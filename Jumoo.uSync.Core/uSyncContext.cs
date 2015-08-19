@@ -1,0 +1,78 @@
+﻿
+namespace Jumoo.uSync.Core
+{
+    using Jumoo.uSync.Core.Interfaces;
+    using Jumoo.uSync.Core.Serializers;
+
+    using Umbraco.Core;
+    using Umbraco.Core.Models;
+
+    public class uSyncCoreContext
+    {
+        private static uSyncCoreContext _instance;
+
+        private uSyncCoreContext() { }
+
+        public static uSyncCoreContext Instance
+        {
+            get { return _instance ?? (_instance = new uSyncCoreContext()); }
+        }
+
+        public ISyncSerializerTwoPass<IContentType> ContentTypeSerializer { get; private set; }
+        public ISyncSerializerTwoPass<IMediaType> MediaTypeSerializer { get; private set; }
+
+        public ISyncSerializer<ITemplate> TemplateSerializer { get; private set; }
+
+        public ISyncSerializer<ILanguage> LanguageSerializer { get; private set; }
+        public ISyncSerializer<IDictionaryItem> DictionarySerializer { get; private set; }
+
+        public ISyncSerializer<IMacro> MacroSerializer { get; private set; }
+        public ISyncSerializer<IDataTypeDefinition> DataTypeSerializer { get; private set; }
+
+        public ISyncSerializerWithParent<IContent> ContentSerializer { get; private set; }
+        public ISyncSerializerWithParent<IMedia> MediaSerializer { get; private set; }
+
+        public uSyncCoreConfig Configuration { get; set; }
+
+        public void Init()
+        {
+            Configuration = new uSyncCoreConfig();
+
+            ContentTypeSerializer = new ContentTypeSerializer(Constants.Packaging.DocumentTypeNodeName);
+            MediaTypeSerializer = new MediaTypeSerializer("MediaType");
+
+            TemplateSerializer = new TemplateSerializer(Constants.Packaging.TemplateNodeName);
+
+            LanguageSerializer = new LanguageSerializer("Language");
+            DictionarySerializer = new DictionarySerializer(Constants.Packaging.DictionaryItemNodeName);
+
+            MacroSerializer = new MacroSerializer(Constants.Packaging.MacroNodeName);
+            DataTypeSerializer = new DataTypeSerializer(Constants.Packaging.DataTypeNodeName);
+
+            ContentSerializer = new ContentSerializer();
+        }
+
+        /// <summary>
+        ///  media is different (and not always used), 
+        /// it needs a physical folder to stream the files to
+        /// </summary>
+        /// <param name="folder"></param>
+        public void InitMedia(string folder)
+        {
+            if (string.IsNullOrEmpty(folder))
+                folder = Configuration.Settings.MediaStorageFolder;
+
+            MediaSerializer = new MediaSerializer(folder);
+        }
+
+        public string Version
+        {
+            get
+            {
+                return typeof(Jumoo.uSync.Core.uSyncCoreContext)
+                  .Assembly.GetName().Version.ToString();
+            }
+        }
+
+    }
+}
