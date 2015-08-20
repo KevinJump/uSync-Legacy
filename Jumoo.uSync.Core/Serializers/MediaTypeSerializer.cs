@@ -82,7 +82,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             _contentTypeService.Save(item);
 
-            return SyncAttempt<IMediaType>.Succeed(item.Name, item, typeof(IMedia), ChangeType.Import);          
+            return SyncAttempt<IMediaType>.Succeed(item.Name, item, ChangeType.Import);          
         }
 
         public override SyncAttempt<IMediaType> DesearlizeSecondPass(IMediaType item, XElement node)
@@ -90,7 +90,7 @@ namespace Jumoo.uSync.Core.Serializers
             DeserializeStructure((IContentTypeBase)item, node);
             _contentTypeService.Save(item);
 
-            return SyncAttempt<IMediaType>.Succeed(item.Name, item, typeof(IMedia), ChangeType.Import);
+            return SyncAttempt<IMediaType>.Succeed(item.Name, item, ChangeType.Import);
         }
 
 

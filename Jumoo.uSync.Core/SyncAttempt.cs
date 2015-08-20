@@ -27,39 +27,72 @@ namespace Jumoo.uSync.Core
             Exception = ex;
         }
 
-        public static SyncAttempt<T> Succeed(string name, Type itemType, ChangeType change)
+        public static SyncAttempt<T> Succeed(string name, ChangeType change)
         {
-            return new SyncAttempt<T>(true, name, default(T), itemType, change, string.Empty, null);
+            return new SyncAttempt<T>(true, name, default(T), typeof(T), change, string.Empty, null);
         }
 
+        public static SyncAttempt<T> Succeed(string name, T item, ChangeType change)
+        {
+            return new SyncAttempt<T>(true, name, item, typeof(T), change, string.Empty, null);
+        }
+
+        public static SyncAttempt<T> Succeed(string name, T item, ChangeType change, string message)
+        {
+            return new SyncAttempt<T>(true, name, item, typeof(T), change, message, null);
+        }
+
+        public static SyncAttempt<T> Fail(string name, T item, ChangeType change)
+        {
+            return new SyncAttempt<T>(false, name, item, typeof(T), change, string.Empty, null);
+        }
+
+        public static SyncAttempt<T> Fail(string name, T item, ChangeType change, string message)
+        {
+            return new SyncAttempt<T>(false, name, item, typeof(T), change, message, null);
+        }
+
+        public static SyncAttempt<T> Fail(string name, T item, ChangeType change, string message, Exception ex)
+        {
+            return new SyncAttempt<T>(false, name, item, typeof(T), change, message, ex);
+        }
+
+        public static SyncAttempt<T> Fail(string name, T item, ChangeType change, Exception ex)
+        {
+            return new SyncAttempt<T>(false, name, item, typeof(T), change, string.Empty, ex);
+        }
+
+        public static SyncAttempt<T> Fail(string name, ChangeType change, string message)
+        {
+            return new SyncAttempt<T>(false, name, default(T), typeof(T), change, message, null);
+        }
+
+        public static SyncAttempt<T> Fail(string name, ChangeType change, string message, Exception ex)
+        {
+            return new SyncAttempt<T>(false, name, default(T), typeof(T), change, message, ex);
+        }
+
+        public static SyncAttempt<T> Fail(string name, ChangeType change, Exception ex)
+        {
+            return new SyncAttempt<T>(false, name, default(T), typeof(T), change, string.Empty, ex);
+        }
+
+        public static SyncAttempt<T> Fail(string name, ChangeType change)
+        {
+            return new SyncAttempt<T>(false, name, default(T), typeof(T), change, string.Empty, null);
+        }
+
+        public static SyncAttempt<T> SucceedIf(bool condition, string name, T item, ChangeType change)
+        {
+            return new SyncAttempt<T>(condition, name, item, typeof(T), change, string.Empty, null);
+        }
+
+
+        // xelement ones, pass type
+        //
         public static SyncAttempt<T> Succeed(string name, T item, Type itemType, ChangeType change)
         {
             return new SyncAttempt<T>(true, name, item, itemType, change, string.Empty, null);
-        }
-
-        public static SyncAttempt<T> Succeed(string name, T item, Type itemType, ChangeType change, string message)
-        {
-            return new SyncAttempt<T>(true, name, item, itemType, change, message, null);
-        }
-
-        public static SyncAttempt<T> Fail(string name, T item, Type itemType, ChangeType change)
-        {
-            return new SyncAttempt<T>(false, name, item, itemType, change, string.Empty, null);
-        }
-
-        public static SyncAttempt<T> Fail(string name, T item, Type itemType, ChangeType change, string message)
-        {
-            return new SyncAttempt<T>(false, name, item, itemType, change, message, null);
-        }
-
-        public static SyncAttempt<T> Fail(string name, T item, Type itemType, ChangeType change, string message, Exception ex)
-        {
-            return new SyncAttempt<T>(false, name, item, itemType, change, message, ex);
-        }
-
-        public static SyncAttempt<T> Fail(string name, T item, Type itemType, ChangeType change, Exception ex)
-        {
-            return new SyncAttempt<T>(false, name, item, itemType, change, string.Empty, ex);
         }
 
         public static SyncAttempt<T> Fail(string name, Type itemType, ChangeType change, string message)
@@ -72,20 +105,12 @@ namespace Jumoo.uSync.Core
             return new SyncAttempt<T>(false, name, default(T), itemType, change, message, ex);
         }
 
-        public static SyncAttempt<T> Fail(string name, Type itemType, ChangeType change, Exception ex)
-        {
-            return new SyncAttempt<T>(false, name, default(T), itemType, change, string.Empty, ex);
-        }
-
-        public static SyncAttempt<T> Fail(string name, Type itemType, ChangeType change)
-        {
-            return new SyncAttempt<T>(false, name, default(T), itemType, change, string.Empty, null);
-        }
-
         public static SyncAttempt<T> SucceedIf(bool condition, string name, T item, Type itemType, ChangeType change)
         {
             return new SyncAttempt<T>(condition, name, item, itemType, change, string.Empty, null);
         }
+
+
     }
 
 

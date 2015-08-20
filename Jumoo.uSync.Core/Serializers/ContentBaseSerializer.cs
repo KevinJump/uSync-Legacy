@@ -37,7 +37,7 @@ namespace Jumoo.uSync.Core.Serializers
                 return DeserializeCore(node, parentId, forceUpdate);
             }
 
-            return SyncAttempt<T>.Succeed(node.NameFromNode(), typeof(T), ChangeType.NoChange);
+            return SyncAttempt<T>.Succeed(node.NameFromNode(), ChangeType.NoChange);
         }
 
         abstract internal SyncAttempt<T> DeserializeCore(XElement node, int parentId, bool forceUpdate);

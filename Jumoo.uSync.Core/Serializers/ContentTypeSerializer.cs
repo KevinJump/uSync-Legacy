@@ -42,7 +42,7 @@ namespace Jumoo.uSync.Core.Serializers
             // structure twice.
             // DeserializeStructure((IContentTypeBase)item, node);
 
-            return SyncAttempt<IContentType>.Succeed(item.Name, item, typeof(IContentType), ChangeType.Import);
+            return SyncAttempt<IContentType>.Succeed(item.Name, item, ChangeType.Import);
         }
 
         public override SyncAttempt<IContentType> DesearlizeSecondPass(IContentType item, XElement node)
@@ -50,7 +50,7 @@ namespace Jumoo.uSync.Core.Serializers
             DeserializeStructure((IContentTypeBase)item, node);
             _contentTypeService.Save(item);
 
-            return SyncAttempt<IContentType>.Succeed(item.Name, item, typeof(IContentType), ChangeType.Import);
+            return SyncAttempt<IContentType>.Succeed(item.Name, item, ChangeType.Import);
         }
 
         internal override SyncAttempt<XElement> SerializeCore(IContentType item)

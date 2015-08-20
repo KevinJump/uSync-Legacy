@@ -43,7 +43,7 @@ namespace Jumoo.uSync.Core.Serializers
                 item = _dataTypeService.GetDataTypeDefinitionById(dataTypeDefinitionId);
 
                 if (item == null)
-                    return SyncAttempt<IDataTypeDefinition>.Fail(node.NameFromNode(), typeof(IDataTypeDefinition), ChangeType.Import, "package service import failed");
+                    return SyncAttempt<IDataTypeDefinition>.Fail(node.NameFromNode(), ChangeType.Import, "package service import failed");
             }
 
             LogHelper.Debug<DataTypeSerializer>("<<< DeserializeCore: Post Import: {0}", ()=> item.Name);
@@ -53,7 +53,7 @@ namespace Jumoo.uSync.Core.Serializers
             DeserializeUpdatePreValues(item, node);
 
             _dataTypeService.Save(item);
-            return SyncAttempt<IDataTypeDefinition>.Succeed(item.Name, item, typeof(IDataTypeDefinition), ChangeType.Import);
+            return SyncAttempt<IDataTypeDefinition>.Succeed(item.Name, item, ChangeType.Import);
 
         }
 

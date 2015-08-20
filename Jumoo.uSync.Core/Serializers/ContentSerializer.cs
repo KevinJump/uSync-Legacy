@@ -24,7 +24,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             var nodeGuid = node.Attribute("guid");
             if (nodeGuid == null)
-                return SyncAttempt<IContent>.Fail(node.NameFromNode(), typeof(IContent), ChangeType.Import, "No Guid in XML");
+                return SyncAttempt<IContent>.Fail(node.NameFromNode(), ChangeType.Import, "No Guid in XML");
 
             Guid sourceGuid = new Guid(nodeGuid.Value);
             Guid targetGuid = uSyncIdMapper.GetTargetGuid(sourceGuid);
@@ -52,13 +52,13 @@ namespace Jumoo.uSync.Core.Serializers
                     if (DateTime.Compare(updateTime, item.UpdateDate.ToLocalTime()) <= 0)
                     {
                         // the import is older than the content on this site;
-                        return SyncAttempt<IContent>.Succeed(item.Name, item, typeof(IContent), ChangeType.NoChange);
+                        return SyncAttempt<IContent>.Succeed(item.Name, item, ChangeType.NoChange);
                     }
                 }
             }
 
             if (item == null)
-                return SyncAttempt<IContent>.Fail(node.NameFromNode(), typeof(IContent), ChangeType.ImportFail, "Cannot find or create content item");
+                return SyncAttempt<IContent>.Fail(node.NameFromNode(), ChangeType.ImportFail, "Cannot find or create content item");
 
             var template = ApplicationContext.Current.Services.FileService.GetTemplate(templateAlias);
             if (template != null)
@@ -98,7 +98,7 @@ namespace Jumoo.uSync.Core.Serializers
             if (newItem)
                 uSyncIdMapper.AddPair(sourceGuid, item.Key);
 
-            return SyncAttempt<IContent>.Succeed(item.Name, item, typeof(IContent), ChangeType.Import);
+            return SyncAttempt<IContent>.Succeed(item.Name, item, ChangeType.Import);
         }
 
         internal override SyncAttempt<XElement> SerializeCore(IContent item)

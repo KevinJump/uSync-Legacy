@@ -35,7 +35,6 @@ namespace Jumoo.uSync.Core.Serializers
                 item != null, 
                 item != null ? item.ItemKey : node.NameFromNode(),
                 item,
-                typeof(IDictionaryItem),
                 ChangeType.Import);
         }
 

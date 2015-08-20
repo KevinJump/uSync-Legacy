@@ -29,7 +29,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             // other bits.
             if (item == null)
-                return SyncAttempt<IMacro>.Fail(node.NameFromNode(), typeof(IMacro), ChangeType.Import, "Package Service import failed");
+                return SyncAttempt<IMacro>.Fail(node.NameFromNode(), ChangeType.Import, "Package Service import failed");
 
             LogHelper.Debug<MacroSerializer>("<<< DeserailizeCore - General properties");
 
@@ -100,7 +100,7 @@ namespace Jumoo.uSync.Core.Serializers
             ApplicationContext.Current.Services.MacroService.Save(item);
 
             LogHelper.Debug<MacroSerializer>("<<< DeserailizeCore - Return");
-            return SyncAttempt<IMacro>.Succeed(item.Name, item, typeof(IMacro), ChangeType.Import);
+            return SyncAttempt<IMacro>.Succeed(item.Name, item, ChangeType.Import);
         }
 
         internal override SyncAttempt<XElement> SerializeCore(IMacro item)
