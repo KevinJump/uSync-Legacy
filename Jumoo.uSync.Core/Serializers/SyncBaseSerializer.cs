@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Jumoo.uSync.Core.Interfaces;
+using Jumoo.uSync.Core.Extensions;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -27,7 +28,7 @@ namespace Jumoo.uSync.Core.Serializers
                 return DeserializeCore(node);
             }
 
-            return SyncAttempt<T>.Succeed(default(T), ChangeType.NoChange);
+            return SyncAttempt<T>.Succeed(node.NameFromNode(), default(T), ChangeType.NoChange);
         }
 
         virtual public bool IsUpdate(XElement node)

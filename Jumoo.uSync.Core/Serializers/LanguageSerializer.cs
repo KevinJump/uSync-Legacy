@@ -32,16 +32,19 @@ namespace Jumoo.uSync.Core.Serializers
                 item = ApplicationContext.Current.Services.LocalizationService.GetLanguageByIsoCode(isoCode);
 
                 if (item == null)
-                    return SyncAttempt<ILanguage>.Fail(ChangeType.Import, "Unable to get item from import");
+                    return SyncAttempt<ILanguage>.Fail(node.NameFromNode(), ChangeType.Import, "Unable to get item from import");
             }
 
-            return SyncAttempt<ILanguage>.Succeed(item, ChangeType.Import);
+            return SyncAttempt<ILanguage>.Succeed(item.CultureName, item, ChangeType.Import);
         }
 
         internal override SyncAttempt<XElement> SerializeCore(ILanguage item)
         {
             var node = _packagingService.Export(item);
-            return SyncAttempt<XElement>.SucceedIf(node != null, node, ChangeType.Export);
+            return SyncAttempt<XElement>.SucceedIf(
+                node != null,
+                item.CultureName,
+                node, ChangeType.Export);
         }
 
         public override bool IsUpdate(XElement node)

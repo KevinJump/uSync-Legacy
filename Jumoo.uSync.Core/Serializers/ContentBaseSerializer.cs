@@ -12,6 +12,7 @@ using Umbraco.Core.Models;
 using Jumoo.uSync.Core.Helpers;
 using Jumoo.uSync.Core.Interfaces;
 using System.Text.RegularExpressions;
+using Jumoo.uSync.Core.Extensions;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -36,7 +37,7 @@ namespace Jumoo.uSync.Core.Serializers
                 return DeserializeCore(node, parentId, forceUpdate);
             }
 
-            return SyncAttempt<T>.Succeed(ChangeType.NoChange);
+            return SyncAttempt<T>.Succeed(node.NameFromNode(), ChangeType.NoChange);
         }
 
         abstract internal SyncAttempt<T> DeserializeCore(XElement node, int parentId, bool forceUpdate);
@@ -135,7 +136,7 @@ namespace Jumoo.uSync.Core.Serializers
 
                 node.Add(updatedNode);
             }
-            return SyncAttempt<XElement>.Succeed(node, ChangeType.Export);
+            return SyncAttempt<XElement>.Succeed(item.Name, node, ChangeType.Export);
         }
 
         private string GetExportIds(string value)

@@ -31,7 +31,11 @@ namespace Jumoo.uSync.Core.Serializers
 
             var langs = _localizationService.GetAllLanguages().ToList();
             var item = UpdateDictionaryValues(node, null, langs); 
-            return SyncAttempt<IDictionaryItem>.SucceedIf(item != null, item, ChangeType.Import);
+            return SyncAttempt<IDictionaryItem>.SucceedIf(
+                item != null, 
+                item != null ? item.ItemKey : node.NameFromNode(),
+                item, 
+                ChangeType.Import);
         }
 
         private IDictionaryItem UpdateDictionaryValues(XElement node, Guid? parent, List<ILanguage> languages)
@@ -86,7 +90,11 @@ namespace Jumoo.uSync.Core.Serializers
         internal override SyncAttempt<XElement> SerializeCore(IDictionaryItem item)
         {
             var node = _packagingService.Export(item, true);
-            return SyncAttempt<XElement>.SucceedIf(node != null, node, ChangeType.Export);
+            return SyncAttempt<XElement>.SucceedIf(
+                node != null, 
+                node != null ? item.ItemKey : node.NameFromNode(),
+                node, 
+                ChangeType.Export);
         }
 
         public override bool IsUpdate(XElement node)

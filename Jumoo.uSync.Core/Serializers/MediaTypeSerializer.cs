@@ -82,7 +82,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             _contentTypeService.Save(item);
 
-            return SyncAttempt<IMediaType>.Succeed(item, ChangeType.Import);          
+            return SyncAttempt<IMediaType>.Succeed(item.Name, item, ChangeType.Import);          
         }
 
         public override SyncAttempt<IMediaType> DesearlizeSecondPass(IMediaType item, XElement node)
@@ -90,7 +90,7 @@ namespace Jumoo.uSync.Core.Serializers
             DeserializeStructure((IContentTypeBase)item, node);
             _contentTypeService.Save(item);
 
-            return SyncAttempt<IMediaType>.Succeed(item, ChangeType.Import);
+            return SyncAttempt<IMediaType>.Succeed(item.Name, item, ChangeType.Import);
         }
 
 
@@ -160,7 +160,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             LogHelper.Debug<MediaTypeSerializer>("Media Serializer Complete");
 
-            return SyncAttempt<XElement>.Succeed(node, ChangeType.Export);
+            return SyncAttempt<XElement>.Succeed(item.Name, node, ChangeType.Export);
         }
 
         public override bool IsUpdate(XElement node)

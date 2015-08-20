@@ -91,26 +91,13 @@ namespace Jumoo.uSync.BackOffice
 
     public struct uSyncActionHelper<T>
     {
-       
         public static uSyncAction SetAction(SyncAttempt<T> attempt, string filename)
         {
             Type itemType = null;
-            string name = "unknown";
             if (attempt.Item != null)
                 attempt.Item.GetType();
 
-            name = Path.GetFileName(filename);
-
-            return new uSyncAction(attempt.Success, name, itemType, attempt.Change, attempt.Message, attempt.Exception, filename);
-        }
-
-        public static uSyncAction SetAction(string name, SyncAttempt<T> attempt, string filename)
-        {
-            Type itemType = null;
-            if (attempt.Item != null)
-                attempt.Item.GetType();
-
-            return new uSyncAction(attempt.Success, name, itemType, attempt.Change, attempt.Message, attempt.Exception, filename);
+            return new uSyncAction(attempt.Success, attempt.Name, itemType, attempt.Change, attempt.Message, attempt.Exception, filename);
         }
     }
 

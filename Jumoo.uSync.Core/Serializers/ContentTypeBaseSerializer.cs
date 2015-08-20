@@ -9,6 +9,7 @@ using Umbraco.Core.Models;
 using Umbraco.Core.Services;
 
 using Jumoo.uSync.Core.Interfaces;
+using Jumoo.uSync.Core.Extensions;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -259,7 +260,7 @@ namespace Jumoo.uSync.Core.Serializers
 
         virtual public SyncAttempt<T> DesearlizeSecondPass(T item, XElement node)
         {
-            return SyncAttempt<T>.Succeed(ChangeType.NoChange);
+            return SyncAttempt<T>.Succeed(node.NameFromNode(), ChangeType.NoChange);
         }
 
         #endregion

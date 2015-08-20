@@ -27,7 +27,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             // other bits.
             if (item == null)
-                return SyncAttempt<IMacro>.Fail(ChangeType.Import, "Package Service import failed");
+                return SyncAttempt<IMacro>.Fail(node.NameFromNode(), ChangeType.Import, "Package Service import failed");
 
             item.Name = node.Element("name").Value;
             item.ControlType = node.Element("scriptType").Value;
@@ -74,13 +74,14 @@ namespace Jumoo.uSync.Core.Serializers
 
             ApplicationContext.Current.Services.MacroService.Save(item);
 
-            return SyncAttempt<IMacro>.Succeed(item, ChangeType.Import);
+            return SyncAttempt<IMacro>.Succeed(item.Name, item, ChangeType.Import);
         }
 
         internal override SyncAttempt<XElement> SerializeCore(IMacro item)
         {
             var node = _packaingService.Export(item);
-            return SyncAttempt<XElement>.SucceedIf(node != null, node, ChangeType.Export);
+            return SyncAttempt<XElement>.SucceedIf(
+                node != null, item.Name, node, ChangeType.Export);
         }
 
         public override bool IsUpdate(XElement node)

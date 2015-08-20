@@ -39,7 +39,7 @@ namespace Jumoo.uSync.Core.Serializers
         {
             var aliasNode = node.Element("Alias");
             if (aliasNode == null)
-                SyncAttempt<ITemplate>.Fail(ChangeType.Import, "No Alias node in xml");
+                SyncAttempt<ITemplate>.Fail(node.NameFromNode(), ChangeType.Import, "No Alias node in xml");
 
             LogHelper.Debug<Events>("# Importing Template : {0}", () => aliasNode.Value);
 
@@ -82,7 +82,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             _fileService.SaveTemplate(item);
 
-            return SyncAttempt<ITemplate>.Succeed(item, ChangeType.Import);
+            return SyncAttempt<ITemplate>.Succeed(item.Name, item, ChangeType.Import);
         }
 
         internal override SyncAttempt<XElement> SerializeCore(ITemplate item)
@@ -92,7 +92,7 @@ namespace Jumoo.uSync.Core.Serializers
                 new XElement("Alias", item.Alias),
                 new XElement("Master", item.MasterTemplateAlias));
 
-            return SyncAttempt<XElement>.Succeed(node, ChangeType.Export);
+            return SyncAttempt<XElement>.Succeed(item.Name, node, ChangeType.Export);
         }
 
         public override bool IsUpdate(XElement node)

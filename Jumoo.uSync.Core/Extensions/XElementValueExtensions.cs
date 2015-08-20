@@ -9,6 +9,54 @@ namespace Jumoo.uSync.Core.Extensions
 {
     public static class XElementValueExtensions
     {
+        /// <summary>
+        ///  trys to get a name for something based on a node 
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public static string NameFromNode(this XElement node)
+        {
+            if (node == null)
+                return "unknown";
+
+            var name = node.Name.LocalName;
+
+            // macro
+            if (node.Element("alias") != null)
+                return node.Element("alias").Value;
+
+            // data types
+            if (node.Attribute("Name") != null)
+                return node.Attribute("Name").Value;
+
+            // doc types and media types
+            if (node.Element("Info") != null && node.Element("Info").Element("Alias") != null)
+                return node.Element("Info").Element("Alias").Value;
+
+            // languages
+            if (node.Attribute("CultureAlias") != null)
+                return node.Attribute("CultureAlias").Value;
+
+            // dictionary items
+            if (node.Attribute("Key") != null)
+                return node.Attribute("Key").Value;
+
+            // some catch alls, incase we've missed on.
+            if (node.Element("Name") != null)
+                return node.Element("Name").Value;
+
+            if (node.Element("Alias") != null)
+                return node.Element("Alias").Value;
+
+            if (node.Element("name") != null)
+                return node.Element("Name").Value;
+
+
+
+            return name;
+        }
+
+
         public static string ValueOrDefault(this XElement node, string defaultValue)
         {
             if (node != null && !string.IsNullOrEmpty(node.Value))
