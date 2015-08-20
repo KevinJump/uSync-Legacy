@@ -28,7 +28,7 @@ namespace Jumoo.uSync.Core.Serializers
                 return DeserializeCore(node);
             }
 
-            return SyncAttempt<T>.Succeed(node.NameFromNode(), default(T), ChangeType.NoChange);
+            return SyncAttempt<T>.Succeed(node.NameFromNode(), default(T), typeof(T), ChangeType.NoChange);
         }
 
         virtual public bool IsUpdate(XElement node)

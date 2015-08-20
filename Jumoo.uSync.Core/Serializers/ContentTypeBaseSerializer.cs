@@ -260,7 +260,7 @@ namespace Jumoo.uSync.Core.Serializers
 
         virtual public SyncAttempt<T> DesearlizeSecondPass(T item, XElement node)
         {
-            return SyncAttempt<T>.Succeed(node.NameFromNode(), ChangeType.NoChange);
+            return SyncAttempt<T>.Succeed(node.NameFromNode(), typeof(T), ChangeType.NoChange);
         }
 
         #endregion

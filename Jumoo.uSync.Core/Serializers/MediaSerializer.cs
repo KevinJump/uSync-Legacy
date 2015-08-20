@@ -26,7 +26,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             var nodeGuid = node.Attribute("guid");
             if (nodeGuid == null)
-                return SyncAttempt<IMedia>.Fail(node.NameFromNode(), ChangeType.Import, "No guid, in xml");
+                return SyncAttempt<IMedia>.Fail(node.NameFromNode(), typeof(IMedia), ChangeType.Import, "No guid, in xml");
 
             Guid sourceGuid = new Guid(nodeGuid.Value);
             Guid targetGuid = uSyncIdMapper.GetTargetGuid(sourceGuid);
@@ -47,7 +47,7 @@ namespace Jumoo.uSync.Core.Serializers
                 if (!forceUpdate)
                 {
                     if (DateTime.Compare(update, item.UpdateDate.ToLocalTime()) < 0)
-                        return SyncAttempt<IMedia>.Succeed(item.Name, item, ChangeType.NoChange);
+                        return SyncAttempt<IMedia>.Succeed(item.Name, item, typeof(IMedia), ChangeType.NoChange);
                 }
             }
 
@@ -67,7 +67,7 @@ namespace Jumoo.uSync.Core.Serializers
             if (newItem)
                 uSyncIdMapper.AddPair(sourceGuid, item.Key);
 
-            return SyncAttempt<IMedia>.Succeed(item.Name, item, ChangeType.Import);
+            return SyncAttempt<IMedia>.Succeed(item.Name, item, typeof(IMedia), ChangeType.Import);
 
         }
 
@@ -98,7 +98,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             }
 
-            return SyncAttempt<XElement>.Succeed(item.Name, node, ChangeType.Export);
+            return SyncAttempt<XElement>.Succeed(item.Name, node, typeof(IMedia), ChangeType.Export);
 
         }
     }

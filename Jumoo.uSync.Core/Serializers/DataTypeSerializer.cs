@@ -43,7 +43,7 @@ namespace Jumoo.uSync.Core.Serializers
                 item = _dataTypeService.GetDataTypeDefinitionById(dataTypeDefinitionId);
 
                 if (item == null)
-                    return SyncAttempt<IDataTypeDefinition>.Fail(node.NameFromNode(), ChangeType.Import, "package service import failed");
+                    return SyncAttempt<IDataTypeDefinition>.Fail(node.NameFromNode(), typeof(IDataTypeDefinition), ChangeType.Import, "package service import failed");
             }
 
             LogHelper.Debug<DataTypeSerializer>("<<< DeserializeCore: Post Import: {0}", ()=> item.Name);
@@ -53,7 +53,7 @@ namespace Jumoo.uSync.Core.Serializers
             DeserializeUpdatePreValues(item, node);
 
             _dataTypeService.Save(item);
-            return SyncAttempt<IDataTypeDefinition>.Succeed(item.Name, item, ChangeType.Import);
+            return SyncAttempt<IDataTypeDefinition>.Succeed(item.Name, item, typeof(IDataTypeDefinition), ChangeType.Import);
 
         }
 
@@ -178,13 +178,13 @@ namespace Jumoo.uSync.Core.Serializers
             try {
                 var node = _packagingService.Export(item);
                 if (node == null)
-                    return SyncAttempt<XElement>.Fail(item.Name, ChangeType.Export, "Package service export failed");
+                    return SyncAttempt<XElement>.Fail(item.Name, typeof(IDataTypeDefinition), ChangeType.Export, "Package service export failed");
 
                 return SerializeUpdatePreValues(item, node);
             }
             catch(Exception ex)
             {
-                return SyncAttempt<XElement>.Fail(item.Name, ChangeType.Export, "Failed to export", ex);
+                return SyncAttempt<XElement>.Fail(item.Name, typeof(IDataTypeDefinition), ChangeType.Export, "Failed to export", ex);
             }
         }
 
@@ -223,7 +223,7 @@ namespace Jumoo.uSync.Core.Serializers
                 nodePreValues.Add(preValueNode);
             }
 
-            return SyncAttempt<XElement>.Succeed(item.Name, node, ChangeType.Export);
+            return SyncAttempt<XElement>.Succeed(item.Name, node, typeof(IDataTypeDefinition), ChangeType.Export);
         }
 
         private Dictionary<string, PreValue> GetPreValues(IDataTypeDefinition dataType)

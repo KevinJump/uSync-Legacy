@@ -34,7 +34,8 @@ namespace Jumoo.uSync.Core.Serializers
             return SyncAttempt<IDictionaryItem>.SucceedIf(
                 item != null, 
                 item != null ? item.ItemKey : node.NameFromNode(),
-                item, 
+                item,
+                typeof(IDictionaryItem),
                 ChangeType.Import);
         }
 
@@ -93,7 +94,8 @@ namespace Jumoo.uSync.Core.Serializers
             return SyncAttempt<XElement>.SucceedIf(
                 node != null, 
                 node != null ? item.ItemKey : node.NameFromNode(),
-                node, 
+                node,
+                typeof(IDictionaryItem),
                 ChangeType.Export);
         }
 

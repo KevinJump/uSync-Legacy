@@ -11,78 +11,80 @@ namespace Jumoo.uSync.Core
         public bool Success { get; }
         public string Name { get; set; }
         public T Item {get; }
+        public Type ItemType { get; }
         public ChangeType Change { get; }
         public string Message { get; }
         public Exception Exception { get; set; }
 
-        private SyncAttempt(bool success, string name, T item, ChangeType change, string message, Exception ex)
+        private SyncAttempt(bool success, string name, T item, Type itemType, ChangeType change, string message, Exception ex)
         {
             Success = success;
             Name = name;
             Item = item;
+            ItemType = itemType;
             Change = change;
             Message = message;
             Exception = ex;
         }
 
-        public static SyncAttempt<T> Succeed(string name, ChangeType change)
+        public static SyncAttempt<T> Succeed(string name, Type itemType, ChangeType change)
         {
-            return new SyncAttempt<T>(true, name, default(T), change, string.Empty, null);
+            return new SyncAttempt<T>(true, name, default(T), itemType, change, string.Empty, null);
         }
 
-        public static SyncAttempt<T> Succeed(string name, T item, ChangeType change)
+        public static SyncAttempt<T> Succeed(string name, T item, Type itemType, ChangeType change)
         {
-            return new SyncAttempt<T>(true, name, item, change, string.Empty, null);
+            return new SyncAttempt<T>(true, name, item, itemType, change, string.Empty, null);
         }
 
-        public static SyncAttempt<T> Succeed(string name, T item, ChangeType change, string message)
+        public static SyncAttempt<T> Succeed(string name, T item, Type itemType, ChangeType change, string message)
         {
-            return new SyncAttempt<T>(true, name, item, change, message, null);
+            return new SyncAttempt<T>(true, name, item, itemType, change, message, null);
         }
 
-        public static SyncAttempt<T> Fail(string name, T item, ChangeType change)
+        public static SyncAttempt<T> Fail(string name, T item, Type itemType, ChangeType change)
         {
-            return new SyncAttempt<T>(false, name, item, change, string.Empty, null);
+            return new SyncAttempt<T>(false, name, item, itemType, change, string.Empty, null);
         }
 
-        public static SyncAttempt<T> Fail(string name, T item, ChangeType change, string message)
+        public static SyncAttempt<T> Fail(string name, T item, Type itemType, ChangeType change, string message)
         {
-            return new SyncAttempt<T>(false, name, item, change, message, null);
+            return new SyncAttempt<T>(false, name, item, itemType, change, message, null);
         }
 
-        public static SyncAttempt<T> Fail(string name, T item, ChangeType change, string message, Exception ex)
+        public static SyncAttempt<T> Fail(string name, T item, Type itemType, ChangeType change, string message, Exception ex)
         {
-            return new SyncAttempt<T>(false, name, item, change, message, ex);
+            return new SyncAttempt<T>(false, name, item, itemType, change, message, ex);
         }
 
-        public static SyncAttempt<T> Fail(string name, T item, ChangeType change, Exception ex)
+        public static SyncAttempt<T> Fail(string name, T item, Type itemType, ChangeType change, Exception ex)
         {
-            return new SyncAttempt<T>(false, name, item, change, string.Empty, ex);
+            return new SyncAttempt<T>(false, name, item, itemType, change, string.Empty, ex);
         }
 
-        public static SyncAttempt<T> Fail(string name, ChangeType change, string message)
+        public static SyncAttempt<T> Fail(string name, Type itemType, ChangeType change, string message)
         {
-            return new SyncAttempt<T>(false, name, default(T), change, message, null);
+            return new SyncAttempt<T>(false, name, default(T), itemType, change, message, null);
         }
 
-        public static SyncAttempt<T> Fail(string name, ChangeType change, string message, Exception ex)
+        public static SyncAttempt<T> Fail(string name, Type itemType, ChangeType change, string message, Exception ex)
         {
-            return new SyncAttempt<T>(false, name, default(T), change, message, ex);
+            return new SyncAttempt<T>(false, name, default(T), itemType, change, message, ex);
         }
 
-        public static SyncAttempt<T> Fail(string name, ChangeType change, Exception ex)
+        public static SyncAttempt<T> Fail(string name, Type itemType, ChangeType change, Exception ex)
         {
-            return new SyncAttempt<T>(false, name, default(T), change, string.Empty, ex);
+            return new SyncAttempt<T>(false, name, default(T), itemType, change, string.Empty, ex);
         }
 
-        public static SyncAttempt<T> Fail(string name, ChangeType change)
+        public static SyncAttempt<T> Fail(string name, Type itemType, ChangeType change)
         {
-            return new SyncAttempt<T>(false, name, default(T), change, string.Empty, null);
+            return new SyncAttempt<T>(false, name, default(T), itemType, change, string.Empty, null);
         }
 
-        public static SyncAttempt<T> SucceedIf(bool condition, string name, T item, ChangeType change)
+        public static SyncAttempt<T> SucceedIf(bool condition, string name, T item, Type itemType, ChangeType change)
         {
-            return new SyncAttempt<T>(condition, name, item, change, string.Empty, null);
+            return new SyncAttempt<T>(condition, name, item, itemType, change, string.Empty, null);
         }
     }
 

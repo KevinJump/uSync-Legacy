@@ -37,7 +37,7 @@ namespace Jumoo.uSync.Core.Serializers
                 return DeserializeCore(node, parentId, forceUpdate);
             }
 
-            return SyncAttempt<T>.Succeed(node.NameFromNode(), ChangeType.NoChange);
+            return SyncAttempt<T>.Succeed(node.NameFromNode(), typeof(T), ChangeType.NoChange);
         }
 
         abstract internal SyncAttempt<T> DeserializeCore(XElement node, int parentId, bool forceUpdate);
@@ -136,7 +136,7 @@ namespace Jumoo.uSync.Core.Serializers
 
                 node.Add(updatedNode);
             }
-            return SyncAttempt<XElement>.Succeed(item.Name, node, ChangeType.Export);
+            return SyncAttempt<XElement>.Succeed(item.Name, node, item.GetType(), ChangeType.Export);
         }
 
         private string GetExportIds(string value)

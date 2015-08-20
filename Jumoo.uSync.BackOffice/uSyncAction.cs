@@ -93,11 +93,7 @@ namespace Jumoo.uSync.BackOffice
     {
         public static uSyncAction SetAction(SyncAttempt<T> attempt, string filename)
         {
-            Type itemType = null;
-            if (attempt.Item != null)
-                attempt.Item.GetType();
-
-            return new uSyncAction(attempt.Success, attempt.Name, itemType, attempt.Change, attempt.Message, attempt.Exception, filename);
+            return new uSyncAction(attempt.Success, attempt.Name, attempt.ItemType, attempt.Change, attempt.Message, attempt.Exception, filename);
         }
     }
 
@@ -139,7 +135,7 @@ namespace Jumoo.uSync.BackOffice
                 if (action.ItemType != null)
                 {
                     string type = action.ItemType.ToString();
-                    type = type.Substring(type.LastIndexOf('.'));
+                    type = type.Substring(type.LastIndexOf('.')+1);
                     actionNode.Add(new XAttribute("Type", type));
                 }
 
