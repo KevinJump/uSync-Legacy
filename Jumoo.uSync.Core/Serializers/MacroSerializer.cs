@@ -10,6 +10,7 @@ using Umbraco.Core.Models;
 using Umbraco.Core.Services;
 
 using Jumoo.uSync.Core.Extensions;
+using Umbraco.Core.Logging;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -23,17 +24,31 @@ namespace Jumoo.uSync.Core.Serializers
 
         internal override SyncAttempt<IMacro> DeserializeCore(XElement node)
         {
+            LogHelper.Debug<MacroSerializer>("<< DeserailizeCore Macro");
             var item = _packaingService.ImportMacros(node).FirstOrDefault();
 
             // other bits.
             if (item == null)
                 return SyncAttempt<IMacro>.Fail(node.NameFromNode(), typeof(IMacro), ChangeType.Import, "Package Service import failed");
 
-            item.Name = node.Element("name").Value;
-            item.ControlType = node.Element("scriptType").Value;
-            item.ControlAssembly = node.Element("scriptAssembly").Value;
-            item.XsltPath = node.Element("xslt").Value;
-            item.ScriptPath = node.Element("scriptingFile").Value;
+            LogHelper.Debug<MacroSerializer>("<<< DeserailizeCore - General properties");
+
+            if (node.Element("name") != null)
+                item.Name = node.Element("name").Value;
+
+            if (node.Element("scriptType") != null)
+                item.ControlType = node.Element("scriptType").Value;
+
+            if (node.Element("scriptAssembly") != null)
+                item.ControlAssembly = node.Element("scriptAssembly").Value;
+
+            if (node.Element("xslt") != null)
+                item.XsltPath = node.Element("xslt").Value;
+
+            if (node.Element("scriptingFile") != null)
+                item.ScriptPath = node.Element("scriptingFile").Value;
+
+            LogHelper.Debug<MacroSerializer>("<<< DeserailizeCore - Defaults");
 
             item.UseInEditor = node.Element("useInEditor").ValueOrDefault(false);
             item.CacheDuration = node.Element("refreshRate").ValueOrDefault(0);
@@ -42,25 +57,33 @@ namespace Jumoo.uSync.Core.Serializers
             item.DontRender = node.Element("dontRender").ValueOrDefault(true);
 
 
+            LogHelper.Debug<MacroSerializer>("<<< DeserailizeCore - Properties");
             List<string> propertiesToRemove = new List<string>();
 
-            var properties = node.Elements("properties");
-            if (properties != null && properties.Any())
+            var properties = node.Element("properties");
+            if (properties != null && properties.HasElements)
             {
-                foreach(var property in properties)
+                foreach (var property in properties.Elements("property"))
                 {
                     var alias = property.Attribute("alias").Value;
-                    var itemProperty = item.Properties.FirstOrDefault(x => string.Equals(x.Alias, alias, StringComparison.OrdinalIgnoreCase));
-                    if (itemProperty!= null)
+                    var itemProperty = item.Properties.FirstOrDefault(x => string.Equals(x.Alias, alias, StringComparison.OrdinalIgnoreCase) == true);
+                    if (itemProperty != null)
                     {
+                        LogHelper.Debug<MacroSerializer>("<<< Updating Property: {0}", () => alias);
                         itemProperty.Alias = alias;
                         itemProperty.Name = property.Attribute("name").Value;
                         itemProperty.EditorAlias = property.Attribute("propertyType").Value;
                     }
-                    else
-                    {
-                        propertiesToRemove.Add(alias);
-                    }
+                }
+            }
+
+            foreach(var property in item.Properties)
+            {
+                var nodeProp = properties.Elements("property").FirstOrDefault(x => x.Attribute("alias").Value == property.Alias);
+
+                if (nodeProp == null)
+                { 
+                    propertiesToRemove.Add(property.Alias);
                 }
             }
 
@@ -68,12 +91,15 @@ namespace Jumoo.uSync.Core.Serializers
             {
                 foreach (var alias in propertiesToRemove)
                 {
+                    LogHelper.Debug<MacroSerializer>("<<< Removing Property : {0}", () => alias);
                     item.Properties.Remove(alias);
                 }
             }
 
+            LogHelper.Debug<MacroSerializer>("<<< DeserailizeCore - Saving");
             ApplicationContext.Current.Services.MacroService.Save(item);
 
+            LogHelper.Debug<MacroSerializer>("<<< DeserailizeCore - Return");
             return SyncAttempt<IMacro>.Succeed(item.Name, item, typeof(IMacro), ChangeType.Import);
         }
 
