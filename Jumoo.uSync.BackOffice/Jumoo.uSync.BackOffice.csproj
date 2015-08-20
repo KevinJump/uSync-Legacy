@@ -97,11 +97,12 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="uSync.BackOffice.Config" />
+    <None Include="uSyncBackOffice.Config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>XCOPY "$(TargetPath)" "$(SolutionDir)Umbraco.Site\Bin\" /q /y</PostBuildEvent>
+    <PostBuildEvent>XCOPY "$(TargetPath)" "$(SolutionDir)Umbraco.Site\Bin\" /q /y
+XCOPY "$(ProjectDir)uSyncBackOffice.config" "$(SolutionDir)Umbraco.Site\Config\uSyncBackOffice.config" /q /y /I</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
