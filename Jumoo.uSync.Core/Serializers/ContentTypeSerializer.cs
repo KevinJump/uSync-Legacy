@@ -34,6 +34,8 @@ namespace Jumoo.uSync.Core.Serializers
             // Update Tabs
             DeserializeTabSortOrder((IContentTypeBase)item, node);
 
+            DeserializeTemplates(item, node);
+
             _contentTypeService.Save(item);
             // Update Structure (Happens in second pass)
             // need to consider if we also call it here
@@ -43,6 +45,41 @@ namespace Jumoo.uSync.Core.Serializers
             // DeserializeStructure((IContentTypeBase)item, node);
 
             return SyncAttempt<IContentType>.Succeed(item.Name, item, ChangeType.Import);
+        }
+
+        private void DeserializeTemplates(IContentType item, XElement node)
+        {
+            var nodeTemplates = node.Element("Info").Element("AllowedTemplates");
+            if (nodeTemplates == null || !nodeTemplates.HasElements)
+                return;
+
+            var _fileService = ApplicationContext.Current.Services.FileService;
+
+            List<ITemplate> templates = new List<ITemplate>();
+
+            foreach(var template in nodeTemplates.Elements("Template"))
+            {
+                var alias = template.Value;
+                var iTemplate = _fileService.GetTemplate(alias);
+                if (template != null)
+                {
+                    templates.Add(iTemplate);
+                }
+            }
+
+            List<ITemplate> templatesToRemove = new List<ITemplate>();
+            foreach(var itemTemplate in item.AllowedTemplates)
+            {
+                if (nodeTemplates.Elements("Template").FirstOrDefault(x => x.Value == itemTemplate.Alias) == null)
+                {
+                    templatesToRemove.Add(itemTemplate);
+                }
+            }
+
+            foreach(var rTemplate in templatesToRemove)
+            {
+                item.RemoveTemplate(rTemplate);
+            }
         }
 
         public override SyncAttempt<IContentType> DesearlizeSecondPass(IContentType item, XElement node)
