@@ -11,7 +11,7 @@ using Jumoo.uSync.Core.Extensions;
 using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
-
+using Umbraco.Core.Logging;
 
 namespace Jumoo.uSync.Core.Serializers
 {

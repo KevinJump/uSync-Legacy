@@ -10,6 +10,7 @@ using Umbraco.Core.Services;
 
 using Jumoo.uSync.Core.Interfaces;
 using Jumoo.uSync.Core.Extensions;
+using Umbraco.Core.Logging;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -184,6 +185,22 @@ namespace Jumoo.uSync.Core.Serializers
                     }
                 }
             }
+
+            // remove tabs 
+            List<string> tabsToRemove = new List<string>();
+            foreach(var tab in item.PropertyGroups)
+            {
+                if (tabNode.Elements("Tab").FirstOrDefault(x => x.Element("Caption").Value == tab.Name) == null)
+                {
+                    // no tab of this name in the import... remove it.
+                    tabsToRemove.Add(tab.Name);
+                }
+            }
+
+            foreach (var name in tabsToRemove)
+            {
+                item.PropertyGroups.Remove(name);
+            }            
         }
         #endregion
 
@@ -206,17 +223,18 @@ namespace Jumoo.uSync.Core.Serializers
             var structureNode = node.Element("Structure");
             structureNode.RemoveNodes();
 
-            SortedList<string, ContentTypeSort> allowedTypes = new SortedList<string, ContentTypeSort>();
+            SortedSet<string> allowedAliases = new SortedSet<string>();
             foreach(var allowedType in item.AllowedContentTypes)
             {
-                allowedTypes.Add(allowedType.Alias, allowedType);
+                var allowed = _contentTypeService.GetContentType(allowedType.Id.Value);
+                if (allowed != null)
+                    allowedAliases.Add(allowed.Alias);
             }
 
-            foreach(var allowedType in allowedTypes)
+            foreach (var alias in allowedAliases)
             {
-                structureNode.Add(new XElement(_itemType , allowedType.Value.Alias));
+                    structureNode.Add(new XElement(_itemType, alias));
             }
-
             return node;            
         }
 
