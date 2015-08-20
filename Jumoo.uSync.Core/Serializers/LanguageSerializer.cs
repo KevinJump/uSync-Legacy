@@ -17,25 +17,41 @@ namespace Jumoo.uSync.Core.Serializers
     public class LanguageSerializer : SyncBaseSerializer<ILanguage>
     {
         private IPackagingService _packagingService;
+        private ILocalizationService _localizationService;
         public LanguageSerializer(string itemType) : base(itemType)
         {
             _packagingService = ApplicationContext.Current.Services.PackagingService;
+            _localizationService = ApplicationContext.Current.Services.LocalizationService;
         }
 
         internal override SyncAttempt<ILanguage> DeserializeCore(XElement node)
         {
-            var item = _packagingService.ImportLanguages(node).FirstOrDefault();
-            if ( item == null)
-            {
-                // existing languages imported return null
-                var isoCode = node.Attribute("CultureAlias").Value;
-                item = ApplicationContext.Current.Services.LocalizationService.GetLanguageByIsoCode(isoCode);
+            var culture = node.Attribute("CultureAlias");
+            var fName = node.Attribute("FriendlyName");
+            if (culture == null || fName == null)
+                return SyncAttempt<ILanguage>.Fail(node.NameFromNode(), ChangeType.Import, "missing Alias or Name");
 
-                if (item == null)
-                    return SyncAttempt<ILanguage>.Fail(node.NameFromNode(), typeof(ILanguage), ChangeType.Import, "Unable to get item from import");
-            }
+            // by name
+            ILanguage item = _localizationService.GetLanguageByCultureCode(fName.Value);
 
-            return SyncAttempt<ILanguage>.Succeed(item.CultureName, item, typeof(ILanguage), ChangeType.Import);
+            // by iso code
+            if (item == null)
+                item = _localizationService.GetLanguageByIsoCode(culture.Value);
+
+            // create a new one
+            if (item == null)
+                item = new Language(culture.Value);            
+
+            // all that failed
+            if (item == null)
+                return SyncAttempt<ILanguage>.Fail(node.NameFromNode(), ChangeType.Import, "Unable to import language");
+
+            // it worked update stuff..
+            item.IsoCode = culture.Value;
+            item.CultureName = fName.Value; 
+            _localizationService.Save(item);
+
+            return SyncAttempt<ILanguage>.Succeed(item.CultureName, item, ChangeType.Import);
         }
 
         internal override SyncAttempt<XElement> SerializeCore(ILanguage item)
