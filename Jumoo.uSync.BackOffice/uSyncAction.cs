@@ -165,8 +165,31 @@ namespace Jumoo.uSync.BackOffice
 
             logFile.Add(logNode);
             logFile.Save(filePath);
+
+            // keep the last 20 no more.
+            CleanLogFolder(20);
         }
 
+        /// <summary>
+        ///  makes sure the log folder doesn't become masssssssive!
+        /// </summary>
+        /// <param name="count"></param>
+        private static void CleanLogFolder(int count)
+        {
+            // creates an action log (xml file) of the actions...
+            var folderPath = IOHelper.MapPath(Path.Combine(SystemDirectories.Data, "temp", "uSync"));
+
+            if (Directory.Exists(folderPath))
+            {
+                DirectoryInfo dir = new DirectoryInfo(folderPath);
+                FileInfo[] filelist = dir.GetFiles("*.config");
+                var files = filelist.OrderByDescending(file => file.CreationTime);
+                foreach(var file in files.Skip(count))
+                {
+                    file.Delete();
+                }
+            }
+        }
 
         public static void LogActions(List<uSyncAction> actions)
         {
