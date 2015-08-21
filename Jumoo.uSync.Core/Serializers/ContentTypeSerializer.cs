@@ -113,7 +113,16 @@ namespace Jumoo.uSync.Core.Serializers
                 foreach (var composistion in comps.Elements("Composition"))
                 {
                     var compAlias = composistion.Value;
-                    var type = _contentTypeService.GetContentType(compAlias);
+                    var compKey = composistion.Attribute("Key").ValueOrDefault(Guid.Empty);
+
+                    IContentType type = null;
+
+                    if (compKey != Guid.Empty)
+                        type = _contentTypeService.GetContentType(compKey);
+
+                    if (type == null)
+                        type = _contentTypeService.GetContentType(compAlias);
+
                     if (type != null)
                         item.AddContentType(type);
                 }
@@ -177,7 +186,9 @@ namespace Jumoo.uSync.Core.Serializers
             var compositions = item.ContentTypeComposition;
             foreach(var composition in compositions)
             {
-                compositionsNode.Add(new XElement("Composition", composition.Alias));
+                compositionsNode.Add(new XElement("Composition", composition.Alias, 
+                    new XAttribute("Key", composition.Key))
+                    );
             }
             info.Add(compositionsNode);
 

@@ -90,6 +90,8 @@ namespace Jumoo.uSync.Core.Serializers
                 IContentTypeBase contentBaseItem = default(IContentTypeBase);
                 if (key != Guid.Empty)
                 {
+                    LogHelper.Debug<uSync.Core.Events>("Using key to find structure element");
+
                     // by key search (survives renames)
                     if (_itemType == Constants.Packaging.DocumentTypeNodeName)
                         contentBaseItem = _contentTypeService.GetContentType(key);
@@ -99,6 +101,7 @@ namespace Jumoo.uSync.Core.Serializers
 
                 if (contentBaseItem == null && !string.IsNullOrEmpty(alias))
                 {
+                    LogHelper.Debug<uSync.Core.Events>("Fallback Alias lookup");
                     if (_itemType == Constants.Packaging.DocumentTypeNodeName)
                     {
                         contentBaseItem = _contentTypeService.GetContentType(alias);
@@ -344,8 +347,8 @@ namespace Jumoo.uSync.Core.Serializers
 
             foreach (var alias in allowedAliases)
             {
-                structureNode.Add(new XElement(_itemType, alias.Key),
-                    new XAttribute("Key", alias.Value.ToString())
+                structureNode.Add(new XElement(_itemType, alias.Key,
+                    new XAttribute("Key", alias.Value.ToString()))
                     );
             }
             return structureNode;            
