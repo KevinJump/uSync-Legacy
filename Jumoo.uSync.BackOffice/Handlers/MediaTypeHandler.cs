@@ -14,6 +14,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
     using Jumoo.uSync.Core;
     using Jumoo.uSync.BackOffice.Helpers;
     using System.Collections.Generic;
+    using Core.Extensions;
 
     public class MediaTypeHandler : uSyncBaseHandler<IMediaType>, ISyncHandler
     {
@@ -158,5 +159,13 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
             }
         }
+
+        public override uSyncAction ReportItem(string file)
+        {
+            var node = XElement.Load(file);
+            var update = uSyncCoreContext.Instance.MediaTypeSerializer.IsUpdate(node);
+            return uSyncActionHelper<IMediaType>.ReportAction(update, node.NameFromNode());
+        }
+
     }
 }

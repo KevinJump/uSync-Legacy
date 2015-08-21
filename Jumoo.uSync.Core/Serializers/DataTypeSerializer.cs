@@ -277,7 +277,7 @@ namespace Jumoo.uSync.Core.Serializers
             if (string.IsNullOrEmpty(nodeHash))
                 return true;
 
-            var defNode = node.Attribute("Definition");
+            var defNode = node.Attribute("Key");
             if (defNode == null)
                 return true;
 

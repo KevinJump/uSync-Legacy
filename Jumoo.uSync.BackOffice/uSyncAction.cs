@@ -95,6 +95,20 @@ namespace Jumoo.uSync.BackOffice
         {
             return new uSyncAction(attempt.Success, attempt.Name, attempt.ItemType, attempt.Change, attempt.Message, attempt.Exception, filename);
         }
+
+        public static uSyncAction ReportAction(bool willUpdate, string name)
+        {
+            return new uSyncAction(true, name, typeof(T), 
+                willUpdate ? ChangeType.Update : ChangeType.NoChange,
+                string.Empty, null, string.Empty);
+        }
+
+        public static uSyncAction ReportAction(bool willUpdate, string name, string message)
+        {
+            return new uSyncAction(true, name, typeof(T), 
+                willUpdate ? ChangeType.Update : ChangeType.NoChange, 
+                message, null, string.Empty);
+        }
     }
 
 

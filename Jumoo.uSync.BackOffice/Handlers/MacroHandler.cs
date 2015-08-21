@@ -14,6 +14,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
     using Jumoo.uSync.Core;
     using Jumoo.uSync.BackOffice.Helpers;
     using System.Collections.Generic;
+    using Core.Extensions;
 
     public class MacroHandler : uSyncBaseHandler<IMacro>, ISyncHandler
     {
@@ -116,6 +117,14 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 ActionTracker.RemoveActions(item.Alias, typeof(IMacro));
             }
         }
+
+        public override uSyncAction ReportItem(string file)
+        {
+            var node = XElement.Load(file);
+            var update = uSyncCoreContext.Instance.MacroSerializer.IsUpdate(node);
+            return uSyncActionHelper<IMacro>.ReportAction(update, node.NameFromNode());
+        }
+
 
     }
 }

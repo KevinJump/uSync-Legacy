@@ -14,6 +14,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
     using Jumoo.uSync.Core;
     using Jumoo.uSync.BackOffice.Helpers;
     using System.Linq;
+    using Core.Extensions;
 
     public class DictionaryHandler : uSyncBaseHandler<IDictionaryItem>, ISyncHandler
     {
@@ -168,5 +169,13 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
             return item;
         }
+
+        public override uSyncAction ReportItem(string file)
+        {
+            var node = XElement.Load(file);
+            var update = uSyncCoreContext.Instance.DictionarySerializer.IsUpdate(node);
+            return uSyncActionHelper<IDictionaryItem>.ReportAction(update, node.NameFromNode());
+        }
+
     }
 }

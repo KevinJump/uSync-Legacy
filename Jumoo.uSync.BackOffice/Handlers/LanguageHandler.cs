@@ -12,6 +12,7 @@
     using Jumoo.uSync.Core;
     using Jumoo.uSync.BackOffice.Helpers;
     using System.Collections.Generic;
+    using Core.Extensions;
 
     public class LanguageHandler : uSyncBaseHandler<ILanguage>, ISyncHandler
     {
@@ -112,5 +113,13 @@
                 ActionTracker.RemoveActions(item.CultureName, typeof(ILanguage));
             }
         }
+
+        public override uSyncAction ReportItem(string file)
+        {
+            var node = XElement.Load(file);
+            var update = uSyncCoreContext.Instance.LanguageSerializer.IsUpdate(node);
+            return uSyncActionHelper<ILanguage>.ReportAction(update, node.NameFromNode());
+        }
+
     }
 }

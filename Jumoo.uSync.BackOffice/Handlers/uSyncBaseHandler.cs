@@ -108,5 +108,36 @@
         {
 
         }
+
+        /// <summary>
+        ///  reutns a list of actions saying what will happen 
+        /// on a import (force = false)
+        /// </summary>
+        /// <param name="folder"></param>
+        /// <returns></returns>
+        public IEnumerable<uSyncAction> Report(string folder)
+        {
+            List<uSyncAction> actions = new List<uSyncAction>();
+
+            string mappedfolder = Umbraco.Core.IO.IOHelper.MapPath(folder);
+
+            if (Directory.Exists(mappedfolder))
+            {
+                foreach (string file in Directory.GetFiles(mappedfolder, "*.config"))
+                {
+                    actions.Add(ReportItem(file));
+
+                }
+
+                foreach (var children in Directory.GetDirectories(mappedfolder))
+                {
+                    actions.AddRange(Report(children));
+                }
+            }
+
+            return actions;
+        }
+
+        abstract public uSyncAction ReportItem(string file);
     }
 }

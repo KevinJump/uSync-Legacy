@@ -12,6 +12,7 @@
     using Jumoo.uSync.BackOffice.Helpers;
     using System.Collections.Generic;
     using System.IO;
+    using Core.Extensions;
 
     public class TemplateHandler : uSyncBaseHandler<ITemplate>, ISyncHandler
     {
@@ -136,5 +137,13 @@
 
             }
         }
+
+        public override uSyncAction ReportItem(string file)
+        {
+            var node = XElement.Load(file);
+            var update = uSyncCoreContext.Instance.TemplateSerializer.IsUpdate(node);
+            return uSyncActionHelper<ITemplate>.ReportAction(update, node.NameFromNode());
+        }
+
     }
 }

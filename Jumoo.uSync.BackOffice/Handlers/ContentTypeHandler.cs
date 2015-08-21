@@ -10,6 +10,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
     using Umbraco.Core.Services;
     using Umbraco.Core.Logging;
 
+    using Jumoo.uSync.Core.Extensions;
+
     using Jumoo.uSync.Core;
     using Jumoo.uSync.BackOffice.Helpers;
     using System.Collections.Generic;
@@ -174,6 +176,13 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 LogHelper.Info<ContentTypeHandler>("Save: Saving uSync files for Item: {0}", () => item.Name);
                 ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
             }
+        }
+
+        public override uSyncAction ReportItem(string file)
+        {
+            var node = XElement.Load(file);
+            var update = uSyncCoreContext.Instance.ContentTypeSerializer.IsUpdate(node);
+            return uSyncActionHelper<IContentType>.ReportAction(update, node.NameFromNode());
         }
     }
 }

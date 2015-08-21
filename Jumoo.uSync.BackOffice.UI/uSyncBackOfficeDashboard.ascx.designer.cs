@@ -13,6 +13,24 @@ namespace Jumoo.uSync.BackOffice.UI {
     public partial class uSyncBackOfficeDashboard {
         
         /// <summary>
+        /// uSyncVersionNumber control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label uSyncVersionNumber;
+        
+        /// <summary>
+        /// uSyncCoreVersion control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label uSyncCoreVersion;
+        
+        /// <summary>
         /// uSyncFolder2 control.
         /// </summary>
         /// <remarks>
@@ -29,6 +47,24 @@ namespace Jumoo.uSync.BackOffice.UI {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label usyncFolder;
+        
+        /// <summary>
+        /// btnReport control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnReport;
+        
+        /// <summary>
+        /// btnSyncImport control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnSyncImport;
         
         /// <summary>
         /// btnFullImport control.
@@ -58,13 +94,31 @@ namespace Jumoo.uSync.BackOffice.UI {
         protected global::System.Web.UI.WebControls.Button btnFullExport;
         
         /// <summary>
-        /// uSyncResults control.
+        /// uSyncResultPlaceHolder control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label uSyncResults;
+        protected global::System.Web.UI.WebControls.PlaceHolder uSyncResultPlaceHolder;
+        
+        /// <summary>
+        /// resultHeader control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label resultHeader;
+        
+        /// <summary>
+        /// resultStatus control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label resultStatus;
         
         /// <summary>
         /// uSyncStatus control.
@@ -128,24 +182,6 @@ namespace Jumoo.uSync.BackOffice.UI {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnSaveSettings;
-        
-        /// <summary>
-        /// uSyncVersionNumber control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label uSyncVersionNumber;
-        
-        /// <summary>
-        /// uSyncCoreVersion control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label uSyncCoreVersion;
         
         /// <summary>
         /// uSyncOtherSettings control.

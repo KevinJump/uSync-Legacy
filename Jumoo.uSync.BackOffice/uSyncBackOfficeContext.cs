@@ -117,6 +117,32 @@
             return exportActions;
         }
 
+        /// <summary>
+        ///  a report on what will change if we run a report
+        /// </summary>
+        /// <param name="folder"></param>
+        /// <returns></returns>
+        public IEnumerable<uSyncAction> ImportReport(string folder = null)
+        {
+            if (string.IsNullOrEmpty(folder))
+                folder = Configuration.Settings.Folder;
+
+            LogHelper.Info<uSyncApplicationEventHandler>("Running full Umbraco Export");
+
+            List<uSyncAction> reportActions = new List<uSyncAction>();
+
+            foreach (var handler in handlers.Select(x => x.Value))
+            {
+                if (HandlerEnabled(handler.Name))
+                {
+                    var syncFolder = System.IO.Path.Combine(folder, handler.SyncFolder);
+                    reportActions.AddRange(handler.Report(syncFolder));
+                }
+            }
+
+            return reportActions;
+        }
+
         private bool HandlerEnabled(string handlerName)
         {
             var handlerConfig = Configuration.Settings.Handlers.Where(x => x.Name == handlerName).FirstOrDefault();

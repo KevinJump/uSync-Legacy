@@ -18,5 +18,7 @@ namespace Jumoo.uSync.BackOffice
 
         IEnumerable<uSyncAction> ImportAll(string folder, bool force);
         IEnumerable<uSyncAction> ExportAll(string folder);
+
+        IEnumerable<uSyncAction> Report(string folder);
     }
 }

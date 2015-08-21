@@ -6,12 +6,26 @@
         margin-right: 20px;
     }
 </style>
+<script type="text/javascript">
+    $(document.forms[0]).submit(function () {
+        document.getElementById("progressnote").innerHTML
+            = "Doing stuff... <small>can take a little while</small>";
+
+        document.getElementById("usyncinprogress").style.visibility = "visible";
+        document.getElementById("usyncupdated").style.display = "none";
+    });
+</script>
 
 <div id="usyncBackOfficeDashboard">
     <div class="propertypane">
         <div class="row">
             <div class="span12">
-                <h3>uSync.BackOffice</h3>
+                <h3>uSync.BackOffice
+                    <small>
+                        [BackOffice: <asp:Label ID="uSyncVersionNumber" runat="server"></asp:Label>]
+                        [Core: <asp:Label ID="uSyncCoreVersion" runat="server"></asp:Label>]
+                    </small>
+                </h3>
                 <p>
                     uSync Backoffice, syncs all the bits of umbraco in settings and developer that
                     are in the database, everything will appear in <strong><asp:Label ID="uSyncFolder2" runat="server"></asp:Label></strong>
@@ -25,7 +39,11 @@
                     Run a full uSync Import, this will take everything in the <asp:Label ID="usyncFolder" runat="server"></asp:Label> folder, and
                     import it into this version of uSync.
                 </p>
-                <asp:Button runat="server" ID="btnFullImport" text="Import" CssClass="btn btn-success" OnClick="btnFullImport_Click" />
+                <p>
+                    <asp:Button runat="server" ID="btnReport" text="Change Report" CssClass="btn btn-info" OnClick="btnReport_Click"/>
+                    <asp:Button runat="server" ID="btnSyncImport" text="Change Import" CssClass="btn btn-success" OnClick="btnSyncImport_Click"/>
+                    <asp:Button runat="server" ID="btnFullImport" text="Full Import" CssClass="btn btn-warning" OnClick="btnFullImport_Click" />
+                </p>
             </div>
 
             <div class="span6">
@@ -34,39 +52,63 @@
                     Run a full uSync Export, this will wipe the <asp:Label ID="usyncFolder1" runat="server"></asp:Label> folder, and
                     write out everything in you're umbraco install to disk
                 </p>
-                <asp:Button runat="server" ID="btnFullExport" text="Export" CssClass="btn btn-warning" OnClick="btnFullExport_Click" />
+                <p>
+                    <asp:Button runat="server" ID="btnFullExport" text="Export" CssClass="btn btn-warning" OnClick="btnFullExport_Click" />
+                </p>
+
             </div>
         </div>
-        <div class="row">
-            <div class="span12">
-                <p>
-                    <asp:Label ID="uSyncResults" runat="server"></asp:Label>
-                </p>
-                <asp:Repeater ID="uSyncStatus" runat="server">
-                    <HeaderTemplate>
-                        <table class="table table-condensed">
-                            <thead>
+        <div id="usyncupdated">
+            <div class="row">
+                <div class="span12">
+                    <blockquote>
+                        <asp:PlaceHolder ID="uSyncResultPlaceHolder" runat="server" Visible="false">
+                            <h3><asp:Label ID="resultHeader" runat="server">Results</asp:Label></h3>
+                            <asp:Label ID="resultStatus" runat="server"></asp:Label>
+                        </asp:PlaceHolder>
+                    </blockquote>
+                </div>
+                <div class="span12">
+                    <asp:Repeater ID="uSyncStatus" runat="server">
+                        <HeaderTemplate>
+                            <table class="table table-condensed">
+                                <thead>
+                                    <tr>
+                                        <th>Result</th>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Change</th>
+                                        <th>Message</th>
+                                    </tr>
+                                </thead>
+                        </HeaderTemplate>
+                        <ItemTemplate>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Change</th>
-                                    <th>Result</th>
-                                    <th>Message</th>
+                                    <td><%# DataBinder.Eval(Container.DataItem, "Success") %></td>
+                                    <td><%# DataBinder.Eval(Container.DataItem, "Name") %></td>
+                                    <td><%# TypeString( Eval("ItemType") ) %></td>
+                                    <td><%# DataBinder.Eval(Container.DataItem, "Change") %></td>
+                                    <td><%# DataBinder.Eval(Container.DataItem, "Message") %></td>
                                 </tr>
-                            </thead>
-                    </HeaderTemplate>
-                    <ItemTemplate>
-                            <tr>
-                                <td><%# DataBinder.Eval(Container.DataItem, "Name") %></td>
-                                <td><%# DataBinder.Eval(Container.DataItem, "ItemType") %></td>
-                                <td><%# DataBinder.Eval(Container.DataItem, "Change") %></td>
-                                <td><%# DataBinder.Eval(Container.DataItem, "Success") %></td>
-                                <td><%# DataBinder.Eval(Container.DataItem, "Message") %></td>
-                            </tr>
-                    </ItemTemplate>
-                    <FooterTemplate>
-                        </table>
-                    </FooterTemplate>
-                </asp:Repeater>
+                        </ItemTemplate>
+                        <FooterTemplate>
+                            </table>
+                        </FooterTemplate>
+                    </asp:Repeater>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div id="usyncinprogress" style="visibility:hidden;">
+            <div class="row">
+                <div class="span12">
+                    <h3 id="progressnote"></h3>
+                    <div class="progress progress-striped active">
+                        <div class="bar" style="width: 100%;"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -94,8 +136,6 @@
 
             <div class="span6">
                 <h4>uSync Info</h4>
-                <small>uSync.BackOffice: <asp:Label ID="uSyncVersionNumber" runat="server"></asp:Label></small> <br />
-                <small>uSync.Core: <asp:Label ID="uSyncCoreVersion" runat="server"></asp:Label></small>
             </div>
         </div>
         <div class="row">

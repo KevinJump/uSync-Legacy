@@ -14,6 +14,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
     using Jumoo.uSync.Core;
     using Jumoo.uSync.BackOffice.Helpers;
+    using Core.Extensions;
 
     public class DataTypeHandler : uSyncBaseHandler<IDataTypeDefinition>, ISyncHandler
     {
@@ -127,5 +128,18 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
             }
         }
+
+        public override uSyncAction ReportItem(string file)
+        {
+            LogHelper.Debug<DataTypeHandler>("Report: {0}", () => file);
+
+            var node = XElement.Load(file);
+
+            LogHelper.Debug<DataTypeHandler>("Report: {0}", () => node.ToString());
+
+            var update = uSyncCoreContext.Instance.DataTypeSerializer.IsUpdate(node);
+            return uSyncActionHelper<IDataTypeDefinition>.ReportAction(update, node.NameFromNode());
+        }
+
     }
 }
