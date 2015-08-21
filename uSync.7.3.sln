@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.Core", "Jumoo.u
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.BackOffice.UI", "Jumoo.uSync.BackOffice.UI\Jumoo.uSync.BackOffice.UI.csproj", "{C82576AE-A650-42E9-976E-60CF0B8FBD40}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.Migrations", "Jumoo.uSync.Migrations\Jumoo.uSync.Migrations.csproj", "{BB5C1973-378A-4E73-9DB1-140BC05789A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{C82576AE-A650-42E9-976E-60CF0B8FBD40}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C82576AE-A650-42E9-976E-60CF0B8FBD40}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C82576AE-A650-42E9-976E-60CF0B8FBD40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB5C1973-378A-4E73-9DB1-140BC05789A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB5C1973-378A-4E73-9DB1-140BC05789A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB5C1973-378A-4E73-9DB1-140BC05789A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB5C1973-378A-4E73-9DB1-140BC05789A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
