@@ -21,6 +21,13 @@ namespace Jumoo.uSync.BackOffice.Handlers
         public string Name { get { return "uSync: ContentTypeHanlder"; } }
         public string SyncFolder { get { return Constants.Packaging.DocumentTypeNodeName; } }
 
+        private IContentTypeService _contentTypeService ;
+
+        public ContentTypeHandler()
+        {
+            _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
+        }
+
         public override SyncAttempt<IContentType> Import(string filePath, bool force = false)
         {
             if (!System.IO.File.Exists(filePath))
@@ -42,6 +49,22 @@ namespace Jumoo.uSync.BackOffice.Handlers
             var serializer = uSyncCoreContext.Instance.ContentTypeSerializer.DesearlizeSecondPass(item, node);
         }
 
+        public override void DeleteItem(Guid key, string keyString)
+        {
+            IContentType item = null;
+
+            if (key != Guid.Empty)
+                item = _contentTypeService.GetContentType(key);
+
+            if (item == null || !string.IsNullOrEmpty(keyString))
+                item = _contentTypeService.GetContentType(keyString);
+
+            if (item != null)
+            {
+                LogHelper.Info<ContentTypeHandler>("Deleting Content Type: {0}", () => item.Name);
+                _contentTypeService.Delete(item);
+            }
+        }
 
         public IEnumerable<uSyncAction> ExportAll(string folder)
         {
@@ -134,6 +157,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 LogHelper.Info<ContentTypeHandler>("Delete: Removing uSync files for Item: {0}", () => item.Name);
                 uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetContentTypePath(item), "def");
 
+                ActionTracker.AddAction(SyncActionType.Delete, item.Key, item.Alias, item.GetType());
             }
         }
 

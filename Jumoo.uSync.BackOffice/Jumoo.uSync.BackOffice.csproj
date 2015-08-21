@@ -77,6 +77,7 @@
     <Compile Include="Handlers\TemplateHandler.cs" />
     <Compile Include="Handlers\TestHandler.cs" />
     <Compile Include="Handlers\uSyncBaseHandler.cs" />
+    <Compile Include="Helpers\ActionTracker.cs" />
     <Compile Include="Helpers\uSyncIOHelper.cs" />
     <Compile Include="Interfaces\ISyncHandler.cs" />
     <Compile Include="uSyncAction.cs" />

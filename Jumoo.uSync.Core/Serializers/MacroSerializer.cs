@@ -106,6 +106,7 @@ namespace Jumoo.uSync.Core.Serializers
         internal override SyncAttempt<XElement> SerializeCore(IMacro item)
         {
             var node = _packaingService.Export(item);
+
             return SyncAttempt<XElement>.SucceedIf(
                 node != null, item.Name, node, typeof(IMacro), ChangeType.Export);
         }

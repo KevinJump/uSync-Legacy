@@ -21,6 +21,12 @@ namespace Jumoo.uSync.BackOffice.Handlers
         public int Priority { get { return uSyncConstants.Priority.DataTypes; } }
         public string SyncFolder { get { return Constants.Packaging.DataTypeNodeName; } }
 
+        IDataTypeService _dataTypeService;
+        public DataTypeHandler()
+        {
+            _dataTypeService = ApplicationContext.Current.Services.DataTypeService;
+        }
+
         public override SyncAttempt<IDataTypeDefinition> Import(string filePath, bool force = false)
         {
             LogHelper.Debug<IDataTypeDefinition>(">> Import: {0}", () => filePath);
@@ -31,6 +37,22 @@ namespace Jumoo.uSync.BackOffice.Handlers
             var node = XElement.Load(filePath);
 
             return uSyncCoreContext.Instance.DataTypeSerializer.DeSerialize(node, force);
+        }
+
+        public override void DeleteItem(Guid key, string keyString)
+        {
+            IDataTypeDefinition item = null;
+            if (key != Guid.Empty)
+                item = _dataTypeService.GetDataTypeDefinitionById(key);
+
+            if (item == null && !string.IsNullOrEmpty(keyString))
+                item = _dataTypeService.GetDataTypeDefinitionByName(keyString);
+
+            if (item != null)
+            {
+                LogHelper.Info<DataTypeHandler>("Deleting datatype: {0}", () => item.Name);
+                _dataTypeService.Delete(item);
+            }
         }
 
         public IEnumerable<uSyncAction> ExportAll(string folder)
@@ -86,6 +108,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
             {
                 LogHelper.Info<DataTypeHandler>("Delete: Deleting uSync File for item: {0}", () => item.Name);
                 uSyncIOHelper.ArchiveRelativeFile(SyncFolder, item.Name.ToSafeAlias());
+
+                ActionTracker.AddAction(SyncActionType.Delete, item.Key, item.Name, item.GetType());
             }
         }
 

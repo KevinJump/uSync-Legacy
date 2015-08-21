@@ -6,8 +6,11 @@
 
     using Jumoo.uSync.Core;
 
+    using Jumoo.uSync.BackOffice.Helpers;
+
     using Umbraco.Core.Logging;
     using Umbraco.Core.Models.EntityBase;
+    using System;
 
     abstract public class uSyncBaseHandler<T>
     {
@@ -18,8 +21,10 @@
             LogHelper.Debug<uSyncApplicationEventHandler>("Running Import: {0}", () => folder);
             Dictionary<string, T> updates = new Dictionary<string, T>();
 
-            List<uSyncAction> actions = new List<uSyncAction>();
 
+            ProcessDeletes()
+
+            List<uSyncAction> actions = new List<uSyncAction>();
             string mappedfolder = Umbraco.Core.IO.IOHelper.MapPath(folder);
 
             if (Directory.Exists(mappedfolder))
@@ -52,6 +57,28 @@
             return actions; 
         }
 
+        private void ProcessActions()
+        {
+            var actions = ActionTracker.GetActions(typeof(T));
+
+            if (actions != null && actions.Any())
+            {
+                foreach(var action in actions)
+                {
+                    switch (action.Action)
+                    {
+                        case SyncActionType.Delete:
+                            DeleteItem(action.Key, action.Name);
+                            break;
+                    }
+                }
+            }
+        }
+
+        virtual public void DeleteItem(Guid key, string keyString)
+        {
+            return;
+        }
 
         virtual public string GetItemPath(T item)
         {

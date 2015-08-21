@@ -21,6 +21,14 @@ namespace Jumoo.uSync.BackOffice.Handlers
         public int Priority { get { return uSyncConstants.Priority.MediaTypes; } }
         public string SyncFolder { get { return "MediaType"; } }
 
+        private IContentTypeService _contentTypeService;
+
+        public ContentTypeHandler()
+        {
+            _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
+        }
+
+
         public override SyncAttempt<IMediaType> Import(string filePath, bool force = false)
         {
             if (!System.IO.File.Exists(filePath))
@@ -40,6 +48,24 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
             uSyncCoreContext.Instance.MediaTypeSerializer.DesearlizeSecondPass(item, node);
         }
+
+        public override void DeleteItem(Guid key, string keyString)
+        {
+            IMediaType item = null;
+
+            if (key != Guid.Empty)
+                item = _contentTypeService.GetMediaType(key);
+
+            if (item == null || !string.IsNullOrEmpty(keyString))
+                item = _contentTypeService.GetMediaType(keyString);
+
+            if (item != null)
+            {
+                LogHelper.Info<ContentTypeHandler>("Deleting Content Type: {0}", () => item.Name);
+                _contentTypeService.Delete(item);
+            }
+        }
+
 
         public IEnumerable<uSyncAction> ExportAll(string folder)
         {
@@ -113,6 +139,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
             {
                 LogHelper.Info<MediaTypeHandler>("Delete: Deleting uSync File for item: {0}", () => item.Name);
                 uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetItemPath(item), "def");
+
+                ActionTracker.AddAction(SyncActionType.Delete, item.Key, item.Alias, item.GetType());
             }
         }
 
