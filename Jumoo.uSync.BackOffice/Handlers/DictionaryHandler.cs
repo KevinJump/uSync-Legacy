@@ -31,6 +31,19 @@ namespace Jumoo.uSync.BackOffice.Handlers
             return uSyncCoreContext.Instance.DictionarySerializer.DeSerialize(node, force);
         }
 
+        public override uSyncAction DeleteItem(Guid key, string keyString)
+        {
+            var item = ApplicationContext.Current.Services.LocalizationService.GetDictionaryItemByKey(keyString);
+            if (item != null)
+            {
+                ApplicationContext.Current.Services.LocalizationService.Delete(item);
+
+                return uSyncAction.SetAction(true, keyString, typeof(IDictionaryItem), ChangeType.Delete);
+            }
+
+            return uSyncAction.Fail(keyString, typeof(IDictionaryItem), ChangeType.Delete, "Not found");
+        }
+
         public IEnumerable<uSyncAction> ExportAll(string folder)
         {
             List<uSyncAction> actions = new List<uSyncAction>();
@@ -117,6 +130,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 {
                     // delete
                     uSyncIOHelper.ArchiveRelativeFile(SyncFolder, item.ItemKey.ToSafeAlias());
+                    ActionTracker.AddAction(SyncActionType.Delete, item.ItemKey, typeof(IDictionaryItem));
                 }
             }
         }
@@ -132,6 +146,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 var topItem = GetTop(item.Key);
 
                 ExportToDisk(topItem, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+
+                ActionTracker.RemoveActions(topItem.ItemKey, typeof(IDictionaryItem));
             }
         }
 

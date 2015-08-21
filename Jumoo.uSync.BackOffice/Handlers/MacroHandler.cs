@@ -31,6 +31,20 @@ namespace Jumoo.uSync.BackOffice.Handlers
             return uSyncCoreContext.Instance.MacroSerializer.DeSerialize(node, force);
         }
 
+        public override uSyncAction DeleteItem(Guid key, string keyString)
+        {
+            var item = ApplicationContext.Current.Services.MacroService.GetByAlias(keyString);
+            if (item != null)
+            {
+                LogHelper.Info<MacroHandler>("Deleteing: {0}", () => item.Alias);
+                ApplicationContext.Current.Services.MacroService.Delete(item);
+
+                return uSyncAction.SetAction(true, keyString, typeof(IMacro), ChangeType.Delete);
+            }
+
+            return uSyncAction.Fail(keyString, typeof(IMacro), ChangeType.Delete, "Not found");
+        }
+
         public IEnumerable<uSyncAction> ExportAll(string folder)
         {
             List<uSyncAction> actions = new List<uSyncAction>();
@@ -84,6 +98,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
             {
                 LogHelper.Info<MacroHandler>("Delete: Deleting uSync File for item: {0}", () => item.Name);
                 uSyncIOHelper.ArchiveRelativeFile(SyncFolder, item.Alias.ToSafeAlias());
+
+                ActionTracker.AddAction(SyncActionType.Delete, item.Alias, typeof(IMacro));
             }
         }
 
@@ -96,6 +112,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
             {
                 LogHelper.Info<MacroHandler>("Save: Saving uSync file for item: {0}", () => item.Name);
                 ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+
+                ActionTracker.RemoveActions(item.Alias, typeof(IMacro));
             }
         }
 

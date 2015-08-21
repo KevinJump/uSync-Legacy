@@ -28,6 +28,20 @@
             return uSyncCoreContext.Instance.TemplateSerializer.DeSerialize(node, force);
         }
 
+        public override uSyncAction DeleteItem(Guid key, string keyString)
+        {
+            var item = ApplicationContext.Current.Services.FileService.GetTemplate(keyString);
+            if (item != null)
+            {
+                LogHelper.Info<TemplateHandler>("Deleting: {0}", () => keyString);
+                ApplicationContext.Current.Services.FileService.DeleteTemplate(keyString);
+
+                return uSyncAction.SetAction(true, keyString, typeof(ITemplate), ChangeType.Delete);
+            }
+
+            return uSyncAction.Fail(keyString, typeof(ITemplate), ChangeType.Delete, "Not found");
+        }
+
         public IEnumerable<uSyncAction> ExportAll(string folder)
         {
             List<uSyncAction> actions = new List<uSyncAction>();
@@ -55,6 +69,8 @@
                 {
                     filename = uSyncIOHelper.SavePath(folder, SyncFolder, GetItemPath(item), item.Alias.ToSafeAlias());
                     uSyncIOHelper.SaveNode(attempt.Item, filename);
+
+
                 }
                 return uSyncActionHelper<XElement>.SetAction(attempt, filename);
 
@@ -98,6 +114,9 @@
             {
                 LogHelper.Info<TemplateHandler>("Delete: Deleting uSync File for item: {0}", () => item.Name);
                 uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetItemPath(item));
+
+                ActionTracker.AddAction(SyncActionType.Delete, item.Alias, typeof(ITemplate));
+                
             }
         }
 
@@ -110,6 +129,11 @@
             {
                 LogHelper.Info<TemplateHandler>("Save: Saving uSync file for item: {0}", () => item.Name);
                 ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+
+                // becuase we delete by name, we should check the action log, and remove any entries with
+                // this alias.
+                ActionTracker.RemoveActions(item.Alias, typeof(ITemplate));
+
             }
         }
     }

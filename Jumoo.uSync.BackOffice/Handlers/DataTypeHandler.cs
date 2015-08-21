@@ -52,7 +52,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             {
                 LogHelper.Info<DataTypeHandler>("Deleting datatype: {0}", () => item.Name);
                 _dataTypeService.Delete(item);
-                return uSyncAction.SetAction(true, keyString, typeof(IDataTypeDefinition), ChangeType.Delete, "Not found");
+                return uSyncAction.SetAction(true, keyString, typeof(IDataTypeDefinition), ChangeType.Delete, "Removed");
             }
 
             return uSyncAction.Fail(keyString, typeof(IDataTypeDefinition), ChangeType.Delete, "Not found");

@@ -28,6 +28,19 @@
             return uSyncCoreContext.Instance.LanguageSerializer.DeSerialize(node, force);
         }
 
+        public override uSyncAction DeleteItem(Guid key, string keyString)
+        {
+            var item = ApplicationContext.Current.Services.LocalizationService.GetLanguageByIsoCode(keyString);
+            if (item != null)
+            {
+                ApplicationContext.Current.Services.LocalizationService.Delete(item);
+
+                return uSyncAction.SetAction(true, keyString, typeof(ILanguage), ChangeType.Delete);
+            }
+
+            return uSyncAction.Fail(keyString, typeof(ILanguage), ChangeType.Delete, "Not found");
+        }
+
         public IEnumerable<uSyncAction> ExportAll(string folder)
         {
             List<uSyncAction> actions = new List<uSyncAction>();
@@ -81,6 +94,8 @@
             {
                 LogHelper.Info<MacroHandler>("Delete: Deleting uSync File for item: {0}", () => item.CultureName);
                 uSyncIOHelper.ArchiveRelativeFile(SyncFolder, item.CultureName.ToSafeAlias());
+
+                ActionTracker.AddAction(SyncActionType.Delete, item.CultureName, typeof(ILanguage));
             }
         }
 
@@ -93,6 +108,8 @@
             {
                 LogHelper.Info<LanguageHandler>("Save: Saving uSync file for item: {0}", () => item.CultureName);
                 ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+
+                ActionTracker.RemoveActions(item.CultureName, typeof(ILanguage));
             }
         }
     }

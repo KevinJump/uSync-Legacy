@@ -90,6 +90,23 @@ namespace Jumoo.uSync.BackOffice.Helpers
             SaveActions();
         }
 
+        public static void RemoveActions(string keyNameValue, Type type)
+        {
+            bool changes = false;
+            var actionsToRemove = _actions.Where(x => x.TypeName == type.ToString() && x.Name == keyNameValue));
+
+            if (actionsToRemove.Any())
+            {
+                foreach (var a in actionsToRemove)
+                {
+                    _actions.Remove(a);
+                    changes = true;
+                }
+            }
+
+            if (changes)
+                SaveActions();
+        }
 
         public static IEnumerable<SyncAction> GetActions(Type type)
         {
