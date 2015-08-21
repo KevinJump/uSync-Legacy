@@ -85,10 +85,21 @@ namespace Jumoo.uSync.Core.Serializers
             foreach (var contentBaseNode in structureNode.Elements(_itemType))
             {
                 var alias = contentBaseNode.Value;
-                if (!string.IsNullOrEmpty(alias))
+                var key = contentBaseNode.Attribute("Key").ValueOrDefault(Guid.Empty);
+
+                IContentTypeBase contentBaseItem = default(IContentTypeBase);
+                if (key != Guid.Empty)
                 {
-                    IContentTypeBase contentBaseItem = default(IContentTypeBase);
-                    if ( _itemType == Constants.Packaging.DocumentTypeNodeName)
+                    // by key search (survives renames)
+                    if (_itemType == Constants.Packaging.DocumentTypeNodeName)
+                        contentBaseItem = _contentTypeService.GetContentType(key);
+                    else
+                        contentBaseItem = _contentTypeService.GetMediaType(key);
+                }
+
+                if (contentBaseItem == null && !string.IsNullOrEmpty(alias))
+                {
+                    if (_itemType == Constants.Packaging.DocumentTypeNodeName)
                     {
                         contentBaseItem = _contentTypeService.GetContentType(alias);
                     }
@@ -96,13 +107,13 @@ namespace Jumoo.uSync.Core.Serializers
                     {
                         contentBaseItem = _contentTypeService.GetMediaType(alias);
                     }
+                }
 
-                    if (contentBaseItem != default(IContentTypeBase))
-                    {
-                        allowedTypes.Add(new ContentTypeSort(
-                            new Lazy<int>(() => contentBaseItem.Id), sortOrder, contentBaseItem.Name));
-                        sortOrder++;
-                    }
+                if (contentBaseItem != default(IContentTypeBase))
+                {
+                    allowedTypes.Add(new ContentTypeSort(
+                        new Lazy<int>(() => contentBaseItem.Id), sortOrder, contentBaseItem.Name));
+                    sortOrder++;
                 }
             }
 
@@ -263,9 +274,9 @@ namespace Jumoo.uSync.Core.Serializers
                 item.PropertyGroups.Remove(name);
             }            
         }
-        #endregion
+#endregion
 
-        #region ContentTypeBase Serialize Helpers
+#region ContentTypeBase Serialize Helpers
         internal XElement SerializeInfo(IContentTypeBase item)
         {
             var info = new XElement("Info",
@@ -313,7 +324,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             LogHelper.Info<MediaTypeSerializer>("BASE: Content Types: {0}", () => item.AllowedContentTypes.Count());
 
-            SortedSet<string> allowedAliases = new SortedSet<string>();
+            SortedList<string, Guid> allowedAliases = new SortedList<string, Guid>();
             foreach(var allowedType in item.AllowedContentTypes)
             {
                 IContentTypeBase allowed = null;         
@@ -327,13 +338,15 @@ namespace Jumoo.uSync.Core.Serializers
                 }
 
                 if (allowed != null)
-                    allowedAliases.Add(allowed.Alias);
+                    allowedAliases.Add(allowed.Alias, allowed.Key);
             }
 
 
             foreach (var alias in allowedAliases)
             {
-                    structureNode.Add(new XElement(_itemType, alias));
+                structureNode.Add(new XElement(_itemType, alias.Key),
+                    new XAttribute("Key", alias.Value.ToString())
+                    );
             }
             return structureNode;            
         }
@@ -399,6 +412,6 @@ namespace Jumoo.uSync.Core.Serializers
             return SyncAttempt<T>.Succeed(node.NameFromNode(), ChangeType.NoChange);
         }
 
-        #endregion
+#endregion
     }
 }
