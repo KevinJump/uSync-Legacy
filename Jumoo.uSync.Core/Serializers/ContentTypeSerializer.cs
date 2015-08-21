@@ -12,21 +12,72 @@ using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
 using Umbraco.Core.Logging;
+using System.Xml.Serialization;
+using System.IO;
+using Umbraco.Core.IO;
+using System.Globalization;
 
 namespace Jumoo.uSync.Core.Serializers
 {
     public class ContentTypeSerializer : ContentTypeBaseSerializer<IContentType> 
     {
-        private readonly IPackagingService _packagingService;
-
         public ContentTypeSerializer(string itemType) : base (itemType)
         {
-            _packagingService = ApplicationContext.Current.Services.PackagingService;
         }
 
         internal override SyncAttempt<IContentType> DeserializeCore(XElement node)
         {
-            var item = _packagingService.ImportContentTypes(node).FirstOrDefault();
+            // we can't use the package manager for this :(
+            // we have to do it by hand.
+            if (node == null | node.Element("Info") == null || node.Element("Info").Element("Alias") == null)
+                throw new ArgumentException("Invalid xml");
+
+            var info = node.Element("Info");
+
+            IContentType item = null;
+
+            Guid key = Guid.Empty;
+            if ((info.Element("Key") != null && Guid.TryParse(info.Element("Key").Value, out key)))
+            {
+                // we have key.
+                item = _contentTypeService.GetContentType(key);
+            }
+
+            // you need the parent to create, so do it here...
+            var parent = default(IContentType);
+            var parentAlias = info.Element("Master");
+            if (parentAlias != null && !string.IsNullOrEmpty(parentAlias.Value))
+            {
+                parent = _contentTypeService.GetContentType(parentAlias.Value);
+            }
+
+            var alias = info.Element("Alias").Value;
+
+            // can't find by key, lookup by alias.
+            if (item == null)
+            {
+                LogHelper.Debug<ContentTypeSerializer>("Looking up ContentType by alias");
+                item = _contentTypeService.GetContentType(alias);
+            }
+
+            if (item == null)
+            {
+                LogHelper.Debug<ContentTypeSerializer>("Creating new ContentType");
+                if (parent != default(IMediaType))
+                {
+                    item = new ContentType(parent, alias);
+                }
+                else
+                {
+                    item = new ContentType(-1);
+                    item.Alias = alias;
+                }
+            }
+
+            if (item.Key != item.Key)
+                item.Key = key;
+
+            DeserializeBase(item, info);
 
             // Update Properties
             DeserializeProperties((IContentTypeBase)item, node);
@@ -34,7 +85,14 @@ namespace Jumoo.uSync.Core.Serializers
             // Update Tabs
             DeserializeTabSortOrder((IContentTypeBase)item, node);
 
-            DeserializeTemplates(item, node);
+            // contenttype specifics..
+            var listView = info.Element("IsListView").ValueOrDefault(false);
+            if (item.IsContainer != listView)
+                item.IsContainer = listView;
+
+            DeserializeCompositions(item, info);
+
+            DeserializeTemplates(item, info);
 
             _contentTypeService.Save(item);
             // Update Structure (Happens in second pass)
@@ -47,9 +105,24 @@ namespace Jumoo.uSync.Core.Serializers
             return SyncAttempt<IContentType>.Succeed(item.Name, item, ChangeType.Import);
         }
 
-        private void DeserializeTemplates(IContentType item, XElement node)
+        private void DeserializeCompositions(IContentType item, XElement info)
         {
-            var nodeTemplates = node.Element("Info").Element("AllowedTemplates");
+            var comps = info.Element("Compositions");
+            if (comps != null && comps.HasElements)
+            {
+                foreach (var composistion in comps.Elements("Composition"))
+                {
+                    var compAlias = composistion.Value;
+                    var type = _contentTypeService.GetContentType(compAlias);
+                    if (type != null)
+                        item.AddContentType(type);
+                }
+            }
+        }
+
+        private void DeserializeTemplates(IContentType item, XElement info)
+        {
+            var nodeTemplates = info.Element("AllowedTemplates");
             if (nodeTemplates == null || !nodeTemplates.HasElements)
                 return;
 
@@ -92,20 +165,45 @@ namespace Jumoo.uSync.Core.Serializers
 
         internal override SyncAttempt<XElement> SerializeCore(IContentType item)
         {
-            var node = _packagingService.Export(item);
+            // var node = _packagingService.Export(item);
+            var info = SerializeInfo(item);
 
-            // get sorted structure
-            node = SerializeStructure(item, node);
+            // add content type/composistions
+            var master = item.ContentTypeComposition.FirstOrDefault(x => x.Id == item.ParentId);
+            if (master != null)
+                info.Add("Master", master.Alias);
 
-            // get sorted properties
-            node = SerializeProperties(item, node);
+            var compositionsNode = new XElement("Compositions");
+            var compositions = item.ContentTypeComposition;
+            foreach(var composition in compositions)
+            {
+                compositionsNode.Add(new XElement("Composition", composition.Alias));
+            }
+            info.Add(compositionsNode);
 
-            return SyncAttempt<XElement>.SucceedIf(
-                node != null, 
-                node != null ? item.Name : node.NameFromNode(),
-                node,
-                typeof(IContentType),
-                ChangeType.Export);
+            // Templates
+            if (item.DefaultTemplate != null && item.DefaultTemplate.Id != 0)
+                info.Add(new XElement("DefaultTemplate", item.DefaultTemplate.Alias));
+            else
+                info.Add(new XElement("DefaultTemplate", ""));
+            
+            // Structure
+            var structure = SerializeStructure(item);
+
+            // Properties
+            var properties = SerializeProperties(item);
+
+            // Tabs
+            var tabs = SerializeTabs(item);
+
+            var node = new XElement(Constants.Packaging.DocumentTypeNodeName,
+                                        info,
+                                        structure,
+                                        properties,
+                                        tabs);
+
+
+            return SyncAttempt<XElement>.Succeed(item.Name, node, typeof(IContentType), ChangeType.Export);
         }
 
         public override bool IsUpdate(XElement node)

@@ -15,66 +15,65 @@ namespace Jumoo.uSync.Core.Serializers
 {
     public class MediaTypeSerializer : ContentTypeBaseSerializer<IMediaType>
     {
-        private readonly IPackagingService _packagingService;
-
         public MediaTypeSerializer(string itemType) : base (itemType)
-        {
-            _packagingService = ApplicationContext.Current.Services.PackagingService;
-        }
+        { }
 
         internal override SyncAttempt<IMediaType> DeserializeCore(XElement node)
         {
             // we can't use the package manager for this :(
             // we have to do it by hand.
-            if (node == null)
-                throw new ArgumentNullException("node");
+            if (node == null | node.Element("Info") == null || node.Element("Info").Element("Alias") == null)
+                throw new ArgumentException("Invalid xml");
 
-            var infoNode = node.Element("Info");
-            if (infoNode == null)
-                throw new ArgumentException("Bad info node");
+            var info = node.Element("Info");
 
-            var alias = infoNode.Element("Alias");
-            if (alias == null)
-                throw new ArgumentException("Bad Alias node");
+            IMediaType item = null;
 
+            Guid key = Guid.Empty;
+            if ((info.Element("Key") != null && Guid.TryParse(info.Element("Key").Value, out key)))
+            {
+                // we have key.
+                item = _contentTypeService.GetMediaType(key);
+            }
+
+            // you need the parent to create, so do it here...
             var parent = default(IMediaType);
-
-            var parentAlias = infoNode.Element("Master");
+            var parentAlias = info.Element("Master");
             if (parentAlias != null && !string.IsNullOrEmpty(parentAlias.Value))
             {
                 parent = _contentTypeService.GetMediaType(parentAlias.Value);
             }
 
-            var item = _contentTypeService.GetMediaType(alias.Value);
+            var alias = info.Element("Alias").Value;
+
+            // can't find by key, lookup by alias.
             if (item == null)
             {
+                LogHelper.Debug<MediaTypeSerializer>("Looking up media type by alias");
+                item = _contentTypeService.GetMediaType(alias);
+            }
+
+            if (item == null)
+            {
+                LogHelper.Debug<MediaTypeSerializer>("Creating new Media Type");
                 if (parent != default(IMediaType))
                 {
-                    item = new MediaType(parent, alias.Value);
+                    item = new MediaType(parent, alias);
                 }
                 else
                 {
                     item = new MediaType(-1);
-                    item.Alias = alias.Value;
+                    item.Alias = alias;
                 }
             }
 
-            if (infoNode.Element("Name") != null)
-                item.Name = infoNode.Element("Name").Value;
+            if (item.Key != item.Key)
+                item.Key = key;
 
-            if (infoNode.Element("Icon") != null)
-                item.Icon = infoNode.Element("Icon").Value;
-
-            if (infoNode.Element("Thumbnail") != null)
-                item.Thumbnail = infoNode.Element("Thumbnail").Value;
-
-            if (infoNode.Element("Description") != null)
-                item.Description= infoNode.Element("Description").Value;
-
-            if (infoNode.Element("AllowAtRoot") != null)
-                item.AllowedAsRoot = infoNode.Element("AllowAtRoot").Value.ToLowerInvariant().Equals("true");
+            DeserializeBase(item, info);
 
             DeserializeProperties(item, node);
+
             DeserializeTabSortOrder(item, node);
 
             // this really needs to happen in a seperate step.
@@ -101,6 +100,8 @@ namespace Jumoo.uSync.Core.Serializers
             if (item == null)
                 throw new ArgumentNullException("item");
 
+            var info = SerializeInfo(item);
+            /*
             var info = new XElement("Info",
                             new XElement("Name", item.Name),
                             new XElement("Alias", item.Alias),
@@ -108,12 +109,14 @@ namespace Jumoo.uSync.Core.Serializers
                             new XElement("Thumbnail", item.Thumbnail),
                             new XElement("Description", item.Description),
                             new XElement("AllowAtRoot", item.AllowedAsRoot.ToString()));
-
+            */
 
             var masterItem = item.CompositionAliases().FirstOrDefault();
             if (masterItem != null)
                 info.Add(new XElement("Master", masterItem));
 
+            var tabs = SerializeTabs(item);
+            /*
             var tabs = new XElement("Tabs");
             foreach(var propertyGroup in item.PropertyGroups)
             {
@@ -123,7 +126,10 @@ namespace Jumoo.uSync.Core.Serializers
                                 new XElement("SortOrder", propertyGroup.SortOrder)));
 
             }
+            */
 
+            var properties = SerializeProperties(item);
+            /*
             var properties = new XElement("GenericProperties");
 
             var _dataTypeService = ApplicationContext.Current.Services.DataTypeService;
@@ -147,8 +153,13 @@ namespace Jumoo.uSync.Core.Serializers
 
                 properties.Add(propNode);
             }
+            */
 
+            var structure = SerializeStructure(item);
+            /*
             var structure = new XElement("Structure");
+
+            LogHelper.Info<MediaTypeSerializer>("Content Types: {0}", () => item.AllowedContentTypes.Count());
 
             var node = new XElement("MediaType", 
                                         info,
@@ -157,7 +168,15 @@ namespace Jumoo.uSync.Core.Serializers
                                         tabs);
 
             node = SerializeStructure(item, node);
+            */
 
+            var node = new XElement("MediaType",
+                                        info,
+                                        structure,
+                                        properties,
+                                        tabs);
+
+            
             LogHelper.Debug<MediaTypeSerializer>("Media Serializer Complete");
 
             return SyncAttempt<XElement>.Succeed(item.Name, node, typeof(IMedia), ChangeType.Export);

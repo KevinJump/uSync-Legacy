@@ -25,6 +25,54 @@ namespace Jumoo.uSync.Core.Serializers
 
         #region ContentTypeBase Deserialize Helpers
 
+        /// <summary>
+        ///  does the basic deserialization, bascially the stuff in info
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        internal void DeserializeBase(IContentTypeBase item, XElement info)
+        {
+            var alias = info.Element("Alias").Value;
+            if (item.Alias != alias)
+                item.Alias = alias;
+
+            var name = info.Element("Name").ValueOrDefault("");
+            if (item.Name != name)
+                item.Name = item.Name;
+
+
+            var icon = info.Element("Icon").ValueOrDefault("");
+            if (item.Icon != icon)
+                item.Icon = icon;
+
+            var thumb = info.Element("Thumbnail").ValueOrDefault("");
+            if (item.Thumbnail != thumb)
+                item.Thumbnail = thumb;
+
+            var desc = info.Element("Description").ValueOrDefault("");
+            if (item.Description != desc)
+                item.Description = desc;
+
+            var allow = info.Element("AllowAtRoot").ValueOrDefault(false);
+            if (item.AllowedAsRoot != allow)
+                item.AllowedAsRoot = allow;
+
+            var masterAlias = info.Element("Master").ValueOrDefault(string.Empty);
+            if (!string.IsNullOrEmpty(masterAlias))
+            {
+                var master = default(IContentTypeBase);
+                if ( _itemType == Constants.Packaging.DocumentTypeNodeName)
+                    master = _contentTypeService.GetContentType(masterAlias);
+                else
+                    master = _contentTypeService.GetMediaType(masterAlias);
+
+                if (master != null)
+                {
+                    item.SetLazyParentId(new Lazy<int>(() => master.Id));                        
+                }
+            }
+        }
+
         internal void DeserializeStructure(IContentTypeBase item, XElement node)
         {
             var structureNode = node.Element("Structure");
@@ -73,8 +121,14 @@ namespace Jumoo.uSync.Core.Serializers
             foreach(var property in item.PropertyTypes)
             {
                 XElement propertyNode = propertyNodes
-                                            .Where(x => x.Element("Alias").Value == property.Alias)
-                                            .SingleOrDefault();
+                                            .SingleOrDefault(x => x.Element("Key").Value == property.Key.ToString());
+
+                if (propertyNode == null)
+                {
+                    LogHelper.Debug<uSync.Core.Events>("Looking up property type by alias");
+                    propertyNode = propertyNodes
+                        .SingleOrDefault(x => x.Element("Alias").Value == property.Alias);
+                }
 
                 if (propertyNodes == null)
                 {
@@ -82,6 +136,13 @@ namespace Jumoo.uSync.Core.Serializers
                 }
                 else
                 {
+                    if (propertyNode.Element("Key") != null)
+                    {
+                        Guid key = Guid.Empty;
+                        if (Guid.TryParse(propertyNode.Element("Key").Value, out key))
+                            property.Key = key;
+
+                    }
                     // update existing settings.
                     if (propertyNode.Element("Name") != null)
                         property.Name = propertyNode.Element("Name").Value;
@@ -204,8 +265,36 @@ namespace Jumoo.uSync.Core.Serializers
         }
         #endregion
 
-
         #region ContentTypeBase Serialize Helpers
+        internal XElement SerializeInfo(IContentTypeBase item)
+        {
+            var info = new XElement("Info",
+                            new XElement("Key", item.Key),
+                            new XElement("Name", item.Name),
+                            new XElement("Alias", item.Alias),
+                            new XElement("Icon", item.Icon),
+                            new XElement("Thumbnail", item.Thumbnail),
+                            new XElement("Description", item.Description),
+                            new XElement("AllowAtRoot", item.AllowedAsRoot.ToString()),
+                            new XElement("IsListView", item.IsContainer.ToString()));
+
+            return info;
+        }
+
+        internal XElement SerializeTabs(IContentTypeBase item)
+        {
+            var tabs = new XElement("Tabs");
+            foreach (var tab in item.PropertyGroups.OrderBy(x => x.SortOrder))
+            {
+                tabs.Add(new XElement("Tab",
+                        // new XElement("Key", tab.Key),
+                        new XElement("Caption", tab.Name),
+                        new XElement("SortOrder", tab.SortOrder)));
+            }
+
+            return tabs;
+        }
+
         /// <summary>
         ///  So fiddling with the structure
         /// 
@@ -218,24 +307,35 @@ namespace Jumoo.uSync.Core.Serializers
         ///  work - so we redo the export, if it turns out this is fixed in 7.3
         ///  we shoud just do the xml sort like with properties, it will be faster
         /// </summary>
-        internal XElement SerializeStructure(IContentTypeBase item, XElement node)
+        internal XElement SerializeStructure(IContentTypeBase item)
         {
-            var structureNode = node.Element("Structure");
-            structureNode.RemoveNodes();
+            var structureNode = new XElement("Structure");
+
+            LogHelper.Info<MediaTypeSerializer>("BASE: Content Types: {0}", () => item.AllowedContentTypes.Count());
 
             SortedSet<string> allowedAliases = new SortedSet<string>();
             foreach(var allowedType in item.AllowedContentTypes)
             {
-                var allowed = _contentTypeService.GetContentType(allowedType.Id.Value);
+                IContentTypeBase allowed = null;         
+                if (_itemType == Constants.Packaging.DocumentTypeNodeName)
+                {
+                    allowed = _contentTypeService.GetContentType(allowedType.Id.Value);
+                }
+                else
+                {
+                    allowed = _contentTypeService.GetMediaType(allowedType.Id.Value);
+                }
+
                 if (allowed != null)
                     allowedAliases.Add(allowed.Alias);
             }
+
 
             foreach (var alias in allowedAliases)
             {
                     structureNode.Add(new XElement(_itemType, alias));
             }
-            return node;            
+            return structureNode;            
         }
 
         /// <summary>
@@ -244,27 +344,45 @@ namespace Jumoo.uSync.Core.Serializers
         /// 
         ///  at the moment we are making quite a big assumption that name is always there?
         /// </summary>
-        internal XElement SerializeProperties(IContentTypeBase item, XElement node)
+        internal XElement SerializeProperties(IContentTypeBase item)
         {
-            var sortedNode = new XElement(node);
+            var _dataTypeService = ApplicationContext.Current.Services.DataTypeService;
 
-            var sortedProperties = sortedNode.Element("GenericProperties");
-            if (sortedProperties == null)
-                return node;
+            var properties = new XElement("GenericProperties");
 
-            sortedProperties.RemoveAll();
-
-            foreach(var property in node.Element("GenericProperties").Elements().OrderBy(x => x.Element("Name").Value))
+            foreach(var property in item.PropertyTypes.OrderBy(x => x.Name))
             {
-                sortedProperties.Add(property);
+                var propNode = new XElement("GenericProperty");
+
+                propNode.Add(new XElement("Key", property.Key));
+                propNode.Add(new XElement("Name", property.Name));
+                propNode.Add(new XElement("Alias", property.Alias));
+
+                var def = _dataTypeService.GetDataTypeDefinitionById(property.DataTypeDefinitionId);
+                if (def != null)
+                    propNode.Add(new XElement("Definition", def.Key));
+
+                propNode.Add(new XElement("Type", property.PropertyEditorAlias));
+                propNode.Add(new XElement("Mandatory", property.Mandatory));
+
+                if (property.ValidationRegExp != null)
+                    propNode.Add(new XElement("Validation", property.ValidationRegExp));
+
+                if (property.Description != null)
+                    propNode.Add(new XElement("Description", new XCData(property.Description)));
+
+                propNode.Add(new XElement("SortOrder", property.SortOrder));
+
+                var tab = item.PropertyGroups.FirstOrDefault(x => x.PropertyTypes.Contains(property));
+                propNode.Add(new XElement("Tab", tab != null ? tab.Name : ""));
+
+                properties.Add(propNode);
             }
 
-            return sortedNode;
+            return properties;
         }
 
-     
-
-
+    
         // special case for two pass, you can tell it to only first step
         public SyncAttempt<T> DeSerialize(XElement node, bool forceUpdate, bool onePass = false)
         {
