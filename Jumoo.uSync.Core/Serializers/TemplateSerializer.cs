@@ -37,21 +37,24 @@ namespace Jumoo.uSync.Core.Serializers
 
         internal override SyncAttempt<ITemplate> DeserializeCore(XElement node)
         {
-            var aliasNode = node.Element("Alias");
-            if (aliasNode == null)
+
+            if (node == null || node.Element("Alias") == null || node.Element("Name") == null)
+                throw new ArgumentException("Bad xml import");
+
+            var alias = node.Element("Alias").ValueOrDefault(string.Empty);
+            if (string.IsNullOrEmpty(alias))
                 SyncAttempt<ITemplate>.Fail(node.NameFromNode(), ChangeType.Import, "No Alias node in xml");
 
-            LogHelper.Debug<Events>("# Importing Template : {0}", () => aliasNode.Value);
+            LogHelper.Debug<Events>("# Importing Template : {0}", () => alias);
 
-            var nameNode = node.Element("Name");
-
-            var item = _fileService.GetTemplate(aliasNode.Value);
+            var name = node.Element("Name").ValueOrDefault(string.Empty);
+            var item = _fileService.GetTemplate(alias);
             if (item == null)
             {
-                var templatePath = IOHelper.MapPath(SystemDirectories.MvcViews + "/" + aliasNode.Value.ToSafeFileName() + ".cshtml");
+                var templatePath = IOHelper.MapPath(SystemDirectories.MvcViews + "/" + alias.ToSafeFileName() + ".cshtml");
                 if (!System.IO.File.Exists(templatePath))
                 {
-                    templatePath = IOHelper.MapPath(SystemDirectories.Masterpages + "/" + aliasNode.Value.ToSafeFileName() + ".master");
+                    templatePath = IOHelper.MapPath(SystemDirectories.Masterpages + "/" + alias.ToSafeFileName() + ".master");
                     if (!System.IO.File.Exists(templatePath))
                     {
                         // cannot find the master for this..
@@ -62,7 +65,7 @@ namespace Jumoo.uSync.Core.Serializers
                 
                 if ( string.IsNullOrEmpty(templatePath))
                 {
-                    item = new Template(nameNode.Value, aliasNode.Value);
+                    item = new Template(name, alias);
                     item.Path = templatePath;
                 }
             }
@@ -89,6 +92,7 @@ namespace Jumoo.uSync.Core.Serializers
         {
             var node = new XElement(Constants.Packaging.TemplateNodeName,
                 new XElement("Name", item.Name),
+                new XElement("Key", item.Key),
                 new XElement("Alias", item.Alias),
                 new XElement("Master", item.MasterTemplateAlias));
 
