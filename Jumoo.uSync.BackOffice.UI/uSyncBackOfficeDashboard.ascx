@@ -70,6 +70,7 @@
             </div>
         </div>
 
+        <asp:Panel ID ="panelTech" Visible="false" runat="server">
         <div class="row">
             <div class="span12">
                  <hr />
@@ -116,8 +117,6 @@
                 <asp:BulletedList runat="server" ID="uSyncHandlers" CssClass="unstyled"></asp:BulletedList>
             </div>
         </div>
-
-
-
+        </asp:Panel>
     </div>
 </div>
