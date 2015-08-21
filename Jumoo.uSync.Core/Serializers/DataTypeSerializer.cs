@@ -19,38 +19,70 @@ namespace Jumoo.uSync.Core.Serializers
 {
     public class DataTypeSerializer : SyncBaseSerializer<IDataTypeDefinition>
     {
-        private IPackagingService _packagingService;
         private IDataTypeService _dataTypeService;
 
         public DataTypeSerializer(string type) : base (type)
         {
-            _packagingService = ApplicationContext.Current.Services.PackagingService;
             _dataTypeService = ApplicationContext.Current.Services.DataTypeService;
         }
 
         internal override SyncAttempt<IDataTypeDefinition> DeserializeCore(XElement node)
         {
             LogHelper.Debug<DataTypeSerializer>("<<< DeserializeCore");
+            
             // pre import
             var mappedNode = DeserializeGetMappedValues(node);
 
-            var item = _packagingService.ImportDataTypeDefinitions(node).FirstOrDefault();
+            IDataTypeDefinition item = null;
+
+            var name = node.Attribute("Name").ValueOrDefault(string.Empty);
+            var editorAlias = node.Attribute("Id").ValueOrDefault(string.Empty);
+            var dbType = node.Attribute("DatabaseType").ValueOrDefault(string.Empty);
+            var databaseType = !string.IsNullOrEmpty(dbType)
+                                    ? dbType.EnumParse<DataTypeDatabaseType>(true)
+                                    : DataTypeDatabaseType.Ntext;
+
+            // var item = _packagingService.ImportDataTypeDefinitions(node).FirstOrDefault();
+            var key = node.Attribute("Key").ValueOrDefault(Guid.Empty);
+            if (key != Guid.Empty)
+            {
+                item = _dataTypeService.GetDataTypeDefinitionById(key);
+            }
+
+            if (item == null && !string.IsNullOrEmpty(name))
+            {
+                // lookup by alias. 
+                LogHelper.Debug<DataTypeSerializer>("Looking up datatype by name: {0}", () => name);
+                item = _dataTypeService.GetDataTypeDefinitionByName(name);
+            }
 
             if (item == null)
             {
-                // Import return null, when the datatype already exists, so get it if we can
-                var dataTypeDefinitionId = new Guid(node.Attribute("Definition").Value);
-                item = _dataTypeService.GetDataTypeDefinitionById(dataTypeDefinitionId);
-
-                if (item == null)
-                    return SyncAttempt<IDataTypeDefinition>.Fail(node.NameFromNode(), ChangeType.Import, "package service import failed");
+                // create
+                item = new DataTypeDefinition(editorAlias)
+                {
+                    Key = key,
+                    Name = name,
+                    DatabaseType = databaseType
+                };
             }
 
-            LogHelper.Debug<DataTypeSerializer>("<<< DeserializeCore: Post Import: {0}", ()=> item.Name);
+            if (item != null)
+            {
+                if (item.Name != name)
+                    item.Name = name;
 
+                if (item.Key != key)
+                    item.Key = key;
 
-            DeserializeUpdate(item, node);
-            DeserializeUpdatePreValues(item, node);
+                if (item.PropertyEditorAlias != editorAlias)
+                    item.PropertyEditorAlias = editorAlias;
+
+                if (item.DatabaseType != databaseType)
+                    item.DatabaseType = databaseType;
+
+                DeserializeUpdatePreValues(item, node);
+            }
 
             _dataTypeService.Save(item);
             return SyncAttempt<IDataTypeDefinition>.Succeed(item.Name, item, ChangeType.Import);
@@ -62,7 +94,7 @@ namespace Jumoo.uSync.Core.Serializers
             LogHelper.Debug<DataTypeSerializer>("<<< Deserialize: GetMappedValues");
 
             XElement nodeCopy = new XElement(node);
-            var id = node.Attribute("Id").Value;
+            var id = node.Attribute("Id").ValueOrDefault(string.Empty);
 
             var mapper = LoadMapper(nodeCopy, id);
 
@@ -89,21 +121,6 @@ namespace Jumoo.uSync.Core.Serializers
                 nodeCopy.Element("Nodes").Remove();
 
             return node;
-        }
-
-        private void DeserializeUpdate(IDataTypeDefinition item, XElement node)
-        {
-            LogHelper.Debug<DataTypeSerializer>("<<< Deserialize: Update");
-
-            if (node.Attribute("Id") != null)
-            {
-                var targetType = node.Attribute("Id").Value;
-                if (!targetType.Equals(item.PropertyEditorAlias, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    // try to change the type (this might need a db update, which i don't think we can do?
-                    item.PropertyEditorAlias = targetType;
-                }
-            }
         }
 
         private void DeserializeUpdatePreValues(IDataTypeDefinition item, XElement node)
@@ -176,11 +193,18 @@ namespace Jumoo.uSync.Core.Serializers
         {
             LogHelper.Debug<DataTypeSerializer>(">>> SerializeCore");
             try {
-                var node = _packagingService.Export(item);
-                if (node == null)
-                    return SyncAttempt<XElement>.Fail(item.Name, typeof(IDataTypeDefinition), ChangeType.Export, "Package service export failed");
 
-                return SerializeUpdatePreValues(item, node);
+                var node = new XElement(Constants.Packaging.DataTypeNodeName,
+                    new XAttribute("Name", item.Name),
+                    new XAttribute("Key", item.Key),
+                    new XAttribute("Id", item.PropertyEditorAlias),
+                    new XAttribute("DatabaseType", item.DatabaseType.ToString())                    
+                    );
+
+
+                node.Add(SerializePreValues(item, node));
+
+                return SyncAttempt<XElement>.Succeed(item.Name, node, typeof(IDataTypeDefinition), ChangeType.Export); 
             }
             catch(Exception ex)
             {
@@ -188,15 +212,12 @@ namespace Jumoo.uSync.Core.Serializers
             }
         }
 
-        private SyncAttempt<XElement> SerializeUpdatePreValues(IDataTypeDefinition item, XElement node)
-        {
-
+        private XElement SerializePreValues(IDataTypeDefinition item, XElement node)
+        { 
             var mapper = LoadMapper(node, item.PropertyEditorAlias);
 
             // we clear them out, and write them ourselves.
-            var nodePreValues = node.Element("PreValues");
-            if (nodePreValues != null)
-                nodePreValues.RemoveNodes();
+            var nodePreValues = new XElement("PreValues");
 
             var itemPreValues = GetPreValues(item);
             foreach(var itemPreValuePair in itemPreValues)
@@ -223,7 +244,7 @@ namespace Jumoo.uSync.Core.Serializers
                 nodePreValues.Add(preValueNode);
             }
 
-            return SyncAttempt<XElement>.Succeed(item.Name, node, typeof(IDataTypeDefinition), ChangeType.Export);
+            return nodePreValues;
         }
 
         private Dictionary<string, PreValue> GetPreValues(IDataTypeDefinition dataType)

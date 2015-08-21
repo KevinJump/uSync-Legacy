@@ -89,12 +89,44 @@ namespace Jumoo.uSync.Core.Extensions
             return defaultValue;
         }
 
+        public static Guid ValueOrDefault(this XElement node, Guid defaultValue)
+        {
+            if (node != null && !string.IsNullOrEmpty(node.Value))
+            {
+                Guid val;
+                if (Guid.TryParse(node.Value, out val))
+                    return val;
+            }
+            return defaultValue;
+        }
+
+
+        public static string ValueOrDefault(this XAttribute node, string defaultValue)
+        {
+            if (node != null && !string.IsNullOrEmpty(node.Value))
+                return node.Value;
+
+            return defaultValue;
+        }
+
         public static DateTime ValueOrDefault(this XAttribute node, DateTime defaultValue)
         {
             if (node != null && !string.IsNullOrEmpty(node.Value))
             {
                 DateTime val;
                 if (DateTime.TryParse(node.Value, out val))
+                    return val;
+            }
+
+            return defaultValue;
+        }
+
+        public static Guid ValueOrDefault(this XAttribute node, Guid defaultValue)
+        {
+            if ( node != null && !string.IsNullOrEmpty(node.Value))
+            {
+                Guid val;
+                if (Guid.TryParse(node.Value, out val))
                     return val;
             }
 
