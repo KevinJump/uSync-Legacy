@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using Umbraco.Core.Logging;
 
 namespace Jumoo.uSync.BackOffice.Helpers
 {
@@ -15,7 +16,7 @@ namespace Jumoo.uSync.BackOffice.Helpers
     {
         private static List<SyncAction> _actions;
         private static string _actionFile;
-        private static object _saveLock;
+        private static object _saveLock = new object();
 
         static ActionTracker()
         {
@@ -92,6 +93,11 @@ namespace Jumoo.uSync.BackOffice.Helpers
 
         public static IEnumerable<SyncAction> GetActions(Type type)
         {
+            LogHelper.Info<uSyncAction>("Getting Actions: for type {0} from {1} actions, found {2}",
+                ()=> type.ToString(), 
+                ()=> _actions.Count, 
+                ()=> _actions.Count(x => x.TypeName == type.ToString())
+                );
             return _actions.Where(x => x.TypeName == type.ToString());
         }
     }

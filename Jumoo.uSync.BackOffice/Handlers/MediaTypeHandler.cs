@@ -23,7 +23,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
         private IContentTypeService _contentTypeService;
 
-        public ContentTypeHandler()
+        public MediaTypeHandler()
         {
             _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
         }
@@ -49,7 +49,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             uSyncCoreContext.Instance.MediaTypeSerializer.DesearlizeSecondPass(item, node);
         }
 
-        public override void DeleteItem(Guid key, string keyString)
+        public override uSyncAction DeleteItem(Guid key, string keyString)
         {
             IMediaType item = null;
 
@@ -63,7 +63,10 @@ namespace Jumoo.uSync.BackOffice.Handlers
             {
                 LogHelper.Info<ContentTypeHandler>("Deleting Content Type: {0}", () => item.Name);
                 _contentTypeService.Delete(item);
+                return uSyncAction.SetAction(true, keyString, typeof(IMediaType), ChangeType.Delete, "Not found");
             }
+
+            return uSyncAction.Fail(keyString, typeof(IMediaType), ChangeType.Delete, "Not found");
         }
 
 
@@ -140,7 +143,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 LogHelper.Info<MediaTypeHandler>("Delete: Deleting uSync File for item: {0}", () => item.Name);
                 uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetItemPath(item), "def");
 
-                ActionTracker.AddAction(SyncActionType.Delete, item.Key, item.Alias, item.GetType());
+                ActionTracker.AddAction(SyncActionType.Delete, item.Key, item.Alias, typeof(IMediaType));
             }
         }
 

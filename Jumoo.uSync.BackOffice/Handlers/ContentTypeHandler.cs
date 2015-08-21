@@ -49,7 +49,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             var serializer = uSyncCoreContext.Instance.ContentTypeSerializer.DesearlizeSecondPass(item, node);
         }
 
-        public override void DeleteItem(Guid key, string keyString)
+        public override uSyncAction DeleteItem(Guid key, string keyString)
         {
             IContentType item = null;
 
@@ -63,7 +63,10 @@ namespace Jumoo.uSync.BackOffice.Handlers
             {
                 LogHelper.Info<ContentTypeHandler>("Deleting Content Type: {0}", () => item.Name);
                 _contentTypeService.Delete(item);
+                return uSyncAction.SetAction(true, keyString, typeof(IContentType), ChangeType.Delete, "Not found");
             }
+
+            return uSyncAction.Fail(keyString, typeof(IContentType), ChangeType.Delete, "Not found");
         }
 
         public IEnumerable<uSyncAction> ExportAll(string folder)
@@ -157,7 +160,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 LogHelper.Info<ContentTypeHandler>("Delete: Removing uSync files for Item: {0}", () => item.Name);
                 uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetContentTypePath(item), "def");
 
-                ActionTracker.AddAction(SyncActionType.Delete, item.Key, item.Alias, item.GetType());
+                ActionTracker.AddAction(SyncActionType.Delete, item.Key, item.Alias, typeof(IContentType));
             }
         }
 

@@ -21,10 +21,16 @@
             LogHelper.Debug<uSyncApplicationEventHandler>("Running Import: {0}", () => folder);
             Dictionary<string, T> updates = new Dictionary<string, T>();
 
-
-            ProcessDeletes()
-
             List<uSyncAction> actions = new List<uSyncAction>();
+
+            // for a non-force sync, we use the actions to process deletes.
+            // when it's a force, then we delete anything that is in umbraco
+            // that isn't in our folder??
+            // if (!force)
+            //{
+                actions.AddRange(ProcessActions());
+            //}
+
             string mappedfolder = Umbraco.Core.IO.IOHelper.MapPath(folder);
 
             if (Directory.Exists(mappedfolder))
@@ -57,27 +63,32 @@
             return actions; 
         }
 
-        private void ProcessActions()
+        private IEnumerable<uSyncAction> ProcessActions()
         {
+            List<uSyncAction> syncActions = new List<uSyncAction>();
+
             var actions = ActionTracker.GetActions(typeof(T));
 
             if (actions != null && actions.Any())
             {
                 foreach(var action in actions)
                 {
+                    LogHelper.Info<uSyncAction>("Processing a Delete: {0}", () => action.TypeName);
                     switch (action.Action)
                     {
                         case SyncActionType.Delete:
-                            DeleteItem(action.Key, action.Name);
+                            syncActions.Add(DeleteItem(action.Key, action.Name));
                             break;
                     }
                 }
             }
+
+            return syncActions;
         }
 
-        virtual public void DeleteItem(Guid key, string keyString)
+        virtual public uSyncAction DeleteItem(Guid key, string keyString)
         {
-            return;
+            return new uSyncAction();
         }
 
         virtual public string GetItemPath(T item)
