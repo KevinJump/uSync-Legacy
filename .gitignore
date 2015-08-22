@@ -7,13 +7,14 @@
 *.userosscache
 *.sln.docstates
 
+.vs/
 snapshots/
 App_Browsers/
 App_Data/
 Umbraco/
 Umbraco_Client/
 Bin/
-Config/
+# Config/
 Archive/
 
 # Build results
