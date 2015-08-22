@@ -74,6 +74,7 @@
                             <table class="table table-condensed">
                                 <thead>
                                     <tr>
+                                        <th></th>
                                         <th>Name</th>
                                         <th>Type</th>
                                         <th>Change</th>
