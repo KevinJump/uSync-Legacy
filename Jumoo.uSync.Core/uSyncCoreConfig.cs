@@ -89,6 +89,12 @@ namespace Jumoo.uSync.Core
 
     public class uSyncValueMapperSettings
     {
+        public uSyncValueMapperSettings()
+        {
+            // default value should work but doesn't?
+            // http://stackoverflow.com/questions/7290618/xmlserializer-define-default-value
+            IdRegex = @"\d{4,9}";
+        }
         /// <summary>
         /// used to match the mappings on import
         /// </summary>

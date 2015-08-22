@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 
 using Umbraco.Core;
+using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
 
 namespace Jumoo.uSync.Core.Helpers
