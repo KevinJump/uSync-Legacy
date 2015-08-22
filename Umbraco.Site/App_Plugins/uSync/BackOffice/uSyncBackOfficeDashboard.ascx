@@ -74,7 +74,6 @@
                             <table class="table table-condensed">
                                 <thead>
                                     <tr>
-                                        <th>Result</th>
                                         <th>Name</th>
                                         <th>Type</th>
                                         <th>Change</th>
@@ -86,7 +85,6 @@
                         <ItemTemplate>
                                 <tr class="<%# ChangeClass( Eval("Change") ) %>">
                                     <th><%# ResultIcon( Eval("Success") ) %></th>
-                                    <td><%# DataBinder.Eval(Container.DataItem, "Success") %></td>
                                     <td><%# DataBinder.Eval(Container.DataItem, "Name") %></td>
                                     <td><%# TypeString( Eval("ItemType") ) %></td>
                                     <td><%# DataBinder.Eval(Container.DataItem, "Change") %></td>
