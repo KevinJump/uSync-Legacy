@@ -28,8 +28,7 @@ namespace Jumoo.uSync.Core.Serializers
 
         internal override SyncAttempt<IDataTypeDefinition> DeserializeCore(XElement node)
         {
-            LogHelper.Debug<DataTypeSerializer>("<<< DeserializeCore");
-            
+          
             // pre import
             var mappedNode = DeserializeGetMappedValues(node);
 
@@ -94,8 +93,6 @@ namespace Jumoo.uSync.Core.Serializers
 
         private XElement DeserializeGetMappedValues(XElement node)
         {
-            LogHelper.Debug<DataTypeSerializer>("<<< Deserialize: GetMappedValues");
-
             XElement nodeCopy = new XElement(node);
             var id = node.Attribute("Id").ValueOrDefault(string.Empty);
 
@@ -105,15 +102,16 @@ namespace Jumoo.uSync.Core.Serializers
 
             if (mapper != null && preValues != null && preValues.HasElements)
             {
-                foreach(var preValue in preValues.Descendants()
+                foreach (var preValue in preValues.Descendants()
                                             .Where(x => x.Attribute("MapGuid") != null)
                                             .ToList())
                 {
+
                     var value = mapper.MapToId(preValue);
 
                     if (!string.IsNullOrEmpty(value))
                     {
-                        preValues.Attribute("Value").Value = value;
+                        preValue.Attribute("Value").Value = value;
                     }
 
                     preValue.Attribute("MapGuid").Remove();
@@ -123,13 +121,11 @@ namespace Jumoo.uSync.Core.Serializers
             if (nodeCopy.Element("Nodes") != null)
                 nodeCopy.Element("Nodes").Remove();
 
-            return node;
+            return nodeCopy;
         }
 
         private void DeserializeUpdatePreValues(IDataTypeDefinition item, XElement node)
         {
-            LogHelper.Debug<DataTypeSerializer>("<<< Deserialize: UpdatePreValues");
-
             var preValueRootNode = node.Element("PreValues");
             if (preValueRootNode != null)
             {
@@ -194,9 +190,7 @@ namespace Jumoo.uSync.Core.Serializers
 
         internal override SyncAttempt<XElement> SerializeCore(IDataTypeDefinition item)
         {
-            LogHelper.Debug<DataTypeSerializer>(">>> SerializeCore");
             try {
-
                 var node = new XElement(Constants.Packaging.DataTypeNodeName,
                     new XAttribute("Name", item.Name),
                     new XAttribute("Key", item.Key),
@@ -204,19 +198,19 @@ namespace Jumoo.uSync.Core.Serializers
                     new XAttribute("DatabaseType", item.DatabaseType.ToString())                    
                     );
 
-
                 node.Add(SerializePreValues(item, node));
 
                 return SyncAttempt<XElement>.Succeed(item.Name, node, typeof(IDataTypeDefinition), ChangeType.Export); 
             }
             catch(Exception ex)
             {
+                LogHelper.Warn<DataTypeSerializer>("Error Serializing {0}", () => ex.ToString());
                 return SyncAttempt<XElement>.Fail(item.Name, typeof(IDataTypeDefinition), ChangeType.Export, "Failed to export", ex);
             }
         }
 
         private XElement SerializePreValues(IDataTypeDefinition item, XElement node)
-        { 
+        {
             var mapper = LoadMapper(node, item.PropertyEditorAlias);
 
             // we clear them out, and write them ourselves.
@@ -230,14 +224,13 @@ namespace Jumoo.uSync.Core.Serializers
 
                 XElement preValueNode = new XElement("PreValue",
                     new XAttribute("Id", preValue.Id.ToString()),
-                    new XAttribute("Value", preValueValue));
+                    new XAttribute("Value", String.IsNullOrEmpty(preValueValue) ? "" : preValueValue));
 
                 if (!itemPreValuePair.Key.StartsWith("zzzuSync"))
                     preValueNode.Add(new XAttribute("Alias", itemPreValuePair.Key));
 
                 if (mapper != null)
                 {
-                    LogHelper.Debug<DataTypeSerializer>("Mapping");
                     Guid newGuid = Guid.NewGuid();
                     if (mapper.MapToGeneric(preValueValue, newGuid))
                     {

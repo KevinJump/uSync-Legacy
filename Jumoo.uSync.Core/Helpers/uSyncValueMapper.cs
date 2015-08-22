@@ -96,7 +96,7 @@ namespace Jumoo.uSync.Core.Helpers
             switch(_settings.ValueStorageType.ToLower())
             {
                 case "json":
-                    if (!string.IsNullOrEmpty(_settings.PropertyName) && IsJson(value))
+                    if (!string.IsNullOrEmpty(_settings.ValueAlias) && IsJson(value))
                     {
                         JObject jObject = JObject.Parse(value);
 

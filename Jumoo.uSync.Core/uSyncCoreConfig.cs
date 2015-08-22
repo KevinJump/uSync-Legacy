@@ -47,7 +47,7 @@ namespace Jumoo.uSync.Core
                     DataTypeId = "Umbraco.MultiNodeTreePicker",
                     MappingType = "content",
                     ValueStorageType = "json",
-                    PropertyName = "startNode"
+                    ValueAlias = "startNode"
                 });
 
                 Settings.MediaStorageFolder = "~/uSync/MediaFiles/";
@@ -117,7 +117,12 @@ namespace Jumoo.uSync.Core
         ///  name of the property in the value storing our id
         ///  (usally in json)
         /// </summary>
-        public string PropertyName { get; set; }
+        public string PropertyName { get; set; } 
+
+        /// <summary>
+        ///  alias of the propertyValue
+        /// </summary>
+        public string ValueAlias { get; set; }
 
 
         /// <summary>
