@@ -237,6 +237,7 @@ namespace Jumoo.uSync.Core.Serializers
 
                 if (mapper != null)
                 {
+                    LogHelper.Debug<DataTypeSerializer>("Mapping");
                     Guid newGuid = Guid.NewGuid();
                     if (mapper.MapToGeneric(preValueValue, newGuid))
                     {
@@ -269,7 +270,7 @@ namespace Jumoo.uSync.Core.Serializers
                         .PreValuesAsArray
                         .OrderBy(p => p.SortOrder)
                         .ThenBy(p => p.Id)
-                        .ToDictionary(preValue => "zzzUsync" + preValue.Id.ToString(), preValue => preValue);
+                        .ToDictionary(preValue => "zzzuSync" + preValue.Id.ToString(), preValue => preValue);
             }
         }
 
@@ -309,7 +310,12 @@ namespace Jumoo.uSync.Core.Serializers
                                 .Where(x => x.DataTypeId == dataTypeId.ToString())
                                 .FirstOrDefault();
 
-            uSyncValueMapper mapper = new uSyncValueMapper(node, settings);
+
+            if (settings != null)
+            {
+                LogHelper.Debug<DataTypeSerializer>("Loading Mapper for : {0}", () => settings.DataTypeId);
+                return new uSyncValueMapper(node, settings);
+            }
 
             return null;
         }
