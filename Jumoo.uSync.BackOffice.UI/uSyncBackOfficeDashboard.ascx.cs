@@ -16,15 +16,6 @@ namespace Jumoo.uSync.BackOffice.UI
             return typeName.Substring(typeName.LastIndexOf('.')+1);
         }
 
-        protected string ChangeClass(object change)
-        {
-            var changeType = (Core.ChangeType)change;
-
-            if (changeType > Core.ChangeType.Fail)
-                return "error";
-            return "";
-        }
-
         protected string ResultIcon(object result)
         {
             var r = (bool)result;
@@ -32,25 +23,48 @@ namespace Jumoo.uSync.BackOffice.UI
             if (r)
                 return "<i class=\"icon-checkbox\"></i>";
             else
-                return "<i class=\"icon-checkbox-empty\"></i>";
+                return "<i class=\"icon-checkbox-dotted\"></i>";
         }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if ( !IsPostBack )
+            if (!IsPostBack)
+            {
                 SetupPage();
+                WriteSettings();
+            }
 
-            WriteSettings();
+            
         }
 
         private void WriteSettings()
         {
             var settings = uSyncBackOfficeContext.Instance.Configuration.Settings;
 
-            chkExport.Checked = settings.ExportAtStartup;
-            chkImport.Checked = settings.Import;
-            chkEvents.Checked = settings.ExportOnSave;
-            chkFiles.Checked = settings.WatchForFileChanges;
+            rbAutoSync.Checked = false;
+            rbTarget.Checked = false;
+            rbManual.Checked = false;
+            rbOther.Checked = false; 
+
+            if (settings.Import == true)
+            {
+                if (settings.ExportOnSave == true)
+                {
+                    rbAutoSync.Checked = true;
+                }
+                else
+                {
+                    rbTarget.Checked = true;
+                }
+            }
+            else if (settings.ExportOnSave == false && settings.ExportAtStartup == false)
+            {
+                rbManual.Checked = true;
+            }
+            else
+            {
+                rbOther.Checked = true;
+            }
 
         }
 
@@ -79,13 +93,7 @@ namespace Jumoo.uSync.BackOffice.UI
                 uSyncHandlers.Items.Add(item);
             }
 
-
-            uSyncOtherSettings.Items.Add(string.Format("Save Location:   {0}", settings.Folder));
-            uSyncOtherSettings.Items.Add(string.Format("Archive on Save: {0}", settings.ArchiveVersions));
-
             usyncFolder.Text = settings.Folder;
-            usyncFolder1.Text = settings.Folder;
-            uSyncFolder2.Text = settings.Folder;
         }
 
         protected void btnFullImport_Click(object sender, EventArgs e)
@@ -95,6 +103,10 @@ namespace Jumoo.uSync.BackOffice.UI
 
         protected void btnFullExport_Click(object sender, EventArgs e)
         {
+            // events shoudn't fire when you export, 
+            // but we are pausing just incase.
+            uSyncEvents.Paused = true;
+
             var folder = uSyncBackOfficeContext.Instance.Configuration.Settings.Folder;
             if (System.IO.Directory.Exists(folder))
                 System.IO.Directory.Delete(folder, true);
@@ -107,18 +119,46 @@ namespace Jumoo.uSync.BackOffice.UI
             }
 
             ShowResultHeader("Export", "All items have been exported");
+            uSyncEvents.Paused = false;
         }
 
         protected void btnSaveSettings_Click(object sender, EventArgs e)
         {
             var settings = uSyncBackOfficeContext.Instance.Configuration.Settings;
 
-            settings.ExportAtStartup = chkExport.Checked;
-            settings.ExportOnSave = chkEvents.Checked;
-            settings.WatchForFileChanges = chkFiles.Checked;
-            settings.Import = chkImport.Checked;
+            var mode = "no change";
+            if (rbAutoSync.Checked == true)
+            {
+                settings.ExportOnSave = true;
+                settings.Import = true;
+                settings.ExportAtStartup = false;
 
+                mode = "AutoSync";
+
+            }
+            else if (rbTarget.Checked == true)
+            {
+                settings.ExportOnSave = false;
+                settings.Import = true;
+                settings.ExportAtStartup = false;
+
+                mode = "Sync Target";
+            }
+            else if (rbManual.Checked == true)
+            {
+                settings.ExportOnSave =false;
+                settings.Import = false;
+                settings.ExportAtStartup = false;
+
+                mode = "Manual";
+
+            }
             uSyncBackOfficeContext.Instance.Configuration.SaveSettings(settings);
+
+            ShowResultHeader("Settings Updated",
+                string.Format("Mode = {0} (requires a restart to take effect)", mode));
+
+            WriteSettings();
 
         }
 
@@ -136,7 +176,7 @@ namespace Jumoo.uSync.BackOffice.UI
 
             if (actions.Any())
             {
-                changeMessage = string.Format("if you ran an import now their would be {0} items processed and {1} changes made",
+                changeMessage = string.Format("if you ran an import now: {0} items would be processed and {1} changes would be made",
                     actions.Count(), actions.Count(x => x.Change > Core.ChangeType.NoChange));
 
                 uSyncStatus.DataSource = actions.Where(x => x.Change > Core.ChangeType.NoChange);
@@ -148,12 +188,16 @@ namespace Jumoo.uSync.BackOffice.UI
 
         private void Backup()
         {
+            uSyncEvents.Paused = true;
+
             var backupFolder = string.Format("~/app_data/uSync/Backups/{0}", DateTime.Now.ToString("yyyyMMdd_HHmmss"));
 
             if (System.IO.Directory.Exists(backupFolder))
                 System.IO.Directory.Delete(backupFolder, true);
 
             uSyncBackOfficeContext.Instance.ExportAll(backupFolder);
+
+            uSyncEvents.Paused = false;
 
 
         }

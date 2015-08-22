@@ -1,9 +1,12 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="uSyncBackOfficeDashboard.ascx.cs" Inherits="Jumoo.uSync.BackOffice.UI.uSyncBackOfficeDashboard" %>
 <style>
-    .setting-checkbox input {
-        float: left;
-        margin-left: 20px;
-        margin-right: 20px;
+    .usync-dash h3, .usync-dash h4 {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 0.2em;
+    }
+    .usync-info
+    {
+        margin: 0 5px;
     }
 </style>
 <script type="text/javascript">
@@ -16,7 +19,7 @@
     });
 </script>
 
-<div id="usyncBackOfficeDashboard">
+<div id="usyncBackOfficeDashboard" class="usync-dash">
     <div class="propertypane">
         <div class="row">
             <div class="span12">
@@ -26,38 +29,67 @@
                         [Core: <asp:Label ID="uSyncCoreVersion" runat="server"></asp:Label>]
                     </small>
                 </h3>
-                <p>
-                    uSync Backoffice, syncs all the bits of umbraco in settings and developer that
-                    are in the database, everything will appear in <strong><asp:Label ID="uSyncFolder2" runat="server"></asp:Label></strong>
-                </p>
+            </div>
+        </div>
+        <div class="row">            
+            <div class="span6">
+                <div class="usync-info">
+                    <h4>Import / Export</h4>
+                    <p>
+                        Perform import and exports - these actions will be processed against sync files in the 
+                        <asp:Label ID="usyncFolder" runat="server"></asp:Label> folder.
+                    </p>
+                    <p>
+                        <asp:Button runat="server" ID="btnReport" text="Change Report" CssClass="btn btn-info" OnClick="btnReport_Click"/>
+                        <small class="muted">What will change</small>
+                    </p>
+                    <p>
+                        <asp:Button runat="server" ID="btnSyncImport" text="Change Import" CssClass="btn btn-success" OnClick="btnSyncImport_Click"/>
+                        <small class="muted">Import only the changes</small>
+                    </p>
+                    <hr />
+                    <p>
+                        <asp:Button runat="server" ID="btnFullImport" text="Full Import" CssClass="btn btn-mini btn-warning" OnClick="btnFullImport_Click" />
+                        <small class="muted">Import everything from folder</small>
+                    </p>
+                    <p>
+                        <asp:Button runat="server" ID="btnFullExport" text="Export" CssClass="btn  btn-mini btn-inverse" OnClick="btnFullExport_Click" />
+                        <small class="muted">Export current settings to disk</small>
+                    </p>
+                </div>
+            </div>
+            <div class="span6">
+                <div class="usync-info">
+                    <h4>Setup</h4>
+                    <p>Choose how uSync behaves on your site</p>
+                    <label class="radio">
+                        <asp:RadioButton ID="rbAutoSync" runat="server" CssClass="" GroupName="uSyncMode"/> 
+                        Auto Sync <small>Run import at startup, Save changes to disk when they occur</small>
+                    </label>
+                    <label class="radio">
+                        <asp:RadioButton ID="rbTarget" runat="server" CssClass="" GroupName="uSyncMode"/> 
+                        Sync Target <small>Will run import at startup only</small>
+                    </label>
+                    <label class="radio">
+                        <asp:RadioButton ID="rbManual" runat="server" CssClass="" GroupName="uSyncMode"/> 
+                        Manual Sync <small>No automatic imports or saves.</small>
+                    </label>
+                    <label class="radio">
+                        <asp:RadioButton ID="rbOther" runat="server" GroupName="uSyncMode" Enabled="false"/>
+                        Other <small>Some other weird setup - see your usyncBackOffice.config</small>
+                    </label>
+                    <div class="pull-right">
+                        <asp:Button ID="btnSaveSettings" runat="server" CssClass="btn btn-default" Text="Save Settings" OnClick="btnSaveSettings_Click" />
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">
-            <div class="span6">
-                <h3>Import</h3>
-                <p>
-                    Run a full uSync Import, this will take everything in the <asp:Label ID="usyncFolder" runat="server"></asp:Label> folder, and
-                    import it into this version of uSync.
-                </p>
-                <p>
-                    <asp:Button runat="server" ID="btnReport" text="Change Report" CssClass="btn btn-info" OnClick="btnReport_Click"/>
-                    <asp:Button runat="server" ID="btnSyncImport" text="Change Import" CssClass="btn btn-success" OnClick="btnSyncImport_Click"/>
-                    <asp:Button runat="server" ID="btnFullImport" text="Full Import" CssClass="btn btn-warning" OnClick="btnFullImport_Click" />
-                </p>
-            </div>
-
-            <div class="span6">
-                <h3>Export</h3>
-                <p>
-                    Run a full uSync Export, this will wipe the <asp:Label ID="usyncFolder1" runat="server"></asp:Label> folder, and
-                    write out everything in you're umbraco install to disk
-                </p>
-                <p>
-                    <asp:Button runat="server" ID="btnFullExport" text="Export" CssClass="btn btn-warning" OnClick="btnFullExport_Click" />
-                </p>
-
+            <div class="span12">
+                <hr />
             </div>
         </div>
+            
         <div id="usyncupdated">
             <div class="row">
                 <div class="span12">
@@ -74,6 +106,7 @@
                             <table class="table table-condensed">
                                 <thead>
                                     <tr>
+                                        <th></th>
                                         <th>Name</th>
                                         <th>Type</th>
                                         <th>Change</th>
@@ -83,7 +116,7 @@
                                 <tbody>
                         </HeaderTemplate>
                         <ItemTemplate>
-                                <tr class="<%# ChangeClass( Eval("Change") ) %>">
+                                <tr>
                                     <th><%# ResultIcon( Eval("Success") ) %></th>
                                     <td><%# DataBinder.Eval(Container.DataItem, "Name") %></td>
                                     <td><%# TypeString( Eval("ItemType") ) %></td>
@@ -116,48 +149,14 @@
         <asp:Panel ID ="panelTech" Visible="false" runat="server">
         <div class="row">
             <div class="span12">
-                 <hr />
                 <h3>uSync.TechnicalBits</h3>
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="span6">
-                <h4>Settings</h4>
-                <ul class="unstyled">
-                    <li><asp:CheckBox ID="chkImport" runat="server" Text="Import on startup" CssClass="setting-checkbox" /></li>
-                    <li><asp:CheckBox ID="chkExport" runat="server" Text="Export on startup" CssClass="setting-checkbox" /></li>
-                    <li><asp:CheckBox ID="chkEvents" runat="server" Text="Write on saves" CssClass="setting-checkbox" /></li>
-                    <li><asp:CheckBox ID="chkFiles" runat="server" Text="Watch folder for changes, and import" CssClass="setting-checkbox" /></li>
-                </ul>
-
-                <asp:Button ID="btnSaveSettings" runat="server" CssClass="btn btn-default" Text="Save Settings" OnClick="btnSaveSettings_Click" />
-                <p></p>
-            </div>
-
-            <div class="span6">
-                <h4>uSync Info</h4>
-            </div>
-        </div>
-        <div class="row">
-
-            <div class="span6">
-                <h4>Other Settings
-                    <small>from uSyncBackOffice.config</small>
-                </h4>
-
-                <asp:BulletedList runat="server" ID="uSyncOtherSettings" CssClass="unstyled">
-
-                </asp:BulletedList>
-            </div>
-            <div class="span6">
                 <h4>Registred Handlers. (<asp:Label ID="uSyncHandlerCount" runat="server"></asp:Label>)</h4>
                 <p><small>The handlers do the hard work, of importing and exporting data, they can be turned off in the 
                     config file
                 </small></p>
                 <asp:BulletedList runat="server" ID="uSyncHandlers" CssClass="unstyled"></asp:BulletedList>
             </div>
-        </div>
         </asp:Panel>
     </div>
 </div>

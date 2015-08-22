@@ -31,15 +31,6 @@ namespace Jumoo.uSync.BackOffice.UI {
         protected global::System.Web.UI.WebControls.Label uSyncCoreVersion;
         
         /// <summary>
-        /// uSyncFolder2 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label uSyncFolder2;
-        
-        /// <summary>
         /// usyncFolder control.
         /// </summary>
         /// <remarks>
@@ -76,15 +67,6 @@ namespace Jumoo.uSync.BackOffice.UI {
         protected global::System.Web.UI.WebControls.Button btnFullImport;
         
         /// <summary>
-        /// usyncFolder1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label usyncFolder1;
-        
-        /// <summary>
         /// btnFullExport control.
         /// </summary>
         /// <remarks>
@@ -92,6 +74,51 @@ namespace Jumoo.uSync.BackOffice.UI {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnFullExport;
+        
+        /// <summary>
+        /// rbAutoSync control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButton rbAutoSync;
+        
+        /// <summary>
+        /// rbTarget control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButton rbTarget;
+        
+        /// <summary>
+        /// rbManual control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButton rbManual;
+        
+        /// <summary>
+        /// rbOther control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButton rbOther;
+        
+        /// <summary>
+        /// btnSaveSettings control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnSaveSettings;
         
         /// <summary>
         /// uSyncResultPlaceHolder control.
@@ -137,60 +164,6 @@ namespace Jumoo.uSync.BackOffice.UI {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel panelTech;
-        
-        /// <summary>
-        /// chkImport control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox chkImport;
-        
-        /// <summary>
-        /// chkExport control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox chkExport;
-        
-        /// <summary>
-        /// chkEvents control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox chkEvents;
-        
-        /// <summary>
-        /// chkFiles control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox chkFiles;
-        
-        /// <summary>
-        /// btnSaveSettings control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSaveSettings;
-        
-        /// <summary>
-        /// uSyncOtherSettings control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.BulletedList uSyncOtherSettings;
         
         /// <summary>
         /// uSyncHandlerCount control.
