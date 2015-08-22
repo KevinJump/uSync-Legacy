@@ -48,7 +48,7 @@ namespace Jumoo.uSync.Core.Helpers
             foreach (Match match in Regex.Matches(ids, _settings.IdRegex))
             {
                 string mappingType = _settings.MappingType.ToLower();
-                string id;
+                string id = match.Value;
                 string mappedValue = string.Empty;
 
                 foreach (var type in mappingType.Split(','))
@@ -68,8 +68,8 @@ namespace Jumoo.uSync.Core.Helpers
                             mappedValue = TabToGeneric(id);
                             break;
                         case "mediaType":
-                            mappedValue = MediaTypeToGeneric(id)
-                                break;
+                            mappedValue = MediaTypeToGeneric(id);
+                            break;
                         case "docType":
                             mappedValue = ContentTypeToGeneric(id);
                             break;
