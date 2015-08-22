@@ -28,6 +28,9 @@ namespace Jumoo.uSync.Core.Helpers
     /// </summary>
     public class uSyncValueMapper
     {
+
+        // TODO: Mapping needs fully testing 
+
         private readonly uSyncValueMapperSettings _settings;
         private XElement _node;
 
