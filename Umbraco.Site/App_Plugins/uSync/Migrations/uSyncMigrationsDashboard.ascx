@@ -22,5 +22,24 @@
     <asp:Button ID="btnSnapshot" runat="server" OnClick="btnSnapshot_Click" Text="Create Snapshot" CssClass="btn btn-default" />
   </div>
 
-   <asp:BulletedList ID="snapshotList" runat="server"></asp:BulletedList>
+    <asp:Repeater ID="snapshotList" runat="server">
+        <HeaderTemplate>
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+        </HeaderTemplate>
+        <ItemTemplate>
+            <tr>
+                <td><%# DataBinder.Eval(Container.DataItem, "Name") %></td>
+                <td><%# DataBinder.Eval(Container.DataItem, "Time") %></td>
+            </tr>
+        </ItemTemplate>
+        <FooterTemplate>
+            </table>
+        </FooterTemplate>
+    </asp:Repeater>
 </form>

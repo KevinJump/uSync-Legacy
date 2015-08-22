@@ -13,9 +13,8 @@ namespace Jumoo.uSync.Migrations
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            var snapshotMgr = new SnapshotManager("~/uSync/snapshots");
-            snapshotList.DataSource = snapshotMgr.ListSnapshots();
-            snapshotList.DataBind();
+            if (!IsPostBack)
+                GetSnapShots();
         }
 
         protected void btnSnapshot_Click(object sender, EventArgs e)
@@ -24,6 +23,15 @@ namespace Jumoo.uSync.Migrations
 
             var snapshotMgr = new SnapshotManager(snapshotRoot);
             snapshotMgr.CreateSnapshot(txtSnapshotName.Text);
+
+            GetSnapShots();
+        }
+
+        private void GetSnapShots()
+        {
+            var snapshotMgr = new SnapshotManager("~/uSync/snapshots");
+            snapshotList.DataSource = snapshotMgr.ListSnapshots();
+            snapshotList.DataBind();
         }
     }
 }

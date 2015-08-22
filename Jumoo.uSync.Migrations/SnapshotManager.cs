@@ -35,14 +35,14 @@ namespace Jumoo.uSync.Migrations
             _folders.Add("fonts");
         }
 
-        public List<string> ListSnapshots()
+        public List<SnapshotInfo> ListSnapshots()
         {
-            List<string> snapshots = new List<string>();
+            List<SnapshotInfo> snapshots = new List<SnapshotInfo>();
             if (Directory.Exists(_rootFolder))
             {
                 foreach(var dir in Directory.GetDirectories(_rootFolder))
                 {
-                    snapshots.Add(dir);
+                    snapshots.Add(new SnapshotInfo(dir));
                 }
             }
 
