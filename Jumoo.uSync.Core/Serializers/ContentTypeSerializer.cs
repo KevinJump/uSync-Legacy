@@ -69,15 +69,24 @@ namespace Jumoo.uSync.Core.Serializers
                 }
                 else
                 {
-                    item = new ContentType(-1);
-                    item.Alias = alias;
+                    item = new ContentType(-1) { Alias = alias };
                 }
+
+                if (parent != null)
+                    item.AddContentType(parent);
             }
 
-            if (item.Key != item.Key)
-                item.Key = key;
-
             DeserializeBase(item, info);
+
+            
+            if (item.Key != key)
+            {
+                LogHelper.Info<ContentTypeSerializer>("Changing Item Key: {0} -> {1}",
+                    () => item.Key, () => key);
+                item.Key = key;
+            }
+
+            // _contentTypeService.Save(item);
 
             // Update Properties
             DeserializeProperties((IContentTypeBase)item, node);

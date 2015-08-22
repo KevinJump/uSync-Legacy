@@ -18,9 +18,7 @@
 
         public IEnumerable<uSyncAction> ImportAll(string folder, bool force)
         {
-            LogHelper.Debug<uSyncApplicationEventHandler>("Running Import: {0}", () => folder);
-            Dictionary<string, T> updates = new Dictionary<string, T>();
-
+            LogHelper.Info<Logging>("Running Import: {0}", () => Path.GetFileName(folder));
             List<uSyncAction> actions = new List<uSyncAction>();
 
             // for a non-force sync, we use the actions to process deletes.
@@ -28,8 +26,24 @@
             // that isn't in our folder??
             // if (!force)
             //{
-                actions.AddRange(ProcessActions());
+            actions.AddRange(ProcessActions());
             //}
+
+            actions.AddRange(ImportFolder(folder, force));
+
+            LogHelper.Info<Logging>("Import Complete: {0} Items {1} changes {2} failures",
+                () => actions.Count(),
+                () => actions.Count(x => x.Change > ChangeType.NoChange),
+                () => actions.Count(x => x.Change > ChangeType.Fail));
+
+            return actions; 
+        }
+
+        private IEnumerable<uSyncAction> ImportFolder(string folder, bool force)
+        {
+            Dictionary<string, T> updates = new Dictionary<string, T>();
+
+            List<uSyncAction> actions = new List<uSyncAction>();
 
             string mappedfolder = Umbraco.Core.IO.IOHelper.MapPath(folder);
 
@@ -48,7 +62,7 @@
 
                 foreach (var children in Directory.GetDirectories(mappedfolder))
                 {
-                    actions.AddRange(ImportAll(children, force));
+                    actions.AddRange(ImportFolder(children, force));
                 }
             }
 
@@ -73,7 +87,7 @@
             {
                 foreach(var action in actions)
                 {
-                    LogHelper.Info<uSyncAction>("Processing a Delete: {0}", () => action.TypeName);
+                    LogHelper.Info<Logging>("Processing a Delete: {0}", () => action.TypeName);
                     switch (action.Action)
                     {
                         case SyncActionType.Delete:

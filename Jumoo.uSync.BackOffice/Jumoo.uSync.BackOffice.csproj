@@ -67,6 +67,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BackOffice.cs" />
     <Compile Include="Controllers\uSyncBackOfficeController.cs" />
     <Compile Include="Handlers\ContentTypeHandler.cs" />
     <Compile Include="Handlers\DataTypeHandler.cs" />

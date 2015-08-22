@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Umbraco.Core.Logging;
 
 namespace Jumoo.uSync.Core.Extensions
 {
@@ -21,9 +22,19 @@ namespace Jumoo.uSync.Core.Extensions
             {
                 foreach(var preVal in preVals.Elements("PreValue"))
                 {
-                    preVals.SetAttributeValue("Id", "");
+                    preVal.SetAttributeValue("Id", "");
                 }
             }
+
+            // take out any keys? 
+            // we might not want to do this, as 
+            // keys are something we can set
+            /* 
+            foreach(var key in copy.Descendants("Key"))
+            {
+                key.Remove();
+            }
+            */
 
             var nodes = copy.Element("Nodes");
             if (nodes != null)

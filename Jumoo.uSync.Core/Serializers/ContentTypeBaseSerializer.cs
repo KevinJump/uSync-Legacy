@@ -36,10 +36,11 @@ namespace Jumoo.uSync.Core.Serializers
             if (item.Alias != alias)
                 item.Alias = alias;
 
-            var name = info.Element("Name").ValueOrDefault("");
-            if (item.Name != name)
-                item.Name = item.Name;
-
+            var name = info.Element("Name").ValueOrDefault(string.Empty);
+            if (!string.IsNullOrEmpty(name) )
+            {
+                item.Name = name;
+            }
 
             var icon = info.Element("Icon").ValueOrDefault("");
             if (item.Icon != icon)
@@ -325,7 +326,7 @@ namespace Jumoo.uSync.Core.Serializers
         {
             var structureNode = new XElement("Structure");
 
-            LogHelper.Info<MediaTypeSerializer>("BASE: Content Types: {0}", () => item.AllowedContentTypes.Count());
+            LogHelper.Debug<Events>("BASE: Content Types: {0}", () => item.AllowedContentTypes.Count());
 
             SortedList<string, Guid> allowedAliases = new SortedList<string, Guid>();
             foreach(var allowedType in item.AllowedContentTypes)

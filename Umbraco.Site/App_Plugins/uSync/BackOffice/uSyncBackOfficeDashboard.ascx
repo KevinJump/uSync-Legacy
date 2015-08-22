@@ -81,9 +81,11 @@
                                         <th>Message</th>
                                     </tr>
                                 </thead>
+                                <tbody>
                         </HeaderTemplate>
                         <ItemTemplate>
-                                <tr>
+                                <tr class="<%# ChangeClass( Eval("Change") ) %>">
+                                    <th><%# ResultIcon( Eval("Success") ) %></th>
                                     <td><%# DataBinder.Eval(Container.DataItem, "Success") %></td>
                                     <td><%# DataBinder.Eval(Container.DataItem, "Name") %></td>
                                     <td><%# TypeString( Eval("ItemType") ) %></td>
@@ -92,6 +94,7 @@
                                 </tr>
                         </ItemTemplate>
                         <FooterTemplate>
+                                </tbody>
                             </table>
                         </FooterTemplate>
                     </asp:Repeater>

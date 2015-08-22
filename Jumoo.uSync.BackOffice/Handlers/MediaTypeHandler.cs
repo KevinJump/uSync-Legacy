@@ -78,7 +78,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
             var _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
             foreach (var item in _contentTypeService.GetAllMediaTypes())
             {
-                LogHelper.Info<MediaTypeHandler>("Enum: {0}", () => item.Name);
                 if (item != null)
                     actions.Add(ExportToDisk(item, folder));
             }

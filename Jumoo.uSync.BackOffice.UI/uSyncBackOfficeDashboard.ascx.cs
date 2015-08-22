@@ -16,6 +16,25 @@ namespace Jumoo.uSync.BackOffice.UI
             return typeName.Substring(typeName.LastIndexOf('.')+1);
         }
 
+        protected string ChangeClass(object change)
+        {
+            var changeType = (Core.ChangeType)change;
+
+            if (changeType > Core.ChangeType.Fail)
+                return "error";
+            return "";
+        }
+
+        protected string ResultIcon(object result)
+        {
+            var r = (bool)result;
+
+            if (r)
+                return "<i class=\"icon-checkbox\"></i>";
+            else
+                return "<i class=\"icon-checkbox-empty\"></i>";
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if ( !IsPostBack )
@@ -105,24 +124,39 @@ namespace Jumoo.uSync.BackOffice.UI
 
         protected void btnSyncImport_Click(object sender, EventArgs e)
         {
+            Backup();
             PerformImport(false);
         }
 
         protected void btnReport_Click(object sender, EventArgs e)
         {
-            ShowResultHeader("Change Report", "Below shows what will happen if you run an import now");
-
+            var changeMessage = "These are the changes if you ran an import now";
             var actions = uSyncBackOfficeContext.Instance.ImportReport(
                 uSyncBackOfficeContext.Instance.Configuration.Settings.MappedFolder());
 
             if (actions.Any())
             {
-                uSyncStatus.DataSource = actions;
+                changeMessage = string.Format("if you ran an import now their would be {0} items processed and {1} changes made",
+                    actions.Count(), actions.Count(x => x.Change > Core.ChangeType.NoChange));
+
+                uSyncStatus.DataSource = actions.Where(x => x.Change > Core.ChangeType.NoChange);
                 uSyncStatus.DataBind();
             }
 
+            ShowResultHeader("Change Report", changeMessage);
         }
 
+        private void Backup()
+        {
+            var backupFolder = string.Format("~/app_data/uSync/Backups/{0}", DateTime.Now.ToString("yyyyMMdd_HHmmss"));
+
+            if (System.IO.Directory.Exists(backupFolder))
+                System.IO.Directory.Delete(backupFolder, true);
+
+            uSyncBackOfficeContext.Instance.ExportAll(backupFolder);
+
+
+        }
         private void PerformImport(bool force)
         {
             Stopwatch sw = new Stopwatch();
@@ -139,7 +173,7 @@ namespace Jumoo.uSync.BackOffice.UI
 
             if (actions.Any())
             {
-                uSyncStatus.DataSource = actions;
+                uSyncStatus.DataSource = actions.Where(x => x.Change > Core.ChangeType.NoChange);
                 uSyncStatus.DataBind();
             }
 

@@ -110,7 +110,7 @@ namespace Jumoo.uSync.BackOffice.Helpers
 
         public static IEnumerable<SyncAction> GetActions(Type type)
         {
-            LogHelper.Info<uSyncAction>("Getting Actions: for type {0} from {1} actions, found {2}",
+            LogHelper.Debug<uSyncAction>("Getting Actions: for type {0} from {1} actions, found {2}",
                 ()=> type.ToString(), 
                 ()=> _actions.Count, 
                 ()=> _actions.Count(x => x.TypeName == type.ToString())
