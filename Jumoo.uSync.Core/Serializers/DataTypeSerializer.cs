@@ -81,6 +81,9 @@ namespace Jumoo.uSync.Core.Serializers
                 if (item.DatabaseType != databaseType)
                     item.DatabaseType = databaseType;
 
+
+                _dataTypeService.Save(item);
+
                 DeserializeUpdatePreValues(item, node);
             }
 
