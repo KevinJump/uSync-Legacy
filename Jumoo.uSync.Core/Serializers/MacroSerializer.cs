@@ -117,32 +117,19 @@ namespace Jumoo.uSync.Core.Serializers
             if (string.IsNullOrEmpty(nodeHash))
                 return true;
 
-            LogHelper.Debug<MacroSerializer>("1");
-
             var aliasNode = node.Element("alias");
             if (aliasNode == null)
                 return true;
-
-            LogHelper.Debug<MacroSerializer>("2");
 
             var item = ApplicationContext.Current.Services.MacroService.GetByAlias(aliasNode.Value);
             if (item == null)
                 return true;
 
-            LogHelper.Debug<MacroSerializer>("3");
-
             var attempt = Serialize(item);
             if (!attempt.Success)
                 return true;
 
-            LogHelper.Debug<MacroSerializer>("4");
-
             var itemHash = attempt.Item.GetSyncHash();
-
-            LogHelper.Debug<MacroSerializer>("5");
-
-            LogHelper.Debug<MacroSerializer>("{0}", () => attempt.Item.ToString());
-            LogHelper.Debug<MacroSerializer>("{0}", () => node.ToString());
 
             return (!nodeHash.Equals(itemHash));
         }
