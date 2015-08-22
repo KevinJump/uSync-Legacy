@@ -45,36 +45,41 @@ namespace Jumoo.uSync.Core.Helpers
 
             var ids = GetValueMatchSubstring(value);
 
-            foreach(Match match in Regex.Matches(ids, _settings.IdRegex))
+            foreach (Match match in Regex.Matches(ids, _settings.IdRegex))
             {
                 string mappingType = _settings.MappingType.ToLower();
-                int id;
+                string id;
+                string mappedValue = string.Empty;
 
-                if (int.TryParse(match.Value, out id))
+                foreach (var type in mappingType.Split(','))
                 {
-                    string mappedValue = string.Empty;
-
-                    foreach(var type in mappingType.Split(','))
+                    var destinationType = type;
+                    switch (type)
                     {
-                        var destinationType = type;
-                        switch(type)
-                        {
-                            case "content":
-                                break;
-                            case "tab":
-                                break;
-                            case "mediaType":
-                                break;
-                            case "docType":
-                                break;
-                        }
-
-                        if (!string.IsNullOrEmpty(mappedValue))
-                        {
-                            AddToNode(id, mappedValue, type, guid);
-                            isMapped = true;
+                        case "content":
+                            mappedValue = ContentToGeneric(id);
+                            if (string.IsNullOrEmpty(mappedValue))
+                            {
+                                destinationType = "Media";
+                                mappedValue = MediaToGeneric(id);
+                            }
                             break;
-                        }
+                        case "tab":
+                            mappedValue = TabToGeneric(id);
+                            break;
+                        case "mediaType":
+                            mappedValue = MediaTypeToGeneric(id)
+                                break;
+                        case "docType":
+                            mappedValue = ContentTypeToGeneric(id);
+                            break;
+                    }
+
+                    if (!string.IsNullOrEmpty(mappedValue))
+                    {
+                        AddToNode(id, mappedValue, type, guid);
+                        isMapped = true;
+                        break;
                     }
                 }
             }
@@ -124,7 +129,7 @@ namespace Jumoo.uSync.Core.Helpers
                 || (val.StartsWith("[") && val.EndsWith("]"));
         }
 
-        private void AddToNode(int id, string value, string type, Guid guid)
+        private void AddToNode(string id, string value, string type, Guid guid)
         {
             XElement nodes = _node.Element("Nodes");
             if (nodes == null)
@@ -134,7 +139,7 @@ namespace Jumoo.uSync.Core.Helpers
             }
 
             var mappedNode = new XElement("Node",
-                    new XAttribute("Id", id.ToString()),
+                    new XAttribute("Id", id),
                     new XAttribute("Value", value),
                     new XAttribute("Type", type),
                     new XAttribute("MapGuid", guid.ToString()));
@@ -149,43 +154,65 @@ namespace Jumoo.uSync.Core.Helpers
         /// </summary>
          
 
-        private string ContentToGeneric(int id)
+        private string ContentToGeneric(string id)
         {
             uSyncTreeWalker walker = new uSyncTreeWalker(UmbracoObjectTypes.ContentItem);
-            return walker.GetPathFromId(id);
+
+            int contentId;
+            if (int.TryParse(id, out contentId))
+                return walker.GetPathFromId(contentId);
+
+            return string.Empty;
         }
 
-        private string MediaToGeneric(int id)
+        private string MediaToGeneric(string id)
         {
             uSyncTreeWalker walker = new uSyncTreeWalker(UmbracoObjectTypes.Media);
-            return walker.GetPathFromId(id);
-        }
 
-        private string MediaTypeToGeneric(int id)
-        {
-            var item = ApplicationContext.Current.Services.ContentTypeService.GetMediaType(id);
-            if (item != null)
-                return item.Alias;
+            int contentId;
+            if (int.TryParse(id, out contentId))
+                return walker.GetPathFromId(contentId);
 
             return string.Empty;
         }
 
-        private string ContentTypeToGeneric(int id)
+        private string MediaTypeToGeneric(string id)
         {
-            var item = ApplicationContext.Current.Services.ContentTypeService.GetContentType(id);
-            if (item != null)
-                return item.Alias;
-
-            return string.Empty;
-        }
-
-        private string TabToGeneric(int id)
-        {
-            foreach(var contentType in ApplicationContext.Current.Services.ContentTypeService.GetAllContentTypes())
+            int typeId;
+            if (int.TryParse(id, out typeId))
             {
-                var tab = contentType.PropertyGroups.Where(x => x.Id == id).FirstOrDefault();
-                if (tab != null)
-                    return contentType + "|" + tab.Name;
+                var item = ApplicationContext.Current.Services.ContentTypeService.GetMediaType(id);
+                if (item != null)
+                    return item.Key.ToString();
+            }
+            return string.Empty;
+        }
+
+        private string ContentTypeToGeneric(string id)
+        {
+            int typeId;
+
+            if (int.TryParse(id, out typeId))
+            {
+                var item = ApplicationContext.Current.Services.ContentTypeService.GetContentType(typeId);
+                if (item != null)
+                    return item.Key.ToString();
+            }
+
+            return string.Empty;
+        }
+
+        private string TabToGeneric(string id)
+        {
+            int tabId;
+            if (int.TryParse(id, out tabId))
+            {
+                foreach (var contentType in ApplicationContext.Current.Services.ContentTypeService.GetAllContentTypes())
+                {
+                    var tab = contentType.PropertyGroups.Where(x => x.Id == tabId).FirstOrDefault();
+                    if (tab != null)
+                        return contentType.Key.ToString() + "|" + tab.Name;
+                }
             }
             return string.Empty;
         }
@@ -274,19 +301,26 @@ namespace Jumoo.uSync.Core.Helpers
 
         private string MediaTypeToId(string id, string value)
         {
-            var item = ApplicationContext.Current.Services.ContentTypeService.GetMediaType(value);
-            if (item != null)
-                return item.Id.ToString();
 
+            var itemKey = Guid.Empty;
+            if (Guid.TryParse(value, out itemKey))
+            {
+                var item = ApplicationContext.Current.Services.ContentTypeService.GetMediaType(itemKey);
+                if (item != null)
+                    return item.Id.ToString();
+            }
             return id;
         }
 
         private string ContentTypeToId(string id, string value)
         {
-            var item = ApplicationContext.Current.Services.ContentTypeService.GetContentType(value);
-            if (item != null)
-                return item.Id.ToString();
-
+            var itemKey = Guid.Empty;
+            if (Guid.TryParse(value, out itemKey))
+            {
+                var item = ApplicationContext.Current.Services.ContentTypeService.GetContentType(itemKey);
+                if (item != null)
+                    return item.Id.ToString();
+            }
             return id;
         }
 
@@ -295,12 +329,17 @@ namespace Jumoo.uSync.Core.Helpers
             if (value.Contains("|") && value.Split('|').Count() == 2)
             {
                 var nameTabPair = value.Split('|');
-                var item = ApplicationContext.Current.Services.ContentTypeService.GetContentType(nameTabPair[0]);
-                if (item != null)
+
+                var itemKey = Guid.Empty;
+                if (Guid.TryParse(nameTabPair[0], out itemKey))
                 {
-                    var tab = item.PropertyGroups.Where(x => x.Name == nameTabPair[1]).FirstOrDefault();
-                    if (tab != null)
-                        return tab.Id.ToString();
+                    var item = ApplicationContext.Current.Services.ContentTypeService.GetContentType(itemKey);
+                    if (item != null)
+                    {
+                        var tab = item.PropertyGroups.Where(x => x.Name == nameTabPair[1]).FirstOrDefault();
+                        if (tab != null)
+                            return tab.Id.ToString();
+                    }
                 }
             }
             return id;

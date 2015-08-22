@@ -34,6 +34,15 @@ namespace Jumoo.uSync.Core.Helpers
             return string.Empty;
         }
 
+        public string GetPathFromKey(Guid key)
+        {
+            var item = _entityService.GetByKey(key);
+            if (item != null && !item.Trashed)
+                return GetPath(item);
+
+            return string.Empty;
+        }
+
         private string GetPath(IUmbracoEntity item)
         {
             var path = item.Name;
