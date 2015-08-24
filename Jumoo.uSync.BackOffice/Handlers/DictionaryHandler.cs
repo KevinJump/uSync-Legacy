@@ -180,7 +180,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
         {
             var node = XElement.Load(file);
             var update = uSyncCoreContext.Instance.DictionarySerializer.IsUpdate(node);
-            return uSyncActionHelper<IDictionaryItem>.ReportAction(update, node.NameFromNode());
+            return uSyncActionHelper<IDictionaryItem>.ReportAction(update, node.NameFromNode(), "Dictionary Items often get their order mixed up");
         }
 
     }

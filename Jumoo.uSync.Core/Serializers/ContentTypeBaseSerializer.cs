@@ -357,6 +357,17 @@ namespace Jumoo.uSync.Core.Serializers
                         {
                             itemTab.SortOrder = int.Parse(sortOrder.Value);
                         }
+                        else
+                        {
+                            LogHelper.Info<Events>("Adding new Tab? {0}", ()=> name);
+                            // at this point we might have a missing tab. 
+                            if (item.AddPropertyGroup(name))
+                            {
+                                itemTab = item.PropertyGroups.FirstOrDefault(x => x.Name == name);
+                                if (itemTab != null)
+                                    itemTab.SortOrder = int.Parse(sortOrder.Value);
+                            }
+                        }
                     }
                 }
             }

@@ -127,7 +127,7 @@
             if (string.IsNullOrEmpty(folder))
                 folder = Configuration.Settings.Folder;
 
-            LogHelper.Info<uSyncApplicationEventHandler>("Running full Umbraco Export");
+            LogHelper.Info<uSyncApplicationEventHandler>("Running Import Report");
 
             List<uSyncAction> reportActions = new List<uSyncAction>();
 

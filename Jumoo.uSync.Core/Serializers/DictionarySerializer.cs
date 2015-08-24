@@ -118,8 +118,6 @@ namespace Jumoo.uSync.Core.Serializers
 
             var itemHash = attempt.Item.GetSyncHash();
 
-            LogHelper.Debug<ILanguage>(">> IsUpdated: {0} : {1}", () => !nodeHash.Equals(itemHash), () => item.Key);
-
             return (!nodeHash.Equals(itemHash));
         }
     }
