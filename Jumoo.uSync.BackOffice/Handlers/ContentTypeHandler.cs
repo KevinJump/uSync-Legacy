@@ -42,6 +42,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
         public override void ImportSecondPass(string file, IContentType item)
         {
+            LogHelper.Info<ContentTypeHandler>("Second Pass Import: {0} {1}", () => item.Name, () => file);
             if (!System.IO.File.Exists(file))
                 throw new System.IO.FileNotFoundException();
 

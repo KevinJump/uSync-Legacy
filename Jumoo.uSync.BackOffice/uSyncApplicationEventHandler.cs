@@ -79,7 +79,11 @@ namespace Jumoo.uSync.BackOffice
             uSyncEvents.fireInitilized(new uSyncEventArgs());
 
             uSyncActionLogger.LogActions(setupActions);
-            uSyncActionLogger.SaveActionLog("Startup", setupActions);
+
+            // we write a log - when there have been changes, a zero run doesn't get
+            // a file written to disk.
+            if ( setupActions.Any(x => x.Change > ChangeType.NoChange))
+                uSyncActionLogger.SaveActionLog("Startup", setupActions);
 
 
             sw.Stop();
