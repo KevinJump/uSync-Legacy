@@ -108,7 +108,7 @@ namespace Jumoo.uSync.Core.Serializers
             if (key == null)
                 return true;
 
-            var item = ApplicationContext.Current.Services.LocalizationService.GetDictionaryItemByKey(key.Value);
+            var item = _localizationService.GetDictionaryItemByKey(key.Value);
             if (item == null)
                 return true;
 
