@@ -21,6 +21,8 @@
             LogHelper.Info<Logging>("Running Import: {0}", () => Path.GetFileName(folder));
             List<uSyncAction> actions = new List<uSyncAction>();
 
+            Dictionary<string, T> updates = new Dictionary<string, T>();
+
             // for a non-force sync, we use the actions to process deletes.
             // when it's a force, then we delete anything that is in umbraco
             // that isn't in our folder??
@@ -29,9 +31,18 @@
             actions.AddRange(ProcessActions());
             //}
 
-            actions.AddRange(ImportFolder(folder, force));
+            actions.AddRange(ImportFolder(folder, force, updates));
 
-            LogHelper.Info<Logging>("Import Complete: {0} Items {1} changes {2} failures",
+
+            if (updates.Any())
+            {
+                foreach (var update in updates)
+                {
+                    ImportSecondPass(update.Key, update.Value);
+                }
+            }
+
+            LogHelper.Info<Logging>("Handler Import Complete: {0} Items {1} changes {2} failures",
                 () => actions.Count(),
                 () => actions.Count(x => x.Change > ChangeType.NoChange),
                 () => actions.Count(x => x.Change > ChangeType.Fail));
@@ -39,10 +50,8 @@
             return actions; 
         }
 
-        private IEnumerable<uSyncAction> ImportFolder(string folder, bool force)
+        private IEnumerable<uSyncAction> ImportFolder(string folder, bool force, Dictionary<string, T> updates)
         {
-            Dictionary<string, T> updates = new Dictionary<string, T>();
-
             List<uSyncAction> actions = new List<uSyncAction>();
 
             string mappedfolder = Umbraco.Core.IO.IOHelper.MapPath(folder);
@@ -62,15 +71,7 @@
 
                 foreach (var children in Directory.GetDirectories(mappedfolder))
                 {
-                    actions.AddRange(ImportFolder(children, force));
-                }
-            }
-
-            if (updates.Any())
-            {
-                foreach (var update in updates)
-                {
-                    ImportSecondPass(update.Key, update.Value);
+                    actions.AddRange(ImportFolder(children, force, updates));
                 }
             }
 
