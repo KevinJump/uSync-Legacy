@@ -131,11 +131,16 @@
             foreach (var item in e.SavedEntities)
             {
                 LogHelper.Info<TemplateHandler>("Save: Saving uSync file for item: {0}", () => item.Name);
-                ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+                var action = ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
 
-                // becuase we delete by name, we should check the action log, and remove any entries with
-                // this alias.
-                ActionTracker.RemoveActions(item.Alias, typeof(ITemplate));
+                if (action.Success)
+                {
+                    NameChecker.ManageOrphanFiles(SyncFolder, item.Key, action.FileName);
+
+                    // becuase we delete by name, we should check the action log, and remove any entries with
+                    // this alias.
+                    ActionTracker.RemoveActions(item.Alias, typeof(ITemplate));
+                }
 
             }
         }

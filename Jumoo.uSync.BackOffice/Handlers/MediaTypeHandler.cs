@@ -157,7 +157,11 @@ namespace Jumoo.uSync.BackOffice.Handlers
             foreach (var item in e.SavedEntities)
             {
                 LogHelper.Info<MediaTypeHandler>("Save: Saving uSync file for item: {0}", () => item.Name);
-                ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+                var action = ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+                if (action.Success)
+                {
+                    NameChecker.ManageOrphanFiles(SyncFolder, item.Key, action.FileName);
+                }
             }
         }
 

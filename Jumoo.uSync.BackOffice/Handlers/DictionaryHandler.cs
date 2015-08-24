@@ -148,9 +148,13 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 LogHelper.Info<DictionaryHandler>("Save: {0}", () => item.ItemKey);
                 var topItem = GetTop(item.Key);
 
-                ExportToDisk(topItem, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
-
-                ActionTracker.RemoveActions(topItem.ItemKey, typeof(IDictionaryItem));
+                var action = ExportToDisk(topItem, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+                if (action.Success)
+                {
+                    // name checker only really works, when the export has the guid in it.
+                    // NameChecker.ManageOrphanFiles(Constants.Packaging.DictionaryItemNodeName, item.Key, action.FileName);
+                    ActionTracker.RemoveActions(topItem.ItemKey, typeof(IDictionaryItem));
+                }
             }
         }
 

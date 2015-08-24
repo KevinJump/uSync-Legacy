@@ -58,8 +58,10 @@ namespace Jumoo.uSync.BackOffice.Handlers
             if (key != Guid.Empty)
                 item = _contentTypeService.GetContentType(key);
 
+            /* Delete only by key
             if (item == null || !string.IsNullOrEmpty(keyString))
                 item = _contentTypeService.GetContentType(keyString);
+            */
 
             if (item != null)
             {
@@ -174,7 +176,10 @@ namespace Jumoo.uSync.BackOffice.Handlers
             foreach (var item in e.SavedEntities)
             {
                 LogHelper.Info<ContentTypeHandler>("Save: Saving uSync files for Item: {0}", () => item.Name);
-                ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+                var action = ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+
+                if (action.Success)
+                    NameChecker.ManageOrphanFiles(Constants.Packaging.DocumentTypeNodeName, item.Key, action.FileName);
             }
         }
 

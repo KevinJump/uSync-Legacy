@@ -114,9 +114,15 @@ namespace Jumoo.uSync.BackOffice.Handlers
             foreach (var item in e.SavedEntities)
             {
                 LogHelper.Info<MacroHandler>("Save: Saving uSync file for item: {0}", () => item.Name);
-                ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+                var action = ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+                if (action.Success)
+                {
+                    // Name checker currently only works on guidkeys. 
+                    // todo make it work on other properties.
 
-                ActionTracker.RemoveActions(item.Alias, typeof(IMacro));
+                    // NameChecker.ManageOrphanFiles(SyncFolder, item.Key, action.FileName);
+                    ActionTracker.RemoveActions(item.Alias, typeof(IMacro));
+                }
             }
         }
 
