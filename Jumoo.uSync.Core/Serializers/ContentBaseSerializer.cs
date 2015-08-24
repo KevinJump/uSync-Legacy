@@ -47,10 +47,10 @@ namespace Jumoo.uSync.Core.Serializers
             return Deserialize(node, -1);
         }
 
+        
         internal int GetIdFromGuid(Guid guid)
         {
-            Guid sourceGuid = uSyncIdMapper.GetTargetGuid(guid);
-            var item = ApplicationContext.Current.Services.EntityService.GetByKey(sourceGuid);
+            var item = ApplicationContext.Current.Services.EntityService.GetByKey(guid);
             if (item != null)
                 return item.Id;
 
@@ -65,6 +65,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             return null;
         }
+        
 
         internal string GetImportIds(string content)
         {
@@ -107,9 +108,7 @@ namespace Jumoo.uSync.Core.Serializers
         {
             var node = new XElement(contentTypeAlias);
 
-            Guid sourceGuid = uSyncIdMapper.GetSourceGuid(item.Key);
-
-            node.Add(new XAttribute("guid", sourceGuid));
+            node.Add(new XAttribute("guid", item.Key));
             node.Add(new XAttribute("id", item.Id));
             node.Add(new XAttribute("nodeName", item.Name));
             node.Add(new XAttribute("isDoc", ""));
@@ -143,19 +142,15 @@ namespace Jumoo.uSync.Core.Serializers
         {
             Dictionary<string, string> replacements = new Dictionary<string, string>();
 
-            foreach(Match m in Regex.Matches(value, @"\d{1,9}"))
+            foreach(Match m in Regex.Matches(value, @"\d{4,9}"))
             {
                 int id;
                 if (int.TryParse(m.Value, out id))
                 {
-                    Guid? localGuid = GetGuidFromId(id);
-                    if (localGuid != null)
+                    Guid? itemGuid = GetGuidFromId(id);
+                    if (itemGuid != null && !replacements.ContainsKey(m.Value))
                     {
-                        if (!replacements.ContainsKey(m.Value))
-                        {
-                            Guid sourceGuid = uSyncIdMapper.GetSourceGuid(localGuid.Value);
-                            replacements.Add(m.Value, sourceGuid.ToString().ToUpper());
-                        }
+                        replacements.Add(m.Value, itemGuid.ToString().ToUpper());
                     }
                 }
             }

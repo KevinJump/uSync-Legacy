@@ -9,6 +9,13 @@ using Umbraco.Core.IO;
 
 namespace Jumoo.uSync.Core.Helpers
 {
+    // dropping mapping in favor of guid changing 
+    // (so making the guids the same on all installtions)
+    //
+    // we might include a finder - so first time we attempt to sync by name?
+    //
+
+    /*
     public class uSyncIdMapper
     {
         public static Dictionary<Guid, Guid> pairs = new Dictionary<Guid, Guid>();
@@ -122,4 +129,5 @@ namespace Jumoo.uSync.Core.Helpers
             }
         }
     }
+    */
 }

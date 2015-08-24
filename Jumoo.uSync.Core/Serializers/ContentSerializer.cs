@@ -20,14 +20,11 @@ namespace Jumoo.uSync.Core.Serializers
 
         internal override SyncAttempt<IContent> DeserializeCore(XElement node, int parentId, bool forceUpdate = false)
         {
-            var newItem = false; 
-
             var nodeGuid = node.Attribute("guid");
             if (nodeGuid == null)
                 return SyncAttempt<IContent>.Fail(node.NameFromNode(), ChangeType.Import, "No Guid in XML");
 
-            Guid sourceGuid = new Guid(nodeGuid.Value);
-            Guid targetGuid = uSyncIdMapper.GetTargetGuid(sourceGuid);
+            Guid guid = new Guid(nodeGuid.Value);
 
             var name = node.Attribute("nodeName").Value;
             var type = node.Attribute("nodeTypeAlias").Value;
@@ -36,11 +33,11 @@ namespace Jumoo.uSync.Core.Serializers
             var sortOrder = int.Parse(node.Attribute("sortOrder").Value);
             var published = bool.Parse(node.Attribute("published").Value);
 
-            var item = _contentService.GetById(targetGuid);
+            // because later set the guid, we are going for a match at this point
+            var item = _contentService.GetById(guid);
             if (item == null || item.Trashed)
             {
                 item = _contentService.CreateContent(name, parentId, type);
-                newItem = true;
             }
             else
             {
@@ -63,6 +60,8 @@ namespace Jumoo.uSync.Core.Serializers
             var template = ApplicationContext.Current.Services.FileService.GetTemplate(templateAlias);
             if (template != null)
                 item.Template = template;
+
+            item.Key = guid; 
 
             item.SortOrder = sortOrder;
             item.Name = name;
@@ -94,9 +93,6 @@ namespace Jumoo.uSync.Core.Serializers
                 if (item.Published)
                     _contentService.UnPublish(item);
             }
-
-            if (newItem)
-                uSyncIdMapper.AddPair(sourceGuid, item.Key);
 
             return SyncAttempt<IContent>.Succeed(item.Name, item, ChangeType.Import);
         }
