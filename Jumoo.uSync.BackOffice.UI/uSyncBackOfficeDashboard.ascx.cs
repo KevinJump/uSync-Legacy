@@ -186,6 +186,7 @@ namespace Jumoo.uSync.BackOffice.UI
             ShowResultHeader("Change Report", changeMessage);
         }
 
+        /*
         private void Backup()
         {
             uSyncEvents.Paused = true;
@@ -201,6 +202,8 @@ namespace Jumoo.uSync.BackOffice.UI
 
 
         }
+        */
+
         private void PerformImport(bool force)
         {
             Stopwatch sw = new Stopwatch();
