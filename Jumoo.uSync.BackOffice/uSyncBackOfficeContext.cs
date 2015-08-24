@@ -147,7 +147,7 @@
         {
             var handlerConfig = Configuration.Settings.Handlers.Where(x => x.Name == handlerName).FirstOrDefault();
 
-            if (!handlerConfig.Enabled)
+            if (handlerConfig != null && !handlerConfig.Enabled)
             {
                 // this handler is off (on is default)
                 LogHelper.Debug<uSyncApplicationEventHandler>("Handler: {0} is disabled by config", () => handlerName);

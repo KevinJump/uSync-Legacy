@@ -80,7 +80,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
             List<uSyncAction> actions = new List<uSyncAction>();
 
-            var _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
             foreach (var item in _contentTypeService.GetAllContentTypes())
             {
                 if (item != null)
