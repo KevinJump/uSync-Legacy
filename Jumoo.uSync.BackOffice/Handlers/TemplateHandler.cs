@@ -70,6 +70,7 @@
 
                 if (attempt.Success)
                 {
+                    LogHelper.Info<TemplateHandler>("Item Path: {0}", () => GetItemPath(item));
                     filename = uSyncIOHelper.SavePath(folder, SyncFolder, GetItemPath(item), item.Alias.ToSafeAlias());
                     uSyncIOHelper.SaveNode(attempt.Item, filename);
 
@@ -88,14 +89,15 @@
 
         public override string GetItemPath(ITemplate item)
         {
-            string path = string.Empty;
+            string path = item.Alias.ToSafeFileName();
             if (item != null)
             {
                 if (!string.IsNullOrEmpty(item.MasterTemplateAlias))
                 {
                     var parent = ApplicationContext.Current.Services.FileService.GetTemplate(item.MasterTemplateAlias);
                     if (parent != null)
-                        path = GetItemPath(parent);
+                        path = Path.Combine(GetItemPath(parent), path);
+                        // path = path + "\\" + item.Alias.ToSafeFileName() + "\\" + GetItemPath(parent);
                 }
             }
 
