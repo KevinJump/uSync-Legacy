@@ -164,7 +164,7 @@ namespace Jumoo.uSync.BackOffice.UI
 
         protected void btnSyncImport_Click(object sender, EventArgs e)
         {
-            Backup();
+            // Backup();
             PerformImport(false);
         }
 
