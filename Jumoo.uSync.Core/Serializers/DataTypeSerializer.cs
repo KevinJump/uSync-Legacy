@@ -231,10 +231,13 @@ namespace Jumoo.uSync.Core.Serializers
 
                 if (mapper != null)
                 {
-                    Guid newGuid = Guid.NewGuid();
-                    if (mapper.MapToGeneric(preValueValue, newGuid))
+                    if (itemPreValuePair.Key.StartsWith("zzzuSync") || mapper.ValueAlias == itemPreValuePair.Key)
                     {
-                        preValueNode.Add(new XAttribute("MapGuid", newGuid));
+                        Guid newGuid = Guid.NewGuid();
+                        if (mapper.MapToGeneric(preValueValue, newGuid))
+                        {
+                            preValueNode.Add(new XAttribute("MapGuid", newGuid));
+                        }
                     }
                 }
 

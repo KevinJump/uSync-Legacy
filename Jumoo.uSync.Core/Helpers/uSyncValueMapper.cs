@@ -41,6 +41,10 @@ namespace Jumoo.uSync.Core.Helpers
             _node = node;
         }
 
+        public string ValueAlias
+        {
+            get { return _settings.ValueAlias;  }
+        }
 
         #region ToGeneric (going out from installation)
         public bool MapToGeneric(string value, Guid guid)
@@ -93,16 +97,25 @@ namespace Jumoo.uSync.Core.Helpers
 
         private string GetValueMatchSubstring(string value)
         {
+
             switch(_settings.ValueStorageType.ToLower())
             {
                 case "json":
-                    if (!string.IsNullOrEmpty(_settings.ValueAlias) && IsJson(value))
+                    LogHelper.Debug<uSyncValueMapper>("Mapping Alias: {1} Value: {0}", () => value, ()=> _settings.ValueAlias);
+                    if (!string.IsNullOrEmpty(_settings.PropertyName) && IsJson(value))
                     {
                         JObject jObject = JObject.Parse(value);
 
-                        var propertyValue = jObject.SelectToken(_settings.PropertyName);
-                        if (propertyValue != null)
-                            return propertyValue.ToString(Newtonsoft.Json.Formatting.None);
+                        if (jObject != null )
+                        {
+                            var propertyValue = jObject.SelectToken(_settings.PropertyName);
+                            if (propertyValue != null)
+                                return propertyValue.ToString(Newtonsoft.Json.Formatting.None);
+                        }
+                        else
+                        {
+                            LogHelper.Warn<uSyncValueMapper>("Mapping JSON Couldn't parse : {0}", ()=> value);
+                        }
                     }
                     break;
                 case "number":
