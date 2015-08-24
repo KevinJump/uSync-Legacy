@@ -134,10 +134,11 @@ namespace Jumoo.uSync.Core.Serializers
 
                 List<string> preValsToRemove = new List<string>();
 
-                foreach(var preValue in itemPreValues)
+                foreach (var preValue in itemPreValues)
                 {
+
                     var preValNode = preValueRootNode.Elements("PreValue")
-                                        .Where(x => ((string)x.Attribute("Alias").Value == preValue.Key))
+                                        .Where(x => x.Attribute("Alias") != null && ((string)x.Attribute("Alias").Value == preValue.Key))
                                         .FirstOrDefault();
 
                     if (preValNode != null)
@@ -149,10 +150,12 @@ namespace Jumoo.uSync.Core.Serializers
                     {
                         preValsToRemove.Add(preValue.Key);
                     }
+
+
                 }
 
                 // remove things that we didn't find
-                foreach(var key in preValsToRemove)
+                foreach (var key in preValsToRemove)
                 {
                     itemPreValues.Remove(key);
                 }
@@ -162,7 +165,7 @@ namespace Jumoo.uSync.Core.Serializers
                                         .Where(x => ((string)x.Attribute("Alias")).IsNullOrWhiteSpace() == false)
                                         .ToDictionary(key => (string)key.Attribute("Alias"), val => (string)val.Attribute("Value"));
 
-                foreach(var nodeValue in valuesWithKeys)
+                foreach (var nodeValue in valuesWithKeys)
                 {
 
                     if (!itemPreValues.ContainsKey(nodeValue.Key))
@@ -173,13 +176,12 @@ namespace Jumoo.uSync.Core.Serializers
 
                 _dataTypeService.SavePreValues(item, itemPreValues);
 
-
+                /*
                 var valuesSansKeys = preValueRootNode.Elements("PreValue")
                                         .Where(x => ((string)x.Attribute("Alias")).IsNullOrWhiteSpace() == false)
                                         .Select(x => x.Attribute("Value").Value);
 
                 /// this is marked as obsolete? but don't some prevalues still have no keys?
-                /*
                 if (valuesSansKeys.Any())
                 {
                     _dataTypeService.SavePreValues(item.Id, valuesSansKeys);
