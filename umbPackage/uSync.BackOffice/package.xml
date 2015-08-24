@@ -2,6 +2,7 @@
 <umbPackage>
   <files>
     <file>
+      <!-- back office -->
       <guid>Jumoo.uSync.BackOffice.dll</guid>
       <orgPath>/bin</orgPath>
       <orgName>Jumoo.uSync.BackOffice.dll</orgName>
@@ -12,14 +13,20 @@
       <orgName>Jumoo.uSync.BackOffice.UI.dll</orgName>
     </file>
     <file>
+      <guid>uSyncBackOffice.Config</guid>
+      <orgPath>/Config</orgPath>
+      <orgName>uSyncBackOffice.Config</orgName>
+    </file>
+    <!-- core -->
+    <file>
       <guid>Jumoo.uSync.Core.dll</guid>
       <orgPath>/bin</orgPath>
       <orgName>Jumoo.uSync.Core.dll</orgName>
     </file>
     <file>
-      <guid>uSyncBackOffice.Config</guid>
+      <guid>uSyncCore.Config</guid>
       <orgPath>/Config</orgPath>
-      <orgName>uSyncBackOffice.Config</orgName>
+      <orgName>uSyncCore.Config</orgName>
     </file>
     <file>
       <guid>uSyncBackOfficeDashboard.ascx</guid>
