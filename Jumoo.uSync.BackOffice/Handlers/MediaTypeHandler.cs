@@ -73,6 +73,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
         public IEnumerable<uSyncAction> ExportAll(string folder)
         {
+            LogHelper.Info<MediaTypeHandler>("Exporting all MediaTypes");
+
             List<uSyncAction> actions = new List<uSyncAction>();
 
             var _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;

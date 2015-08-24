@@ -57,6 +57,9 @@
 
         public uSyncAction ExportToDisk(ILanguage item, string folder)
         {
+
+            LogHelper.Info<LanguageHandler>("Exporting all Langauges");
+
             if (item == null)
                 return uSyncAction.Fail(Path.GetFileName(folder), typeof(ILanguage), "item not set");
 

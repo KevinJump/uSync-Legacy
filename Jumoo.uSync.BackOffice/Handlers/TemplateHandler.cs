@@ -45,6 +45,8 @@
 
         public IEnumerable<uSyncAction> ExportAll(string folder)
         {
+            LogHelper.Info<TemplateHandler>("Exporting all Templates");
+
             List<uSyncAction> actions = new List<uSyncAction>();
 
             var _fileService = ApplicationContext.Current.Services.FileService;

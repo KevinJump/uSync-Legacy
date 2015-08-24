@@ -47,6 +47,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
         public IEnumerable<uSyncAction> ExportAll(string folder)
         {
+            LogHelper.Info<DictionaryHandler>("Exporting all Dictionary Items");
+
             List<uSyncAction> actions = new List<uSyncAction>();
 
             var _languageService = ApplicationContext.Current.Services.LocalizationService;

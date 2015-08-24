@@ -48,6 +48,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
         public IEnumerable<uSyncAction> ExportAll(string folder)
         {
+            LogHelper.Info<MacroHandler>("Exporting all Macros");
+
             List<uSyncAction> actions = new List<uSyncAction>();
 
             var _macroService = ApplicationContext.Current.Services.MacroService;
