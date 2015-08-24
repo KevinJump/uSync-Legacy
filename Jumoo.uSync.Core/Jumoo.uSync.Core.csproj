@@ -67,6 +67,7 @@
     <Compile Include="Serializers\MacroSerializer.cs" />
     <Compile Include="Serializers\MediaSerializer.cs" />
     <Compile Include="Serializers\MediaTypeSerializer.cs" />
+    <Compile Include="Serializers\MemberTypeSerializer.cs" />
     <Compile Include="Serializers\SyncBaseSerializer.cs" />
     <Compile Include="Serializers\TemplateSerializer.cs" />
     <Compile Include="SyncAttempt.cs" />

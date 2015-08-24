@@ -11,6 +11,7 @@ using Umbraco.Core.Services;
 using Jumoo.uSync.Core.Interfaces;
 using Jumoo.uSync.Core.Extensions;
 using Umbraco.Core.Logging;
+using Umbraco.Core.Models.EntityBase;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -18,11 +19,13 @@ namespace Jumoo.uSync.Core.Serializers
     {
         internal IContentTypeService _contentTypeService;
         internal IDataTypeService _dataTypeService;
+        internal IMemberTypeService _memberTypeService; 
 
         public ContentTypeBaseSerializer(string itemType): base(itemType)
         {
             _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
             _dataTypeService = ApplicationContext.Current.Services.DataTypeService;
+            _memberTypeService = ApplicationContext.Current.Services.MemberTypeService;
         }
 
         #region ContentTypeBase Deserialize Helpers
@@ -79,11 +82,7 @@ namespace Jumoo.uSync.Core.Serializers
 
                     LogHelper.Debug<Events>("Looking up Content Master by Alias");
                     var masterAlias = masterNode.Value;
-                    if (_itemType == Constants.Packaging.DocumentTypeNodeName)
-                        master = _contentTypeService.GetContentType(masterAlias);
-                    else
-                        master = _contentTypeService.GetMediaType(masterAlias);
-
+                    master = LookupByAlias(masterAlias);
                     if (master != null)
                         masterId = master.Id;
                 }
@@ -110,28 +109,20 @@ namespace Jumoo.uSync.Core.Serializers
                 var key = contentBaseNode.Attribute("Key").ValueOrDefault(Guid.Empty);
 
                 IContentTypeBase contentBaseItem = default(IContentTypeBase);
+                IUmbracoEntity baseItem = default(IUmbracoEntity);
+
+                var _entityService = ApplicationContext.Current.Services.EntityService;
+
                 if (key != Guid.Empty)
                 {
                     LogHelper.Debug<uSync.Core.Events>("Using key to find structure element");
-
-                    // by key search (survives renames)
-                    if (_itemType == Constants.Packaging.DocumentTypeNodeName)
-                        contentBaseItem = _contentTypeService.GetContentType(key);
-                    else
-                        contentBaseItem = _contentTypeService.GetMediaType(key);
+                    contentBaseItem = LookupByKey(key);
                 }
 
-                if (contentBaseItem == null && !string.IsNullOrEmpty(alias))
+                if (baseItem == null && !string.IsNullOrEmpty(alias))
                 {
                     LogHelper.Debug<uSync.Core.Events>("Fallback Alias lookup");
-                    if (_itemType == Constants.Packaging.DocumentTypeNodeName)
-                    {
-                        contentBaseItem = _contentTypeService.GetContentType(alias);
-                    }
-                    else
-                    {
-                        contentBaseItem = _contentTypeService.GetMediaType(alias);
-                    }
+                    contentBaseItem = LookupByAlias(alias);
                 }
 
                 if (contentBaseItem != default(IContentTypeBase))
@@ -234,6 +225,15 @@ namespace Jumoo.uSync.Core.Serializers
 
                         var tabName = propertyNode.Element("Tab").ValueOrDefault(string.Empty);
 
+                        if (_itemType == "MemberType")
+                        {
+                            ((IMemberType)item).SetMemberCanEditProperty(alias,
+                                propertyNode.Element("CanEdit").ValueOrDefault(false));
+
+                            ((IMemberType)item).SetMemberCanViewProperty(alias,
+                                propertyNode.Element("CanView").ValueOrDefault(false));
+                        }
+
                         if (!newProperty)
                         {
                             if (!string.IsNullOrEmpty(tabName))
@@ -290,7 +290,7 @@ namespace Jumoo.uSync.Core.Serializers
             foreach(var property in item.PropertyTypes)
             {
                 XElement propertyNode = propertyNodes
-                                            .SingleOrDefault(x => x.Element("Key").Value == property.Key.ToString());
+                                            .FirstOrDefault(x => x.Element("Key").Value == property.Key.ToString());
 
                 if (propertyNode == null)
                 {
@@ -441,16 +441,7 @@ namespace Jumoo.uSync.Core.Serializers
             SortedList<string, Guid> allowedAliases = new SortedList<string, Guid>();
             foreach(var allowedType in item.AllowedContentTypes)
             {
-                IContentTypeBase allowed = null;         
-                if (_itemType == Constants.Packaging.DocumentTypeNodeName)
-                {
-                    allowed = _contentTypeService.GetContentType(allowedType.Id.Value);
-                }
-                else
-                {
-                    allowed = _contentTypeService.GetMediaType(allowedType.Id.Value);
-                }
-
+                IContentTypeBase allowed = LookupById(allowedType.Id.Value);
                 if (allowed != null)
                     allowedAliases.Add(allowed.Alias, allowed.Key);
             }
@@ -503,6 +494,15 @@ namespace Jumoo.uSync.Core.Serializers
                 var tab = item.PropertyGroups.FirstOrDefault(x => x.PropertyTypes.Contains(property));
                 propNode.Add(new XElement("Tab", tab != null ? tab.Name : ""));
 
+                if (_itemType == "MemberType")
+                {
+                    var canEdit = ((IMemberType)item).MemberCanEditProperty(property.Name);
+                    var canView = ((IMemberType)item).MemberCanViewProperty(property.Name);
+
+                    propNode.Add(new XElement("CanEdit", canEdit));
+                    propNode.Add(new XElement("CanView", canView));
+                }
+
                 properties.Add(propNode);
             }
 
@@ -526,6 +526,72 @@ namespace Jumoo.uSync.Core.Serializers
             return SyncAttempt<T>.Succeed(node.NameFromNode(), ChangeType.NoChange);
         }
 
-#endregion
+        #endregion
+
+        #region Lookup Helpers
+        /// <summary>
+        ///  these shoud be doable with the entity service, but for now, we 
+        ///  are grouping these making it eaiser should we add another 
+        /// contentTypeBased type to it. 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        private IContentTypeBase LookupByKey(Guid key)
+        {
+            IContentTypeBase item = default(IContentTypeBase);
+            switch (_itemType)
+            {
+                case Constants.Packaging.DocumentTypeNodeName:
+                    item = _contentTypeService.GetContentType(key);
+                    break;
+                case "MediaType":
+                    item = _contentTypeService.GetMediaType(key);
+                    break;
+                case "MemberType":
+                    item = _memberTypeService.Get(key);
+                    break;
+            }
+
+            return item;
+        }
+
+        private IContentTypeBase LookupById(int id)
+        {
+            IContentTypeBase item = default(IContentTypeBase);
+            switch (_itemType)
+            {
+                case Constants.Packaging.DocumentTypeNodeName:
+                    item = _contentTypeService.GetContentType(id);
+                    break;
+                case "MediaType":
+                    item = _contentTypeService.GetMediaType(id);
+                    break;
+                case "MemberType":
+                    item = _memberTypeService.Get(id);
+                    break;
+            }
+
+            return item;
+        }
+        private IContentTypeBase LookupByAlias(string alias)
+        {
+            IContentTypeBase item = default(IContentTypeBase);
+            switch (_itemType)
+            {
+                case Constants.Packaging.DocumentTypeNodeName:
+                    item = _contentTypeService.GetContentType(alias);
+                    break;
+                case "MediaType":
+                    item = _contentTypeService.GetMediaType(alias);
+                    break;
+                case "MemberType":
+                    item = _memberTypeService.Get(alias);
+                    break;
+            }
+
+            return item;
+        }
+        #endregion
+
     }
 }

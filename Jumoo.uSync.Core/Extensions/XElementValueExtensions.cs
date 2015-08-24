@@ -94,7 +94,8 @@ namespace Jumoo.uSync.Core.Extensions
             if (node != null && !string.IsNullOrEmpty(node.Value))
             {
                 Guid val;
-                if (Guid.TryParse(node.Value, out val))
+                if (node.Value != "00000000-0000-0000-0000-000000000000" &&
+                    Guid.TryParse(node.Value, out val))
                     return val;
             }
             return defaultValue;

@@ -21,6 +21,8 @@ namespace Jumoo.uSync.Core
         public ISyncSerializerTwoPass<IContentType> ContentTypeSerializer { get; private set; }
         public ISyncSerializerTwoPass<IMediaType> MediaTypeSerializer { get; private set; }
 
+        public ISyncSerializerTwoPass<IMemberType> MemberTypeSerializer { get; private set; }
+
         public ISyncSerializer<ITemplate> TemplateSerializer { get; private set; }
 
         public ISyncSerializer<ILanguage> LanguageSerializer { get; private set; }
@@ -40,6 +42,8 @@ namespace Jumoo.uSync.Core
 
             ContentTypeSerializer = new ContentTypeSerializer(Constants.Packaging.DocumentTypeNodeName);
             MediaTypeSerializer = new MediaTypeSerializer("MediaType");
+
+            MemberTypeSerializer = new MemberTypeSerializer("MemberType");
 
             TemplateSerializer = new TemplateSerializer(Constants.Packaging.TemplateNodeName);
 

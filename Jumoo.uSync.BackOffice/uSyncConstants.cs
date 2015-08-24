@@ -13,6 +13,7 @@ namespace Jumoo.uSync.BackOffice
 
             public const int ContentTypes = USYNC_RESERVED_LOWER + 30;
             public const int MediaTypes = USYNC_RESERVED_LOWER + 40;
+            public const int MemberTypes = USYNC_RESERVED_LOWER + 45;
 
             public const int Languages = USYNC_RESERVED_LOWER + 50;
             public const int DictionaryItems = USYNC_RESERVED_LOWER + 60;
