@@ -140,7 +140,13 @@
   </Target>
   <PropertyGroup>
     <PostBuildEvent>XCOPY "$(TargetPath)" "$(SolutionDir)Umbraco.Site\Bin\" /q /y
-XCOPY "$(ProjectDir)uSyncBackOfficeDashboard.ascx" "$(SolutionDir)Umbraco.Site\App_Plugins\uSync\BackOffice\" /q /y</PostBuildEvent>
+XCOPY "$(ProjectDir)uSyncBackOfficeDashboard.ascx" "$(SolutionDir)Umbraco.Site\App_Plugins\uSync\BackOffice\" /q /y
+
+
+XCOPY "$(TargetPath)" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
+XCOPY "$(ProjectDir)uSyncBackOfficeDashboard.ascx" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
+
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

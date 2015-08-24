@@ -77,10 +77,26 @@
   <ItemGroup>
     <None Include="uSyncCore.Config" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="package.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>XCOPY "$(TargetPath)" "$(SolutionDir)Umbraco.Site\Bin\" /q /y
-XCOPY "$(ProjectDir)uSyncCore.config" "$(SolutionDir)Umbraco.Site\Config\uSyncCore.config" /q /y /I</PostBuildEvent>
+    <PostBuildEvent>ECHO Copying to Site
+XCOPY "$(TargetPath)" "$(SolutionDir)Umbraco.Site\Bin\" /q /y
+XCOPY "$(ProjectDir)uSyncCore.config" "$(SolutionDir)Umbraco.Site\Config\uSyncCore.config" /q /y /I
+
+ECHO Coping to Package Folder
+XCOPY "$(TargetPath)" "$(SolutionDir)umbPackage\uSync.Core\" /q /y
+XCOPY "$(ProjectDir)uSyncCore.config" "$(SolutionDir)umbPackage\uSync.Core\" /q /y
+XCOPY "$(ProjectDir)package.xml" "$(SolutionDir)umbPackage\uSync.Core\" /q /y
+
+XCOPY "$(TargetPath)" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
+XCOPY "$(ProjectDir)uSyncCore.config" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
+
+
+
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

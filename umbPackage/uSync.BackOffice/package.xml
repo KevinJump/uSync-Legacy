@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<umbPackage>
+  <files>
+    <file>
+      <guid>Jumoo.uSync.BackOffice.dll</guid>
+      <orgPath>/bin</orgPath>
+      <orgName>Jumoo.uSync.BackOffice.dll</orgName>
+    </file>
+    <file>
+      <guid>Jumoo.uSync.BackOffice.UI.dll</guid>
+      <orgPath>/bin</orgPath>
+      <orgName>Jumoo.uSync.BackOffice.UI.dll</orgName>
+    </file>
+    <file>
+      <guid>Jumoo.uSync.Core.dll</guid>
+      <orgPath>/bin</orgPath>
+      <orgName>Jumoo.uSync.Core.dll</orgName>
+    </file>
+    <file>
+      <guid>uSyncBackOffice.Config</guid>
+      <orgPath>/Config</orgPath>
+      <orgName>uSyncBackOffice.Config</orgName>
+    </file>
+    <file>
+      <guid>uSyncBackOfficeDashboard.ascx</guid>
+      <orgPath>/App_Plugins/uSync/BackOffice</orgPath>
+      <orgName>uSyncBackOfficeDashboard.ascx</orgName>
+    </file>
+  </files>
+  <info>
+    <package>
+      <name>uSync.BackOffice</name>
+      <version>3.0</version>
+      <license url="http://opensource.org/licenses/MIT">MIT License</license>
+      <url>http://jumoo.uk/uSync</url>
+      <requirements>
+        <major>3</major>
+        <minor>0</minor>
+        <patch>0</patch>
+      </requirements>
+    </package>
+    <author>
+      <name>Kevin Jump</name>
+      <website>http://jumoo.uk</website>
+    </author>
+    <readme>
+      <![CDATA[ uSync.BackOffice (for Umbraco 7.3+)
+===============================
+New version of usync, writes and read the database elements of your umbraco installation to disk and back, great for multi-development environments, and deployment.
+
+This version syncs:
+- DocTypes, MediaTypes, DataTypes, Macros, Languages, Dictionary Items, Templates and MemberTypes. ]]>
+    </readme>
+  </info>
+  <DocumentTypes />
+  <Templates />
+  <Stylesheets />
+  <Macros />
+  <DictionaryItems />
+  <Languages />
+  <DataTypes />
+  <Actions>
+    <Action runat="install" alias="addDashboardSection" dashboardAlias="usyncBackOffice">
+      <section>
+        <areas>
+          <area>developer</area>
+        </areas>
+        <tab caption="uSync BackOffice">
+          <control>/App_Plugins/usync/BackOffice/uSyncBackOfficeDashboard.ascx</control>
+        </tab>
+      </section>
+    </Action>
+  </Actions>
+</umbPackage>
