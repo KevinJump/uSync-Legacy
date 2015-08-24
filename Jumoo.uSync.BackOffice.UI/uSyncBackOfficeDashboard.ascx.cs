@@ -33,8 +33,6 @@ namespace Jumoo.uSync.BackOffice.UI
                 SetupPage();
                 WriteSettings();
             }
-
-            
         }
 
         private void WriteSettings()
@@ -120,6 +118,8 @@ namespace Jumoo.uSync.BackOffice.UI
 
             ShowResultHeader("Export", "All items have been exported");
             uSyncEvents.Paused = false;
+
+            uSyncActionLogger.SaveActionLog("Export", actions);
         }
 
         protected void btnSaveSettings_Click(object sender, EventArgs e)
@@ -220,6 +220,8 @@ namespace Jumoo.uSync.BackOffice.UI
                 uSyncStatus.DataSource = actions.Where(x => x.Change > Core.ChangeType.NoChange);
                 uSyncStatus.DataBind();
             }
+
+            uSyncActionLogger.SaveActionLog("Import", actions);
 
         }
 

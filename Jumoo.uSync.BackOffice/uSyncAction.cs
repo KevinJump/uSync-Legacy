@@ -114,7 +114,7 @@ namespace Jumoo.uSync.BackOffice
 
     public class uSyncActionLogger
     {
-        public static void SaveActionLog(string name, List<uSyncAction> actions)
+        public static void SaveActionLog(string name, IEnumerable<uSyncAction> actions)
         {
             // creates an action log (xml file) of the actions...
             var folderPath = IOHelper.MapPath(Path.Combine(SystemDirectories.Data, "temp", "uSync"));

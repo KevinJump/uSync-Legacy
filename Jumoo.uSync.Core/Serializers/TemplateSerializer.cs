@@ -37,7 +37,6 @@ namespace Jumoo.uSync.Core.Serializers
 
         internal override SyncAttempt<ITemplate> DeserializeCore(XElement node)
         {
-
             if (node == null || node.Element("Alias") == null || node.Element("Name") == null)
                 throw new ArgumentException("Bad xml import");
 
@@ -61,13 +60,24 @@ namespace Jumoo.uSync.Core.Serializers
                         templatePath = string.Empty;
                         LogHelper.Warn<TemplateSerializer>("Cannot find underling template file, so we cannot create the template");
                     }
-                }    
-                
-                if ( string.IsNullOrEmpty(templatePath))
+                }
+
+                if (!string.IsNullOrEmpty(templatePath))
                 {
                     item = new Template(name, alias);
                     item.Path = templatePath;
                 }
+                else 
+                {
+                    LogHelper.Warn<TemplateSerializer>("Can't get a template path?");
+                    return SyncAttempt<ITemplate>.Fail(name, ChangeType.Import, "Failed to generate template path");
+                }
+            }
+
+            if (item == null)
+            {
+                LogHelper.Warn<TemplateSerializer>("Cannot create the template, something missing?");
+                return SyncAttempt<ITemplate>.Fail(name, ChangeType.Import, "Item create fail");
             }
 
             if (node.Element("Name").Value != item.Name)
@@ -82,6 +92,10 @@ namespace Jumoo.uSync.Core.Serializers
                         item.SetMasterTemplate(master);
                 }
             }
+
+            var key = node.Element("Key").ValueOrDefault(Guid.Empty);
+            if (key != Guid.Empty)
+                item.Key = key;
 
             _fileService.SaveTemplate(item);
 

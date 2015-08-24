@@ -17,10 +17,12 @@ namespace Jumoo.uSync.Core.Serializers
     abstract public class ContentTypeBaseSerializer<T> : SyncBaseSerializer<T>, ISyncSerializerTwoPass<T>
     {
         internal IContentTypeService _contentTypeService;
+        internal IDataTypeService _dataTypeService;
 
         public ContentTypeBaseSerializer(string itemType): base(itemType)
         {
             _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
+            _dataTypeService = ApplicationContext.Current.Services.DataTypeService;
         }
 
         #region ContentTypeBase Deserialize Helpers
@@ -58,18 +60,37 @@ namespace Jumoo.uSync.Core.Serializers
             if (item.AllowedAsRoot != allow)
                 item.AllowedAsRoot = allow;
 
-            var masterAlias = info.Element("Master").ValueOrDefault(string.Empty);
-            if (!string.IsNullOrEmpty(masterAlias))
+            var masterNode = info.Element("Master");
+            if (masterNode != null)
             {
-                var master = default(IContentTypeBase);
-                if ( _itemType == Constants.Packaging.DocumentTypeNodeName)
-                    master = _contentTypeService.GetContentType(masterAlias);
-                else
-                    master = _contentTypeService.GetMediaType(masterAlias);
+                var masterId = 0;
 
-                if (master != null)
+                var masterKey = masterNode.Attribute("Key").ValueOrDefault(Guid.Empty);
+                if (masterKey != Guid.Empty)
                 {
-                    item.SetLazyParentId(new Lazy<int>(() => master.Id));                        
+                    var masterEntity = ApplicationContext.Current.Services.EntityService.GetByKey(masterKey);
+                    masterId = masterEntity.Id;
+                }
+
+                if (masterId == 0)
+                {
+                    // old school alias lookup
+                    var master = default(IContentTypeBase);
+
+                    LogHelper.Debug<Events>("Looking up Content Master by Alias");
+                    var masterAlias = masterNode.Value;
+                    if (_itemType == Constants.Packaging.DocumentTypeNodeName)
+                        master = _contentTypeService.GetContentType(masterAlias);
+                    else
+                        master = _contentTypeService.GetMediaType(masterAlias);
+
+                    if (master != null)
+                        masterId = master.Id;
+                }
+
+                if (masterId > 0)
+                {
+                    item.SetLazyParentId(new Lazy<int>(() => masterId));                        
                 }
             }
         }
@@ -130,9 +151,138 @@ namespace Jumoo.uSync.Core.Serializers
             Dictionary<string, string> propertiesToMove = new Dictionary<string, string>();
             Dictionary<PropertyGroup, string> tabsToBlank = new Dictionary<PropertyGroup, string>();
 
+            var genericPropertyNode = node.Element("GenericProperties");
+            if (genericPropertyNode != null)
+            {
+                // add or update properties
+                foreach (var propertyNode in genericPropertyNode.Elements("GenericProperty"))
+                {
+                    bool newProperty = false; 
 
+                    var property = default(PropertyType);
+                    var propKey = propertyNode.Element("Key").ValueOrDefault(Guid.Empty);
+                    if (propKey != Guid.Empty)
+                    {
+                        property = item.PropertyTypes.SingleOrDefault(x => x.Key == propKey);
+                    }
+
+                    var alias = propertyNode.Element("Alias").ValueOrDefault(string.Empty);
+
+                    if (property == null)
+                    {
+                        // look up via alias?
+                        property = item.PropertyTypes.SingleOrDefault(x => x.Alias == alias);
+                    }
+
+                    // we need to get element stuff now before we can create or update
+
+                    var defGuid = propertyNode.Element("Definition").ValueOrDefault(Guid.Empty);
+                    var dataTypeDefinition = _dataTypeService.GetDataTypeDefinitionById(defGuid);
+
+                    if (dataTypeDefinition == null)
+                    {
+                        var propEditorAlias = propertyNode.Element("Type").ValueOrDefault(string.Empty);
+                        if (!string.IsNullOrEmpty(propEditorAlias))
+                        {
+                            dataTypeDefinition = _dataTypeService
+                                            .GetDataTypeDefinitionByPropertyEditorAlias(propEditorAlias)
+                                            .FirstOrDefault();
+                        }
+                    }
+
+                    if (dataTypeDefinition == null)
+                    { 
+                        LogHelper.Warn<Events>("Failed to get Definition for property type");
+                        continue;
+                    }
+
+                    if (property == null)
+                    {
+                        // create the property
+                        LogHelper.Debug<Events>("Creating new Property: {0} {1}", ()=> item.Alias,  ()=> alias);
+                        property = new PropertyType(dataTypeDefinition, alias);
+                        newProperty = true;
+                    }
+
+                    if (property != null)
+                    {
+                        LogHelper.Debug<Events>("Updating Property :{0} {1}", ()=> item.Alias, ()=> alias);
+
+                        var key = propertyNode.Element("Key").ValueOrDefault(Guid.Empty);
+                        if (key != Guid.Empty)
+                        {
+                            LogHelper.Debug<Events>("Setting Key :{0}", () => key);
+                            property.Key = key;
+                        }
+
+                        LogHelper.Debug<Events>("Item Key    :{0}", () => property.Key);
+
+                        // update settings.
+                        property.Name = propertyNode.Element("Name").ValueOrDefault("unnamed" + DateTime.Now.ToString("yyyyMMdd_HHmmss"));
+
+                        if (propertyNode.Element("Description") != null)
+                            property.Description = propertyNode.Element("Description").Value;
+
+                        if (propertyNode.Element("Mandatory") != null)
+                            property.Mandatory = propertyNode.Element("Mandatory").Value.ToLowerInvariant().Equals("true");
+
+                        if (propertyNode.Element("Validation") != null)
+                            property.ValidationRegExp = propertyNode.Element("Validation").Value;
+
+                        if (propertyNode.Element("SortOrder") != null)
+                            property.SortOrder = int.Parse(propertyNode.Element("SortOrder").Value);
+
+                        var tabName = propertyNode.Element("Tab").ValueOrDefault(string.Empty);
+
+                        if (!newProperty)
+                        {
+                            if (!string.IsNullOrEmpty(tabName))
+                            {
+                                var propGroup = item.PropertyGroups.FirstOrDefault(x => x.Name == tabName);
+                                if (propGroup != null)
+                                {
+                                    if (!propGroup.PropertyTypes.Any(x => x.Alias == property.Alias))
+                                    {
+                                        // this tab currently doesn't contain this property, to we have to
+                                        // move it (later)
+                                        propertiesToMove.Add(property.Alias, tabName);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // this property isn't in a tab (now!)
+                                if (!newProperty)
+                                {
+                                    var existingTab = item.PropertyGroups.FirstOrDefault(x => x.PropertyTypes.Contains(property));
+                                    if (existingTab != null)
+                                    {
+                                        // this item is now not in a tab (when it was)
+                                        // so we have to remove it from tabs (later)
+                                        tabsToBlank.Add(existingTab, property.Alias);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // new propert needs to be added to content type..
+                            if (string.IsNullOrEmpty(tabName))
+                            {
+                                item.AddPropertyType(property);
+                            }
+                            else
+                            {
+                                item.AddPropertyType(property, tabName);
+                            }
+                        }
+                    }
+                } // end foreach property
+            } // end generic properties 
+
+
+            // look at what properties we need to remove. 
             var propertyNodes = node.Elements("GenericProperties").Elements("GenericProperty");
-
             foreach(var property in item.PropertyTypes)
             {
                 XElement propertyNode = propertyNodes
@@ -149,63 +299,6 @@ namespace Jumoo.uSync.Core.Serializers
                 {
                     propertiesToRemove.Add(property.Alias);
                 }
-                else
-                {
-                    if (propertyNode.Element("Key") != null)
-                    {
-                        Guid key = Guid.Empty;
-                        if (Guid.TryParse(propertyNode.Element("Key").Value, out key))
-                            property.Key = key;
-
-                    }
-                    // update existing settings.
-                    if (propertyNode.Element("Name") != null)
-                        property.Name = propertyNode.Element("Name").Value;
-
-                    if (propertyNode.Element("Description") != null)
-                        property.Description = propertyNode.Element("Description").Value;
-
-                    if (propertyNode.Element("Mandatory") != null)
-                        property.Mandatory = propertyNode.Element("Mandatory").Value.ToLowerInvariant().Equals("true");
-
-                    if (propertyNode.Element("Validation") != null)
-                        property.ValidationRegExp= propertyNode.Element("Validation").Value;
-
-                    if (propertyNode.Element("SortOrder") != null)
-                        property.SortOrder = int.Parse(propertyNode.Element("SortOrder").Value);
-
-                    if (propertyNode.Element("Tab") != null)
-                    {
-                        var nodeTab = propertyNode.Element("Tab").Value;
-                        if (!string.IsNullOrEmpty(nodeTab))
-                        {
-                            var propGroup = item.PropertyGroups.FirstOrDefault(x => x.Name == nodeTab);
-
-                            if (propGroup != null)
-                            {
-                                if (!propGroup.PropertyTypes.Any(x => x.Alias == property.Alias))
-                                {
-                                    // this tab currently doesn't contain this property, to we have to
-                                    // move it (later)
-                                    propertiesToMove.Add(property.Alias, nodeTab);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            // this property isn't in a tab (now!)
-
-                            var existingTab = item.PropertyGroups.FirstOrDefault(x => x.PropertyTypes.Contains(property));
-                            if (existingTab != null)
-                            {
-                                // this item is now not in a tab (when it was)
-                                // so we have to remove it from tabs (later)
-                                tabsToBlank.Add(existingTab, property.Alias);
-                            }
-                        }
-
-                    }
-                }
             }
 
 
@@ -214,6 +307,7 @@ namespace Jumoo.uSync.Core.Serializers
             {
                 foreach (var move in propertiesToMove)
                 {
+                    LogHelper.Debug<Events>("Moving Property: {0} {1}", () => move.Key, () => move.Value);
                     item.MovePropertyType(move.Key, move.Value);
                 }
             }
@@ -223,6 +317,7 @@ namespace Jumoo.uSync.Core.Serializers
                 // removing properties can cause timeouts on installs with lots of content...
                 foreach(var delete in propertiesToRemove)
                 {
+                    LogHelper.Debug<Events>("Removing Property: {0} {1}", () => delete);
                     item.RemovePropertyType(delete);
                 }
             }

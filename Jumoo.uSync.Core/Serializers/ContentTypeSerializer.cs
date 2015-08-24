@@ -48,7 +48,14 @@ namespace Jumoo.uSync.Core.Serializers
             var parentAlias = info.Element("Master");
             if (parentAlias != null && !string.IsNullOrEmpty(parentAlias.Value))
             {
-                parent = _contentTypeService.GetContentType(parentAlias.Value);
+                var masterKey = parentAlias.Attribute("Key").ValueOrDefault(Guid.Empty);
+                if (masterKey != null)
+                {
+                    parent = _contentTypeService.GetContentType(masterKey);
+                }
+
+                if (parent == null)
+                    parent = _contentTypeService.GetContentType(parentAlias.Value);
             }
 
             var alias = info.Element("Alias").Value;
@@ -98,6 +105,14 @@ namespace Jumoo.uSync.Core.Serializers
             var listView = info.Element("IsListView").ValueOrDefault(false);
             if (item.IsContainer != listView)
                 item.IsContainer = listView;
+
+            var masterTemplate = info.Element("DefaultTemplate").ValueOrDefault(string.Empty);
+            if (!string.IsNullOrEmpty(masterTemplate))
+            {
+                var template = ApplicationContext.Current.Services.FileService.GetTemplate(masterTemplate);
+                if (template != null)
+                    item.SetDefaultTemplate(template);
+            }
 
             DeserializeCompositions(item, info);
 
@@ -189,7 +204,8 @@ namespace Jumoo.uSync.Core.Serializers
             // add content type/composistions
             var master = item.ContentTypeComposition.FirstOrDefault(x => x.Id == item.ParentId);
             if (master != null)
-                info.Add("Master", master.Alias);
+                info.Add(new XElement("Master", master.Alias,
+                            new XAttribute("Key", master.Key)));
 
             var compositionsNode = new XElement("Compositions");
             var compositions = item.ContentTypeComposition;
