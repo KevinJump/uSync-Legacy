@@ -275,6 +275,10 @@ namespace Jumoo.uSync.Core.Serializers
                             {
                                 item.AddPropertyType(property, tabName);
                             }
+
+                            // setting the key before here doesn't seem to work for new types.
+                            if (key != Guid.Empty)
+                                property.Key = key; 
                         }
                     }
                 } // end foreach property
