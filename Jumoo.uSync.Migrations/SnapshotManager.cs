@@ -49,7 +49,6 @@ namespace Jumoo.uSync.Migrations
             return snapshots;
         }
 
-
         public void CreateSnapshot(string name)
         {
             var masterSnap = CombineSnapshots(_rootFolder);
@@ -88,6 +87,23 @@ namespace Jumoo.uSync.Migrations
 
             LogHelper.Info<SnapshotManager>("Cleaned Snapshot up..");
 
+        }
+
+        /// <summary>
+        ///  takes everything in the snapshot folder, builds a master snapshot
+        ///  and then runs it through an import
+        /// </summary>
+        public IEnumerable<uSyncAction> ApplySnapshots()
+        {
+            var snapshotImport = CombineSnapshots(_rootFolder);
+
+            if (Directory.Exists(snapshotImport))
+            {
+                var actions = uSyncBackOfficeContext.Instance.ImportAll(snapshotImport);
+                return actions;
+            }
+
+            return null;
         }
 
         #region Snapshot Creation

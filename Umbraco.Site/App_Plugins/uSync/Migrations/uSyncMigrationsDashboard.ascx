@@ -11,16 +11,24 @@
     </div>
 </div>
 
-<form class="form-horizontal">
-  <div class="control-group">
-    <asp:Label AssociatedControlID="txtSnapshotName" Text="Name" runat="server" CssClass="control-label"></asp:Label>
-    <div class="controls">
-        <asp:TextBox ID="txtSnapshotName" runat="server"></asp:TextBox>
+<div class="row">
+    <div class="span6">
+        <form class="form-horizontal">
+          <div class="control-group">
+            <asp:Label AssociatedControlID="txtSnapshotName" Text="Name" runat="server" CssClass="control-label"></asp:Label>
+            <div class="controls">
+                <asp:TextBox ID="txtSnapshotName" runat="server"></asp:TextBox>
+            </div>
+          </div>
+          <div class="control-group">
+            <asp:Button ID="btnSnapshot" runat="server" OnClick="btnSnapshot_Click" Text="Create Snapshot" CssClass="btn btn-default" />
+          </div>
+        </form>
     </div>
-  </div>
-  <div class="control-group">
-    <asp:Button ID="btnSnapshot" runat="server" OnClick="btnSnapshot_Click" Text="Create Snapshot" CssClass="btn btn-default" />
-  </div>
+    <div class="span6">
+        <asp:Button ID="btnApplySnapshot" runat="server" Text="Apply Snapshots" CssClass="btn btn-info" OnClick="btnApplySnapshot_Click" />
+    </div>
+</div>
 
     <asp:Repeater ID="snapshotList" runat="server">
         <HeaderTemplate>
@@ -42,4 +50,3 @@
             </table>
         </FooterTemplate>
     </asp:Repeater>
-</form>

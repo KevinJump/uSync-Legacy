@@ -33,5 +33,11 @@ namespace Jumoo.uSync.Migrations
             snapshotList.DataSource = snapshotMgr.ListSnapshots();
             snapshotList.DataBind();
         }
+
+        protected void btnApplySnapshot_Click(object sender, EventArgs e)
+        {
+            var snapshotMgr = new SnapshotManager("~/uSync/snapshots");
+            snapshotMgr.ApplySnapshots();
+        }
     }
 }
