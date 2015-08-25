@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Web;
 
@@ -11,6 +12,7 @@ namespace Jumoo.uSync.Migrations
         public string Name { get; set; }
         public DateTime Time { get; set; }
         public string Path { get; set; }
+        public int FileCount { get; set; }
 
         public SnapshotInfo(string path)
         {
@@ -30,6 +32,24 @@ namespace Jumoo.uSync.Migrations
             {
                 Time = when;
             }
+
+            FileCount = CountFiles(path);
         }
+
+        private int CountFiles(string folder)
+        {
+            int count = 0;
+            if (Directory.Exists(folder))
+            {
+                count = Directory.GetFiles(folder).Count();
+
+                foreach (var dir in Directory.GetDirectories(folder))
+                {
+                    count += CountFiles(dir);
+                }
+            }
+            return count;
+        }
+
     }
 }

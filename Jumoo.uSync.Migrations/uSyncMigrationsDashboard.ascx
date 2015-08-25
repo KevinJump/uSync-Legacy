@@ -26,6 +26,7 @@
         </form>
     </div>
     <div class="span6">
+        You can combine all the snapshots below, and apply their changes to this umbraco installation: 
         <asp:Button ID="btnApplySnapshot" runat="server" Text="Apply Snapshots" CssClass="btn btn-info" OnClick="btnApplySnapshot_Click" />
     </div>
 </div>
@@ -36,6 +37,7 @@
                 <thead>
                     <tr>
                         <th>Name</th>
+                        <th>No of Items</th>
                         <th>Time</th>
                     </tr>
                 </thead>
@@ -43,6 +45,7 @@
         <ItemTemplate>
             <tr>
                 <td><%# DataBinder.Eval(Container.DataItem, "Name") %></td>
+                <td><%# DataBinder.Eval(Container.DataItem, "FileCount") %></td>
                 <td><%# DataBinder.Eval(Container.DataItem, "Time") %></td>
             </tr>
         </ItemTemplate>

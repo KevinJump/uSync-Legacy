@@ -42,6 +42,8 @@ namespace Jumoo.uSync.Migrations
             {
                 foreach(var dir in Directory.GetDirectories(_rootFolder))
                 {
+                    DirectoryInfo snapshotDir = new DirectoryInfo(dir);
+                    
                     snapshots.Add(new SnapshotInfo(dir));
                 }
             }
@@ -248,6 +250,7 @@ namespace Jumoo.uSync.Migrations
             Directory.Delete(target_dir, false);
         }
         #endregion
+
     }
 
     class FileCompare : IEqualityComparer<FileInfo>
