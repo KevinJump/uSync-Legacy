@@ -10,6 +10,7 @@ using Jumoo.uSync.Core.Interfaces;
 using Jumoo.uSync.Core.Extensions;
 using Umbraco.Core;
 using Jumoo.uSync.Core.Helpers;
+using Umbraco.Core.Logging;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -61,7 +62,7 @@ namespace Jumoo.uSync.Core.Serializers
             if (template != null)
                 item.Template = template;
 
-            item.Key = guid; 
+            item.Key = guid;
 
             item.SortOrder = sortOrder;
             item.Name = name;
@@ -70,7 +71,7 @@ namespace Jumoo.uSync.Core.Serializers
                 item.ParentId = parentId;
 
             var properties = node.Elements().Where(x => x.Attribute("isDoc") == null);
-            foreach(var property in properties)
+            foreach (var property in properties)
             {
                 var propertyTypeAlias = property.Name.LocalName;
                 if (item.HasProperty(propertyTypeAlias))
@@ -79,6 +80,17 @@ namespace Jumoo.uSync.Core.Serializers
                 }
             }
 
+            PublishOrSave(item, published);
+
+            return SyncAttempt<IContent>.Succeed(item.Name, item, ChangeType.Import);
+        }
+
+        /// <summary>
+        ///  called from teh base when things change, we need to save or publish our content
+        /// </summary>
+        /// <param name="item"></param>
+        public override void PublishOrSave(IContent item, bool published)
+        {
             if (published)
             {
                 var publishAttempt = _contentService.SaveAndPublishWithStatus(item, 0, false);
@@ -93,12 +105,12 @@ namespace Jumoo.uSync.Core.Serializers
                 if (item.Published)
                     _contentService.UnPublish(item);
             }
-
-            return SyncAttempt<IContent>.Succeed(item.Name, item, ChangeType.Import);
         }
 
         internal override SyncAttempt<XElement> SerializeCore(IContent item)
         {
+            LogHelper.Info<ContentSerializer>("Serialize Core: {0}", () => item.Name);
+
             var ContentTypeAlias = item.ContentType.Alias;
             var attempt = base.SerializeBase(item, ContentTypeAlias);
 
@@ -115,7 +127,37 @@ namespace Jumoo.uSync.Core.Serializers
             node.Add(new XAttribute("sortOrder", item.SortOrder));
             node.Add(new XAttribute("published", item.Published));
 
+            LogHelper.Info<ContentSerializer>("Returning Node");
             return SyncAttempt<XElement>.Succeed(item.Name, node, typeof(IContent), ChangeType.Export);
         }
+
+        public override bool IsUpdate(XElement node)
+        {
+            var key = node.Attribute("guid").ValueOrDefault(Guid.Empty);
+            if (key == Guid.Empty)
+                return true;
+
+            var item = _contentService.GetById(key);
+            if (item == null)
+                return true;
+
+            DateTime updateTime = node.Attribute("updated").ValueOrDefault(DateTime.Now);
+            if (DateTime.Compare(updateTime, item.UpdateDate.ToLocalTime()) <= 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+
+        public override SyncAttempt<IContent> DesearlizeSecondPass(IContent item, XElement node)
+        {
+            base.DeserializeMappedIds(item, node);
+            return SyncAttempt<IContent>.Succeed(item.Name, ChangeType.Import);
+        }
+   
     }
 }

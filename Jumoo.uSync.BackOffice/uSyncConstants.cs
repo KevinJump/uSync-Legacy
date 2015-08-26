@@ -18,6 +18,9 @@ namespace Jumoo.uSync.BackOffice
             public const int Languages = USYNC_RESERVED_LOWER + 50;
             public const int DictionaryItems = USYNC_RESERVED_LOWER + 60;
             public const int Macros = USYNC_RESERVED_LOWER + 70;
+
+            public const int Media = USYNC_RESERVED_LOWER + 200;
+            public const int Content = USYNC_RESERVED_LOWER + 210;
         }
     }
 

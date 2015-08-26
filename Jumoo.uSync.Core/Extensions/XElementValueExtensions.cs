@@ -41,6 +41,10 @@ namespace Jumoo.uSync.Core.Extensions
             if (node.Attribute("Key") != null)
                 return node.Attribute("Key").Value;
 
+            // content 
+            if (node.Attribute("nodeName") != null)
+                return node.Attribute("nodeName").Value;
+
             // some catch alls, incase we've missed on.
             if (node.Element("Name") != null)
                 return node.Element("Name").Value;
@@ -101,6 +105,18 @@ namespace Jumoo.uSync.Core.Extensions
             return defaultValue;
         }
 
+        public static bool ValueOrDefault(this XAttribute node, bool defaultValue)
+        {
+            if (node != null && !string.IsNullOrEmpty(node.Value))
+            {
+                bool val;
+                if (bool.TryParse(node.Value, out val))
+                    return val;
+            }
+
+            return defaultValue;
+
+        }
 
         public static string ValueOrDefault(this XAttribute node, string defaultValue)
         {

@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace Jumoo.uSync.Core.Interfaces
 {
-    public interface ISyncSerializerWithParent<T> : ISyncSerializer<T>
+    public interface ISyncSerializerWithParent<T> : ISyncSerializer<T>, ISyncSerializerTwoPass<T>
     {
         SyncAttempt<T> Deserialize(XElement node, int parentId, bool forceUpdate);
     }

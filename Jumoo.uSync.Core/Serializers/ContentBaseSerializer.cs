@@ -27,17 +27,17 @@ namespace Jumoo.uSync.Core.Serializers
             _mediaService = ApplicationContext.Current.Services.MediaService;
         }
 
+        public SyncAttempt<T> Deserialize(XElement node, bool forceUpdate, bool onePass)
+        {
+            return Deserialize(node, -1, forceUpdate);
+        }
+
         public SyncAttempt<T> Deserialize(XElement node, int parentId, bool forceUpdate = false)
         {
-            // can't do this the names are always different
-            // if (node.Name.LocalName != _itemType)
-            // throw new ArgumentException("XML Not valud for type: " + _itemType);
-            if (forceUpdate || IsUpdate(node))
-            {
-                return DeserializeCore(node, parentId, forceUpdate);
-            }
-
-            return SyncAttempt<T>.Succeed(node.NameFromNode(), ChangeType.NoChange);
+            // for content, we always call deserialize, because the first step will 
+            // do the item lookup, and we want to return item so we can import 
+            // as part of a tree. 
+            return DeserializeCore(node, parentId, forceUpdate);
         }
 
         abstract internal SyncAttempt<T> DeserializeCore(XElement node, int parentId, bool forceUpdate);
@@ -47,7 +47,32 @@ namespace Jumoo.uSync.Core.Serializers
             return Deserialize(node, -1);
         }
 
-        
+        /// <summary>
+        ///  second pass ID update in properties? 
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="item"></param>
+        public void DeserializeMappedIds(T baseItem, XElement node)
+        {
+            IContentBase item = (IContentBase)baseItem;
+            var properties = node.Elements().Where(x => x.Attribute("isDoc") == null);
+            foreach (var property in properties)
+            {
+                var propertyTypeAlias = property.Name.LocalName;
+                if (item.HasProperty(propertyTypeAlias))
+                {
+                    item.SetValue(propertyTypeAlias, GetImportIds(GetImportXml(property)));
+                }
+            }
+
+            var published = node.Attribute("published").ValueOrDefault(false);
+
+            PublishOrSave(baseItem, published);
+        }
+
+        virtual public void PublishOrSave(T item, bool published) { }
+
+
         internal int GetIdFromGuid(Guid guid)
         {
             var item = ApplicationContext.Current.Services.EntityService.GetByKey(guid);
@@ -98,7 +123,7 @@ namespace Jumoo.uSync.Core.Serializers
             reader.MoveToContent();
             string xml = reader.ReadInnerXml();
 
-            if (xml.StartsWith("<!CDATA["))
+            if (xml.StartsWith("<![CDATA["))
                 return parent.Value;
             else
                 return xml.Replace("&amp;", "&");
@@ -168,6 +193,11 @@ namespace Jumoo.uSync.Core.Serializers
             var reader = parent.CreateReader();
             reader.MoveToContent();
             return reader.ReadInnerXml();
+        }
+
+        virtual public SyncAttempt<T> DesearlizeSecondPass(T item, XElement node)
+        {
+            return SyncAttempt<T>.Succeed(node.NameFromNode(), ChangeType.NoChange);
         }
     }
 }

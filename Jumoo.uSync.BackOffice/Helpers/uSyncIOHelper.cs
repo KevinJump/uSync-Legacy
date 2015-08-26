@@ -49,7 +49,7 @@ namespace Jumoo.uSync.BackOffice.Helpers
             uSyncEvents.fireSaved(new uSyncEventArgs { fileName = path });
         }
 
-        internal static void ArchiveFile(string path)
+        public static void ArchiveFile(string path)
         {
             LogHelper.Debug<uSyncIOHelper>("Archive: {0}", () => path);
 
@@ -87,19 +87,19 @@ namespace Jumoo.uSync.BackOffice.Helpers
             }
         }
 
-        internal static void ArchiveRelativeFile(string type, string path, string name)
+        public static void ArchiveRelativeFile(string type, string path, string name)
         {
             string fullpath = Path.Combine(type, path, name);
             ArchiveRelativeFile(fullpath);
         }
 
-        internal static void ArchiveRelativeFile(string path, string name)
+        public static void ArchiveRelativeFile(string path, string name)
         {
             string fullPath = Path.Combine(path, name);
             ArchiveRelativeFile(fullPath);
         }
 
-        internal static void ArchiveRelativeFile(string fullPath)
+        public static void ArchiveRelativeFile(string fullPath)
         {
             var uSyncFolder = uSyncBackOfficeContext.Instance.Configuration.Settings.Folder;
             var fullFolder = Path.Combine(uSyncFolder, fullPath + ".config");
