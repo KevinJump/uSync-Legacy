@@ -146,7 +146,7 @@
             </div>
         </div>
 
-        <asp:Panel ID ="panelTech" Visible="false" runat="server">
+        <asp:Panel ID ="panelTech" Visible="true" runat="server">
         <div class="row">
             <div class="span12">
                 <h3>uSync.TechnicalBits</h3>
