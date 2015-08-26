@@ -115,7 +115,18 @@ namespace Jumoo.uSync.Core.Extensions
             }
 
             return defaultValue;
+        }
 
+        public static int ValueOrDefault(this XAttribute node, int defaultValue)
+        {
+            if (node != null && !string.IsNullOrEmpty(node.Value))
+            {
+                int val;
+                if (int.TryParse(node.Value, out val))
+                    return val;
+            }
+
+            return defaultValue;
         }
 
         public static string ValueOrDefault(this XAttribute node, string defaultValue)

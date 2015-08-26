@@ -64,10 +64,6 @@ namespace Jumoo.uSync.Core.Serializers
                     item.SetValue(propertyTypeAlias, GetImportIds(GetImportXml(property)));
                 }
             }
-
-            var published = node.Attribute("published").ValueOrDefault(false);
-
-            PublishOrSave(baseItem, published);
         }
 
         virtual public void PublishOrSave(T item, bool published) { }

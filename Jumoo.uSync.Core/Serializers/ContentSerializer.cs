@@ -156,6 +156,15 @@ namespace Jumoo.uSync.Core.Serializers
         public override SyncAttempt<IContent> DesearlizeSecondPass(IContent item, XElement node)
         {
             base.DeserializeMappedIds(item, node);
+
+            int sortOrder = node.Attribute("sortOrder").ValueOrDefault(-1);
+            if (sortOrder >= 0)
+                item.SortOrder = sortOrder;
+
+            var published = node.Attribute("published").ValueOrDefault(false);
+            PublishOrSave(item, published);
+
+
             return SyncAttempt<IContent>.Succeed(item.Name, ChangeType.Import);
         }
    
