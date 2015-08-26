@@ -63,7 +63,7 @@ namespace Jumoo.uSync.Content
                 foreach (string file in Directory.GetFiles(folder, "*.config"))
                 {
                     var attempt = Import(file, parentId, force);
-                    if (attempt.Success && attempt.Item != null)
+                    if (attempt.Success && attempt.Change > ChangeType.NoChange && attempt.Item != null)
                     {
                         updates.Add(file, attempt.Item);
                     }
