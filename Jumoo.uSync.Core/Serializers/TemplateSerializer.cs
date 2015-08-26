@@ -64,8 +64,12 @@ namespace Jumoo.uSync.Core.Serializers
 
                 if (!string.IsNullOrEmpty(templatePath))
                 {
+                    var content = System.IO.File.ReadAllText(templatePath);
+
                     item = new Template(name, alias);
                     item.Path = templatePath;
+                    item.Content = content;
+
                 }
                 else 
                 {
