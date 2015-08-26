@@ -25,7 +25,7 @@ namespace Jumoo.uSync.Content
 
         public override SyncAttempt<IContent> Import(string filePath, int parentId, bool force = false)
         {
-            LogHelper.Info<IContent>("Importing Content : {0} {1}", ()=> filePath, ()=> parentId);
+            LogHelper.Debug<IContent>("Importing Content : {0} {1}", ()=> filePath, ()=> parentId);
             if (!System.IO.File.Exists(filePath))
                 throw new FileNotFoundException(filePath);
 

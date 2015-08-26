@@ -31,7 +31,7 @@ namespace Jumoo.uSync.Content
 
         public IEnumerable<uSyncAction> ImportAll(string folder, bool force)
         {
-            LogHelper.Info<Logging>("Running Content Import: {0}", () => Path.GetFileName(folder));
+            LogHelper.Debug<Logging>("Running Content Import: {0}", () => Path.GetFileName(folder));
 
             Dictionary<string, T> updates = new Dictionary<string, T>();
 
@@ -54,7 +54,7 @@ namespace Jumoo.uSync.Content
 
         private IEnumerable<uSyncAction> ImportFolder(string folder, int parentId, bool force, Dictionary<string, T> updates)
         {
-            LogHelper.Info<ContentHandler>("Import Folder: {0} {1}", () => folder, () => parentId);
+            LogHelper.Debug<ContentHandler>("Import Folder: {0} {1}", () => folder, () => parentId);
             int itemId = parentId;
             List<uSyncAction> actions = new List<uSyncAction>();
 
@@ -70,9 +70,6 @@ namespace Jumoo.uSync.Content
 
                     if (attempt.Item != null)
                         itemId = ((IContentBase)attempt.Item).Id;
-
-                    LogHelper.Info<ContentHandler>("Attempt: {0}", () => attempt.Success);
-                    LogHelper.Info<ContentHandler>("Item : {0}", () => attempt.Item != null);
 
                     actions.Add(uSyncActionHelper<T>.SetAction(attempt, file));
                 }
