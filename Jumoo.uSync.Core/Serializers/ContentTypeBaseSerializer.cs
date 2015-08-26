@@ -511,7 +511,7 @@ namespace Jumoo.uSync.Core.Serializers
 
     
         // special case for two pass, you can tell it to only first step
-        public SyncAttempt<T> DeSerialize(XElement node, bool forceUpdate, bool onePass = false)
+        public SyncAttempt<T> Deserialize(XElement node, bool forceUpdate, bool onePass = false)
         {
             var attempt = base.DeSerialize(node);
 

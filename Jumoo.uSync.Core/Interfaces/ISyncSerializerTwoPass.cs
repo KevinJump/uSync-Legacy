@@ -9,7 +9,7 @@ namespace Jumoo.uSync.Core.Interfaces
 {
     public interface ISyncSerializerTwoPass<T> : ISyncSerializer<T>
     {
-        SyncAttempt<T> DeSerialize(XElement node, bool forceUpdate, bool onePass);
+        SyncAttempt<T> Deserialize(XElement node, bool forceUpdate, bool onePass);
         SyncAttempt<T> DesearlizeSecondPass(T item, XElement node);
     }
 }

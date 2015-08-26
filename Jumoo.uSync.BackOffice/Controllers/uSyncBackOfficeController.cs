@@ -51,7 +51,7 @@ namespace Jumoo.uSync.BackOffice.Controllers
                 if (node != null)
                 {
                     uSyncEvents.Paused = true;
-                    uSyncCoreContext.Instance.ContentTypeSerializer.DeSerialize(node, true, true);
+                    uSyncCoreContext.Instance.ContentTypeSerializer.Deserialize(node, true, true);
                     uSyncEvents.Paused = false;
                 }
             }
