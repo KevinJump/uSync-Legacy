@@ -46,6 +46,9 @@ namespace Jumoo.uSync.Core.Serializers
 
             if (item != null)
             {
+                if (item.Key != guid)
+                    item.Key = guid;
+
                 if (item.Name != name)
                     item.Name = name;
 
@@ -117,6 +120,8 @@ namespace Jumoo.uSync.Core.Serializers
         public override SyncAttempt<IMedia> DesearlizeSecondPass(IMedia item, XElement node)
         {
             base.DeserializeMappedIds(item, node);
+            PublishOrSave(item, true);
+
             return SyncAttempt<IMedia>.Succeed(item.Name, ChangeType.Import);
         }
     }

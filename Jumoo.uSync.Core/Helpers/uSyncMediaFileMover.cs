@@ -9,6 +9,7 @@ using Umbraco.Core.Models;
 using Umbraco.Core.IO;
 using Newtonsoft.Json;
 using Jumoo.uSync.Core.Interfaces;
+using Umbraco.Core;
 
 namespace Jumoo.uSync.Core.Helpers
 {
@@ -17,6 +18,7 @@ namespace Jumoo.uSync.Core.Helpers
 
         public bool ImportFile(IMedia item, string folder)
         {
+            bool changes = false; 
             Guid guid = item.Key;
 
             if (!Directory.Exists(folder))
@@ -59,6 +61,7 @@ namespace Jumoo.uSync.Core.Helpers
                         using (FileStream s = new FileStream(sourceFile, FileMode.Open))
                         {
                             item.SetValue("umbracoFile", sourceFile, s);
+                            changes = true;
                         }
 
                         // if we've created a new file in umbraco, it will be in a new folder
@@ -73,10 +76,15 @@ namespace Jumoo.uSync.Core.Helpers
                     using (FileStream s = new FileStream(file, FileMode.Open))
                     {
                         item.SetValue("umbracoFile", Path.GetFileName(file), s);
+                        changes = true;
                     }
 
                 }
             }
+
+            if (changes)
+                ApplicationContext.Current.Services.MediaService.Save(item);
+            
             return true;
         }
 
