@@ -54,6 +54,7 @@
     <Compile Include="Helpers\uSyncTreeWalker.cs" />
     <Compile Include="Helpers\uSyncIdMapper.cs" />
     <Compile Include="Helpers\uSyncValueMapper.cs" />
+    <Compile Include="Interfaces\ISyncSerializerWithFiles.cs" />
     <Compile Include="Interfaces\ISyncSerializerWithParent.cs" />
     <Compile Include="Interfaces\ISyncSerializer.cs" />
     <Compile Include="Interfaces\ISyncSerializerTwoPass.cs" />

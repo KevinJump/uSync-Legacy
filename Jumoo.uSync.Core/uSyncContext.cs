@@ -1,6 +1,7 @@
 ﻿
 namespace Jumoo.uSync.Core
 {
+    using Helpers;
     using Jumoo.uSync.Core.Interfaces;
     using Jumoo.uSync.Core.Serializers;
 
@@ -34,6 +35,8 @@ namespace Jumoo.uSync.Core
         public ISyncSerializerWithParent<IContent> ContentSerializer { get; private set; }
         public ISyncSerializerWithParent<IMedia> MediaSerializer { get; private set; }
 
+        public ISyncFileHandler<IMedia> MediaFileMover { get; private set; }
+
         public uSyncCoreConfig Configuration { get; set; }
 
         public void Init()
@@ -54,19 +57,9 @@ namespace Jumoo.uSync.Core
             DataTypeSerializer = new DataTypeSerializer(Constants.Packaging.DataTypeNodeName);
 
             ContentSerializer = new ContentSerializer();
-        }
+            MediaSerializer = new MediaSerializer();
 
-        /// <summary>
-        ///  media is different (and not always used), 
-        /// it needs a physical folder to stream the files to
-        /// </summary>
-        /// <param name="folder"></param>
-        public void InitMedia(string folder)
-        {
-            if (string.IsNullOrEmpty(folder))
-                folder = Configuration.Settings.MediaStorageFolder;
-
-            MediaSerializer = new MediaSerializer(folder);
+            MediaFileMover = new uSyncMediaFileMover();
         }
 
         public string Version

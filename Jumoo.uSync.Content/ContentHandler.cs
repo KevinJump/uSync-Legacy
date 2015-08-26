@@ -25,7 +25,7 @@ namespace Jumoo.uSync.Content
 
         public override SyncAttempt<IContent> Import(string filePath, int parentId, bool force = false)
         {
-            LogHelper.Debug<IContent>("Importing Content : {0} {1}", ()=> filePath, ()=> parentId);
+            LogHelper.Debug<ContentHandler>("Importing Content : {0} {1}", ()=> filePath, ()=> parentId);
             if (!System.IO.File.Exists(filePath))
                 throw new FileNotFoundException(filePath);
 
@@ -110,20 +110,29 @@ namespace Jumoo.uSync.Content
 
         private void ContentService_Copied(IContentService sender, Umbraco.Core.Events.CopyEventArgs<IContent> e)
         {
+            if (uSyncEvents.Paused)
+                return;
+
             SaveItems(sender, new List<IContent>(new IContent[] { e.Copy }));
         }
 
         private void ContentService_Saved(IContentService sender, Umbraco.Core.Events.SaveEventArgs<IContent> e)
         {
+            if (uSyncEvents.Paused)
+                return;
+
             SaveItems(sender, e.SavedEntities);
         }
 
         void SaveItems(IContentService sender, IEnumerable<IContent> items)
         {
-            foreach(var item in items)
+            if (uSyncEvents.Paused)
+                return;
+
+            foreach (var item in items)
             {
-                var path = "";
-                var attempt = ExportItem(item, path, SyncFolder);
+                var path = GetContentPath(item);
+                var attempt = ExportItem(item, path, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
                 if (attempt.Success)
                 {
                     NameChecker.ManageOrphanFiles(SyncFolder, item.Key, attempt.FileName);
@@ -142,8 +151,6 @@ namespace Jumoo.uSync.Content
 
         private string GetContentPath(IContent item)
         {
-            return "";
-
             var path = item.Name.ToSafeFileName();
             if (item.ParentId != -1)
             {

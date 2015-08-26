@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="BaseContentHandler.cs" />
     <Compile Include="ContentHandler.cs" />
+    <Compile Include="MediaHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

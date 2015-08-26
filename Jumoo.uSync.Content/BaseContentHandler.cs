@@ -18,6 +18,8 @@ namespace Jumoo.uSync.Content
         internal IContentService _contentService;
         internal IMediaService _mediaService; 
 
+        internal const string mediaFolderName = "_uSyncMedia";
+
         public BaseContentHandler()
         {
             _contentService = ApplicationContext.Current.Services.ContentService;
@@ -76,7 +78,10 @@ namespace Jumoo.uSync.Content
 
                 foreach (var child in Directory.GetDirectories(folder))
                 {
-                    actions.AddRange(ImportFolder(child, itemId, force, updates));
+                    if (!Path.GetFileName(child).Equals("_uSyncMedia", StringComparison.OrdinalIgnoreCase))
+                    {
+                        actions.AddRange(ImportFolder(child, itemId, force, updates));
+                    }
                 }
             }
             return actions;

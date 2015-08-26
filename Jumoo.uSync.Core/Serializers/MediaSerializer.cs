@@ -7,18 +7,15 @@ using Umbraco.Core.Models;
 using Jumoo.uSync.Core.Extensions;
 using Jumoo.uSync.Core.Helpers;
 
+using Jumoo.uSync.Core.Interfaces;
+
 
 namespace Jumoo.uSync.Core.Serializers
 {
     public class MediaSerializer : ContentBaseSerializer<IMedia>
     {
-
-        private uSyncMediaFileMover _mover;
-
-        public MediaSerializer(string mediaFolder) : base(string.Empty)
-        {
-            _mover = new uSyncMediaFileMover(mediaFolder);
-        }
+        public MediaSerializer() : base(string.Empty)
+        { }
 
         internal override SyncAttempt<IMedia> DeserializeCore(XElement node, int parentId, bool forceUpdate)
         {
@@ -55,7 +52,7 @@ namespace Jumoo.uSync.Core.Serializers
                 if (item.ParentId != parentId)
                     item.ParentId = parentId;
 
-                _mover.ImportFile(guid, item);
+                // _mover.ImportFile(item);
 
                 _mediaService.Save(item);
             }
@@ -74,10 +71,11 @@ namespace Jumoo.uSync.Core.Serializers
 
             var node = attempt.Item;
 
-            node.Add(new XAttribute("parentGUID", item.Level > 1 ? item.Parent().Key : new Guid("")));
+            node.Add(new XAttribute("parentGUID", item.Level > 1 ? item.Parent().Key : new Guid("00000000-0000-0000-0000-000000000000")));
             node.Add(new XAttribute("nodeTypeAlias", item.ContentType.Alias));
             node.Add(new XAttribute("path", item.Path));
 
+            /*
             foreach (var file in item.Properties.Where(p => p.Alias == "umbracoFile"))
             {
                 if (file == null || file.Value == null)
@@ -86,13 +84,13 @@ namespace Jumoo.uSync.Core.Serializers
                 }
                 else
                 {
-                    _mover.ExportMediaFile(file.Value.ToString(), item.Key);
+                    // _mover.ExportMediaFile(file.Value.ToString(), item.Key);
                 }
 
             }
+            */
 
             return SyncAttempt<XElement>.Succeed(item.Name, node, typeof(IMedia), ChangeType.Export);
-
         }
     }
 }

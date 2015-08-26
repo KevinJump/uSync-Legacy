@@ -8,27 +8,22 @@ using System.Threading.Tasks;
 using Umbraco.Core.Models;
 using Umbraco.Core.IO;
 using Newtonsoft.Json;
+using Jumoo.uSync.Core.Interfaces;
 
 namespace Jumoo.uSync.Core.Helpers
 {
-    public class uSyncMediaFileMover
+    public class uSyncMediaFileMover : ISyncFileHandler<IMedia>
     {
-        private string _mediaFolder;
 
-        public uSyncMediaFileMover(string folder)
+        public bool ImportFile(IMedia item, string folder)
         {
-            _mediaFolder = folder;
-        }
+            Guid guid = item.Key;
 
-        public void ImportFile(Guid guid, IMedia item)
-        {
-            string sourceFolder = string.Format("{0}\\{1}", _mediaFolder, guid.ToString());
-
-            if (!Directory.Exists(sourceFolder))
-                return;
+            if (!Directory.Exists(folder))
+                return false;
 
             if (!item.HasProperty("umbracoFile"))
-                return;
+                return false;
 
             FileInfo currentFile = null;
 
@@ -52,7 +47,7 @@ namespace Jumoo.uSync.Core.Helpers
                 }
             }
 
-            foreach(var file in Directory.GetFiles(sourceFolder, "*.*"))
+            foreach(var file in Directory.GetFiles(folder, "*.*"))
             {
                 if (currentFile != null)
                 {
@@ -82,28 +77,38 @@ namespace Jumoo.uSync.Core.Helpers
 
                 }
             }
+            return true;
         }
 
 
-        public void ExportMediaFile(string umbracoFile, Guid guid)
+        public bool ExportFile(IMedia item, string folder)
         {
-            var filePath = umbracoFile;
-            if (IsJson(umbracoFile))
+            foreach (var fileProperty in item.Properties.Where(p => p.Alias == "umbracoFile"))
             {
-                filePath = JsonConvert.DeserializeObject<dynamic>(umbracoFile).src;
+                if (fileProperty == null || fileProperty.Value == null)
+                    continue;
+
+                var umbracoFile = fileProperty.Value.ToString();
+
+                var filePath = umbracoFile;
+                if (IsJson(umbracoFile))
+                {
+                    filePath = JsonConvert.DeserializeObject<dynamic>(umbracoFile).src;
+                }
+
+                string uSyncFolder = folder; 
+                string uSyncFile = Path.Combine(uSyncFolder, Path.GetFileName(filePath));
+                string sourceFile = IOHelper.MapPath(string.Format("~{0}", filePath));
+
+                if (System.IO.File.Exists(sourceFile))
+                {
+                    if (!Directory.Exists(uSyncFolder))
+                        Directory.CreateDirectory(uSyncFolder);
+
+                    System.IO.File.Copy(sourceFile, uSyncFile, true);
+                }
             }
-
-            string uSyncFolder = Path.Combine(_mediaFolder, guid.ToString());
-            string uSyncFile = Path.Combine(uSyncFolder, Path.GetFileName(filePath));
-            string sourceFile = IOHelper.MapPath(string.Format("~{0}", filePath));
-
-            if (System.IO.File.Exists(sourceFile))
-            {
-                if (!Directory.Exists(uSyncFolder))
-                    Directory.CreateDirectory(uSyncFolder);
-
-                System.IO.File.Copy(sourceFile, uSyncFile, true);
-            }
+            return true;
         }
 
 
