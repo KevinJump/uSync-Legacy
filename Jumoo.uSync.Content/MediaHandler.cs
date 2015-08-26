@@ -163,7 +163,9 @@ namespace Jumoo.uSync.Content
 
         public override uSyncAction ReportItem(string file)
         {
-            throw new NotImplementedException();
+            var node = XElement.Load(file);
+            var update = uSyncCoreContext.Instance.MediaSerializer.IsUpdate(node);
+            return uSyncActionHelper<IMedia>.ReportAction(update, node.NameFromNode());
         }
     }
 }

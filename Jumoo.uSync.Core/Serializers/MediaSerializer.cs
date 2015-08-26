@@ -92,5 +92,32 @@ namespace Jumoo.uSync.Core.Serializers
 
             return SyncAttempt<XElement>.Succeed(item.Name, node, typeof(IMedia), ChangeType.Export);
         }
+
+        public override bool IsUpdate(XElement node)
+        {
+            var key = node.Attribute("guid").ValueOrDefault(Guid.Empty);
+            if (key == Guid.Empty)
+                return true;
+
+            var item = _contentService.GetById(key);
+            if (item == null)
+                return true;
+
+            DateTime updateTime = node.Attribute("updated").ValueOrDefault(DateTime.Now);
+            if (DateTime.Compare(updateTime, item.UpdateDate.ToLocalTime()) <= 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public override SyncAttempt<IMedia> DesearlizeSecondPass(IMedia item, XElement node)
+        {
+            base.DeserializeMappedIds(item, node);
+            return SyncAttempt<IMedia>.Succeed(item.Name, ChangeType.Import);
+        }
     }
 }
