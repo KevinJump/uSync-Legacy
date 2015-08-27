@@ -89,11 +89,11 @@ namespace Jumoo.uSync.Core.Serializers
         ///  called from teh base when things change, we need to save or publish our content
         /// </summary>
         /// <param name="item"></param>
-        public override void PublishOrSave(IContent item, bool published)
+        public override void PublishOrSave(IContent item, bool published, bool raiseEvents = false )
         {
             if (published)
             {
-                var publishAttempt = _contentService.SaveAndPublishWithStatus(item, 0, false);
+                var publishAttempt = _contentService.SaveAndPublishWithStatus(item, 0, raiseEvents);
                 if (!publishAttempt.Success)
                 {
                     // publish didn't work :(
@@ -162,7 +162,8 @@ namespace Jumoo.uSync.Core.Serializers
                 item.SortOrder = sortOrder;
 
             var published = node.Attribute("published").ValueOrDefault(false);
-            PublishOrSave(item, published);
+
+            PublishOrSave(item, published, true);
 
 
             return SyncAttempt<IContent>.Succeed(item.Name, ChangeType.Import);

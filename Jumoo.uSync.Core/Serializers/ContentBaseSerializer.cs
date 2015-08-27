@@ -66,7 +66,7 @@ namespace Jumoo.uSync.Core.Serializers
             }
         }
 
-        virtual public void PublishOrSave(T item, bool published) { }
+        virtual public void PublishOrSave(T item, bool published, bool raiseEvents) { }
 
 
         internal int GetIdFromGuid(Guid guid)
