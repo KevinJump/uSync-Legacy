@@ -10,6 +10,8 @@ using Jumoo.uSync.BackOffice;
 using Umbraco.Core.Logging;
 using System.Security.Cryptography;
 
+using Jumoo.uSync.Migrations.Helpers;
+
 namespace Jumoo.uSync.Migrations
 {
     public class SnapshotManager
@@ -40,10 +42,10 @@ namespace Jumoo.uSync.Migrations
             List<SnapshotInfo> snapshots = new List<SnapshotInfo>();
             if (Directory.Exists(_rootFolder))
             {
-                foreach(var dir in Directory.GetDirectories(_rootFolder))
+                foreach (var dir in Directory.GetDirectories(_rootFolder))
                 {
                     DirectoryInfo snapshotDir = new DirectoryInfo(dir);
-                    
+
                     snapshots.Add(new SnapshotInfo(dir));
                 }
             }
@@ -62,14 +64,14 @@ namespace Jumoo.uSync.Migrations
 
             LogHelper.Info<SnapshotManager>("Export Complete");
 
-            foreach(var folder in _folders)
+            foreach (var folder in _folders)
             {
                 var source = IOHelper.MapPath("~/" + folder);
                 if (Directory.Exists(source))
                 {
                     LogHelper.Info<SnapshotManager>("Including {0} in snapshot", () => source);
                     var target = Path.Combine(snapshotFolder, folder);
-                    MergeFolder(source, target);
+                    SnapshotIO.MergeFolder(target, source);
                 }
             }
 
@@ -78,11 +80,11 @@ namespace Jumoo.uSync.Migrations
             // now we delete anything that is in any of the previous snapshots.
             if (!string.IsNullOrEmpty(masterSnap))
             {
-                RemoveDuplicates(snapshotFolder, masterSnap);
+                SnapshotIO.RemoveDuplicates(snapshotFolder, masterSnap);
 
                 // todo - capture deletes since last snapshot?
                 //          things in the master but not in our new one?
-                          
+
 
                 // Directory.Delete(masterSnap, true);
             }
@@ -134,9 +136,9 @@ namespace Jumoo.uSync.Migrations
 
             if (snapshots.Any())
             {
-                foreach(var snapshot in snapshots)
+                foreach (var snapshot in snapshots)
                 {
-                    MergeFolder(snapshot.FullName, tempRoot);
+                    SnapshotIO.MergeFolder(tempRoot, snapshot.FullName);
                 }
 
                 return tempRoot;
@@ -144,147 +146,7 @@ namespace Jumoo.uSync.Migrations
 
             return string.Empty;
         }
-
-        private void MergeFolder(string source, string dest)
-        {
-            DirectoryInfo dir = new DirectoryInfo(source);
-            DirectoryInfo[] dirs = dir.GetDirectories();
-
-            if (!dir.Exists)
-                return;
-
-            if (!Directory.Exists(dest))
-                Directory.CreateDirectory(dest);
-
-            FileInfo[] files = dir.GetFiles();
-            foreach (var file in files)
-            {
-                var destPath = Path.Combine(dest, file.Name);
-                file.CopyTo(destPath, true);
-            }
-
-            foreach (var subDirectory in dirs)
-            {
-                string destPath = Path.Combine(dest, subDirectory.Name);
-                MergeFolder(subDirectory.FullName, destPath);
-            }
-        }
-
-        private void RemoveDuplicates(string target, string source)
-        {
-            DirectoryInfo targetDir = new DirectoryInfo(target);
-            DirectoryInfo sourceDir = new DirectoryInfo(source);
-
-            var targetList = targetDir.GetFiles("*.*", SearchOption.AllDirectories);
-            var sourceList = sourceDir.GetFiles("*.*", SearchOption.AllDirectories);
-
-            FileCompare fileComp = new FileCompare();
-
-            List<string> duplicates = new List<string>();
-            var matches = targetList.Intersect(sourceList, fileComp);
-
-            if (matches.Any())
-            {
-                foreach(var f in matches)
-                {
-                    duplicates.Add(f.FullName);
-                }
-            }
-
-            if (duplicates.Any())
-            {
-                foreach(var f in duplicates)
-                {
-                    LogHelper.Info<SnapshotManager>("Deleting: {0}", () => f);
-                    File.Delete(f);
-                }
-            }
-
-            // remove empty directories.
-            RemoveEmptyDirectories(target);
-        }
-
-        private void RemoveEmptyDirectories(string folder)
-        {
-            DirectoryInfo dir = new DirectoryInfo(folder);
-
-            if (dir.GetDirectories().Any())
-            {
-                foreach(var subFolder in dir.GetDirectories())
-                {
-                    RemoveEmptyDirectories(subFolder.FullName);
-                }
-            }
-
-            dir.Refresh();
-
-            if (!dir.GetDirectories().Any() && !dir.GetFiles().Any())
-            {
-                try {
-                    LogHelper.Info<SnapshotManager>("Removing: {0}", () => folder);
-                    dir.Delete();
-                }
-                catch(Exception ex)
-                {
-                    LogHelper.Warn<SnapshotManager>("Removing folder fail: {0}", ()=> ex.Message);
-                }
-            }
-        }
-
-        private void DeleteDirectory(string target_dir)
-        {
-            string[] files = Directory.GetFiles(target_dir);
-            string[] dirs = Directory.GetDirectories(target_dir);
-
-            foreach (string file in files)
-            {
-                File.SetAttributes(file, FileAttributes.Normal);
-                File.Delete(file);
-            }
-
-            foreach (string dir in dirs)
-            {
-                DeleteDirectory(dir);
-            }
-
-            Directory.Delete(target_dir, false);
-        }
+        
         #endregion
-
-    }
-
-    class FileCompare : IEqualityComparer<FileInfo>
-    {
-        public FileCompare() { }
-
-        public bool Equals(FileInfo x, FileInfo y)
-        {
-            if (x.Name == y.Name && x.Length == y.Length)
-            {
-                var xhash = GetFileHash(x.FullName, x.Name);
-                var yhash = GetFileHash(y.FullName, y.Name);
-
-                LogHelper.Info<SnapshotManager>("Compare: {0} {1}", () => x.Name, () => y.Name);
-                LogHelper.Info<SnapshotManager>("Compare: {0} {1}", () => xhash, () => yhash);
-                return xhash.Equals(yhash);
-            }
-            return false;
-        }
-
-        public int GetHashCode(FileInfo x)
-        {
-            return GetFileHash(x.FullName, x.Name).GetHashCode();
-        }
-
-        private string GetFileHash(string path, string name)
-        {
-            using (var md5 = MD5.Create())
-            {
-                using (var stream = File.OpenRead(path))
-                {
-                    return BitConverter.ToString(md5.ComputeHash(stream)) + name;
-                }
-            }
-        }
     }
 }
