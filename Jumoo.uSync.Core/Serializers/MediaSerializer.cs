@@ -120,7 +120,7 @@ namespace Jumoo.uSync.Core.Serializers
         public override SyncAttempt<IMedia> DesearlizeSecondPass(IMedia item, XElement node)
         {
             base.DeserializeMappedIds(item, node);
-            PublishOrSave(item, true);
+            PublishOrSave(item, true, true);
 
             return SyncAttempt<IMedia>.Succeed(item.Name, ChangeType.Import);
         }
