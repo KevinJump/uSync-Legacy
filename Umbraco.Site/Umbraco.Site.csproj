@@ -56,6 +56,14 @@
       <HintPath>..\packages\UmbracoCms.Core.7.3.0-beta3\lib\businesslogic.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Chauffeur, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Chauffeur.0.6.0-beta12\lib\net45\Chauffeur.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Chauffeur.Runner, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Chauffeur.Runner.0.6.0-beta12\lib\net45\Chauffeur.Runner.exe</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ClientDependency.Core, Version=1.8.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ClientDependency.1.8.4\lib\net45\ClientDependency.Core.dll</HintPath>
       <Private>True</Private>
@@ -183,6 +191,10 @@
     </Reference>
     <Reference Include="System.Data.SqlServerCe.Entity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <HintPath>..\packages\UmbracoCms.Core.7.3.0-beta3\lib\System.Data.SqlServerCe.Entity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Abstractions, Version=1.4.0.83, Culture=neutral, PublicKeyToken=d480b5b72fb413da, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Abstractions.1.4.0.83\lib\net35\System.IO.Abstractions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http" />
