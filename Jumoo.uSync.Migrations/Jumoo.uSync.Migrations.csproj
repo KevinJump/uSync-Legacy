@@ -46,6 +46,10 @@
     <Reference Include="Chauffeur">
       <HintPath>..\..\..\..\Expreiments\Umbraco\73CommandLine\73CommandLine\bin\Chauffeur.dll</HintPath>
     </Reference>
+    <Reference Include="CommandLine, Version=1.9.71.2, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
       <Private>True</Private>
@@ -85,6 +89,8 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Deliveriables\ImportCommand.cs" />
+    <Compile Include="Deliveriables\Options.cs" />
     <Compile Include="Deliveriables\uSyncDeliverable.cs" />
     <Compile Include="Helpers\SnapshotIO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
