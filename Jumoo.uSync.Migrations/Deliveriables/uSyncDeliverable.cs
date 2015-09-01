@@ -42,9 +42,11 @@ namespace Jumoo.uSync.Migrations.Deliveriables
 
             switch (invokedVerb)
             {
+                case "list":
+                    break;
                 case "import":
                     ImportCommand importer = new ImportCommand(In, Out);
-                    await importer.Import((ImportOptions)invokedInstance);
+                    await importer.Process((ImportOptions)invokedInstance);
                     break;
                 case "export":
                     break;
@@ -78,8 +80,5 @@ namespace Jumoo.uSync.Migrations.Deliveriables
             await Out.WriteLineAsync("\n\t\t\t will search ~/usytnc/data/macro/test.config");
             await Out.WriteLineAsync("\n\t\t\t\t and any sub folders of ~/uSync/data/macro/");
         }
-
-
-
     }
 }

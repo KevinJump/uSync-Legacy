@@ -9,11 +9,19 @@ namespace Jumoo.uSync.Migrations.Deliveriables
 {
     public class Options
     {
-        [VerbOption("import", HelpText = "Import files/folders"]
+        [VerbOption("list")]
+        public ListOptions ListVerb { get; set; }
+
+        [VerbOption("import", HelpText = "Import files/folders")]
         public ImportOptions ImportVerb { get; set; }
 
         [VerbOption("export")]
         public ExportOptions ExportVerb { get; set; }
+    }
+
+    public class ListOptions
+    {
+        public UmbracoType Type { get; set; }
     }
 
     public class ImportOptions
@@ -31,8 +39,19 @@ namespace Jumoo.uSync.Migrations.Deliveriables
 
     public class ExportOptions
     {
-        public string itemType { get; set; }
+        public UmbracoType Type { get; set; }
         public string itemKey { get; set; }
         public string fileName { get; set; }
+    }
+
+    public enum UmbracoType
+    {
+        DataType,
+        ContentType,
+        MediaType,
+        Language,
+        DictionaryItem,
+        Template,
+        Macro
     }
 }

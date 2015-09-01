@@ -21,7 +21,7 @@ namespace Jumoo.uSync.Migrations.Deliveriables
             In = reader;
         }
 
-        public async Task Import(ImportOptions options)
+        public async Task Process(ImportOptions options)
         {
             if (options.Folder)
             {
