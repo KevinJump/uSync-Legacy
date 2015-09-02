@@ -70,17 +70,14 @@ namespace Jumoo.uSync.Migrations.Deliveriables
             await Out.WriteLineAsync("");
             await Out.WriteLineAsync("actions:");
             await Out.WriteLineAsync("\t list [type]");
-            await Out.WriteLineAsync("\t import filename [-all]");
-            await Out.WriteLineAsync("\t export type name filename");
-            await Out.WriteLineAsync("\t create-snapshot name");
-            await Out.WriteLineAsync("\t import-snapshot name");
-            await Out.WriteLineAsync("\t run-migration");
+            await Out.WriteLineAsync("\t import -f filename [-force] [-folder]");
+            await Out.WriteLineAsync("\t export -t type -n name -f filename");
 
             await Out.WriteLineAsync("\n\t uSync will look for files in:");
             await Out.WriteLineAsync("\t\t uSync\\data");
             await Out.WriteLineAsync("\t\t and subfolders of any sepcified folder");
 
-            await Out.WriteLineAsync("\n\t\t example : usync import macro/test.config");
+            await Out.WriteLineAsync("\n\t\t example : usync import -f macro/test.config");
             await Out.WriteLineAsync("\n\t\t\t will search ~/usytnc/data/macro/test.config");
             await Out.WriteLineAsync("\n\t\t\t\t and any sub folders of ~/uSync/data/macro/");
         }
