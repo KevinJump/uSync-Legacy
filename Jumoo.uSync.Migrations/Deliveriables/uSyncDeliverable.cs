@@ -49,13 +49,17 @@ namespace Jumoo.uSync.Migrations.Deliveriables
                     await importer.Process((ImportOptions)invokedInstance);
                     break;
                 case "export":
+                    ExportCommand exporter = new ExportCommand(In, Out);
+                    await exporter.Process((ExportOptions)invokedInstance);
                     break;
+                /* snapshots will be in own deliveriable. 
                 case "create-snapshot":
                     break;
                 case "import-snapshot":
                     break;
                 case "run-migration":
                     break;
+                */
             }
             return DeliverableResponse.Continue;
         }

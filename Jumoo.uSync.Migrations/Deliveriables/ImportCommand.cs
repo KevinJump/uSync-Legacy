@@ -23,6 +23,10 @@ namespace Jumoo.uSync.Migrations.Deliveriables
 
         public async Task Process(ImportOptions options)
         {
+            await Out.WriteLineAsync(
+                string.Format("Importing {0} with Force: {1}", options.FileName, options.Force));
+
+
             if (options.Folder)
             {
                 await ImportFolders(options.FileName, options.Force);

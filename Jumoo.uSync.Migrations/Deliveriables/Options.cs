@@ -26,10 +26,10 @@ namespace Jumoo.uSync.Migrations.Deliveriables
 
     public class ImportOptions
     {
-        [Option(Required = true)]
+        [Option('f', "file", Required = true)]
         public string FileName { get; set; }
 
-        [Option('f', DefaultValue = false)]
+        [Option("force", DefaultValue = false)]
         public bool Force { get; set; }
 
         [Option('d')]
@@ -39,8 +39,13 @@ namespace Jumoo.uSync.Migrations.Deliveriables
 
     public class ExportOptions
     {
+        [Option('t', "type")]
         public UmbracoType Type { get; set; }
+
+        [Option('n', "name")]
         public string itemKey { get; set; }
+
+        [Option('f', "file")]
         public string fileName { get; set; }
     }
 
