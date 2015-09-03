@@ -47,6 +47,7 @@ namespace Jumoo.uSync.Migrations.Deliveriables
                         await CreateSnapshot(args[1]);
                         break;
                     case "import":
+                        await Out.WriteLineAsync("Not implimented - you should use import-all to ensure all changes are imported");
                         break;
                     case "import-all":
                         await ImportAll();
