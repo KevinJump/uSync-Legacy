@@ -103,14 +103,14 @@ namespace Jumoo.uSync.Migrations.Chauffeur
             var migrationManager = new MigrationManager("~/usync/migrations");
             var migrations = migrationManager.ListMigrations();
 
-            if (migrations.Any())
+            if (migrations.Any()) 
             {
-                await Out.WriteLineAsync(string.Format("Found {0} migrations", migrations.Count()));
+                await Out.WriteLineAsync(string.Format("Found {0} migrations\n================", migrations.Count()));
 
                 foreach(var migration in migrations)
                 {
                     await Out.WriteLineAsync(
-                        string.Format("{0. -30} {1} [{2} file{3}",
+                        string.Format("{0,-30} {1} [{2} file{3}]",
                         migration.Name, migration.Time, migration.FileCount, migration.FileCount > 1 ? "s" : ""));
                 }
             }

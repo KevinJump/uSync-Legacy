@@ -1,4 +1,13 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="uSyncMigrationsDashboard.ascx.cs" Inherits="Jumoo.uSync.Migrations.uSyncMigrationsDashboard" %>
+<script type="text/javascript">
+    $(document.forms[0]).submit(function () {
+        document.getElementById("progressnote").innerHTML
+            = "Doing stuff... <small>can take a little while</small>";
+
+        document.getElementById("usyncinprogress").style.visibility = "visible";
+        document.getElementById("usyncupdated").style.display = "none";
+    });
+</script>
 
 <div class="row">
     <div class="span12">
@@ -21,15 +30,34 @@
             </div>
           </div>
           <div class="control-group">
-            <asp:Button ID="btnSnapshot" runat="server" OnClick="btnSnapshot_Click" Text="Create Snapshot" CssClass="btn btn-default" />
+            <asp:Button ID="btnSnapshot" runat="server" OnClick="btnSnapshot_Click" Text="Create Snapshot" CssClass="btn btn-info" />
           </div>
         </form>
     </div>
     <div class="span6">
+        <h4>Apply</h4>
         You can combine all the snapshots below, and apply their changes to this umbraco installation: 
-        <asp:Button ID="btnApplySnapshot" runat="server" Text="Apply Snapshots" CssClass="btn btn-info" OnClick="btnApplySnapshot_Click" />
+        <asp:Button ID="btnApplySnapshot" runat="server" Text="Apply Snapshots" CssClass="btn btn-default" OnClick="btnApplySnapshot_Click" />
     </div>
 </div>
+
+<div class="row">
+    <div class="span12">
+        <asp:Label ID="lbStatus" runat="server"></asp:Label>
+    </div>
+</div>
+
+<div id="usyncinprogress" style="visibility:hidden;">
+    <div class="row">
+        <div class="span12">
+            <h3 id="progressnote"></h3>
+            <div class="progress progress-striped active">
+                <div class="bar" style="width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
     <asp:Repeater ID="snapshotList" runat="server">
         <HeaderTemplate>

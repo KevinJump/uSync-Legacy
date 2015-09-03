@@ -19,24 +19,33 @@ namespace Jumoo.uSync.Migrations
 
         protected void btnSnapshot_Click(object sender, EventArgs e)
         {
-            string snapshotRoot = "~/uSync/snapshots";
+            string snapshotRoot = "~/uSync/Migrations";
 
             var snapshotMgr = new MigrationManager(snapshotRoot);
-            snapshotMgr.CreateMigration(txtSnapshotName.Text);
+            var info = snapshotMgr.CreateMigration(txtSnapshotName.Text);
+
+            if (info.FileCount == 0)
+            {
+                lbStatus.Text = "Migration contained no changes, so no folder has been created";
+            }
+            else
+            {
+                lbStatus.Text = "Migration created";
+            }
 
             GetSnapShots();
         }
 
         private void GetSnapShots()
         {
-            var snapshotMgr = new MigrationManager("~/uSync/snapshots");
+            var snapshotMgr = new MigrationManager("~/uSync/migrations");
             snapshotList.DataSource = snapshotMgr.ListMigrations();
             snapshotList.DataBind();
         }
 
         protected void btnApplySnapshot_Click(object sender, EventArgs e)
         {
-            var snapshotMgr = new MigrationManager("~/uSync/snapshots");
+            var snapshotMgr = new MigrationManager("~/uSync/migrations");
             snapshotMgr.ApplyMigrations();
         }
     }

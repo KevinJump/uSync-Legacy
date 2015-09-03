@@ -69,6 +69,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="package.xml" />
     <Content Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -138,7 +139,14 @@
   </Target>
   <PropertyGroup>
     <PostBuildEvent>XCOPY "$(TargetPath)" "$(SolutionDir)Umbraco.Site\Bin\" /q /y
-XCOPY "$(ProjectDir)uSyncMigrationsDashboard.ascx" "$(SolutionDir)Umbraco.Site\App_Plugins\uSync\Migrations\" /q /y</PostBuildEvent>
+XCOPY "$(ProjectDir)uSyncMigrationsDashboard.ascx" "$(SolutionDir)Umbraco.Site\App_Plugins\uSync\Migrations\" /q /y
+
+XCOPY "$(TargetPath)" "$(SolutionDir)umbPackage\uSync.Migrations\" /q /y
+XCOPY "$(ProjectDir)uSyncMigrationsDashboard.ascx" "$(SolutionDir)umbPackage\uSync.Migrations\" /q /y
+
+XCOPY "$(ProjectDir)package.xml" "$(SolutionDir)umbPackage\uSync.Migrations\" /q /y
+
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

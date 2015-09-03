@@ -1,0 +1,10 @@
+<dashBoard>
+    <section alias="usyncMigration">
+        <areas>
+          <area>developer</area>
+        </areas>
+        <tab caption="uSync Migrations">
+          <control>/App_Plugins/usync/Migrations/uSyncMigrationsDashboard.ascx</control>
+        </tab>
+    </section>
+</dashBoard>

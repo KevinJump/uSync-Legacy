@@ -1,0 +1,10 @@
+<dashBoard>
+    <section alias="usyncBackOffice">
+        <areas>
+          <area>developer</area>
+        </areas>
+        <tab caption="uSync Backoffice">
+          <control>/App_Plugins/usync/BackOffice/uSyncBackOfficeDashboard.ascx</control>
+        </tab>
+    </section>
+</dashBoard>

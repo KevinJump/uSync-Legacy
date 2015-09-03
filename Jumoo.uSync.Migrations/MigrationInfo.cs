@@ -24,7 +24,7 @@ namespace Jumoo.uSync.Migrations
                             path.LastIndexOf('\\') + 1,
                             path.LastIndexOf('_') - path.LastIndexOf('\\')-1);
 
-            Name = Name + " [" + dateBit + "]";
+            Name = Name; // + " [" + dateBit + "]";
 
             DateTime when;
             if (DateTime.TryParseExact(dateBit, "yyyyMMdd_HHmmss", CultureInfo.InvariantCulture,

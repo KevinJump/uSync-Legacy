@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<umbPackage>
+  <files>
+    <file>
+      <!-- back office -->
+      <guid>Jumoo.uSync.Migrations.dll</guid>
+      <orgPath>/bin</orgPath>
+      <orgName>Jumoo.uSync.Migrations.dll</orgName>
+    </file>
+    <file>
+      <guid>uSyncMigrationsDashboard.ascx</guid>
+      <orgPath>/App_Plugins/uSync/Migrations</orgPath>
+      <orgName>uSyncMigrationsDashboard.ascx</orgName>
+    </file>
+  </files>
+  <info>
+    <package>
+      <name>uSync.Migrations</name>
+      <version>3.0</version>
+      <license url="http://opensource.org/licenses/MIT">MIT License</license>
+      <url>http://jumoo.uk/uSync</url>
+      <requirements>
+        <major>3</major>
+        <minor>0</minor>
+        <patch>0</patch>
+      </requirements>
+    </package>
+    <author>
+      <name>Kevin Jump</name>
+      <website>http://jumoo.uk</website>
+    </author>
+    <readme>
+      <![CDATA[ uSync.Migrations 3.0rc1 (for Umbraco 7.3+) 
+=======================================
+create and apply migration snapshots as you develop
+
+this package requires uSync.BackOffice. you should have that installed first.
+]]>
+    </readme>
+  </info>
+  <DocumentTypes />
+  <Templates />
+  <Stylesheets />
+  <Macros />
+  <DictionaryItems />
+  <Languages />
+  <DataTypes />
+  <Actions>
+    <Action runat="install" alias="addDashboardSection" dashboardAlias="usyncMigrations">
+      <section>
+        <areas>
+          <area>developer</area>
+        </areas>
+        <tab caption="uSync Migrations">
+          <control>/App_Plugins/usync/Migrations/uSyncMigrationsDashboard.ascx</control>
+        </tab>
+      </section>
+    </Action>
+  </Actions>
+</umbPackage>

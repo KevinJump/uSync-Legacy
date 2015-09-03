@@ -40,6 +40,15 @@ namespace Jumoo.uSync.Migrations {
         protected global::System.Web.UI.WebControls.Button btnApplySnapshot;
         
         /// <summary>
+        /// lbStatus control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbStatus;
+        
+        /// <summary>
         /// snapshotList control.
         /// </summary>
         /// <remarks>
