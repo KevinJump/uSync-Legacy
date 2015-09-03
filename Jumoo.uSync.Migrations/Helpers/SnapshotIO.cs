@@ -21,7 +21,7 @@ namespace Jumoo.uSync.Migrations.Helpers
         {
             DirectoryInfo sourceDir = new DirectoryInfo(source);
 
-            if (Directory.Exists(target))
+            if (!Directory.Exists(target))
                 Directory.CreateDirectory(target);
 
             FileInfo[] files = sourceDir.GetFiles();

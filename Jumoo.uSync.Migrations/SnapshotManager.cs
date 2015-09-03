@@ -53,7 +53,7 @@ namespace Jumoo.uSync.Migrations
             return snapshots;
         }
 
-        public void CreateSnapshot(string name)
+        public SnapshotInfo CreateSnapshot(string name)
         {
             var masterSnap = CombineSnapshots(_rootFolder);
 
@@ -66,6 +66,7 @@ namespace Jumoo.uSync.Migrations
 
             foreach (var folder in _folders)
             {
+          
                 var source = IOHelper.MapPath("~/" + folder);
                 if (Directory.Exists(source))
                 {
@@ -91,6 +92,13 @@ namespace Jumoo.uSync.Migrations
 
             LogHelper.Info<SnapshotManager>("Cleaned Snapshot up..");
 
+            if (!Directory.Exists(snapshotFolder))
+            {
+                // empty snapshot
+                LogHelper.Info<SnapshotManager>("No changes in this snapshot");
+            }
+
+            return new SnapshotInfo(snapshotFolder);
         }
 
         /// <summary>
@@ -125,7 +133,7 @@ namespace Jumoo.uSync.Migrations
         {
             var tempRoot = IOHelper.MapPath(Path.Combine(SystemDirectories.Data, "temp", "usync", "snapshots"));
 
-            if (Directory.Exists(tempRoot))
+           if (Directory.Exists(tempRoot))
                 Directory.Delete(tempRoot, true);
 
             Directory.CreateDirectory(tempRoot);
@@ -144,7 +152,7 @@ namespace Jumoo.uSync.Migrations
                 return tempRoot;
             }
 
-            return string.Empty;
+            return tempRoot;
         }
         
         #endregion

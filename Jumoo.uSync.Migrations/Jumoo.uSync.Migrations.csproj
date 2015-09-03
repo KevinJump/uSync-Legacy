@@ -89,6 +89,7 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Deliveriables\ChangeSetDeliverable.cs" />
     <Compile Include="Deliveriables\ExportCommand.cs" />
     <Compile Include="Deliveriables\ImportCommand.cs" />
     <Compile Include="Deliveriables\Options.cs" />
