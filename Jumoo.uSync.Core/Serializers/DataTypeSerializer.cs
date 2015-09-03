@@ -214,6 +214,7 @@ namespace Jumoo.uSync.Core.Serializers
         private XElement SerializePreValues(IDataTypeDefinition item, XElement node)
         {
             var mapper = LoadMapper(node, item.PropertyEditorAlias);
+            var mapId = 1; 
 
             // we clear them out, and write them ourselves.
             var nodePreValues = new XElement("PreValues");
@@ -235,10 +236,11 @@ namespace Jumoo.uSync.Core.Serializers
                 {
                     if (itemPreValuePair.Key.StartsWith("zzzuSync") || mapper.ValueAlias == itemPreValuePair.Key)
                     {
-                        Guid newGuid = Guid.NewGuid();
-                        if (mapper.MapToGeneric(preValueValue, newGuid))
+                        // Guid newGuid = Guid.NewGuid();
+                        if (mapper.MapToGeneric(preValueValue, mapId))
                         {
-                            preValueNode.Add(new XAttribute("MapGuid", newGuid));
+                            preValueNode.Add(new XAttribute("MapGuid", mapId));
+                            mapId++;
                         }
                     }
                 }

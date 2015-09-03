@@ -47,7 +47,7 @@ namespace Jumoo.uSync.Core.Helpers
         }
 
         #region ToGeneric (going out from installation)
-        public bool MapToGeneric(string value, Guid guid)
+        public bool MapToGeneric(string value, int mapId)
         {
             bool isMapped = false;
 
@@ -85,7 +85,7 @@ namespace Jumoo.uSync.Core.Helpers
 
                     if (!string.IsNullOrEmpty(mappedValue))
                     {
-                        AddToNode(id, mappedValue, type, guid);
+                        AddToNode(id, mappedValue, type, mapId);
                         isMapped = true;
                         break;
                     }
@@ -146,7 +146,7 @@ namespace Jumoo.uSync.Core.Helpers
                 || (val.StartsWith("[") && val.EndsWith("]"));
         }
 
-        private void AddToNode(string id, string value, string type, Guid guid)
+        private void AddToNode(string id, string value, string type, int mapId)
         {
             XElement nodes = _node.Element("Nodes");
             if (nodes == null)
@@ -159,7 +159,7 @@ namespace Jumoo.uSync.Core.Helpers
                     new XAttribute("Id", id),
                     new XAttribute("Value", value),
                     new XAttribute("Type", type),
-                    new XAttribute("MapGuid", guid.ToString()));
+                    new XAttribute("MapGuid", mapId.ToString()));
 
             nodes.Add(mappedNode);
         }
