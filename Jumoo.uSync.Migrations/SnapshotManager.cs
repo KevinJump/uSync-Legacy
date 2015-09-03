@@ -112,6 +112,17 @@ namespace Jumoo.uSync.Migrations
             if (Directory.Exists(snapshotImport))
             {
                 var actions = uSyncBackOfficeContext.Instance.ImportAll(snapshotImport);
+
+                // Import the other folders across to umbraco...
+                foreach(var folder in _folders)
+                {
+                    var snapshotFolder = Path.Combine(snapshotImport, folder);
+                    var target = IOHelper.MapPath("~/" + folder);
+
+                    // copy across.
+                    SnapshotIO.MergeFolder(target, snapshotFolder);
+                }
+
                 return actions;
             }
 
