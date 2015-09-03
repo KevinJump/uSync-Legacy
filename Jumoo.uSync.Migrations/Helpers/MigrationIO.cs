@@ -14,7 +14,7 @@ namespace Jumoo.uSync.Migrations.Helpers
     ///  mostly this is around merging 
     ///  and comparing folders
     /// </summary>
-    public class SnapshotIO
+    public class MigrationIO
     {
 
         public static void MergeFolder(string target, string source)

@@ -14,13 +14,13 @@ using Jumoo.uSync.Migrations.Helpers;
 
 namespace Jumoo.uSync.Migrations
 {
-    public class SnapshotManager
+    public class MigrationManager
     {
         private string _rootFolder;
 
         private List<string> _folders;
 
-        public SnapshotManager(string folder)
+        public MigrationManager(string folder)
         {
             _rootFolder = IOHelper.MapPath(folder);
 
@@ -37,32 +37,32 @@ namespace Jumoo.uSync.Migrations
             _folders.Add("fonts");
         }
 
-        public List<SnapshotInfo> ListSnapshots()
+        public List<MigrationInfo> ListMigrations()
         {
-            List<SnapshotInfo> snapshots = new List<SnapshotInfo>();
+            List<MigrationInfo> snapshots = new List<MigrationInfo>();
             if (Directory.Exists(_rootFolder))
             {
                 foreach (var dir in Directory.GetDirectories(_rootFolder))
                 {
                     DirectoryInfo snapshotDir = new DirectoryInfo(dir);
 
-                    snapshots.Add(new SnapshotInfo(dir));
+                    snapshots.Add(new MigrationInfo(dir));
                 }
             }
 
             return snapshots;
         }
 
-        public SnapshotInfo CreateSnapshot(string name)
+        public MigrationInfo CreateMigration(string name)
         {
-            var masterSnap = CombineSnapshots(_rootFolder);
+            var masterSnap = CombineMigrations(_rootFolder);
 
             var snapshotFolder = Path.Combine(_rootFolder,
                 string.Format("{0}_{1}", DateTime.Now.ToString("yyyyMMdd_HHmmss"), name.ToSafeFileName()));
 
             uSyncBackOfficeContext.Instance.ExportAll(snapshotFolder);
 
-            LogHelper.Info<SnapshotManager>("Export Complete");
+            LogHelper.Info<MigrationManager>("Export Complete");
 
             foreach (var folder in _folders)
             {
@@ -70,18 +70,18 @@ namespace Jumoo.uSync.Migrations
                 var source = IOHelper.MapPath("~/" + folder);
                 if (Directory.Exists(source))
                 {
-                    LogHelper.Info<SnapshotManager>("Including {0} in snapshot", () => source);
+                    LogHelper.Info<MigrationManager>("Including {0} in snapshot", () => source);
                     var target = Path.Combine(snapshotFolder, folder);
-                    SnapshotIO.MergeFolder(target, source);
+                    MigrationIO.MergeFolder(target, source);
                 }
             }
 
-            LogHelper.Info<SnapshotManager>("Extra folders copied");
+            LogHelper.Info<MigrationManager>("Extra folders copied");
 
             // now we delete anything that is in any of the previous snapshots.
             if (!string.IsNullOrEmpty(masterSnap))
             {
-                SnapshotIO.RemoveDuplicates(snapshotFolder, masterSnap);
+                MigrationIO.RemoveDuplicates(snapshotFolder, masterSnap);
 
                 // todo - capture deletes since last snapshot?
                 //          things in the master but not in our new one?
@@ -90,24 +90,24 @@ namespace Jumoo.uSync.Migrations
                 // Directory.Delete(masterSnap, true);
             }
 
-            LogHelper.Info<SnapshotManager>("Cleaned Snapshot up..");
+            LogHelper.Info<MigrationManager>("Cleaned Snapshot up..");
 
             if (!Directory.Exists(snapshotFolder))
             {
                 // empty snapshot
-                LogHelper.Info<SnapshotManager>("No changes in this snapshot");
+                LogHelper.Info<MigrationManager>("No changes in this snapshot");
             }
 
-            return new SnapshotInfo(snapshotFolder);
+            return new MigrationInfo(snapshotFolder);
         }
 
         /// <summary>
         ///  takes everything in the snapshot folder, builds a master snapshot
         ///  and then runs it through an import
         /// </summary>
-        public IEnumerable<uSyncAction> ApplySnapshots()
+        public IEnumerable<uSyncAction> ApplyMigrations()
         {
-            var snapshotImport = CombineSnapshots(_rootFolder);
+            var snapshotImport = CombineMigrations(_rootFolder);
 
             if (Directory.Exists(snapshotImport))
             {
@@ -120,7 +120,7 @@ namespace Jumoo.uSync.Migrations
                     var target = IOHelper.MapPath("~/" + folder);
 
                     // copy across.
-                    SnapshotIO.MergeFolder(target, snapshotFolder);
+                    MigrationIO.MergeFolder(target, snapshotFolder);
                 }
 
                 return actions;
@@ -140,9 +140,9 @@ namespace Jumoo.uSync.Migrations
         /// </summary>
         /// <param name="snapshotFolder"></param>
         /// <returns></returns>
-        private string CombineSnapshots(string snapshotFolder)
+        private string CombineMigrations(string snapshotFolder)
         {
-            var tempRoot = IOHelper.MapPath(Path.Combine(SystemDirectories.Data, "temp", "usync", "snapshots"));
+            var tempRoot = IOHelper.MapPath(Path.Combine(SystemDirectories.Data, "temp", "usync", "migrations"));
 
            if (Directory.Exists(tempRoot))
                 Directory.Delete(tempRoot, true);
@@ -157,7 +157,7 @@ namespace Jumoo.uSync.Migrations
             {
                 foreach (var snapshot in snapshots)
                 {
-                    SnapshotIO.MergeFolder(tempRoot, snapshot.FullName);
+                    MigrationIO.MergeFolder(tempRoot, snapshot.FullName);
                 }
 
                 return tempRoot;

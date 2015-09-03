@@ -11,11 +11,11 @@ using Jumoo.uSync.BackOffice;
 
 namespace Jumoo.uSync.Migrations.Deliveriables
 {
-    [DeliverableName("change-set")]
+    [DeliverableName("migration")]
     [DeliverableAlias("cs")]
-    public class ChangeSetDeliverable : Deliverable, IProvideDirections
+    public class MigrationDeliverable : Deliverable, IProvideDirections
     {
-        public ChangeSetDeliverable(TextReader reader, TextWriter writer)
+        public MigrationDeliverable(TextReader reader, TextWriter writer)
             :base (reader, writer)
         {
             uSyncCoreContext.Instance.Init();
@@ -23,13 +23,13 @@ namespace Jumoo.uSync.Migrations.Deliveriables
 
         public async Task Directions()
         {
-            await Out.WriteLineAsync("change-set <actions> <name>");
+            await Out.WriteLineAsync("migration <actions> <name>");
             await Out.WriteLineAsync("");
-            await Out.WriteLineAsync("Creates and manages changesets of your files.");
+            await Out.WriteLineAsync("Creates and manages migrations sets of your files.");
             await Out.WriteLineAsync("");
-            await Out.WriteLineAsync("change-set create [name]");
-            await Out.WriteLineAsync("change-set import [name]");
-            await Out.WriteLineAsync("change-set import-all");
+            await Out.WriteLineAsync("migration create [name]");
+            // await Out.WriteLineAsync("migration import [name]");
+            await Out.WriteLineAsync("migration import-all");
         }
 
         public override async Task<DeliverableResponse> Run(string command, string[] args)
@@ -44,7 +44,7 @@ namespace Jumoo.uSync.Migrations.Deliveriables
                         await ListSnapshots();
                         break;
                     case "create":
-                        await CreateSnapshot(args[1]);
+                        await CreateMigration(args[1]);
                         break;
                     case "import":
                         await Out.WriteLineAsync("Not implimented - you should use import-all to ensure all changes are imported");
@@ -60,21 +60,21 @@ namespace Jumoo.uSync.Migrations.Deliveriables
             return DeliverableResponse.Continue;
         }
 
-        public async Task CreateSnapshot(string name)
+        public async Task CreateMigration(string name)
         {
             uSyncBackOfficeContext.Instance.Init();
 
             await Out.WriteLineAsync("Creating ChangeSet: [" + name + "]");
-            var snapshotManager = new SnapshotManager("~/usync/changesets/");
-            var info = snapshotManager.CreateSnapshot(name);
+            var snapshotManager = new MigrationManager("~/usync/migrations/");
+            var info = snapshotManager.CreateMigration(name);
 
             if (info.FileCount == 0)
             {
-                await Out.WriteLineAsync("ChangeSet contains no changes, no folder created");
+                await Out.WriteLineAsync("Migration contains no changes, no folder created");
             }
             else
             {
-                await Out.WriteLineAsync("ChangeSet Created " + info.FileCount + " changes");
+                await Out.WriteLineAsync("Migration Created " + info.FileCount + " changes");
             }
             
         }
@@ -83,9 +83,9 @@ namespace Jumoo.uSync.Migrations.Deliveriables
         {
             uSyncBackOfficeContext.Instance.Init();
 
-            await Out.WriteLineAsync("merging all changesets");
-            var snapshotManager = new SnapshotManager("~/usync/changesets/");
-            var actions = snapshotManager.ApplySnapshots();
+            await Out.WriteLineAsync("merging all Migrations");
+            var snapshotManager = new MigrationManager("~/usync/migrations/");
+            var actions = snapshotManager.ApplyMigrations();
 
             if (actions.Any() && actions.Any(x => x.Change > ChangeType.NoChange))
             {
@@ -107,11 +107,11 @@ namespace Jumoo.uSync.Migrations.Deliveriables
         {
             uSyncBackOfficeContext.Instance.Init();
 
-            var snapshotManager = new SnapshotManager("~/usync/changesets/");
-            var snaps = snapshotManager.ListSnapshots();
+            var snapshotManager = new MigrationManager("~/usync/migrations/");
+            var snaps = snapshotManager.ListMigrations();
             if (snaps.Any())
             {
-                await Out.WriteLineAsync("Found " + snaps.Count() + " change sets\n=================");
+                await Out.WriteLineAsync("Found " + snaps.Count() + " migrations\n=================");
                 foreach (var snap in snaps)
                 {
                     await Out.WriteLineAsync(string.Format("{0,-30} {1} [{2} file{3}]", snap.Name, snap.Time, snap.FileCount, snap.FileCount > 1 ? "s" : ""));
@@ -119,7 +119,7 @@ namespace Jumoo.uSync.Migrations.Deliveriables
             }
             else
             {
-                await Out.WriteLineAsync("there are no changesets - use change-set create [name] to create a change");
+                await Out.WriteLineAsync("there are no migration - use migration create [name] to create a change");
             }
         }
     }

@@ -21,23 +21,23 @@ namespace Jumoo.uSync.Migrations
         {
             string snapshotRoot = "~/uSync/snapshots";
 
-            var snapshotMgr = new SnapshotManager(snapshotRoot);
-            snapshotMgr.CreateSnapshot(txtSnapshotName.Text);
+            var snapshotMgr = new MigrationManager(snapshotRoot);
+            snapshotMgr.CreateMigration(txtSnapshotName.Text);
 
             GetSnapShots();
         }
 
         private void GetSnapShots()
         {
-            var snapshotMgr = new SnapshotManager("~/uSync/snapshots");
-            snapshotList.DataSource = snapshotMgr.ListSnapshots();
+            var snapshotMgr = new MigrationManager("~/uSync/snapshots");
+            snapshotList.DataSource = snapshotMgr.ListMigrations();
             snapshotList.DataBind();
         }
 
         protected void btnApplySnapshot_Click(object sender, EventArgs e)
         {
-            var snapshotMgr = new SnapshotManager("~/uSync/snapshots");
-            snapshotMgr.ApplySnapshots();
+            var snapshotMgr = new MigrationManager("~/uSync/snapshots");
+            snapshotMgr.ApplyMigrations();
         }
     }
 }

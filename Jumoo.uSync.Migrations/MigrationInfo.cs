@@ -7,14 +7,14 @@ using System.Web;
 
 namespace Jumoo.uSync.Migrations
 {
-    public class SnapshotInfo
+    public class MigrationInfo
     {
         public string Name { get; set; }
         public DateTime Time { get; set; }
         public string Path { get; set; }
         public int FileCount { get; set; }
 
-        public SnapshotInfo(string path)
+        public MigrationInfo(string path)
         {
             Path = path;
 
