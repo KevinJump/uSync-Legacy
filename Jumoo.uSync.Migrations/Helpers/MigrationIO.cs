@@ -72,6 +72,20 @@ namespace Jumoo.uSync.Migrations.Helpers
 
         }
 
+        public static IEnumerable<FileInfo> LeftOnlyFiles(string left, string right)
+        {
+            DirectoryInfo leftDir = new DirectoryInfo(left);
+            DirectoryInfo rightDir = new DirectoryInfo(right);
+
+            var leftList = leftDir.GetFiles("*.*", SearchOption.AllDirectories);
+            var rightList = rightDir.GetFiles("*.*", SearchOption.AllDirectories);
+
+            FileNameCompare fileNameCompare = new FileNameCompare(left, right);
+            var leftOnly = leftList.Except(rightList, fileNameCompare);
+
+            return leftOnly;
+        }
+
 
         public static void RemoveEmptyDirectories(string folder)
         {
@@ -94,6 +108,27 @@ namespace Jumoo.uSync.Migrations.Helpers
         }
     }
 
+    class FileNameCompare : IEqualityComparer<FileInfo>
+    {
+        private int leftRootLength;
+        private int rightRootLength;
+
+        public FileNameCompare(string leftRoot, string rightRoot)
+        {
+            leftRootLength = leftRoot.Length;
+            rightRootLength = rightRoot.Length;
+        }
+
+        public bool Equals(FileInfo x, FileInfo y)
+        {
+            return (x.FullName.Substring(leftRootLength) == y.FullName.Substring(rightRootLength));
+        }
+
+        public int GetHashCode(FileInfo x)
+        {
+            return x.FullName.Substring(leftRootLength).GetHashCode();
+        }
+    }
 
     class FileCompare : IEqualityComparer<FileInfo>
     {

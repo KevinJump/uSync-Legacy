@@ -6,11 +6,17 @@ using System.Web;
 using System.IO;
 using Umbraco.Core;
 using Umbraco.Core.IO;
-using Jumoo.uSync.BackOffice;
+
 using Umbraco.Core.Logging;
-using System.Security.Cryptography;
+
+using Jumoo.uSync.Core.Extensions;
+
+using Jumoo.uSync.BackOffice;
+using Jumoo.uSync.BackOffice.Helpers;
 
 using Jumoo.uSync.Migrations.Helpers;
+
+using System.Xml.Linq;
 
 namespace Jumoo.uSync.Migrations
 {
@@ -81,13 +87,18 @@ namespace Jumoo.uSync.Migrations
             // now we delete anything that is in any of the previous snapshots.
             if (!string.IsNullOrEmpty(masterSnap))
             {
+
+                // Capture deletes since last snapshot
+                //   things in the master but not in our new one, must have 
+                //   gone missing (delete?)
+
+                // IdentifyDeletes(masterSnap, snapshotFolder);
+
+
+                // take anything that is now in our snapshotFolder and masterSnapshot
+                // this will leave just the changes..
                 MigrationIO.RemoveDuplicates(snapshotFolder, masterSnap);
-
-                // todo - capture deletes since last snapshot?
-                //          things in the master but not in our new one?
-
-
-                // Directory.Delete(masterSnap, true);
+                Directory.Delete(masterSnap, true);
             }
 
             LogHelper.Info<MigrationManager>("Cleaned Snapshot up..");
@@ -164,6 +175,48 @@ namespace Jumoo.uSync.Migrations
             }
 
             return tempRoot;
+        }
+
+        /// <summary>
+        ///  workout what is a delete, anything that isn't in the target but is in the master
+        ///  should be a delete.
+        /// </summary>
+        /// <param name="master"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        private void IdentifyDeletes(string master, string target)
+        {
+            var missingFiles = MigrationIO.LeftOnlyFiles(master, target);
+
+            var actionTracker = new ActionTracker(target);
+
+            foreach(var file in missingFiles)
+            {
+                // work out the type of file...
+                if (File.Exists(file.FullName))
+                {
+                    XElement node = XElement.Load(file.FullName);
+                    var itemType = node.GetUmbracoType();
+                    var key = node.NameFromNode();
+
+                    // this isn't quite ready, we need to find id's to handle deletes,
+                    // and we need to check that the thing hasn't been renamed. 
+                    // so if it exsits only in master we need to double check its id 
+                    // doesn't still exist somewhere else on the install with the 
+                    // same id but a different name, 
+
+                    // we basically need some id hunting shizzel. 
+
+                    if (itemType != default(Type))
+                    {
+                        // add an action to the localalized action tracker.
+                        actionTracker.AddAction(SyncActionType.Delete, key, itemType);
+                    }
+                }
+
+            }
+
+            actionTracker.SaveActions();
         }
         
         #endregion

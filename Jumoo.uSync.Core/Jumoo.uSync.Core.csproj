@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Events.cs" />
     <Compile Include="Extensions\XElementTrackerExtension.cs" />
+    <Compile Include="Extensions\XElementuSyncTypeExtension.cs" />
     <Compile Include="Extensions\XElementValueExtensions.cs" />
     <Compile Include="Helpers\uSyncMediaFileMover.cs" />
     <Compile Include="Helpers\uSyncTreeWalker.cs" />
