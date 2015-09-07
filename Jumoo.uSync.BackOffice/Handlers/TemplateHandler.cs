@@ -120,7 +120,7 @@
                 LogHelper.Info<TemplateHandler>("Delete: Deleting uSync File for item: {0}", () => item.Name);
                 uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetItemPath(item));
 
-                ActionTracker.AddAction(SyncActionType.Delete, item.Alias, typeof(ITemplate));
+                uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, item.Alias, typeof(ITemplate));
                 
             }
         }
@@ -141,7 +141,7 @@
 
                     // becuase we delete by name, we should check the action log, and remove any entries with
                     // this alias.
-                    ActionTracker.RemoveActions(item.Alias, typeof(ITemplate));
+                    uSyncBackOfficeContext.Instance.Tracker.RemoveActions(item.Alias, typeof(ITemplate));
                 }
 
             }

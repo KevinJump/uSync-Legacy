@@ -14,6 +14,8 @@
         private static uSyncBackOfficeContext _instance;
         private SortedList<int, ISyncHandler> handlers;
 
+        public Helpers.ActionTracker Tracker; 
+
         public List<ISyncHandler> Handlers
         {
             get { return handlers.Select(x => x.Value).ToList(); }
@@ -60,6 +62,8 @@
 
             uSyncCoreContext.Instance.Init();
             _config = new uSyncBackOfficeConfig();
+
+            Tracker = new Helpers.ActionTracker(_config.Settings.MappedFolder());
         }
 
         public void SetupEvents()

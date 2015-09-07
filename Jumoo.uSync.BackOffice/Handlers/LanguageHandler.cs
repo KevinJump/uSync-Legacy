@@ -99,7 +99,7 @@
                 LogHelper.Info<MacroHandler>("Delete: Deleting uSync File for item: {0}", () => item.CultureName);
                 uSyncIOHelper.ArchiveRelativeFile(SyncFolder, item.CultureName.ToSafeAlias());
 
-                ActionTracker.AddAction(SyncActionType.Delete, item.CultureName, typeof(ILanguage));
+                uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, item.CultureName, typeof(ILanguage));
             }
         }
 
@@ -113,7 +113,7 @@
                 LogHelper.Info<LanguageHandler>("Save: Saving uSync file for item: {0}", () => item.CultureName);
                 ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
 
-                ActionTracker.RemoveActions(item.CultureName, typeof(ILanguage));
+                uSyncBackOfficeContext.Instance.Tracker.RemoveActions(item.CultureName, typeof(ILanguage));
             }
         }
 

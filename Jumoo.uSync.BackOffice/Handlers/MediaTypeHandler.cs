@@ -145,7 +145,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 LogHelper.Info<MediaTypeHandler>("Delete: Deleting uSync File for item: {0}", () => item.Name);
                 uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetItemPath(item), "def");
 
-                ActionTracker.AddAction(SyncActionType.Delete, item.Key, item.Alias, typeof(IMediaType));
+                uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, item.Key, item.Alias, typeof(IMediaType));
             }
         }
 

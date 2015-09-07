@@ -82,7 +82,7 @@
         {
             List<uSyncAction> syncActions = new List<uSyncAction>();
 
-            var actions = ActionTracker.GetActions(typeof(T));
+            var actions = uSyncBackOfficeContext.Instance.Tracker.GetActions(typeof(T));
 
             if (actions != null && actions.Any())
             {

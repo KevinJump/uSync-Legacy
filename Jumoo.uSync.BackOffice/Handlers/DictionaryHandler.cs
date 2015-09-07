@@ -133,7 +133,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 {
                     // delete
                     uSyncIOHelper.ArchiveRelativeFile(SyncFolder, item.ItemKey.ToSafeAlias());
-                    ActionTracker.AddAction(SyncActionType.Delete, item.ItemKey, typeof(IDictionaryItem));
+                    uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, item.ItemKey, typeof(IDictionaryItem));
                 }
             }
         }
@@ -153,7 +153,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 {
                     // name checker only really works, when the export has the guid in it.
                     // NameChecker.ManageOrphanFiles(Constants.Packaging.DictionaryItemNodeName, item.Key, action.FileName);
-                    ActionTracker.RemoveActions(topItem.ItemKey, typeof(IDictionaryItem));
+                    uSyncBackOfficeContext.Instance.Tracker.RemoveActions(topItem.ItemKey, typeof(IDictionaryItem));
                 }
             }
         }

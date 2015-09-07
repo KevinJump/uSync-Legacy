@@ -12,21 +12,20 @@ namespace Jumoo.uSync.BackOffice.Helpers
     /// <summary>
     ///  action tracker, lets you track deletes
     /// </summary>
-    public static class ActionTracker
+    public class ActionTracker
     {
         private static List<SyncAction> _actions;
         private static string _actionFile;
         private static object _saveLock = new object();
 
-        static ActionTracker()
+        public ActionTracker(string folder)
         {
-            _actionFile = Path.Combine(uSyncBackOfficeContext.Instance.Configuration.Settings.MappedFolder(),
-                "uSyncActions.config");
+            _actionFile = Path.Combine(folder,"uSyncActions.config");
 
             LoadActions();
         }
 
-        private static void LoadActions()
+        private void LoadActions()
         {
             lock(_saveLock)
             {
@@ -43,7 +42,7 @@ namespace Jumoo.uSync.BackOffice.Helpers
             }
         }
 
-        public static void SaveActions()
+        public void SaveActions()
         {
             lock(_saveLock)
             {
@@ -64,7 +63,7 @@ namespace Jumoo.uSync.BackOffice.Helpers
         /// <param name="key">Guid of item (if it has one)</param>
         /// <param name="keyNameValue">value of element used as key (alias or name)</param>
         /// <param name="type">type of object</param>
-        public static void AddAction(SyncActionType actionType, Guid key, string keyNameValue, Type type)
+        public void AddAction(SyncActionType actionType, Guid key, string keyNameValue, Type type)
         {
             _actions.Add(new SyncAction()
             {
@@ -77,7 +76,7 @@ namespace Jumoo.uSync.BackOffice.Helpers
             SaveActions();
         }
 
-        public static void AddAction(SyncActionType actionType, string keyNameValue, Type type)
+        public void AddAction(SyncActionType actionType, string keyNameValue, Type type)
         {
             _actions.Add(new SyncAction()
             {
@@ -90,7 +89,7 @@ namespace Jumoo.uSync.BackOffice.Helpers
             SaveActions();
         }
 
-        public static void RemoveActions(string keyNameValue, Type type)
+        public void RemoveActions(string keyNameValue, Type type)
         {
             bool changes = false;
             var actionsToRemove = _actions.Where(x => x.TypeName == type.ToString() && x.Name == keyNameValue);
@@ -108,7 +107,7 @@ namespace Jumoo.uSync.BackOffice.Helpers
                 SaveActions();
         }
 
-        public static IEnumerable<SyncAction> GetActions(Type type)
+        public IEnumerable<SyncAction> GetActions(Type type)
         {
             LogHelper.Debug<uSyncAction>("Getting Actions: for type {0} from {1} actions, found {2}",
                 ()=> type.ToString(), 

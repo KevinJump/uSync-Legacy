@@ -102,7 +102,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 LogHelper.Info<MacroHandler>("Delete: Deleting uSync File for item: {0}", () => item.Name);
                 uSyncIOHelper.ArchiveRelativeFile(SyncFolder, item.Alias.ToSafeAlias());
 
-                ActionTracker.AddAction(SyncActionType.Delete, item.Alias, typeof(IMacro));
+                uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, item.Alias, typeof(IMacro));
             }
         }
 
@@ -121,7 +121,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
                     // todo make it work on other properties.
 
                     // NameChecker.ManageOrphanFiles(SyncFolder, item.Key, action.FileName);
-                    ActionTracker.RemoveActions(item.Alias, typeof(IMacro));
+                    uSyncBackOfficeContext.Instance.Tracker.RemoveActions(item.Alias, typeof(IMacro));
                 }
             }
         }
