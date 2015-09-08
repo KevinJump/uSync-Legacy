@@ -159,7 +159,7 @@ namespace Jumoo.uSync.Core.Serializers
             /*
             var structure = new XElement("Structure");
 
-            LogHelper.Info<MediaTypeSerializer>("Content Types: {0}", () => item.AllowedContentTypes.Count());
+            LogHelper.Debug<MediaTypeSerializer>("Content Types: {0}", () => item.AllowedContentTypes.Count());
 
             var node = new XElement("MediaType", 
                                         info,

@@ -88,7 +88,7 @@ namespace Jumoo.uSync.Core.Serializers
             
             if (item.Key != key)
             {
-                LogHelper.Info<ContentTypeSerializer>("Changing Item Key: {0} -> {1}",
+                LogHelper.Debug<ContentTypeSerializer>("Changing Item Key: {0} -> {1}",
                     () => item.Key, () => key);
                 item.Key = key;
             }

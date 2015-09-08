@@ -98,7 +98,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             if (mapping != null)
             {
-                LogHelper.Info<Events>("Mapping Content Import: {0} {1}", () => mapping.EditorAlias, () => mapping.MappingType);
+                LogHelper.Debug<Events>("Mapping Content Import: {0} {1}", () => mapping.EditorAlias, () => mapping.MappingType);
 
                 switch (mapping.MappingType)
                 {
@@ -138,25 +138,19 @@ namespace Jumoo.uSync.Core.Serializers
 
         internal string GetImportDataTypeIds(PropertyType propType, string content)
         {
-            LogHelper.Info<Events>("Mapping a datatype: {0} {1}", () => propType.DataTypeDefinitionId, () => content);
+            LogHelper.Debug<Events>("Mapping a datatype: {0} {1}", () => propType.DataTypeDefinitionId, () => content);
             var prevalues =
                 ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(propType.DataTypeDefinitionId)
                                   .PreValuesAsDictionary;
 
             if (prevalues != null && prevalues.Count > 0)
             {
-                LogHelper.Info<Events>("Looking in prevalues for value: {0} ", () => content);
                 string preValue = prevalues.Where(kvp => kvp.Value.Value.ToString() == content).Select(kvp => kvp.Value.Id.ToString()).SingleOrDefault();
 
                 if (!String.IsNullOrWhiteSpace(preValue))
                 {
-                    LogHelper.Info<Events>("Setting value {0} to {1}", () => content, () => preValue);
+                    LogHelper.Debug<Events>("Setting value {0} to {1}", () => content, () => preValue);
                     return preValue;
-                }
-
-                foreach(var kvp in prevalues)
-                {
-                    LogHelper.Info<Events>("PreValue: {0} [{1} {2}]", () => kvp.Key, () => kvp.Value.Id, ()=> kvp.Value.Value);
                 }
 
             }

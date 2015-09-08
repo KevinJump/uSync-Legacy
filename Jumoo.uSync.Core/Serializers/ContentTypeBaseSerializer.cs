@@ -359,7 +359,7 @@ namespace Jumoo.uSync.Core.Serializers
                         }
                         else
                         {
-                            LogHelper.Info<Events>("Adding new Tab? {0}", ()=> name);
+                            LogHelper.Debug<Events>("Adding new Tab? {0}", ()=> name);
                             // at this point we might have a missing tab. 
                             if (item.AddPropertyGroup(name))
                             {

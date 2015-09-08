@@ -110,7 +110,7 @@ namespace Jumoo.uSync.Core.Serializers
 
         internal override SyncAttempt<XElement> SerializeCore(IContent item)
         {
-            LogHelper.Info<ContentSerializer>("Serialize Core: {0}", () => item.Name);
+            LogHelper.Debug<ContentSerializer>("Serialize Core: {0}", () => item.Name);
 
             var ContentTypeAlias = item.ContentType.Alias;
             var attempt = base.SerializeBase(item, ContentTypeAlias);
@@ -128,7 +128,7 @@ namespace Jumoo.uSync.Core.Serializers
             node.Add(new XAttribute("sortOrder", item.SortOrder));
             node.Add(new XAttribute("published", item.Published));
 
-            LogHelper.Info<ContentSerializer>("Returning Node");
+            LogHelper.Debug<ContentSerializer>("Returning Node");
             return SyncAttempt<XElement>.Succeed(item.Name, node, typeof(IContent), ChangeType.Export);
         }
 
