@@ -61,7 +61,28 @@ namespace Jumoo.uSync.Core.Serializers
                 var propertyTypeAlias = property.Name.LocalName;
                 if (item.HasProperty(propertyTypeAlias))
                 {
-                    item.SetValue(propertyTypeAlias, GetImportIds(GetImportXml(property)));
+                    string newValue = GetImportIds(GetImportXml(property));
+
+                    var prop = item.Properties[propertyTypeAlias];
+
+                    if (prop.PropertyType.PropertyEditorAlias == "Umbraco.RadioButtonList" || prop.PropertyType.PropertyEditorAlias == "Umbraco.DropDownList")
+                    {
+                        var prevalues =
+                            ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(prop.PropertyType.DataTypeDefinitionId)
+                                              .PreValuesAsDictionary;
+
+                        if (prevalues != null && prevalues.Count > 0)
+                        {
+                            string preValue = prevalues.Where(kvp => kvp.Key.ToString() == newValue).Select(kvp => kvp.Value.Id.ToString()).SingleOrDefault();
+
+                            if (!String.IsNullOrWhiteSpace(preValue))
+                            {
+                                newValue = preValue;
+                            }
+                        }
+                    }
+
+                    item.SetValue(propertyTypeAlias, newValue);
                 }
             }
         }
@@ -150,6 +171,22 @@ namespace Jumoo.uSync.Core.Serializers
 
                 string xml = "";
                 xml = GetExportIds(GetInnerXml(propNode));
+
+                if (prop.PropertyType.PropertyEditorAlias == "Umbraco.RadioButtonList" || prop.PropertyType.PropertyEditorAlias == "Umbraco.DropDownList")
+                {
+                    var prevalues =
+                        ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(prop.PropertyType.DataTypeDefinitionId).PreValuesAsDictionary;
+
+                    if (prevalues != null && prevalues.Count > 0)
+                    {
+                        string preValue = prevalues.Where(kvp => prop.Value != null && kvp.Value.Id == (int)prop.Value).Select(kvp => kvp.Key.ToString()).SingleOrDefault();
+
+                        if (!String.IsNullOrWhiteSpace(preValue))
+                        {
+                            xml = preValue;
+                        }
+                    }
+                }
 
                 var updatedNode = XElement.Parse(
                     string.Format("<{0}>{1}</{0}>", propNode.Name.ToString(), xml), LoadOptions.PreserveWhitespace);
