@@ -76,7 +76,8 @@ namespace Jumoo.uSync.Core.Serializers
                 var propertyTypeAlias = property.Name.LocalName;
                 if (item.HasProperty(propertyTypeAlias))
                 {
-                    item.SetValue(propertyTypeAlias, GetImportIds(GetImportXml(property)));
+                    var propType = item.Properties[propertyTypeAlias].PropertyType;
+                    item.SetValue(propertyTypeAlias, GetImportIds(propType, GetImportXml(property)));
                 }
             }
 

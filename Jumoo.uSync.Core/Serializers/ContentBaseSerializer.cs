@@ -13,6 +13,7 @@ using Jumoo.uSync.Core.Helpers;
 using Jumoo.uSync.Core.Interfaces;
 using System.Text.RegularExpressions;
 using Jumoo.uSync.Core.Extensions;
+using Umbraco.Core.Logging;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -61,27 +62,8 @@ namespace Jumoo.uSync.Core.Serializers
                 var propertyTypeAlias = property.Name.LocalName;
                 if (item.HasProperty(propertyTypeAlias))
                 {
-                    string newValue = GetImportIds(GetImportXml(property));
-
                     var prop = item.Properties[propertyTypeAlias];
-
-                    if (prop.PropertyType.PropertyEditorAlias == "Umbraco.RadioButtonList" || prop.PropertyType.PropertyEditorAlias == "Umbraco.DropDownList")
-                    {
-                        var prevalues =
-                            ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(prop.PropertyType.DataTypeDefinitionId)
-                                              .PreValuesAsDictionary;
-
-                        if (prevalues != null && prevalues.Count > 0)
-                        {
-                            string preValue = prevalues.Where(kvp => kvp.Key.ToString() == newValue).Select(kvp => kvp.Value.Id.ToString()).SingleOrDefault();
-
-                            if (!String.IsNullOrWhiteSpace(preValue))
-                            {
-                                newValue = preValue;
-                            }
-                        }
-                    }
-
+                    string newValue = GetImportIds(prop.PropertyType, GetImportXml(property));
                     item.SetValue(propertyTypeAlias, newValue);
                 }
             }
@@ -107,10 +89,31 @@ namespace Jumoo.uSync.Core.Serializers
 
             return null;
         }
-        
 
-        internal string GetImportIds(string content)
+
+        internal string GetImportIds(PropertyType propType, string content)
         {
+            var mapping = uSyncCoreContext.Instance.Configuration.Settings.ContentMappings
+                .SingleOrDefault(x => x.EditorAlias == propType.PropertyEditorAlias);
+
+            if (mapping != null)
+            {
+                LogHelper.Info<Events>("Mapping Content Import: {0} {1}", () => mapping.EditorAlias, () => mapping.MappingType);
+
+                switch (mapping.MappingType)
+                {
+                    case ContentMappingType.Content:
+                        return GetImportContentIds(content);
+                    case ContentMappingType.DataType:
+                        return GetImportDataTypeIds(propType, content);
+                }
+            }
+
+            return content;
+        }
+
+        internal string GetImportContentIds(string content)
+        { 
             Dictionary<string, string> replacements = new Dictionary<string, string>();
 
             string guidRegEx = @"\b[A-Fa-f0-9]{8}(?:-[A-Fa-f0-9]{4}){3}-[A-Fa-f0-9]{12}\b";
@@ -131,6 +134,33 @@ namespace Jumoo.uSync.Core.Serializers
             }
 
             return content; 
+        }
+
+        internal string GetImportDataTypeIds(PropertyType propType, string content)
+        {
+            LogHelper.Info<Events>("Mapping a datatype: {0} {1}", () => propType.DataTypeDefinitionId, () => content);
+            var prevalues =
+                ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(propType.DataTypeDefinitionId)
+                                  .PreValuesAsDictionary;
+
+            if (prevalues != null && prevalues.Count > 0)
+            {
+                LogHelper.Info<Events>("Looking in prevalues for value: {0} ", () => content);
+                string preValue = prevalues.Where(kvp => kvp.Value.Value.ToString() == content).Select(kvp => kvp.Value.Id.ToString()).SingleOrDefault();
+
+                if (!String.IsNullOrWhiteSpace(preValue))
+                {
+                    LogHelper.Info<Events>("Setting value {0} to {1}", () => content, () => preValue);
+                    return preValue;
+                }
+
+                foreach(var kvp in prevalues)
+                {
+                    LogHelper.Info<Events>("PreValue: {0} [{1} {2}]", () => kvp.Key, () => kvp.Value.Id, ()=> kvp.Value.Value);
+                }
+
+            }
+            return content;
         }
 
 
@@ -170,23 +200,8 @@ namespace Jumoo.uSync.Core.Serializers
                 }
 
                 string xml = "";
-                xml = GetExportIds(GetInnerXml(propNode));
+                xml = GetExportIds(prop.PropertyType, GetInnerXml(propNode));
 
-                if (prop.PropertyType.PropertyEditorAlias == "Umbraco.RadioButtonList" || prop.PropertyType.PropertyEditorAlias == "Umbraco.DropDownList")
-                {
-                    var prevalues =
-                        ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(prop.PropertyType.DataTypeDefinitionId).PreValuesAsDictionary;
-
-                    if (prevalues != null && prevalues.Count > 0)
-                    {
-                        string preValue = prevalues.Where(kvp => prop.Value != null && kvp.Value.Id == (int)prop.Value).Select(kvp => kvp.Key.ToString()).SingleOrDefault();
-
-                        if (!String.IsNullOrWhiteSpace(preValue))
-                        {
-                            xml = preValue;
-                        }
-                    }
-                }
 
                 var updatedNode = XElement.Parse(
                     string.Format("<{0}>{1}</{0}>", propNode.Name.ToString(), xml), LoadOptions.PreserveWhitespace);
@@ -196,11 +211,33 @@ namespace Jumoo.uSync.Core.Serializers
             return SyncAttempt<XElement>.Succeed(item.Name, node, item.GetType(), ChangeType.Export);
         }
 
-        private string GetExportIds(string value)
+        private string GetExportIds(PropertyType propType, string value)
+        {
+
+            var mapping = uSyncCoreContext.Instance.Configuration.Settings.ContentMappings
+                .SingleOrDefault(x => x.EditorAlias == propType.PropertyEditorAlias);
+
+            if (mapping != null)
+            {
+                LogHelper.Debug<Events>("Mapping Content Export: {0} {1}", () => mapping.EditorAlias, () => mapping.MappingType);
+
+                switch (mapping.MappingType)
+                {
+                    case ContentMappingType.Content:
+                        return GetExportContentIds(value);
+                    case ContentMappingType.DataType:
+                        return GetExportDataTypeValues(propType, value);
+                }
+            }
+
+            return value;
+        }
+
+        private string GetExportContentIds(string value)
         {
             Dictionary<string, string> replacements = new Dictionary<string, string>();
 
-            foreach(Match m in Regex.Matches(value, @"\d{4,9}"))
+            foreach (Match m in Regex.Matches(value, @"\d{4,9}"))
             {
                 int id;
                 if (int.TryParse(m.Value, out id))
@@ -213,9 +250,33 @@ namespace Jumoo.uSync.Core.Serializers
                 }
             }
 
-            foreach(var pair in replacements)
+            foreach (var pair in replacements)
             {
                 value = value.Replace(pair.Key, pair.Value);
+            }
+
+            return value;
+        }
+
+        private string GetExportDataTypeValues(PropertyType propType, string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return value;
+
+            var prevalues =
+                ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(propType.DataTypeDefinitionId).PreValuesAsDictionary;
+
+            if (prevalues != null && prevalues.Count > 0)
+            {
+                int valInt;
+                if (int.TryParse(value, out valInt))
+                {
+                    string preValue = prevalues.Where(kvp => kvp.Value.Id == valInt).Select(kvp => kvp.Key.ToString()).SingleOrDefault();
+                    if (!String.IsNullOrWhiteSpace(preValue))
+                    {
+                        return preValue;
+                    }
+                }
             }
 
             return value;

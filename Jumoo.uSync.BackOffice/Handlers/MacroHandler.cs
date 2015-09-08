@@ -118,8 +118,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 if (action.Success)
                 {
                     // Name checker currently only works on guidkeys. 
-                    // todo make it work on other properties.
-
+                    // but it's not needed, when we use Ids to track anyway :) 
                     // NameChecker.ManageOrphanFiles(SyncFolder, item.Key, action.FileName);
                     uSyncBackOfficeContext.Instance.Tracker.RemoveActions(item.Alias, typeof(IMacro));
                 }
