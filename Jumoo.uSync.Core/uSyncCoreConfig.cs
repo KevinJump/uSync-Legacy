@@ -80,11 +80,13 @@ namespace Jumoo.uSync.Core
         public uSyncCoreSettings()
         {
             Mappings = new List<uSyncValueMapperSettings>();
+            ContentMappings = new List<uSyncContentMapping>();
         }
 
         public string MediaStorageFolder { get; set; }
 
         public List<uSyncValueMapperSettings> Mappings { get; set; }
+        public List<uSyncContentMapping> ContentMappings { get; set; }
     }
 
     public class uSyncValueMapperSettings
@@ -131,5 +133,30 @@ namespace Jumoo.uSync.Core
         /// </summary>
         public char PropertySplitter { get; set; }
         public int PropertyPosistion { get; set; }
+    }
+
+    /// <summary>
+    ///  basic mapping for content,
+    ///  we will only map content in properties with
+    ///  the relevatnt datatype
+    /// 
+    ///  and then we will have mapping types...
+    /// 
+    ///  it might make sense to have a IMapper 
+    ///  or something, so we can extend this?
+    /// </summary>
+    public class uSyncContentMapping
+    {
+        [XmlAttribute(AttributeName = "Alias")]
+        public string EditorAlias { get; set; }
+
+        [XmlAttribute(AttributeName = "Mapping")]
+        public ContentMappingType MappingType { get; set; }
+    }
+
+    public enum ContentMappingType
+    {
+        Content,
+        DataType
     }
 }
