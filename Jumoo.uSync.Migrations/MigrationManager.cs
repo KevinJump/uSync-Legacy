@@ -92,8 +92,7 @@ namespace Jumoo.uSync.Migrations
                 //   things in the master but not in our new one, must have 
                 //   gone missing (delete?)
 
-                // IdentifyDeletes(masterSnap, snapshotFolder);
-
+                IdentifyDeletes(masterSnap, snapshotFolder);
 
                 // take anything that is now in our snapshotFolder and masterSnapshot
                 // this will leave just the changes..
@@ -170,8 +169,6 @@ namespace Jumoo.uSync.Migrations
                 {
                     MigrationIO.MergeFolder(tempRoot, snapshot.FullName);
                 }
-
-                return tempRoot;
             }
 
             return tempRoot;
@@ -199,19 +196,41 @@ namespace Jumoo.uSync.Migrations
                     var itemType = node.GetUmbracoType();
                     var key = node.NameFromNode();
 
-                    // this isn't quite ready, we need to find id's to handle deletes,
+                    // we need to find id's to handle deletes,
                     // and we need to check that the thing hasn't been renamed. 
                     // so if it exsits only in master we need to double check its id 
                     // doesn't still exist somewhere else on the install with the 
                     // same id but a different name, 
 
                     // we basically need some id hunting shizzel. 
-
                     if (itemType != default(Type))
                     {
-                        // add an action to the localalized action tracker.
-                        actionTracker.AddAction(SyncActionType.Delete, key, itemType);
+                        var fileKey = MigrationIDHunter.GetItemId(node);
+                        if (!string.IsNullOrEmpty(fileKey))
+                        {
+                            if (MigrationIDHunter.FindInFiles(target, fileKey))
+                            {
+                                // the key exists somewhere else in the 
+                                // folder, so it's a rename of something
+                                // we won't add this one to the delete pile.
+
+                                // but we will need to signal somehow that 
+                                // the old name is wrong, so that on a full
+                                // merge the two files don't get included.
+                                actionTracker.AddAction(SyncActionType.Obsolete, file.FullName, itemType);
+
+                                continue;
+                            }
+                        }
                     }
+
+                    // if we can't workout what type of thing it is, we assume
+                    // it's a file, then we can deal with it like a delete 
+                    // later on.
+                    if (itemType == default(Type))
+                        itemType = typeof(FileInfo);
+
+                    actionTracker.AddAction(SyncActionType.Delete, key, itemType);
                 }
 
             }

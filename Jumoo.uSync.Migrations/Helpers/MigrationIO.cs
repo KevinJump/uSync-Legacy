@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Web;
+using System.Xml.Linq;
 using Umbraco.Core.Logging;
 
 namespace Jumoo.uSync.Migrations.Helpers
@@ -28,7 +29,17 @@ namespace Jumoo.uSync.Migrations.Helpers
             foreach(var file in files)
             {
                 var targetFile = Path.Combine(target, file.Name);
-                file.CopyTo(targetFile, true);
+
+                // need to do something special if it's the action file?
+                if (file.Name == "uSyncActions.config" && File.Exists(targetFile))
+                {
+                    // merge actions...
+                    MergeXMLFiles(file.FullName, targetFile);
+                }
+                else
+                {
+                    file.CopyTo(targetFile, true);
+                }
             }
 
             foreach(var subFolder in sourceDir.GetDirectories())
@@ -86,7 +97,6 @@ namespace Jumoo.uSync.Migrations.Helpers
             return leftOnly;
         }
 
-
         public static void RemoveEmptyDirectories(string folder)
         {
             DirectoryInfo dir = new DirectoryInfo(folder);
@@ -104,6 +114,22 @@ namespace Jumoo.uSync.Migrations.Helpers
             if(!dir.GetFileSystemInfos().Any())
             {
                 dir.Delete();
+            }
+        }
+
+        private static void MergeXMLFiles(string source, string target)
+        {
+            XElement sourceNode = XElement.Load(source);
+            XElement targetNode = XElement.Load(target);
+
+            if (sourceNode != null && targetNode != null)
+            {
+                foreach(var n in sourceNode.Elements())
+                {
+                    targetNode.Add(n);
+                }
+
+                targetNode.Save(target);
             }
         }
     }

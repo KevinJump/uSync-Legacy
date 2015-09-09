@@ -129,6 +129,7 @@ namespace Jumoo.uSync.BackOffice.Helpers
     public enum SyncActionType
     {
         Delete,
-        Rename
+        Rename,
+        Obsolete, 
     }
 }
