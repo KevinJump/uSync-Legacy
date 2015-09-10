@@ -33,6 +33,8 @@ namespace Jumoo.uSync.Migrations.Helpers
             key = node.Element("Info") != null ? node.Element("Info").Element("Key").ValueOrDefault(string.Empty) : string.Empty;
             if (!string.IsNullOrEmpty(key))
                 return key;
+
+            key = node.Attribute("guid").ValueOrDefault(string.Empty);
             return key;
         }
 
