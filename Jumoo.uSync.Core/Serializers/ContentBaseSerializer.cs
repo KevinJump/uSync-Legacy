@@ -139,6 +139,7 @@ namespace Jumoo.uSync.Core.Serializers
         internal string GetImportDataTypeIds(PropertyType propType, string content)
         {
             LogHelper.Debug<Events>("Mapping a datatype: {0} {1}", () => propType.DataTypeDefinitionId, () => content);
+
             var prevalues =
                 ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(propType.DataTypeDefinitionId)
                                   .PreValuesAsDictionary;
@@ -262,12 +263,14 @@ namespace Jumoo.uSync.Core.Serializers
 
             if (prevalues != null && prevalues.Count > 0)
             {
+                LogHelper.Debug<Events>("Looking in preValue for DropDown {0}", ()=> value);
                 int valInt;
                 if (int.TryParse(value, out valInt))
                 {
-                    string preValue = prevalues.Where(kvp => kvp.Value.Id == valInt).Select(kvp => kvp.Key.ToString()).SingleOrDefault();
+                    string preValue = prevalues.Where(kvp => kvp.Value.Id == valInt).Select(kvp => kvp.Value.Value).SingleOrDefault();
                     if (!String.IsNullOrWhiteSpace(preValue))
                     {
+                        LogHelper.Debug<Events>("Setting PreValue Value to {0}", () => preValue);
                         return preValue;
                     }
                 }
