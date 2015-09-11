@@ -60,6 +60,10 @@
     <Compile Include="Interfaces\ISyncSerializerWithParent.cs" />
     <Compile Include="Interfaces\ISyncSerializer.cs" />
     <Compile Include="Interfaces\ISyncSerializerTwoPass.cs" />
+    <Compile Include="Mappers\ContentDataTypeKeyMapper.cs" />
+    <Compile Include="Mappers\ContentDataTypeMapper.cs" />
+    <Compile Include="Mappers\ContentIdMapping.cs" />
+    <Compile Include="Mappers\IContentMapper.cs" />
     <Compile Include="Serializers\ContentBaseSerializer.cs" />
     <Compile Include="Serializers\ContentSerializer.cs" />
     <Compile Include="Serializers\ContentTypeBaseSerializer.cs" />
@@ -84,6 +88,7 @@
   <ItemGroup>
     <Content Include="package.xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>ECHO Copying to Site
