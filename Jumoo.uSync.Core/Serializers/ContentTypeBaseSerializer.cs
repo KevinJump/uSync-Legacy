@@ -294,12 +294,12 @@ namespace Jumoo.uSync.Core.Serializers
 
                 if (propertyNode == null)
                 {
-                    LogHelper.Debug<uSync.Core.Events>("Looking up property type by alias");
+                    LogHelper.Debug<uSync.Core.Events>("Looking up property type by alias {0}", ()=> property.Alias);
                     propertyNode = propertyNodes
                         .SingleOrDefault(x => x.Element("Alias").Value == property.Alias);
                 }
 
-                if (propertyNodes == null)
+                if (propertyNode == null)
                 {
                     propertiesToRemove.Add(property.Alias);
                 }
@@ -321,7 +321,7 @@ namespace Jumoo.uSync.Core.Serializers
                 // removing properties can cause timeouts on installs with lots of content...
                 foreach(var delete in propertiesToRemove)
                 {
-                    LogHelper.Debug<Events>("Removing Property: {0} {1}", () => delete);
+                    LogHelper.Debug<Events>("Removing Property: {0}", () => delete);
                     item.RemovePropertyType(delete);
                 }
             }
