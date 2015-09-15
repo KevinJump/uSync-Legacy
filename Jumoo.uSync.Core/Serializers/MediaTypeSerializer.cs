@@ -73,7 +73,7 @@ namespace Jumoo.uSync.Core.Serializers
                 }
             }
 
-            if (item.Key != item.Key)
+            if (item.Key != key)
                 item.Key = key;
 
             DeserializeBase(item, info);
