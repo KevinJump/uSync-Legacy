@@ -33,7 +33,13 @@ namespace Jumoo.uSync.Core.Serializers
             if ((info.Element("Key") != null && Guid.TryParse(info.Element("Key").Value, out key)))
             {
                 // we have key.
-                item = _contentTypeService.GetMediaType(key);
+                try {
+                    item = _contentTypeService.GetMediaType(key);
+                }
+                catch(Exception ex)
+                {
+                    LogHelper.Warn<MediaTypeSerializer>("Wobbler looking for media type: {0}", () => key);
+                }
             }
 
             // you need the parent to create, so do it here...
