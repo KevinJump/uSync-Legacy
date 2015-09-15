@@ -126,6 +126,8 @@ namespace Jumoo.uSync.Core.Serializers
 
         private void DeserializeUpdatePreValues(IDataTypeDefinition item, XElement node)
         {
+            LogHelper.Debug<DataTypeSerializer>("Deserializing DataType PreValues: {0}", ()=> item.Name);
+
             var preValueRootNode = node.Element("PreValues");
             if (preValueRootNode != null)
             {
@@ -161,16 +163,24 @@ namespace Jumoo.uSync.Core.Serializers
                 }
 
                 // now add any new prevalues from the xml
+                /*
                 var valuesWithKeys = preValueRootNode.Elements("PreValue")
-                                        .Where(x => ((string)x.Attribute("Alias")).IsNullOrWhiteSpace() == false)
+                                        .Where(x => (string.IsNullOrWhiteSpace((string)x.Attribute("Alias")) == false))
                                         .ToDictionary(key => (string)key.Attribute("Alias"), val => (string)val.Attribute("Value"));
+                */
 
-                foreach (var nodeValue in valuesWithKeys)
+                foreach (var nodeValue in preValueRootNode.Elements("PreValue"))
                 {
+                    var alias = nodeValue.Attribute("Alias").ValueOrDefault(string.Empty);
+                    var value = nodeValue.Attribute("Value").ValueOrDefault(string.Empty);
 
-                    if (!itemPreValues.ContainsKey(nodeValue.Key))
+                    if (!string.IsNullOrEmpty(alias))
                     {
-                        itemPreValues.Add(nodeValue.Key, new PreValue(nodeValue.Value));
+                        if (!itemPreValues.ContainsKey(alias))
+                        {
+                            LogHelper.Debug<DataTypeSerializer>("Adding PreValue {0} for {1}", () => alias, () => item.Name);
+                            itemPreValues.Add(alias, new PreValue(value));
+                        }
                     }
                 }
 

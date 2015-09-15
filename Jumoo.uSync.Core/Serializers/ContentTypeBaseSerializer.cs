@@ -223,6 +223,17 @@ namespace Jumoo.uSync.Core.Serializers
                         if (propertyNode.Element("SortOrder") != null)
                             property.SortOrder = int.Parse(propertyNode.Element("SortOrder").Value);
 
+                        if (propertyNode.Element("Type") != null)
+                        {
+                            LogHelper.Debug<Events>("Setting Property Type : {0}", () => propertyNode.Element("Type").Value);
+                            property.PropertyEditorAlias = propertyNode.Element("Type").Value;
+                        }
+
+                        if (property.DataTypeDefinitionId != dataTypeDefinition.Id)
+                        {
+                            property.DataTypeDefinitionId = dataTypeDefinition.Id;
+                        }
+
                         var tabName = propertyNode.Element("Tab").ValueOrDefault(string.Empty);
 
                         if (_itemType == "MemberType")
@@ -399,7 +410,7 @@ namespace Jumoo.uSync.Core.Serializers
                             new XElement("Alias", item.Alias),
                             new XElement("Icon", item.Icon),
                             new XElement("Thumbnail", item.Thumbnail),
-                            new XElement("Description", item.Description),
+                            new XElement("Description", string.IsNullOrEmpty(item.Description) ? "" : item.Description ),
                             new XElement("AllowAtRoot", item.AllowedAsRoot.ToString()),
                             new XElement("IsListView", item.IsContainer.ToString()));
 
@@ -483,11 +494,10 @@ namespace Jumoo.uSync.Core.Serializers
                 propNode.Add(new XElement("Type", property.PropertyEditorAlias));
                 propNode.Add(new XElement("Mandatory", property.Mandatory));
 
-                if (property.ValidationRegExp != null)
-                    propNode.Add(new XElement("Validation", property.ValidationRegExp));
+                propNode.Add(new XElement("Validation", property.ValidationRegExp != null ? property.ValidationRegExp : "" ));
 
-                if (property.Description != null)
-                    propNode.Add(new XElement("Description", new XCData(property.Description)));
+                var description = String.IsNullOrEmpty(property.Description) ? "" : property.Description;
+                propNode.Add(new XElement("Description", new XCData(description)));
 
                 propNode.Add(new XElement("SortOrder", property.SortOrder));
 
