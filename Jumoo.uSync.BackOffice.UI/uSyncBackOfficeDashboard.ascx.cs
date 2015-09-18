@@ -28,6 +28,9 @@ namespace Jumoo.uSync.BackOffice.UI
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            var licence = new Jumoo.uSync.BackOffice.Licence.GoodwillLicence();
+            goodwillLicence.Visible = !licence.IsLicenced();
+            
             if (!IsPostBack)
             {
                 SetupPage();

@@ -84,6 +84,7 @@
     <Compile Include="Helpers\NameChecker.cs" />
     <Compile Include="Helpers\uSyncIOHelper.cs" />
     <Compile Include="Interfaces\ISyncHandler.cs" />
+    <Compile Include="Licence\GoodwillLicence.cs" />
     <Compile Include="uSyncAction.cs" />
     <Compile Include="uSyncApplicationEventHandler.cs" />
     <Compile Include="uSyncBackOfficeConfig.cs" />
