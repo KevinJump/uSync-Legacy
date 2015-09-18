@@ -8,6 +8,9 @@
     {
         margin: 0 5px;
     }
+
+    .goodwill-licence-banner { font-size: 0.8em; background-color: #f1f1f1; color: #222;}
+    .goodwill-licence-banner a { font-weight: bold; color: #aaa; }
 </style>
 <script type="text/javascript">
     $(document.forms[0]).submit(function () {
@@ -28,7 +31,7 @@
                         [BackOffice: <asp:Label ID="uSyncVersionNumber" runat="server"></asp:Label>]
                         [Core: <asp:Label ID="uSyncCoreVersion" runat="server"></asp:Label>]
                     </small>
-                </h3>
+                </h3>               
             </div>
         </div>
         <div class="row">            
@@ -40,11 +43,11 @@
                         <asp:Label ID="usyncFolder" runat="server"></asp:Label> folder.
                     </p>
                     <p>
-                        <asp:Button runat="server" ID="btnReport" text="Change Report" CssClass="btn btn-info" OnClick="btnReport_Click"/>
+                        <asp:Button runat="server" ID="btnReport" text="Report" CssClass="btn btn-info" OnClick="btnReport_Click"/>
                         <small class="muted">What will change</small>
                     </p>
                     <p>
-                        <asp:Button runat="server" ID="btnSyncImport" text="Change Import" CssClass="btn btn-success" OnClick="btnSyncImport_Click"/>
+                        <asp:Button runat="server" ID="btnSyncImport" text="Import" CssClass="btn btn-success" OnClick="btnSyncImport_Click"/>
                         <small class="muted">Import only the changes</small>
                     </p>
                     <hr />
@@ -146,6 +149,18 @@
             </div>
         </div>
 
+        <asp:Panel runat="server" Visible="false" ID="goodwillLicence">
+            <div class="row">
+                <div class="span12">
+                    <!-- yes removing this code removes the banner - but how much nicer would it be to support usync :) -->
+                    <div class="goodwill-licence-banner alert alert-warning" >
+                        <i class="icon-info"></i> uSync is unlicenced - 
+                            It doesn't stop anything from working, but you can make yourself feel better with a <a href="http://jumoo.uk/usync/licence/">goodwill licence</a>
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
+
         <asp:Panel ID ="panelTech" Visible="true" runat="server">
         <div class="row">
             <div class="span12">
@@ -160,3 +175,4 @@
         </asp:Panel>
     </div>
 </div>
+
