@@ -155,7 +155,7 @@
                     <!-- yes removing this code removes the banner - but how much nicer would it be to support usync :) -->
                     <div class="goodwill-licence-banner alert alert-warning" >
                         <i class="icon-info"></i> uSync is unlicenced - 
-                            It doesn't stop anything from working, but you can make yourself feel better with a <a href="http://jumoo.uk/usync/licence/">goodwill licence</a>
+                            It doesn't stop anything from working, but you can make yourself feel better with a <a href="http://jumoo.uk/usync/licence/" target="_blank">goodwill licence</a>
                     </div>
                 </div>
             </div>
