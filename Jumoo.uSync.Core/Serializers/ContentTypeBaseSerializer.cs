@@ -211,6 +211,9 @@ namespace Jumoo.uSync.Core.Serializers
                         // update settings.
                         property.Name = propertyNode.Element("Name").ValueOrDefault("unnamed" + DateTime.Now.ToString("yyyyMMdd_HHmmss"));
 
+                        if (property.Alias != alias)
+                            property.Alias = alias; 
+
                         if (propertyNode.Element("Description") != null)
                             property.Description = propertyNode.Element("Description").Value;
 
