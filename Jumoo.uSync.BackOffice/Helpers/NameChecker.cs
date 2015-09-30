@@ -31,7 +31,9 @@ namespace Jumoo.uSync.BackOffice.Helpers
         }
 
         private static void CheckFolder(string folder, Guid Key, string newFile)
-        { 
+        {
+            LogHelper.Debug<NameChecker>("Checking Folder: {0}", () => folder);
+
             if (!Directory.Exists(folder))
                 return;
 
@@ -48,9 +50,15 @@ namespace Jumoo.uSync.BackOffice.Helpers
                 }
             }
 
-            foreach(var directory in Directory.GetDirectories(folder))
+
+            // it is possible (or ineed likely) that if we find the file, ManageOrphan
+            // might have deleted the folder.
+            if (Directory.Exists(folder))
             {
-                CheckFolder(directory, Key, newFile);
+                foreach (var directory in Directory.GetDirectories(folder))
+                {
+                    CheckFolder(directory, Key, newFile);
+                }
             }
         }
 
