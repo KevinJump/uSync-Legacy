@@ -143,8 +143,8 @@ namespace Jumoo.uSync.BackOffice
                 var actionNode = new XElement("Action",
                                         new XAttribute("Change", action.Change.ToString()),
                                         new XAttribute("Success", action.Success),
-                                        new XAttribute("Message", action.Message),
-                                        new XAttribute("Name", action.Name));
+                                        new XAttribute("Message", string.IsNullOrEmpty(action.Message) ? "" : action.Message),
+                                        new XAttribute("Name", string.IsNullOrEmpty(action.Name) ? "" : action.Name));
 
                 if (action.ItemType != null)
                 {
