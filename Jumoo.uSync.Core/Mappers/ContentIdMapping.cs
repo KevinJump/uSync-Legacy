@@ -24,7 +24,7 @@ namespace Jumoo.uSync.Core.Mappers
                     Guid? itemGuid = GetGuidFromId(id);
                     if (itemGuid != null && !replacements.ContainsKey(m.Value))
                     {
-                        replacements.Add(m.Value, itemGuid.ToString().ToUpper());
+                        replacements.Add(m.Value, itemGuid.ToString().ToLower());
                     }
                 }
             }

@@ -15,7 +15,7 @@
   <info>
     <package>
       <name>uSync.Core</name>
-      <version>3.0</version>
+      <version>3.0.1</version>
       <license url="http://opensource.org/licenses/MIT">MIT License</license>
       <url>http://jumoo.uk/uSync</url>
       <requirements>
@@ -28,7 +28,7 @@
       <name>Kevin Jump</name>
       <website>http://jumoo.uk</website>
     </author>
-    <readme><![CDATA[ uSync3 : uSync.Core
+    <readme><![CDATA[ uSync3 : uSync.Core 3.0.1
 ==================
 Core is included in uSync.BackOffice you don't need to install this package separately. 
 

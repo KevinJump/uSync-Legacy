@@ -126,7 +126,7 @@ namespace Jumoo.uSync.Core.Serializers
         {
             var node = new XElement(contentTypeAlias);
 
-            node.Add(new XAttribute("guid", item.Key));
+            node.Add(new XAttribute("guid", item.Key.ToString().ToLower()));
             node.Add(new XAttribute("id", item.Id));
             node.Add(new XAttribute("nodeName", item.Name));
             node.Add(new XAttribute("isDoc", ""));
