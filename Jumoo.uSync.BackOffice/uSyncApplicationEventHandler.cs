@@ -10,12 +10,23 @@ namespace Jumoo.uSync.BackOffice
     using System.Collections.Generic;
     using System.Linq;
     using Core;
+    using System;
 
     public class uSyncApplicationEventHandler : ApplicationEventHandler
     {
         protected override void ApplicationStarted(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
         {
             LogHelper.Info<uSyncApplicationEventHandler>("Initializing uSync 73");
+
+            var onUaaS = AppDomain.CurrentDomain.GetAssemblies()
+                            .Any(a => a.FullName.StartsWith("Concorde.Messaging.Web"));
+            if (onUaaS)
+            {
+                LogHelper.Warn<uSyncApplicationEventHandler>("uSync doesn't run on UaaS, so it will just stop now");
+                return;
+            }
+
+
 
             if (!ApplicationContext.Current.IsConfigured)
             {
