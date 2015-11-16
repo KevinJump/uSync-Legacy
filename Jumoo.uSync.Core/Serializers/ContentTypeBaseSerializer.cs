@@ -304,7 +304,7 @@ namespace Jumoo.uSync.Core.Serializers
             foreach(var property in item.PropertyTypes)
             {
                 XElement propertyNode = propertyNodes
-                                            .FirstOrDefault(x => x.Element("Key").Value == property.Key.ToString());
+                                            .FirstOrDefault(x=> x.Element("key") != null && x.Element("Key").Value == property.Key.ToString());
 
                 if (propertyNode == null)
                 {
