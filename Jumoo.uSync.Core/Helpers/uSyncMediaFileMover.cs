@@ -58,7 +58,7 @@ namespace Jumoo.uSync.Core.Helpers
                     {
                         string sourceFile = Path.GetFileName(file);
 
-                        using (FileStream s = new FileStream(sourceFile, FileMode.Open))
+                        using (FileStream s = new FileStream(file, FileMode.Open))
                         {
                             item.SetValue("umbracoFile", sourceFile, s);
                             changes = true;
