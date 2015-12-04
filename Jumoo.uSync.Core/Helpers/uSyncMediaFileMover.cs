@@ -58,7 +58,7 @@ namespace Jumoo.uSync.Core.Helpers
                     {
                         string sourceFile = Path.GetFileName(file);
 
-                        using (FileStream s = new FileStream(sourceFile, FileMode.Open))
+                        using (FileStream s = new FileStream(file, FileMode.Open))
                         {
                             item.SetValue("umbracoFile", sourceFile, s);
                             changes = true;
@@ -67,7 +67,9 @@ namespace Jumoo.uSync.Core.Helpers
                         // if we've created a new file in umbraco, it will be in a new folder
                         // and the old current file will need to be deleted.
                         if (Directory.Exists(currentFile.DirectoryName))
-                            Directory.Delete(currentFile.DirectoryName);
+                           
+                                Directory.Delete(currentFile.DirectoryName, true);
+                           
                     }
                 }
                 else
