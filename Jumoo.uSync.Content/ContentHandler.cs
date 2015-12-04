@@ -104,7 +104,7 @@ namespace Jumoo.uSync.Content
         public void RegisterEvents()
         {
             ContentService.Saved += ContentService_Saved;
-            ContentService.Trashing += ContentService_Trashing;
+            ContentService.Trashing += ContentService_Trashed;
             ContentService.Copied += ContentService_Copied;
         }
 
@@ -118,6 +118,7 @@ namespace Jumoo.uSync.Content
 
         private void ContentService_Saved(IContentService sender, Umbraco.Core.Events.SaveEventArgs<IContent> e)
         {
+            LogHelper.Info<ContentHandler>("Content Save Fired:");
             if (uSyncEvents.Paused)
                 return;
 
@@ -131,21 +132,24 @@ namespace Jumoo.uSync.Content
 
             foreach (var item in items)
             {
-                var path = GetContentPath(item);
-                var attempt = ExportItem(item, path, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
-                if (attempt.Success)
+                if (!item.Trashed)
                 {
-                    NameChecker.ManageOrphanFiles(SyncFolder, item.Key, attempt.FileName);
+                    var path = GetContentPath(item);
+                    var attempt = ExportItem(item, path, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+                    if (attempt.Success)
+                    {
+                        NameChecker.ManageOrphanFiles(SyncFolder, item.Key, attempt.FileName);
+                    }
                 }
             }
         }
 
-        private void ContentService_Trashing(IContentService sender, Umbraco.Core.Events.MoveEventArgs<IContent> e)
+        private void ContentService_Trashed(IContentService sender, Umbraco.Core.Events.MoveEventArgs<IContent> e)
         {
-            foreach(var moveInfo in e.MoveInfoCollection)
+            LogHelper.Info<ContentHandler>("Content Trashed:");
+            foreach (var moveInfo in e.MoveInfoCollection)
             {
-                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetContentPath(moveInfo.Entity));
-
+                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetContentPath(moveInfo.Entity), "content");
             }
         }
 

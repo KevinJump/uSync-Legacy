@@ -130,7 +130,7 @@ namespace Jumoo.uSync.Content
 
             foreach(var moveInfo in e.MoveInfoCollection)
             {
-                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetMediaPath(moveInfo.Entity));
+                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetMediaPath(moveInfo.Entity), "media");
             }
         }
 

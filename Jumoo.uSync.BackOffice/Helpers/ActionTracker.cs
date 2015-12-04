@@ -92,7 +92,7 @@ namespace Jumoo.uSync.BackOffice.Helpers
         public void RemoveActions(string keyNameValue, Type type)
         {
             bool changes = false;
-            var actionsToRemove = _actions.Where(x => x.TypeName == type.ToString() && x.Name == keyNameValue);
+            var actionsToRemove = _actions.Where(x => x.TypeName == type.ToString() && x.Name == keyNameValue).ToList();
 
             if (actionsToRemove.Any())
             {
