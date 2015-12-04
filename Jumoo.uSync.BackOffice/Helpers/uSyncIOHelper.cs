@@ -111,12 +111,15 @@ namespace Jumoo.uSync.BackOffice.Helpers
         {
             uSyncEvents.fireDeleting(new uSyncEventArgs { fileName = file });
 
-            if (File.Exists(file))
-                File.Delete(file);
-
             var dir = Path.GetDirectoryName(file);
-            if (!Directory.EnumerateFileSystemEntries(dir).Any())
-                Directory.Delete(dir);
+            if (Directory.Exists(dir))
+            {
+                if (File.Exists(file))
+                    File.Delete(file);
+
+                if (!Directory.EnumerateFileSystemEntries(dir).Any())
+                    Directory.Delete(dir);
+            }
 
             uSyncEvents.fireDeleted(new uSyncEventArgs { fileName = file });
         }
