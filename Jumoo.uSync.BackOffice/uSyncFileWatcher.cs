@@ -27,6 +27,8 @@ namespace Jumoo.uSync.BackOffice
 
         public static void Init(string path)
         {
+            LogHelper.Info<uSyncFileWatcher>("uSync is watching for file changes : {0}", () => path);
+
             watcher = new FileSystemWatcher
             {
                 Path = path,
@@ -35,13 +37,14 @@ namespace Jumoo.uSync.BackOffice
                                 NotifyFilters.FileName |
                                 NotifyFilters.DirectoryName,
                 IncludeSubdirectories = true,
-                Filter = "*.confg"
+                EnableRaisingEvents = true,
+                Filter = "*.config"
             };
 
-            watcher.Changed += FileWatcherChangeEvent;
-            watcher.Created += FileWatcherChangeEvent;
-            watcher.Deleted += FileWatcherChangeEvent;
-            watcher.Renamed += FileWatcherRenameEvent;
+            watcher.Changed += new FileSystemEventHandler(FileWatcherChangeEvent);
+            watcher.Created += new FileSystemEventHandler(FileWatcherChangeEvent);
+            watcher.Deleted += new FileSystemEventHandler(FileWatcherChangeEvent);
+            watcher.Renamed += new RenamedEventHandler(FileWatcherRenameEvent);
 
             _waitTimer = new System.Timers.Timer(8128); // wait a perfect amount of time
             _waitTimer.Elapsed += ChangeTimerElapsed;
