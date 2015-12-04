@@ -26,7 +26,15 @@
                 throw new FileNotFoundException(filePath);
 
             var node = XElement.Load(filePath);
-            return uSyncCoreContext.Instance.LanguageSerializer.DeSerialize(node, force);
+            var attempt = uSyncCoreContext.Instance.LanguageSerializer.DeSerialize(node, force);
+
+            if (attempt.Success && attempt.Item != null)
+            {
+                // if it worked take any deletes we may have out of the sync file (we do this because language syncs are done by name)
+                uSyncBackOfficeContext.Instance.Tracker.RemoveActions(attempt.Item.CultureName, typeof(ILanguage));
+            }
+
+            return attempt;
         }
 
         public override uSyncAction DeleteItem(Guid key, string keyString)
