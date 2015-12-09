@@ -116,55 +116,61 @@ namespace Jumoo.uSync.BackOffice
     {
         public static void SaveActionLog(string name, IEnumerable<uSyncAction> actions)
         {
-            // creates an action log (xml file) of the actions...
-            var folderPath = IOHelper.MapPath(Path.Combine(SystemDirectories.Data, "temp", "uSync"));
+            try {
+                // creates an action log (xml file) of the actions...
+                var folderPath = IOHelper.MapPath(Path.Combine(SystemDirectories.Data, "temp", "uSync"));
 
 
-            if (!Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
+                if (!Directory.Exists(folderPath))
+                    Directory.CreateDirectory(folderPath);
 
-            string fileName = string.Format("{0}_{1}.config", DateTime.Now.ToString("yyyyMMdd_HHmmss"), name);
+                string fileName = string.Format("{0}_{1}.config", DateTime.Now.ToString("yyyyMMdd_HHmmss"), name);
 
-            string filePath = Path.Combine(folderPath, fileName);
+                string filePath = Path.Combine(folderPath, fileName);
 
-            if (System.IO.File.Exists(filePath))
-                System.IO.File.Delete(filePath);
+                if (System.IO.File.Exists(filePath))
+                    System.IO.File.Delete(filePath);
 
-            LogHelper.Info<uSyncActionLogger>("Saving uSync Report: {0}", () => filePath);
+                LogHelper.Info<uSyncActionLogger>("Saving uSync Report: {0}", () => filePath);
 
-            XElement logFile = new XElement("uSync", 
-                new XAttribute("Name", name), 
-                new XAttribute("DateTime", DateTime.Now.ToString("g")));
+                XElement logFile = new XElement("uSync",
+                    new XAttribute("Name", string.IsNullOrEmpty(name) ? "" : name),
+                    new XAttribute("DateTime", DateTime.Now.ToString("g")));
 
-            XElement logNode = new XElement("Actions");
-            
-            foreach (var action in actions)
-            {
-                var actionNode = new XElement("Action",
-                                        new XAttribute("Change", action.Change.ToString()),
-                                        new XAttribute("Success", action.Success),
-                                        new XAttribute("Message", string.IsNullOrEmpty(action.Message) ? "" : action.Message),
-                                        new XAttribute("Name", string.IsNullOrEmpty(action.Name) ? "" : action.Name));
+                XElement logNode = new XElement("Actions");
 
-                if (action.ItemType != null)
+                foreach (var action in actions)
                 {
-                    string type = action.ItemType.ToString();
-                    type = type.Substring(type.LastIndexOf('.')+1);
-                    actionNode.Add(new XAttribute("Type", type));
+                    var actionNode = new XElement("Action",
+                                            new XAttribute("Change", action.Change.ToString()),
+                                            new XAttribute("Success", action.Success),
+                                            new XAttribute("Message", string.IsNullOrEmpty(action.Message) ? "" : action.Message),
+                                            new XAttribute("Name", string.IsNullOrEmpty(action.Name) ? "" : action.Name));
+
+                    if (action.ItemType != null)
+                    {
+                        string type = action.ItemType.ToString();
+                        type = type.Substring(type.LastIndexOf('.') + 1);
+                        actionNode.Add(new XAttribute("Type", string.IsNullOrEmpty(type) ? "unknown" : type));
+                    }
+
+                    if (action.Exception != null)
+                        actionNode.Add(new XElement("Exception", action.Exception.ToString()));
+
+
+                    logNode.Add(actionNode);
                 }
 
-                if (action.Exception != null)
-                    actionNode.Add(new XElement("Exception", action.Exception.ToString()));
-                
+                logFile.Add(logNode);
+                logFile.Save(filePath);
 
-                logNode.Add(actionNode);
+                // keep the last 20 no more.
+                CleanLogFolder(20);
             }
-
-            logFile.Add(logNode);
-            logFile.Save(filePath);
-
-            // keep the last 20 no more.
-            CleanLogFolder(20);
+            catch(Exception ex)
+            {
+                LogHelper.Warn<uSyncActionLogger>("Failed to save action log: {0}", () => ex.ToString());
+            }
         }
 
         /// <summary>
