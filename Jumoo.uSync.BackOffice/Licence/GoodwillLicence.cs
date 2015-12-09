@@ -25,12 +25,12 @@ namespace Jumoo.uSync.BackOffice.Licence
         {
             var licencefile = IOHelper.MapPath(Path.Combine(SystemDirectories.Config, "usynclicence.config"));
 
-            LogHelper.Info<GoodwillLicence>("Checking : {0} for licence", () => licencefile);
+            LogHelper.Debug<GoodwillLicence>("Checking : {0} for licence", () => licencefile);
 
             if (!System.IO.File.Exists(licencefile))
                 return false;
 
-            LogHelper.Info<GoodwillLicence>("Loading licence file");
+            LogHelper.Debug<GoodwillLicence>("Loading licence file");
             var lic = XElement.Load(licencefile);
             if (lic == null)
                 return false;
@@ -50,7 +50,7 @@ namespace Jumoo.uSync.BackOffice.Licence
             {
                 hash = BitConverter.ToString(md5.ComputeHash(inputBytes)).Replace("-", "").ToLower();
             }
-            LogHelper.Info<GoodwillLicence>("Licence : [{0}] [{1}]", () => hash, () => licenceHash);
+            LogHelper.Debug<GoodwillLicence>("Licence : [{0}] [{1}]", () => hash, () => licenceHash);
 
             return hash.Equals(licenceHash);
 
