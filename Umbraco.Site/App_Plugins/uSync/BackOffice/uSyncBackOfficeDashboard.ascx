@@ -172,6 +172,7 @@
                 </small></p>
                 <asp:BulletedList runat="server" ID="uSyncHandlers"></asp:BulletedList>
             </div>
+        </div>
         </asp:Panel>
     </div>
 </div>
