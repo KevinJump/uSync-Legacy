@@ -84,6 +84,7 @@ namespace Jumoo.uSync.Core
         }
 
         public string MediaStorageFolder { get; set; }
+        public bool MoveMedia { get; set; }
 
         public List<uSyncValueMapperSettings> Mappings { get; set; }
         public List<uSyncContentMapping> ContentMappings { get; set; }

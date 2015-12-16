@@ -66,7 +66,7 @@ namespace Jumoo.uSync.Core.Serializers
                 {
                     var prop = item.Properties[propertyTypeAlias];
                     string newValue = GetImportIds(prop.PropertyType, GetImportXml(property));
-                    LogHelper.Debug<Events>("#### Setting property: [{0}] to {1}", () => propertyTypeAlias, ()=> newValue);
+                    LogHelper.Debug<Events>("#### BASE: Setting property: [{0}] to {1}", () => propertyTypeAlias, ()=> newValue);
                     item.SetValue(propertyTypeAlias, newValue);
                 }
             }

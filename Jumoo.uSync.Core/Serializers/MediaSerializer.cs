@@ -8,7 +8,7 @@ using Jumoo.uSync.Core.Extensions;
 using Jumoo.uSync.Core.Helpers;
 
 using Jumoo.uSync.Core.Interfaces;
-
+using Umbraco.Core.Logging;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -55,7 +55,24 @@ namespace Jumoo.uSync.Core.Serializers
                 if (item.ParentId != parentId)
                     item.ParentId = parentId;
 
-                // _mover.ImportFile(item);
+                /*
+                 * properties are set in second pass, for speed we don't do it here.
+                 */
+                /*
+                var properties = node.Elements().Where(x => x.Attribute("isDoc") == null);
+                foreach (var property in properties)
+                {
+                    var propertyTypeAlias = property.Name.LocalName;
+                    if (item.HasProperty(propertyTypeAlias))
+                    {
+                        var propType = item.Properties[propertyTypeAlias].PropertyType;
+                        var newValue = GetImportIds(propType, GetImportXml(property));
+
+                        LogHelper.Debug<Events>("#### Setting property: [{0}] to {1}", () => propertyTypeAlias, () => newValue);
+                        item.SetValue(propertyTypeAlias, newValue);
+                    }
+                }
+                */
 
                 _mediaService.Save(item);
             }
@@ -78,20 +95,12 @@ namespace Jumoo.uSync.Core.Serializers
             node.Add(new XAttribute("nodeTypeAlias", item.ContentType.Alias));
             node.Add(new XAttribute("path", item.Path));
 
-            /*
-            foreach (var file in item.Properties.Where(p => p.Alias == "umbracoFile"))
+            // if we are not moving the media then we just write the umbracoFile settings as we see them
+            //
+            if (!uSyncCoreContext.Instance.Configuration.Settings.MoveMedia)
             {
-                if (file == null || file.Value == null)
-                {
-                    // we don't have an associated file
-                }
-                else
-                {
-                    // _mover.ExportMediaFile(file.Value.ToString(), item.Key);
-                }
-
+                // this is done in SerializeBase ? 
             }
-            */
 
             return SyncAttempt<XElement>.Succeed(item.Name, node, typeof(IMedia), ChangeType.Export);
         }
@@ -102,7 +111,7 @@ namespace Jumoo.uSync.Core.Serializers
             if (key == Guid.Empty)
                 return true;
 
-            var item = _contentService.GetById(key);
+            var item = _mediaService.GetById(key);
             if (item == null)
                 return true;
 
@@ -123,6 +132,11 @@ namespace Jumoo.uSync.Core.Serializers
             PublishOrSave(item, true, true);
 
             return SyncAttempt<IMedia>.Succeed(item.Name, ChangeType.Import);
+        }
+
+        public override void PublishOrSave(IMedia item, bool published, bool raiseEvents)
+        {
+            _mediaService.Save(item, raiseEvents: raiseEvents);
         }
     }
 }

@@ -10,6 +10,7 @@ using Umbraco.Core.IO;
 using Newtonsoft.Json;
 using Jumoo.uSync.Core.Interfaces;
 using Umbraco.Core;
+using Umbraco.Core.Logging;
 
 namespace Jumoo.uSync.Core.Helpers
 {
@@ -18,6 +19,18 @@ namespace Jumoo.uSync.Core.Helpers
 
         public bool ImportFile(IMedia item, string folder)
         {
+            // 
+            // if we have move media = false, we don't actually move 
+            // the media file, we just let the user move the Media folder
+            // so the internal umbracoFile values will be fine ?
+            //
+            if (!uSyncCoreContext.Instance.Configuration.Settings.MoveMedia) {
+                LogHelper.Debug<uSyncMediaFileMover>("Media moving is off - media file not being moved");
+                return true;
+            }
+            
+
+
             bool changes = false; 
             Guid guid = item.Key;
 
@@ -93,6 +106,12 @@ namespace Jumoo.uSync.Core.Helpers
 
         public bool ExportFile(IMedia item, string folder)
         {
+            if (!uSyncCoreContext.Instance.Configuration.Settings.MoveMedia)
+            {
+                LogHelper.Debug<uSyncMediaFileMover>("Media moving is off - media file not being moved");
+                return true;
+            }
+
             foreach (var fileProperty in item.Properties.Where(p => p.Alias == "umbracoFile"))
             {
                 if (fileProperty == null || fileProperty.Value == null)
