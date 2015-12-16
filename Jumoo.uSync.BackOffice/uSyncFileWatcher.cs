@@ -37,7 +37,6 @@ namespace Jumoo.uSync.BackOffice
                                 NotifyFilters.FileName |
                                 NotifyFilters.DirectoryName,
                 IncludeSubdirectories = true,
-                EnableRaisingEvents = true,
                 Filter = "*.config"
             };
 
@@ -45,6 +44,8 @@ namespace Jumoo.uSync.BackOffice
             watcher.Created += new FileSystemEventHandler(FileWatcherChangeEvent);
             watcher.Deleted += new FileSystemEventHandler(FileWatcherChangeEvent);
             watcher.Renamed += new RenamedEventHandler(FileWatcherRenameEvent);
+
+            watcher.EnableRaisingEvents = true;
 
             _waitTimer = new System.Timers.Timer(8128); // wait a perfect amount of time
             _waitTimer.Elapsed += ChangeTimerElapsed;
@@ -54,20 +55,28 @@ namespace Jumoo.uSync.BackOffice
         {
             lock(_watcherLock)
             {
-                Pause();
+                _waitTimer.Stop();
+                try {
+                    Pause();
 
-                Stopwatch sw = new Stopwatch();
-                sw.Start();
+                    Stopwatch sw = new Stopwatch();
+                    sw.Start();
 
-                uSyncEvents.Paused = true;
+                    uSyncEvents.Paused = true;
 
-                LogHelper.Info<uSyncFileWatcher>("FileChanges - starting import");
-                uSyncBackOfficeContext.Instance.ImportAll();
+                    LogHelper.Info<uSyncFileWatcher>("FileChanges - starting import");
+                    uSyncBackOfficeContext.Instance.ImportAll();
 
-                uSyncEvents.Paused = false; 
+                    uSyncEvents.Paused = false;
 
-                sw.Stop();
-                LogHelper.Info<uSyncFileWatcher>("FileChanges - Import Complete: {0}ms", ()=> sw.ElapsedMilliseconds);
+                    sw.Stop();
+                    LogHelper.Info<uSyncFileWatcher>("FileChanges - Import Complete: {0}ms", () => sw.ElapsedMilliseconds);
+                }
+                catch(Exception ex)
+                {
+                    LogHelper.Warn<uSyncFileWatcher>("FileChanges - Error during import: {0}", () => ex.ToString());
+                }
+
                 Start();
             }
             
@@ -78,7 +87,7 @@ namespace Jumoo.uSync.BackOffice
             if (watcher != null)
             {
                 Interlocked.Increment(ref _lockCount);
-                LogHelper.Debug<uSyncFileWatcher>("Watcher Lock: {0}", () => _lockCount);
+                LogHelper.Debug<uSyncFileWatcher>("Pause: Watcher Lock: {0}", () => _lockCount);
 
                 if (watcher.EnableRaisingEvents)
                 {
@@ -97,7 +106,7 @@ namespace Jumoo.uSync.BackOffice
                     Interlocked.Decrement(ref _lockCount);
                 }
 
-                LogHelper.Debug<uSyncFileWatcher>("Watcher Lock: {0}", () => _lockCount);
+                LogHelper.Debug<uSyncFileWatcher>("Start: Watcher Lock: {0}", () => _lockCount);
 
                 if (_lockCount <= 0)
                 {
