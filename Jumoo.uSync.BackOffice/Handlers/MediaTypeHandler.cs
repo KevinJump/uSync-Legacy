@@ -86,7 +86,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
         {
             List<uSyncAction> actions = new List<uSyncAction>();
 
-            var folders = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.DocumentTypeContainer);
+            var folders = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.MediaTypeContainer);
             foreach (var fldr in folders)
             {
                 var container = _contentTypeService.GetMediaTypeContainer(fldr.Key);
@@ -95,7 +95,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 actions.AddRange(Export(fldr.Id, folder));
             }
 
-            var nodes = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.DocumentType);
+            var nodes = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.MediaType);
             foreach (var node in nodes)
             {
                 var item = _contentTypeService.GetMediaType(node.Key);
@@ -137,7 +137,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
         public uSyncAction ExportContainer(EntityContainer item, string folder)
         {
             if (item == null)
-                return uSyncAction.Fail(Path.GetFileName(folder), typeof(IContentType), "folder not set");
+                return uSyncAction.Fail(Path.GetFileName(folder), typeof(IMediaType), "folder not set");
 
             try
             {

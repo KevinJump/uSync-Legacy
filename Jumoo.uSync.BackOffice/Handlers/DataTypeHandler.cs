@@ -15,7 +15,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
     using Jumoo.uSync.Core;
     using Jumoo.uSync.BackOffice.Helpers;
     using Core.Extensions;
-
+    using Umbraco.Core.Models.EntityBase;
     public class DataTypeHandler : uSyncBaseHandler<IDataTypeDefinition>, ISyncHandler
     {
         public string Name { get { return "uSync: DataTypeHandler"; } }
@@ -77,6 +77,37 @@ namespace Jumoo.uSync.BackOffice.Handlers
             return actions;
         }
 
+        /// <summary>
+        ///  v7.4 - we have folders - when we have folders we need to look for containers.
+        /// </summary>
+        public IEnumerable<uSyncAction> Export(int parent, string folder)
+        {
+            List<uSyncAction> actions = new List<uSyncAction>();
+
+            var folders = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.DataTypeContainer);
+            foreach (var fldr in folders)
+            {
+                var container = _dataTypeService.GetContainer(fldr.Key);
+                actions.Add(ExportContainer(container, folder));
+
+                actions.AddRange(Export(fldr.Id, folder));
+            }
+
+            var nodes = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.DataType);
+            foreach (var node in nodes)
+            {
+                var item = _dataTypeService.GetDataTypeDefinitionById(node.Key);
+                actions.Add(ExportToDisk(item, folder));
+
+                actions.AddRange(Export(node.Id, folder));
+            }
+
+            return actions;
+        }
+
+
+
+
         public uSyncAction ExportToDisk(IDataTypeDefinition item, string folder)
         {
             if (item == null)
@@ -89,7 +120,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
                 if (attempt.Success)
                 {
-                    filename = uSyncIOHelper.SavePath(folder, SyncFolder, item.Name.ToSafeAlias());
+                    filename = uSyncIOHelper.SavePath(folder, SyncFolder, GetEntityPath(item), item.Name.ToSafeAlias());
                     uSyncIOHelper.SaveNode(attempt.Item, filename);
                 }
 
@@ -100,6 +131,54 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 return uSyncAction.Fail(item.Name, item.GetType(), ChangeType.Export, ex);
             }
         }
+
+        public uSyncAction ExportContainer(EntityContainer item, string folder)
+        {
+            if (item == null)
+                return uSyncAction.Fail(Path.GetFileName(folder), typeof(IDataTypeDefinition), "folder not set");
+
+            try
+            {
+                var attempt = uSyncCoreContext.Instance.DataTypeSerializer.SerializeContainer(item);
+                var filename = string.Empty;
+
+                if (attempt.Success)
+                {
+                    filename = uSyncIOHelper.SavePath(
+                        folder, SyncFolder, GetEntityPath(item), item.Name.ToSafeAlias());
+
+                    uSyncIOHelper.SaveNode(attempt.Item, filename);
+                }
+
+                return uSyncActionHelper<XElement>.SetAction(attempt, filename);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Warn<DataTypeHandler>("Error saving data type container: {0}", () => ex.ToString());
+                return uSyncAction.Fail(item.Name, item.GetType(), ChangeType.Export, ex);
+            }
+        }
+
+        private string GetEntityPath(IUmbracoEntity item)
+        {
+            string path = string.Empty;
+            if (item != null)
+            {
+                if (item.ParentId > 0)
+                {
+                    var parent = ApplicationContext.Current.Services.EntityService.Get(item.ParentId);
+                    if (parent != null)
+                    {
+                        path = GetEntityPath(parent);
+                    }
+                }
+
+                path = Path.Combine(path, item.Name.ToSafeFileName());
+            }
+
+            return path;
+        }
+
 
         public void RegisterEvents()
         {
