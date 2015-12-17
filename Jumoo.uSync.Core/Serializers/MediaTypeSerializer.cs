@@ -10,6 +10,7 @@ using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
 using Umbraco.Core.Logging;
+using Jumoo.uSync.Core.Helpers;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -20,6 +21,10 @@ namespace Jumoo.uSync.Core.Serializers
 
         internal override SyncAttempt<IMediaType> DeserializeCore(XElement node)
         {
+
+            if (node.Name.LocalName == "EntityFolder")
+                return DeserializeContainer(node);
+
             // we can't use the package manager for this :(
             // we have to do it by hand.
             if (node == null | node.Element("Info") == null || node.Element("Info").Element("Alias") == null)
@@ -90,6 +95,37 @@ namespace Jumoo.uSync.Core.Serializers
             return SyncAttempt<IMediaType>.Succeed(item.Name, item, ChangeType.Import);          
         }
 
+        public override SyncAttempt<IMediaType> DeserializeContainer(XElement node)
+        {
+            var name = node.Attribute("Name").ValueOrDefault(string.Empty);
+            var key = node.Attribute("Key").ValueOrDefault(Guid.Empty);
+            var parentId = node.Attribute("ParentId").ValueOrDefault(-1);
+
+            var item = _contentTypeService.GetMediaTypeContainer(key);
+            if (item == null)
+            {
+                var attempt = _contentTypeService.CreateMediaTypeContainer(parentId, name);
+                if (attempt.Success)
+                    item = _contentTypeService.GetMediaTypeContainer(attempt.Result);
+            }
+
+            if (item != null)
+            {
+                if (item.Name != name)
+                    item.Name = name;
+
+                if (item.Key != key)
+                    item.Key = key;
+
+                _contentTypeService.SaveMediaTypeContainer(item);
+
+                return SyncAttempt<IMediaType>.Succeed(item.Name, null, ChangeType.Import);
+            }
+
+            return SyncAttempt<IMediaType>.Fail(name, ChangeType.ImportFail);
+        }
+
+
         public override SyncAttempt<IMediaType> DesearlizeSecondPass(IMediaType item, XElement node)
         {
             DeserializeStructure((IContentTypeBase)item, node);
@@ -98,6 +134,11 @@ namespace Jumoo.uSync.Core.Serializers
             return SyncAttempt<IMediaType>.Succeed(item.Name, item, ChangeType.Import);
         }
 
+        public override SyncAttempt<XElement> SerializeContainer(EntityContainer item)
+        {
+            return uSyncContainerHelper.SerializeContainer(item);
+        }
+      
 
         internal override SyncAttempt<XElement> SerializeCore(IMediaType item)
         {

@@ -16,6 +16,7 @@ using System.Xml.Serialization;
 using System.IO;
 using Umbraco.Core.IO;
 using System.Globalization;
+using Jumoo.uSync.Core.Helpers;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -27,6 +28,9 @@ namespace Jumoo.uSync.Core.Serializers
 
         internal override SyncAttempt<IContentType> DeserializeCore(XElement node)
         {
+            if (node.Name.LocalName == "EntityFolder")
+                return DeserializeContainer(node);
+
             // we can't use the package manager for this :(
             // we have to do it by hand.
             if (node == null | node.Element("Info") == null || node.Element("Info").Element("Alias") == null)
@@ -129,6 +133,38 @@ namespace Jumoo.uSync.Core.Serializers
             return SyncAttempt<IContentType>.Succeed(item.Name, item, ChangeType.Import);
         }
 
+        public override SyncAttempt<IContentType> DeserializeContainer(XElement node)
+        {
+            var name = node.Attribute("Name").ValueOrDefault(string.Empty);
+            var key = node.Attribute("Key").ValueOrDefault(Guid.Empty);
+            var parentId = node.Attribute("ParentId").ValueOrDefault(-1);
+
+            var item = _contentTypeService.GetContentTypeContainer(key);
+            if (item == null)
+            {
+                var attempt = _contentTypeService.CreateContentTypeContainer(parentId, name);
+                if (attempt.Success)
+                    item = _contentTypeService.GetContentTypeContainer(attempt.Result);
+            }
+
+            if (item != null)
+            {
+                if (item.Name != name)
+                    item.Name = name;
+
+                if (item.Key != key)
+                    item.Key = key;
+
+                _contentTypeService.SaveContentTypeContainer(item);
+
+                return SyncAttempt<IContentType>.Succeed(item.Name, null, ChangeType.Import);
+            }
+
+            return SyncAttempt<IContentType>.Fail(name, ChangeType.ImportFail);
+        }
+
+
+
         private void DeserializeCompositions(IContentType item, XElement info)
         {
             var comps = info.Element("Compositions");
@@ -195,6 +231,13 @@ namespace Jumoo.uSync.Core.Serializers
 
             return SyncAttempt<IContentType>.Succeed(item.Name, item, ChangeType.Import);
         }
+
+
+        public override SyncAttempt<XElement> SerializeContainer(EntityContainer item)
+        {
+            return uSyncContainerHelper.SerializeContainer(item);
+        }
+
 
         internal override SyncAttempt<XElement> SerializeCore(IContentType item)
         {

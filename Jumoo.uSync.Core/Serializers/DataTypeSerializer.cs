@@ -17,7 +17,7 @@ using Umbraco.Core.Logging;
 
 namespace Jumoo.uSync.Core.Serializers
 {
-    public class DataTypeSerializer : SyncBaseSerializer<IDataTypeDefinition>
+    public class DataTypeSerializer : SyncBaseSerializer<IDataTypeDefinition>, ISyncContainerSerializer<IDataTypeDefinition>
     {
         private IDataTypeService _dataTypeService;
 
@@ -28,7 +28,9 @@ namespace Jumoo.uSync.Core.Serializers
 
         internal override SyncAttempt<IDataTypeDefinition> DeserializeCore(XElement node)
         {
-          
+            if (node.Name.LocalName == "EntityFolder")
+                return DeserializeContainer(node);
+
             // pre import
             var mappedNode = DeserializeGetMappedValues(node);
 
@@ -89,6 +91,36 @@ namespace Jumoo.uSync.Core.Serializers
             _dataTypeService.Save(item);
             return SyncAttempt<IDataTypeDefinition>.Succeed(item.Name, item, ChangeType.Import);
 
+        }
+
+        public SyncAttempt<IDataTypeDefinition> DeserializeContainer(XElement node)
+        {
+            var name = node.Attribute("Name").ValueOrDefault(string.Empty);
+            var key = node.Attribute("Key").ValueOrDefault(Guid.Empty);
+            var parentId = node.Attribute("ParentId").ValueOrDefault(-1);
+
+            var item = _dataTypeService.GetContainer(key);
+            if (item == null)
+            {
+                var attempt = _dataTypeService.CreateContainer(parentId, name);
+                if (attempt.Success)
+                    item = _dataTypeService.GetContainer(attempt.Result);
+            }
+
+            if (item != null)
+            {
+                if (item.Name != name)
+                    item.Name = name;
+
+                if (item.Key != key)
+                    item.Key = key;
+
+                _dataTypeService.SaveContainer(item);
+
+                return SyncAttempt<IDataTypeDefinition>.Succeed(item.Name, null, ChangeType.Import);
+            }
+
+            return SyncAttempt<IDataTypeDefinition>.Fail(name, ChangeType.ImportFail);
         }
 
         private XElement DeserializeGetMappedValues(XElement node)
@@ -219,6 +251,11 @@ namespace Jumoo.uSync.Core.Serializers
                 LogHelper.Warn<DataTypeSerializer>("Error Serializing {0}", () => ex.ToString());
                 return SyncAttempt<XElement>.Fail(item.Name, typeof(IDataTypeDefinition), ChangeType.Export, "Failed to export", ex);
             }
+        }
+
+        public SyncAttempt<XElement> SerializeContainer(EntityContainer item)
+        {
+            return uSyncContainerHelper.SerializeContainer(item);
         }
 
         private XElement SerializePreValues(IDataTypeDefinition item, XElement node)

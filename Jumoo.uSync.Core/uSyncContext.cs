@@ -19,8 +19,8 @@ namespace Jumoo.uSync.Core
             get { return _instance ?? (_instance = new uSyncCoreContext()); }
         }
 
-        public ISyncSerializerTwoPass<IContentType> ContentTypeSerializer { get; private set; }
-        public ISyncSerializerTwoPass<IMediaType> MediaTypeSerializer { get; private set; }
+        public ISyncContainerSerializerTwoPass<IContentType> ContentTypeSerializer { get; private set; }
+        public ISyncContainerSerializerTwoPass<IMediaType> MediaTypeSerializer { get; private set; }
 
         public ISyncSerializerTwoPass<IMemberType> MemberTypeSerializer { get; private set; }
 
@@ -30,7 +30,7 @@ namespace Jumoo.uSync.Core
         public ISyncSerializer<IDictionaryItem> DictionarySerializer { get; private set; }
 
         public ISyncSerializer<IMacro> MacroSerializer { get; private set; }
-        public ISyncSerializer<IDataTypeDefinition> DataTypeSerializer { get; private set; }
+        public ISyncContainerSerializer<IDataTypeDefinition> DataTypeSerializer { get; private set; }
 
         public ISyncSerializerWithParent<IContent> ContentSerializer { get; private set; }
         public ISyncSerializerWithParent<IMedia> MediaSerializer { get; private set; }
