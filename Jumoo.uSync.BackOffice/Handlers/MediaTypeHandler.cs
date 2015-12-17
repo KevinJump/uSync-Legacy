@@ -75,15 +75,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
         {
             LogHelper.Info<MediaTypeHandler>("Exporting all MediaTypes");
 
-            List<uSyncAction> actions = new List<uSyncAction>();
-
-            var _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
-            foreach (var item in _contentTypeService.GetAllMediaTypes())
-            {
-                if (item != null)
-                    actions.Add(ExportToDisk(item, folder));
-            }
-            return actions;
+            return Export(-1, folder);
+           
         }
 
         /// <summary>
