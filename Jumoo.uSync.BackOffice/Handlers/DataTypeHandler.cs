@@ -65,16 +65,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
         {
             LogHelper.Info<DataTypeHandler>("Exporting all DataTypes");
 
-            List<uSyncAction> actions = new List<uSyncAction>();
-
-            var _dataTypeService = ApplicationContext.Current.Services.DataTypeService;
-            foreach (var item in _dataTypeService.GetAllDataTypeDefinitions())
-            {
-                if (item != null)
-                    actions.Add(ExportToDisk(item, folder));
-            }
-
-            return actions;
+            return Export(-1, folder);
         }
 
         /// <summary>
