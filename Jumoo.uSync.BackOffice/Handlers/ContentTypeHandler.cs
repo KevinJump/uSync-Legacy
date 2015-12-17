@@ -15,7 +15,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
     using Jumoo.uSync.Core;
     using Jumoo.uSync.BackOffice.Helpers;
     using System.Collections.Generic;
-
+    using Umbraco.Core.Models.EntityBase;
     public class ContentTypeHandler : uSyncBaseHandler<IContentType>, ISyncHandler
     {
         // sets our running order in usync. 
@@ -78,12 +78,32 @@ namespace Jumoo.uSync.BackOffice.Handlers
         {
             LogHelper.Info<ContentTypeHandler>("Exporting all ContentTypes (DocTypes)");
 
+            return Export(-1, folder);
+        }
+
+        /// <summary>
+        ///  v7.4 - we have folders - when we have folders we need to look for containers.
+        /// </summary>
+        public IEnumerable<uSyncAction> Export(int parent, string folder)
+        {
             List<uSyncAction> actions = new List<uSyncAction>();
 
-            foreach (var item in _contentTypeService.GetAllContentTypes())
+            var folders = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.DocumentTypeContainer);
+            foreach(var fldr in folders)
             {
-                if (item != null)
-                    actions.Add(ExportToDisk(item, folder));
+                var container = _contentTypeService.GetContentTypeContainer(fldr.Key);
+                actions.Add(ExportContainer(container, folder));
+
+                actions.AddRange(Export(fldr.Id, folder));
+            }
+
+            var nodes = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.DocumentType);
+            foreach(var node in nodes)
+            {
+                var item = _contentTypeService.GetContentType(node.Key);
+                actions.Add(ExportToDisk(item, folder));
+
+                actions.AddRange(Export(node.Id, folder));
             }
 
             return actions;
@@ -107,7 +127,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
                     filename = uSyncIOHelper.SavePath(
                             folder,
                             SyncFolder,
-                            GetContentTypePath(item),
+                            GetEntityPath(item),
                             "def");
 
                     uSyncIOHelper.SaveNode(attempt.Item, filename);
@@ -121,6 +141,53 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 LogHelper.Warn<ContentTypeHandler>("Error saving content type: {0}", () => ex.ToString());
                 return uSyncAction.Fail(item.Name, item.GetType(), ChangeType.Export, ex);
             }
+        }
+
+        public uSyncAction ExportContainer(EntityContainer item, string folder)
+        {
+            if (item == null)
+                return uSyncAction.Fail(Path.GetFileName(folder), typeof(IContentType), "folder not set");
+
+            try
+            {
+                var attempt = uSyncCoreContext.Instance.ContentTypeSerializer.SerializeContainer(item);
+                var filename = string.Empty;
+
+                if (attempt.Success)
+                {
+                    filename = uSyncIOHelper.SavePath(
+                        folder, SyncFolder, GetEntityPath(item), "def");
+
+                    uSyncIOHelper.SaveNode(attempt.Item, filename);
+                }
+
+                return uSyncActionHelper<XElement>.SetAction(attempt, filename);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Warn<ContentTypeHandler>("Error saving content type container: {0}", () => ex.ToString());
+                return uSyncAction.Fail(item.Name, item.GetType(), ChangeType.Export, ex);
+            }
+        }
+
+        private string GetEntityPath(IUmbracoEntity item)
+        {
+            string path = string.Empty;
+            if (item != null)
+            {
+                if (item.ParentId > 0)
+                {
+                    var parent = ApplicationContext.Current.Services.EntityService.Get(item.ParentId);
+                    if (parent != null)
+                    {
+                        path = GetEntityPath(parent);
+                    }
+                }
+
+                path = Path.Combine(path, item.Name.ToSafeFileName());
+            }
+
+            return path;
         }
 
 
