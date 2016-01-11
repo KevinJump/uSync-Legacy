@@ -25,9 +25,9 @@ namespace Jumoo.uSync.Core.Helpers
             _type = type;
         }
 
-        public string GetPathFromId(int id)
+        public string GetPathFromId(int id, UmbracoObjectTypes type)
         {
-            var item = _entityService.Get(id);
+            var item = _entityService.Get(id, type);
             if (item != null && !item.Trashed)
                 return GetPath(item);
 
