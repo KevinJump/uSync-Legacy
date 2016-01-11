@@ -38,14 +38,7 @@ namespace Jumoo.uSync.Content
 
             var node = XElement.Load(file);
             var attempt = uSyncCoreContext.Instance.MediaSerializer.Deserialize(node, parentId, force);
-            if (attempt.Success && attempt.Change > ChangeType.NoChange )
-            {
-                // the media serializer doens't do the files you
-                // need to also call the filemover to get them out
-                string mediaFolder = Path.Combine(Path.GetDirectoryName(file), mediaFolderName);
-                uSyncCoreContext.Instance.MediaFileMover.ImportFile(attempt.Item, mediaFolder);
-            }
-
+            
             return attempt;
         }
 
@@ -53,6 +46,9 @@ namespace Jumoo.uSync.Content
         {
             XElement node = XElement.Load(file);
             uSyncCoreContext.Instance.MediaSerializer.DesearlizeSecondPass(item, node);
+
+            string mediaFolder = Path.Combine(Path.GetDirectoryName(file), mediaFolderName);
+            uSyncCoreContext.Instance.MediaFileMover.ImportFile(item, mediaFolder);
         }
 
         public IEnumerable<uSyncAction> ExportAll(string folder)
