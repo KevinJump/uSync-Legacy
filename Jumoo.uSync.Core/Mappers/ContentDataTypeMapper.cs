@@ -18,13 +18,13 @@ namespace Jumoo.uSync.Core.Mappers
         ///  takes a list of value names and returns a list 
         ///  of alias values 
         /// </summary>
-        public string GetExportValue(PropertyType propType, string value)
+        public string GetExportValue(int dataTypeDefinitionId, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
                 return value;
 
             var prevalues =
-                ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(propType.DataTypeDefinitionId).PreValuesAsDictionary;
+                ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(dataTypeDefinitionId).PreValuesAsDictionary;
 
             if (prevalues != null && prevalues.Count > 0)
             {
@@ -55,12 +55,12 @@ namespace Jumoo.uSync.Core.Mappers
             return value;
         }
 
-        public string GetImportValue(PropertyType propType, string content)
+        public string GetImportValue(int dataTypeDefinitionId, string content)
         {
-            LogHelper.Debug<ContentDataTypeMapper>("Mapping a datatype: {0} {1}", () => propType.DataTypeDefinitionId, () => content);
+            LogHelper.Debug<ContentDataTypeMapper>("Mapping a datatype: {0} {1}", () => dataTypeDefinitionId, () => content);
 
             var prevalues =
-                ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(propType.DataTypeDefinitionId)
+                ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(dataTypeDefinitionId)
                                   .PreValuesAsDictionary;
 
             if (prevalues != null && prevalues.Count > 0)

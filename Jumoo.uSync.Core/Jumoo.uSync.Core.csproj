@@ -286,6 +286,7 @@
     <Compile Include="Mappers\ContentDataTypeKeyMapper.cs" />
     <Compile Include="Mappers\ContentDataTypeMapper.cs" />
     <Compile Include="Mappers\ContentIdMapping.cs" />
+    <Compile Include="Mappers\ContentMapperFactory.cs" />
     <Compile Include="Mappers\IContentMapper.cs" />
     <Compile Include="Serializers\ContentBaseSerializer.cs" />
     <Compile Include="Serializers\ContentSerializer.cs" />

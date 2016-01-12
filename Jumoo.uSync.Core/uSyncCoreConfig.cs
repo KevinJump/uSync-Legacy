@@ -153,6 +153,9 @@ namespace Jumoo.uSync.Core
 
         [XmlAttribute(AttributeName = "Mapping")]
         public ContentMappingType MappingType { get; set; }
+
+        [XmlAttribute(AttributeName = "CustomMappingType")]
+        public string CustomMappingType { get; set; }
     }
 
     public enum ContentMappingType
@@ -160,5 +163,6 @@ namespace Jumoo.uSync.Core
         Content,
         DataType,
         DataTypeKeys,
+        Custom
     }
 }
