@@ -37,7 +37,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
             var node = XElement.Load(filePath);
 
-            return uSyncCoreContext.Instance.DataTypeSerializer.DeSerialize(node, force);
+            return uSyncCoreContext.Instance.DataTypeSerializer.Deserialize(node, force, false);
         }
 
         public override uSyncAction DeleteItem(Guid key, string keyString)

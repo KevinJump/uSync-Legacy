@@ -26,7 +26,14 @@ namespace Jumoo.uSync.Core.Serializers
 
         public SyncAttempt<IDataTypeDefinition> Deserialize(XElement node, bool forceUpdate, bool onePass)
         {
-            return DeSerialize(node, forceUpdate);
+            var attempt = DeSerialize(node, forceUpdate);
+
+            if (onePass && attempt.Success)
+            {
+                return DesearlizeSecondPass(attempt.Item, node);
+            }
+
+            return attempt;
         }
 
         public SyncAttempt<IDataTypeDefinition> DeSerialize(XElement node, bool forceUpdate = false)
@@ -41,11 +48,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             return SyncAttempt<IDataTypeDefinition>.Succeed(node.NameFromNode(), null, ChangeType.NoChange);
         }
-        
-        public SyncAttempt<IDataTypeDefinition> DesearlizeSecondPass(IDataTypeDefinition item, XElement node, bool onePass)
-        {
-            return DesearlizeSecondPass(item, node);
-        }
+       
 
         public SyncAttempt<IDataTypeDefinition> DesearlizeSecondPass(IDataTypeDefinition item, XElement node)
         {

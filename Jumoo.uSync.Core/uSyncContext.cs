@@ -31,7 +31,6 @@ namespace Jumoo.uSync.Core
 
         public ISyncSerializer<IMacro> MacroSerializer { get; private set; }
         public ISyncSerializerTwoPass<IDataTypeDefinition> DataTypeSerializer { get; private set; }
-        public ISyncSerializerTwoPass<IDataTypeDefinition> DataTypeMappingSerializer { get; private set; }
 
         public ISyncSerializerWithParent<IContent> ContentSerializer { get; private set; }
         public ISyncSerializerWithParent<IMedia> MediaSerializer { get; private set; }
@@ -56,10 +55,7 @@ namespace Jumoo.uSync.Core
 
             MacroSerializer = new MacroSerializer(Constants.Packaging.MacroNodeName);
 
-            var dataTypeSerializer = new DataTypeSerializer(Constants.Packaging.DataTypeNodeName);
-
-            DataTypeSerializer = dataTypeSerializer;
-            DataTypeMappingSerializer = dataTypeSerializer;
+            DataTypeSerializer = new DataTypeSerializer(Constants.Packaging.DataTypeNodeName);
 
             ContentSerializer = new ContentSerializer();
             MediaSerializer = new MediaSerializer();

@@ -59,7 +59,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
         public override void ImportSecondPass(string file, IDataTypeDefinition item)
         {
             XElement node = XElement.Load(file);
-            uSyncCoreContext.Instance.DataTypeMappingSerializer.DesearlizeSecondPass(item, node);
+            uSyncCoreContext.Instance.DataTypeSerializer.DesearlizeSecondPass(item, node);
         }
 
         public override uSyncAction DeleteItem(Guid key, string keyString)
