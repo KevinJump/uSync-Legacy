@@ -38,7 +38,7 @@ namespace Jumoo.uSync.BackOffice
             // this version of usync only runs on umbraco 7.3+ 
             //
             var version = Umbraco.Core.Configuration.UmbracoVersion.Current;
-            if (version.Major > 7 || (version.Major == 7 && version.Minor >= 4))
+            if (version.Major > 7 || (version.Major == 7 && version.Minor >= 3))
             {
                 Setup();
             }

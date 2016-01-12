@@ -68,6 +68,9 @@
       <Name>Jumoo.uSync.Migrations</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>XCOPY "$(TargetPath)" "$(SolutionDir)Umbraco.Site\Bin\" /q /y</PostBuildEvent>
