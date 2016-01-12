@@ -8,15 +8,15 @@ namespace Jumoo.uSync.Core
 {
     public struct SyncAttempt<T>
     {
-        public bool Success { get; }
+        public bool Success { get; private set; }
         public string Name { get; set; }
-        public T Item {get; }
-        public Type ItemType { get; }
-        public ChangeType Change { get; }
-        public string Message { get; }
+        public T Item { get; private set; }
+        public Type ItemType { get; private set; }
+        public ChangeType Change { get; private set; }
+        public string Message { get; private set; }
         public Exception Exception { get; set; }
 
-        private SyncAttempt(bool success, string name, T item, Type itemType, ChangeType change, string message, Exception ex)
+        private SyncAttempt(bool success, string name, T item, Type itemType, ChangeType change, string message, Exception ex) : this()
         {
             Success = success;
             Name = name;

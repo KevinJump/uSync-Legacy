@@ -20,10 +20,10 @@ namespace Jumoo.uSync.BackOffice
         public string Message { get; set; }
         public Exception Exception { get; set; }
         public ChangeType Change { get; set; }
-        public string FileName { get; }
+        public string FileName { get; private set; }
         public string Name { get; set; }
 
-        internal uSyncAction(bool success, string name, Type type, ChangeType change, string message, Exception ex, string filename)
+        internal uSyncAction(bool success, string name, Type type, ChangeType change, string message, Exception ex, string filename) : this()
         {
             Success = success;
             Name = name;
