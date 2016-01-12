@@ -52,7 +52,7 @@ namespace Jumoo.uSync.Core.Helpers
             bool isMapped = false;
 
             var ids = GetValueMatchSubstring(value);
-
+            
             foreach (Match match in Regex.Matches(ids, _settings.IdRegex))
             {
                 string mappingType = _settings.MappingType.ToLower();
@@ -66,11 +66,9 @@ namespace Jumoo.uSync.Core.Helpers
                     {
                         case "content":
                             mappedValue = ContentToGeneric(id);
-                            if (string.IsNullOrEmpty(mappedValue))
-                            {
-                                destinationType = "Media";
-                                mappedValue = MediaToGeneric(id);
-                            }
+                            break;
+                        case "media":
+                            mappedValue = MediaToGeneric(id);
                             break;
                         case "tab":
                             mappedValue = TabToGeneric(id);
@@ -85,7 +83,7 @@ namespace Jumoo.uSync.Core.Helpers
 
                     if (!string.IsNullOrEmpty(mappedValue))
                     {
-                        AddToNode(id, mappedValue, type, mapId);
+                        AddToNode(id, mappedValue, destinationType, mapId);
                         isMapped = true;
                         break;
                     }
@@ -173,11 +171,11 @@ namespace Jumoo.uSync.Core.Helpers
 
         private string ContentToGeneric(string id)
         {
-            uSyncTreeWalker walker = new uSyncTreeWalker(UmbracoObjectTypes.ContentItem);
+            uSyncTreeWalker walker = new uSyncTreeWalker(UmbracoObjectTypes.Document);
 
             int contentId;
             if (int.TryParse(id, out contentId))
-                return walker.GetPathFromId(contentId);
+                return walker.GetPathFromId(contentId, UmbracoObjectTypes.Document);
 
             return string.Empty;
         }
@@ -188,7 +186,7 @@ namespace Jumoo.uSync.Core.Helpers
 
             int contentId;
             if (int.TryParse(id, out contentId))
-                return walker.GetPathFromId(contentId);
+                return walker.GetPathFromId(contentId, UmbracoObjectTypes.Media);
 
             return string.Empty;
         }
@@ -258,7 +256,7 @@ namespace Jumoo.uSync.Core.Helpers
 
                 var valueSubString = GetValueMatchSubstring(value);
 
-                var localId = GetMappedId(id, value, type);
+                var localId = GetMappedId(id, val, type);
 
                 // all the zz swapping here, to stop false positives...
                 Regex exsitingRegEx = new Regex(string.Format("{0}(?!:zzusync)", localId));
@@ -311,7 +309,7 @@ namespace Jumoo.uSync.Core.Helpers
 
         private string ContentToId(string id, string value)
         {
-            var walker = new uSyncTreeWalker(UmbracoObjectTypes.ContentItem);
+            var walker = new uSyncTreeWalker(UmbracoObjectTypes.Document);
             var mappedId = walker.GetIdFromPath(value);
             return (mappedId != -1) ? mappedId.ToString() : id;
         }
