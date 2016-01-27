@@ -148,22 +148,25 @@ namespace Jumoo.uSync.Core.Serializers
             // (need to strip cdata from value)
             var val = GetImportXml(value);
 
-            var mapping = uSyncCoreContext.Instance.Configuration.Settings.ContentMappings
-                .SingleOrDefault(x => x.EditorAlias == propType.PropertyEditorAlias);
-
-
-            if (mapping != null)
+            if (!string.IsNullOrWhiteSpace(val))
             {
-                LogHelper.Debug<Events>("Mapping Content Export: {0} {1}", () => mapping.EditorAlias, () => mapping.MappingType);
 
-                IContentMapper mapper = ContentMapperFactory.GetMapper(mapping);
+                var mapping = uSyncCoreContext.Instance.Configuration.Settings.ContentMappings
+                    .SingleOrDefault(x => x.EditorAlias == propType.PropertyEditorAlias);
 
-                if (mapper != null)
+
+                if (mapping != null)
                 {
-                    return mapper.GetExportValue(propType.DataTypeDefinitionId, val);
+                    LogHelper.Debug<Events>("Mapping Content Export: {0} {1}", () => mapping.EditorAlias, () => mapping.MappingType);
+
+                    IContentMapper mapper = ContentMapperFactory.GetMapper(mapping);
+
+                    if (mapper != null)
+                    {
+                        return mapper.GetExportValue(propType.DataTypeDefinitionId, val);
+                    }
                 }
             }
-
             return GetInnerXml(value);
         }
     
