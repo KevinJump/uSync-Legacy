@@ -64,14 +64,14 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
         public override uSyncAction DeleteItem(Guid key, string keyString)
         {
+            /*
             IDataTypeDefinition item = null;
             if (key != Guid.Empty)
                 item = _dataTypeService.GetDataTypeDefinitionById(key);
 
-            /* delete only by key 
+            // delete only by key 
             if (item == null && !string.IsNullOrEmpty(keyString))
                 item = _dataTypeService.GetDataTypeDefinitionByName(keyString);
-            */
 
             if (item != null)
             {
@@ -81,6 +81,10 @@ namespace Jumoo.uSync.BackOffice.Handlers
             }
 
             return uSyncAction.Fail(keyString, typeof(IDataTypeDefinition), ChangeType.Delete, "Not found");
+            */
+
+            return uSyncAction.SetAction(true, keyString, typeof(IDataTypeDefinition), ChangeType.NoChange, "No change on mapping pass");
+
         }
 
         public IEnumerable<uSyncAction> ExportAll(string folder)
