@@ -117,9 +117,8 @@ namespace Jumoo.uSync.Core.Serializers
                     if (!string.IsNullOrEmpty(value))
                     {
                         preValue.Attribute("Value").Value = value;
+                        preValue.Attribute("MapGuid").Remove();
                     }
-
-                    preValue.Attribute("MapGuid").Remove();
                 }
             }
 
@@ -150,8 +149,15 @@ namespace Jumoo.uSync.Core.Serializers
 
                     if (preValNode != null)
                     {
-                        // set the value of preValue value to the value of the value attribute :)
-                        preValue.Value.Value = preValNode.Attribute("Value").Value;
+                        // if the xml still has MapGuid on it, then the mapping didn't work
+                        // so we just don't set this value, its a value that the site does have
+                        // but its possible the content or whatever is set diffrently on this install
+                        //                        
+                        if (preValNode.Attribute("MapGuid") == null)
+                        {
+                            // set the value of preValue value to the value of the value attribute :)
+                            preValue.Value.Value = preValNode.Attribute("Value").Value;
+                        }
                     }
                     else
                     {

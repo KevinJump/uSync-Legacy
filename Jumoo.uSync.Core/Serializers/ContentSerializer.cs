@@ -36,12 +36,11 @@ namespace Jumoo.uSync.Core.Serializers
 
             // because later set the guid, we are going for a match at this point
             var item = _contentService.GetById(guid);
-            if (item == null || item.Trashed)
+            if (item == null)
             {
                 item = _contentService.CreateContent(name, parentId, type);
             }
-            else
-            {
+            else { 
                 // update is different for content, we go on publish times..
                 if (!forceUpdate)
                 {
@@ -57,6 +56,10 @@ namespace Jumoo.uSync.Core.Serializers
 
             if (item == null)
                 return SyncAttempt<IContent>.Fail(node.NameFromNode(), ChangeType.ImportFail, "Cannot find or create content item");
+
+            // if it's in the trash remove it. 
+            if (item.Trashed)
+                item.ChangeTrashedState(false);
 
             var template = ApplicationContext.Current.Services.FileService.GetTemplate(templateAlias);
             if (template != null)
