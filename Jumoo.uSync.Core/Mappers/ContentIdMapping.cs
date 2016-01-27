@@ -12,7 +12,7 @@ namespace Jumoo.uSync.Core.Mappers
 {
     class ContentIdMapper : IContentMapper
     {
-        public string GetExportValue(PropertyType propType, string value)
+        public string GetExportValue(int dataTypeDefinitionId, string value)
         {
             Dictionary<string, string> replacements = new Dictionary<string, string>();
 
@@ -38,7 +38,7 @@ namespace Jumoo.uSync.Core.Mappers
 
         }
 
-        public string GetImportValue(PropertyType propType, string content)
+        public string GetImportValue(int dataTypeDefinitionId, string content)
         {
             Dictionary<string, string> replacements = new Dictionary<string, string>();
 

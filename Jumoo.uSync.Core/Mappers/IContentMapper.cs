@@ -9,7 +9,7 @@ namespace Jumoo.uSync.Core.Mappers
 {
     public interface IContentMapper
     {
-        string GetExportValue(PropertyType propType, string value);
-        string GetImportValue(PropertyType propType, string content);
+        string GetExportValue(int dataTypeDefinitionId, string value);
+        string GetImportValue(int dataTypeDefinitionId, string content);
     }
 }

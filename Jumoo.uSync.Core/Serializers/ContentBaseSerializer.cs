@@ -85,25 +85,11 @@ namespace Jumoo.uSync.Core.Serializers
             {
                 LogHelper.Debug<Events>("Mapping Content Import: {0} {1}", () => mapping.EditorAlias, () => mapping.MappingType);
 
-                IContentMapper mapper = null;
-
-                switch (mapping.MappingType)
-                {
-                    case ContentMappingType.Content:
-                        mapper = new ContentIdMapper();
-                        break;
-                    case ContentMappingType.DataType:
-                        mapper = new ContentDataTypeMapper();
-                        break;
-                    case ContentMappingType.DataTypeKeys:
-                        mapper = new ContentDataTypeKeyMapper();
-                        break;
-
-                }
+                IContentMapper mapper = ContentMapperFactory.GetMapper(mapping);
 
                 if (mapper != null)
                 {
-                    return mapper.GetImportValue(propType, content);
+                    return mapper.GetImportValue(propType.DataTypeDefinitionId, content);
                 }
             }
 
@@ -165,28 +151,16 @@ namespace Jumoo.uSync.Core.Serializers
             var mapping = uSyncCoreContext.Instance.Configuration.Settings.ContentMappings
                 .SingleOrDefault(x => x.EditorAlias == propType.PropertyEditorAlias);
 
+
             if (mapping != null)
             {
                 LogHelper.Debug<Events>("Mapping Content Export: {0} {1}", () => mapping.EditorAlias, () => mapping.MappingType);
 
-                IContentMapper mapper = null;
-
-                switch (mapping.MappingType)
-                {
-                    case ContentMappingType.Content:
-                        mapper = new ContentIdMapper();
-                        break;
-                    case ContentMappingType.DataType:
-                        mapper = new ContentDataTypeMapper();
-                        break;
-                    case ContentMappingType.DataTypeKeys:
-                        mapper = new ContentDataTypeKeyMapper();
-                        break;
-                }
+                IContentMapper mapper = ContentMapperFactory.GetMapper(mapping);
 
                 if (mapper != null)
                 {
-                    return mapper.GetExportValue(propType, val);
+                    return mapper.GetExportValue(propType.DataTypeDefinitionId, val);
                 }
             }
 
