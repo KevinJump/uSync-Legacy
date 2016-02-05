@@ -185,6 +185,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
         {
             ContentTypeService.SavedMediaType += ContentTypeService_SavedMediaType;
             ContentTypeService.DeletedMediaType += ContentTypeService_DeletedMediaType;
+            ContentTypeService.DeletedMediaTypeContainer += ContentTypeService_DeletedMediaTypeContainer;
+            ContentTypeService.SavedMediaTypeContainer += ContentTypeService_SavedMediaTypeContainer;
         }
 
         private void ContentTypeService_DeletedMediaType(IContentTypeService sender, Umbraco.Core.Events.DeleteEventArgs<IMediaType> e)
@@ -195,9 +197,23 @@ namespace Jumoo.uSync.BackOffice.Handlers
             foreach (var item in e.DeletedEntities)
             {
                 LogHelper.Info<MediaTypeHandler>("Delete: Deleting uSync File for item: {0}", () => item.Name);
-                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetItemPath(item), "def");
+                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetEntityPath(item), "def");
 
                 uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, item.Key, item.Alias, typeof(IMediaType));
+            }
+        }
+
+        private void ContentTypeService_DeletedMediaTypeContainer(IContentTypeService sender, Umbraco.Core.Events.DeleteEventArgs<EntityContainer> e)
+        {
+            if (uSyncEvents.Paused)
+                return;
+
+            foreach (var item in e.DeletedEntities)
+            {
+                LogHelper.Info<MediaTypeHandler>("Delete: Deleting uSync File for item: {0}", () => item.Name);
+                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetEntityPath(item), "def");
+
+                uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, item.Key, item.Name, typeof(EntityContainer));
             }
         }
 
@@ -216,6 +232,24 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 }
             }
         }
+
+        private void ContentTypeService_SavedMediaTypeContainer(IContentTypeService sender, Umbraco.Core.Events.SaveEventArgs<EntityContainer> e)
+        {
+            if (uSyncEvents.Paused)
+                return;
+
+            foreach(var item in e.SavedEntities)
+            {
+                LogHelper.Info<MediaTypeHandler>("Save: Container: {0}", () => item.Name);
+                var action = ExportContainer(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+                if (action.Success)
+                {
+                    NameChecker.ManageOrphanFiles(SyncFolder, item.Key, action.FileName);
+                }
+            }
+        }
+
+
 
         public override uSyncAction ReportItem(string file)
         {

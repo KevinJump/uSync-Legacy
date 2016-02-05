@@ -175,6 +175,9 @@ namespace Jumoo.uSync.BackOffice.Handlers
         {
             DataTypeService.Saved += DataTypeService_Saved;
             DataTypeService.Deleted += DataTypeService_Deleted;
+
+            DataTypeService.SavedContainer += DataTypeService_SavedContainer;
+            DataTypeService.DeletedContainer += DataTypeService_DeletedContainer;
         }
 
         private void DataTypeService_Deleted(IDataTypeService sender, Umbraco.Core.Events.DeleteEventArgs<IDataTypeDefinition> e)
@@ -188,6 +191,20 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 uSyncIOHelper.ArchiveRelativeFile(SyncFolder, item.Name.ToSafeAlias());
 
                 uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, item.Key, item.Name, typeof(IDataTypeDefinition));
+            }
+        }
+
+        private void DataTypeService_DeletedContainer(IDataTypeService sender, Umbraco.Core.Events.DeleteEventArgs<EntityContainer> e)
+        {
+            if (uSyncEvents.Paused)
+                return;
+
+            foreach (var item in e.DeletedEntities)
+            {
+                LogHelper.Info<DataTypeHandler>("Delete: Deleting uSync File for item: {0}", () => item.Name);
+                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, item.Name.ToSafeAlias());
+
+                uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, item.Key, item.Name, typeof(EntityContainer));
             }
         }
 
@@ -207,7 +224,23 @@ namespace Jumoo.uSync.BackOffice.Handlers
             }
         }
 
-        public override uSyncAction ReportItem(string file)
+        private void DataTypeService_SavedContainer(IDataTypeService sender, Umbraco.Core.Events.SaveEventArgs<EntityContainer> e)
+        {
+            if (uSyncEvents.Paused)
+                return;
+
+            foreach (var item in e.SavedEntities)
+            {
+                LogHelper.Info<DataTypeHandler>("Save: Saving uSync file for item: {0}", () => item.Name);
+                var action = ExportContainer(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+                if (action.Success)
+                {
+                    NameChecker.ManageOrphanFiles(SyncFolder, item.Key, action.FileName);
+                }
+            }
+        }
+
+    public override uSyncAction ReportItem(string file)
         {
             LogHelper.Debug<DataTypeHandler>("Report: {0}", () => file);
 
@@ -218,6 +251,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             var update = uSyncCoreContext.Instance.DataTypeSerializer.IsUpdate(node);
             return uSyncActionHelper<IDataTypeDefinition>.ReportAction(update, node.NameFromNode());
         }
+
 
     }
 }

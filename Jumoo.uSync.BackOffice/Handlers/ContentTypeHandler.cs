@@ -189,36 +189,28 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
             return path;
         }
-
-
-        /// <summary>
-        ///     works out the folder path, for saving this item
-        /// </summary>
-        private string GetContentTypePath(IContentType item)
-        {
-            string path = string.Empty;
-            if (item != null)
-            {
-                if (item.ParentId != 0)
-                {
-                    var parent = ApplicationContext.Current.Services.ContentTypeService.GetContentType(item.ParentId);
-                    if (parent != null)
-                    {
-                        path = GetContentTypePath(parent);
-                    }
-                }
-
-                path = Path.Combine(path, item.Alias.ToSafeFileName());
-            }
-
-            return path;
-        }
-
-
+                
         public void RegisterEvents()
         {
             ContentTypeService.SavedContentType += ContentTypeService_SavedContentType;
             ContentTypeService.DeletedContentType += ContentTypeService_DeletedContentType;
+            ContentTypeService.SavedContentTypeContainer += ContentTypeService_SavedContentTypeContainer;
+            ContentTypeService.DeletedContentTypeContainer += ContentTypeService_DeletedContentTypeContainer;
+        }
+
+        private void ContentTypeService_DeletedContentTypeContainer(IContentTypeService sender, Umbraco.Core.Events.DeleteEventArgs<EntityContainer> e)
+        {
+
+            if (uSyncEvents.Paused)
+                return;
+
+            foreach (var item in e.DeletedEntities)
+            {
+                LogHelper.Info<ContentTypeHandler>("Delete: Container Deleted", () => item.Name);
+                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetEntityPath(item), "def");
+
+                uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, item.Key, item.Name, typeof(EntityContainer));
+            }
         }
 
         private void ContentTypeService_DeletedContentType(IContentTypeService sender, Umbraco.Core.Events.DeleteEventArgs<IContentType> e)
@@ -229,11 +221,27 @@ namespace Jumoo.uSync.BackOffice.Handlers
             foreach (var item in e.DeletedEntities)
             {
                 LogHelper.Info<ContentTypeHandler>("Delete: Removing uSync files for Item: {0}", () => item.Name);
-                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetContentTypePath(item), "def");
+                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetEntityPath(item), "def");
 
                 uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, item.Key, item.Alias, typeof(IContentType));
             }
         }
+
+        private void ContentTypeService_SavedContentTypeContainer(IContentTypeService sender, Umbraco.Core.Events.SaveEventArgs<EntityContainer> e)
+        {
+            if (uSyncEvents.Paused)
+                return;
+
+            foreach(var item in e.SavedEntities)
+            {
+                LogHelper.Info<ContentTypeHandler>("Save: Container Saved: {0}", ()=> item.Name);
+                var action = ExportContainer(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+
+                if (action.Success)
+                    NameChecker.ManageOrphanFiles(Constants.Packaging.DocumentTypeNodeName, item.Key, action.FileName);
+            }
+        }
+
 
         private void ContentTypeService_SavedContentType(IContentTypeService sender, Umbraco.Core.Events.SaveEventArgs<IContentType> e)
         {
