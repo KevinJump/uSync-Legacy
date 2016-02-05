@@ -15,7 +15,7 @@ using Umbraco.Core.Models.EntityBase;
 
 namespace Jumoo.uSync.Core.Serializers
 {
-    abstract public class ContentTypeBaseSerializer<T> : SyncBaseSerializer<T>, ISyncSerializerTwoPass<T>
+    abstract public class ContentTypeBaseSerializer<T> : SyncBaseSerializer<T>, ISyncContainerSerializerTwoPass<T>
     {
         internal IContentTypeService _contentTypeService;
         internal IDataTypeService _dataTypeService;
@@ -402,9 +402,15 @@ namespace Jumoo.uSync.Core.Serializers
                 item.PropertyGroups.Remove(name);
             }            
         }
-#endregion
+        #endregion
 
-#region ContentTypeBase Serialize Helpers
+        #region ContentTypeBase Serialize Helpers
+
+        public virtual SyncAttempt<XElement> SerializeContainer(EntityContainer item)
+        {
+            return SyncAttempt<XElement>.Succeed(item.Name, ChangeType.NoChange);
+        }
+
         internal XElement SerializeInfo(IContentTypeBase item)
         {
             var info = new XElement("Info",
@@ -532,6 +538,11 @@ namespace Jumoo.uSync.Core.Serializers
                 return attempt;
 
             return DesearlizeSecondPass(attempt.Item, node);
+        }
+
+        virtual public SyncAttempt<T> DeserializeContainer(XElement node)
+        {
+            return SyncAttempt<T>.Succeed(node.NameFromNode(), ChangeType.NoChange);
         }
 
         virtual public SyncAttempt<T> DesearlizeSecondPass(T item, XElement node)
