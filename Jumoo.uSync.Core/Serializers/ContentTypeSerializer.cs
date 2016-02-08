@@ -20,9 +20,9 @@ using Jumoo.uSync.Core.Helpers;
 
 namespace Jumoo.uSync.Core.Serializers
 {
-    public class ContentTypeSerializer : ContentTypeBaseSerializer<IContentType> 
+    public class ContentTypeSerializer : ContentTypeBaseSerializer<IContentType>
     {
-        public ContentTypeSerializer(string itemType) : base (itemType)
+        public ContentTypeSerializer(string itemType) : base(itemType)
         {
         }
 
@@ -89,7 +89,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             DeserializeBase(item, info);
 
-            
+
             if (item.Key != key)
             {
                 LogHelper.Debug<ContentTypeSerializer>("Changing Item Key: {0} -> {1}",
@@ -199,7 +199,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             List<ITemplate> templates = new List<ITemplate>();
 
-            foreach(var template in nodeTemplates.Elements("Template"))
+            foreach (var template in nodeTemplates.Elements("Template"))
             {
                 var alias = template.Value;
                 var iTemplate = _fileService.GetTemplate(alias);
@@ -210,7 +210,7 @@ namespace Jumoo.uSync.Core.Serializers
             }
 
             List<ITemplate> templatesToRemove = new List<ITemplate>();
-            foreach(var itemTemplate in item.AllowedTemplates)
+            foreach (var itemTemplate in item.AllowedTemplates)
             {
                 if (nodeTemplates.Elements("Template").FirstOrDefault(x => x.Value == itemTemplate.Alias) == null)
                 {
@@ -218,7 +218,7 @@ namespace Jumoo.uSync.Core.Serializers
                 }
             }
 
-            foreach(var rTemplate in templatesToRemove)
+            foreach (var rTemplate in templatesToRemove)
             {
                 item.RemoveTemplate(rTemplate);
             }
@@ -252,9 +252,9 @@ namespace Jumoo.uSync.Core.Serializers
 
             var compositionsNode = new XElement("Compositions");
             var compositions = item.ContentTypeComposition;
-            foreach(var composition in compositions)
+            foreach (var composition in compositions)
             {
-                compositionsNode.Add(new XElement("Composition", composition.Alias, 
+                compositionsNode.Add(new XElement("Composition", composition.Alias,
                     new XAttribute("Key", composition.Key))
                     );
             }
@@ -265,7 +265,7 @@ namespace Jumoo.uSync.Core.Serializers
                 info.Add(new XElement("DefaultTemplate", item.DefaultTemplate.Alias));
             else
                 info.Add(new XElement("DefaultTemplate", ""));
-            
+
             // Structure
             var structure = SerializeStructure(item);
 
@@ -287,6 +287,9 @@ namespace Jumoo.uSync.Core.Serializers
 
         public override bool IsUpdate(XElement node)
         {
+            if (node.Name.LocalName == "EntityFolder")
+                return IsContainerUpdated(node);
+
             var nodeHash = node.GetSyncHash();
             if (string.IsNullOrEmpty(nodeHash))
                 return true;
@@ -306,6 +309,29 @@ namespace Jumoo.uSync.Core.Serializers
             var itemHash = attempt.Item.GetSyncHash();
 
             return (!nodeHash.Equals(itemHash));
+        }
+
+        private bool IsContainerUpdated(XElement node)
+        {
+            var nodeHash = node.GetSyncHash();
+            if (string.IsNullOrEmpty(nodeHash))
+                return true;
+
+            var key = node.Attribute("Key").ValueOrDefault(Guid.Empty);
+            if (key == Guid.Empty)
+                return true;
+
+            var item = _contentTypeService.GetContentTypeContainer(key);
+            if (item == null)
+                return true;
+
+            var attempt = SerializeContainer(item);
+            if (!attempt.Success)
+                return true;
+
+            var itemHash = attempt.Item.GetSyncHash();
+
+            return (!nodeHash.Equals(itemHash));            
         }
     }
 }

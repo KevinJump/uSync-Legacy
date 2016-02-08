@@ -105,7 +105,7 @@ namespace Jumoo.uSync.Core.Serializers
                 return true;
 
             var itemHash = attempt.Item.GetSyncHash();
-
+               
             return (!nodeHash.Equals(itemHash));
 
         }

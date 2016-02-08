@@ -20,7 +20,7 @@ namespace Jumoo.uSync.Core.Serializers
 
         public SyncAttempt<T> DeSerialize(XElement node, bool forceUpdate = false)
         {
-            if (node.Name.LocalName != _itemType)
+            if (node.Name.LocalName != _itemType && node.Name.LocalName != "EntityFolder")
                 throw new ArgumentException("XML not valid for type: " + _itemType);
 
             if (forceUpdate || IsUpdate(node))

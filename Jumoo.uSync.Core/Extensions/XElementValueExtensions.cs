@@ -54,12 +54,8 @@ namespace Jumoo.uSync.Core.Extensions
 
             if (node.Element("name") != null)
                 return node.Element("Name").Value;
-
-
-
             return name;
         }
-
 
         public static string ValueOrDefault(this XElement node, string defaultValue)
         {

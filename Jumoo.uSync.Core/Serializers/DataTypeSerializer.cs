@@ -295,6 +295,9 @@ namespace Jumoo.uSync.Core.Serializers
 
         public override bool IsUpdate(XElement node)
         {
+            if (node.Name.LocalName == "EntityFolder")
+                return IsContainerUpdated(node);
+
             var nodeHash = node.GetSyncHash();
             if (string.IsNullOrEmpty(nodeHash))
                 return true;
@@ -321,6 +324,30 @@ namespace Jumoo.uSync.Core.Serializers
 
             return (!nodeHash.Equals(itemHash));
         }
+
+        private bool IsContainerUpdated(XElement node)
+        {
+            var nodeHash = node.GetSyncHash();
+            if (string.IsNullOrEmpty(nodeHash))
+                return true;
+
+            var key = node.Attribute("Key").ValueOrDefault(Guid.Empty);
+            if (key == Guid.Empty)
+                return true;
+
+            var item = _dataTypeService.GetContainer(key);
+            if (item == null)
+                return true;
+
+            var attempt = SerializeContainer(item);
+            if (!attempt.Success)
+                return true;
+
+            var itemHash = attempt.Item.GetSyncHash();
+
+            return (!nodeHash.Equals(itemHash));
+        }
+
 
         private uSyncValueMapper LoadMapper(XElement node, string dataTypeId)
         {
