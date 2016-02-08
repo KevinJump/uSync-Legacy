@@ -81,16 +81,22 @@ namespace Jumoo.uSync.BackOffice.UI
             uSyncHandlerCount.Text = handlers.Count.ToString(); ;
 
             foreach (var handler in handlers)
-            {
-                var handlerConfig = settings.Handlers.Where(x => x.Name == handler.Name)
+            { 
+
+                var name = handler.Name ;
+                var handlerConfig = settings.Handlers.Where(x => x.Name == name)
                     .FirstOrDefault();
 
                 string enabledText = " (enabled) ";
+                bool enabled = true;
 
                 if (handlerConfig != null && !handlerConfig.Enabled)
+                {
                     enabledText = " (disabled) ";
+                    enabled = false; 
+                }
 
-                var item = new ListItem(handler.Name + enabledText);
+                var item = new ListItem(name + enabledText, name, enabled);
                 uSyncHandlers.Items.Add(item);
             }
 

@@ -170,7 +170,7 @@
                 <p><small>The handlers do the hard work, of importing and exporting data, they can be turned off in the 
                     config file
                 </small></p>
-                <asp:BulletedList runat="server" ID="uSyncHandlers"></asp:BulletedList>
+                <asp:BulletedList runat="server" ID="uSyncHandlers" Enabled="false"></asp:BulletedList>
             </div>
         </div>
         </asp:Panel>
