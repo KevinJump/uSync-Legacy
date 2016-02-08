@@ -8,12 +8,8 @@ using Jumoo.uSync.Core;
 
 namespace Jumoo.uSync.BackOffice
 {
-    public interface ISyncHandler
+    public interface ISyncHandler: ISyncHandlerBase
     {
-        int Priority { get; }
-        string Name { get; }
-        string SyncFolder { get; }
-
         void RegisterEvents();
 
         IEnumerable<uSyncAction> ImportAll(string folder, bool force);

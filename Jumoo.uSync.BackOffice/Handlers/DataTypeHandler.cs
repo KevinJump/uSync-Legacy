@@ -4,6 +4,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Xml.Linq;
     using System.Collections.Generic;
 
@@ -16,7 +17,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
     using Jumoo.uSync.BackOffice.Helpers;
     using Core.Extensions;
     using Umbraco.Core.Models.EntityBase;
-    public class DataTypeHandler : uSyncBaseHandler<IDataTypeDefinition>, ISyncHandler
+    public class DataTypeHandler : uSyncBaseHandler<IDataTypeDefinition>, ISyncHandler, ISyncPostImportHandler
     {
         public string Name { get { return "uSync: DataTypeHandler"; } }
         public int Priority { get { return uSyncConstants.Priority.DataTypes; } }
@@ -26,6 +27,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
         public DataTypeHandler()
         {
             _dataTypeService = ApplicationContext.Current.Services.DataTypeService;
+            RequiresPostProcessing = true;
         }
 
         public override SyncAttempt<IDataTypeDefinition> Import(string filePath, bool force = false)
@@ -240,7 +242,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             }
         }
 
-    public override uSyncAction ReportItem(string file)
+        public override uSyncAction ReportItem(string file)
         {
             LogHelper.Debug<DataTypeHandler>("Report: {0}", () => file);
 
@@ -252,6 +254,22 @@ namespace Jumoo.uSync.BackOffice.Handlers
             return uSyncActionHelper<IDataTypeDefinition>.ReportAction(update, node.NameFromNode());
         }
 
+        public IEnumerable<uSyncAction> ProcessPostImport(string folder, IEnumerable<uSyncAction> actions)
+        {
+            // we get passed actions that need a second pass.
+            var datatypes = actions.Where(x => x.ItemType == typeof(IDataTypeDefinition));
 
+            foreach (var action in datatypes)
+            {
+                LogHelper.Debug<DataTypeHandler>("Post Processing: {0} {1}", () => action.Name, () => action.FileName);
+                var attempt = Import(action.FileName);
+                if (attempt.Success)
+                {
+                    ImportSecondPass(action.FileName, attempt.Item);
+                }
+            }
+
+            return actions;
+        }
     }
 }

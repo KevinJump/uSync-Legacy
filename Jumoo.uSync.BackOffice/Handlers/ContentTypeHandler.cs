@@ -16,6 +16,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
     using Jumoo.uSync.BackOffice.Helpers;
     using System.Collections.Generic;
     using Umbraco.Core.Models.EntityBase;
+    using Umbraco.Core.Events;
     public class ContentTypeHandler : uSyncBaseHandler<IContentType>, ISyncHandler
     {
         // sets our running order in usync. 
@@ -90,7 +91,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
             var folders = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.DocumentTypeContainer);
             foreach(var fldr in folders)
-            {
+            {                
                 var container = _contentTypeService.GetContentTypeContainer(fldr.Key);
                 actions.Add(ExportContainer(container, folder));
 
@@ -254,7 +255,18 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 var action = ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
 
                 if (action.Success)
+                {
                     NameChecker.ManageOrphanFiles(Constants.Packaging.DocumentTypeNodeName, item.Key, action.FileName);
+                    e.Messages.Add(
+                        new EventMessage("uSync", "uSync save a copy to disk", EventMessageType.Info));
+                }
+                else
+                {
+                    e.Messages.Add(
+                        new EventMessage("uSync", "uSync Failed to save to disk", EventMessageType.Warning));
+                }
+
+
             }
         }
 

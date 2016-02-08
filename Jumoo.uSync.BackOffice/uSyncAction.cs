@@ -22,8 +22,9 @@ namespace Jumoo.uSync.BackOffice
         public ChangeType Change { get; set; }
         public string FileName { get; private set; }
         public string Name { get; set; }
+        public bool RequiresPostProcessing { get; set; }
 
-        internal uSyncAction(bool success, string name, Type type, ChangeType change, string message, Exception ex, string filename) : this()
+        internal uSyncAction(bool success, string name, Type type, ChangeType change, string message, Exception ex, string filename, bool postProcess = false) : this()
         {
             Success = success;
             Name = name;
@@ -32,6 +33,7 @@ namespace Jumoo.uSync.BackOffice
             Change = change;
             Exception = ex;
             FileName = filename;
+            RequiresPostProcessing = postProcess; 
         }
 
         public static uSyncAction SetAction(
@@ -91,9 +93,9 @@ namespace Jumoo.uSync.BackOffice
 
     public struct uSyncActionHelper<T>
     {
-        public static uSyncAction SetAction(SyncAttempt<T> attempt, string filename)
+        public static uSyncAction SetAction(SyncAttempt<T> attempt, string filename, bool requirePostProcessing = true)
         {
-            return new uSyncAction(attempt.Success, attempt.Name, attempt.ItemType, attempt.Change, attempt.Message, attempt.Exception, filename);
+            return new uSyncAction(attempt.Success, attempt.Name, attempt.ItemType, attempt.Change, attempt.Message, attempt.Exception, filename, requirePostProcessing);
         }
 
         public static uSyncAction ReportAction(bool willUpdate, string name)

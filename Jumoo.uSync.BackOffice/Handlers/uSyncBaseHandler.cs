@@ -14,6 +14,11 @@
 
     abstract public class uSyncBaseHandler<T>
     {
+        // do things that get imported by this handler then require some form of 
+        // post import processing, if this is set to true then the items will
+        // also be post processed. 
+        internal bool RequiresPostProcessing = false;
+
         abstract public SyncAttempt<T> Import(string filePath, bool force = false);
 
         public IEnumerable<uSyncAction> ImportAll(string folder, bool force)
@@ -66,7 +71,7 @@
                         updates.Add(file, attempt.Item);
                     }
 
-                    actions.Add(uSyncActionHelper<T>.SetAction(attempt, file));
+                    actions.Add(uSyncActionHelper<T>.SetAction(attempt, file, RequiresPostProcessing));
                 }
 
                 foreach (var children in Directory.GetDirectories(mappedfolder))

@@ -116,6 +116,11 @@ namespace Jumoo.uSync.BackOffice.Helpers
                 );
             return _actions.Where(x => x.TypeName == type.ToString());
         }
+
+        public IEnumerable<SyncAction> GetActions(SyncActionType actionType)
+        {
+            return _actions.Where(x => x.Action == actionType);
+        }
     }
 
     public class SyncAction

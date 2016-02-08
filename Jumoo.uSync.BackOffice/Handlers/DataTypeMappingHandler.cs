@@ -4,6 +4,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Xml.Linq;
     using System.Collections.Generic;
 
@@ -15,17 +16,12 @@ namespace Jumoo.uSync.BackOffice.Handlers
     using Jumoo.uSync.Core;
     using Jumoo.uSync.BackOffice.Helpers;
     using Core.Extensions;
-
-    public class DataTypeMappingHandler : uSyncBaseHandler<IDataTypeDefinition>, ISyncHandler
+    /*
+    public class DataTypeMappingHandler : ISyncSecondPass
     {
         public string Name { get { return "uSync: DataTypeMappingHandler"; } }
         public int Priority { get { return uSyncConstants.Priority.DataTypeMappings; } }
         public string SyncFolder { get { return Constants.Packaging.DataTypeNodeName; } }
-
-        public void RegisterEvents()
-        {
-            //No events to register
-        }
 
         IDataTypeService _dataTypeService;
         public DataTypeMappingHandler()
@@ -33,7 +29,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             _dataTypeService = ApplicationContext.Current.Services.DataTypeService;
         }
 
-        public override SyncAttempt<IDataTypeDefinition> Import(string filePath, bool force = false)
+        private SyncAttempt<IDataTypeDefinition> Import(string filePath, bool force = false)
         {
             IDataTypeDefinition item = null;
 
@@ -56,61 +52,29 @@ namespace Jumoo.uSync.BackOffice.Handlers
         /// </summary>
         /// <param name="file"></param>
         /// <param name="item"></param>
-        public override void ImportSecondPass(string file, IDataTypeDefinition item)
+        private void ImportSecondPass(string file, IDataTypeDefinition item)
         {
             XElement node = XElement.Load(file);
             uSyncCoreContext.Instance.DataTypeSerializer.DesearlizeSecondPass(item, node);
         }
 
-        public override uSyncAction DeleteItem(Guid key, string keyString)
+        public IEnumerable<uSyncAction> HandleSecondPass(string folder, IEnumerable<uSyncAction> actions)
         {
-            /*
-            IDataTypeDefinition item = null;
-            if (key != Guid.Empty)
-                item = _dataTypeService.GetDataTypeDefinitionById(key);
+            // get all the data types that need a second pass.
+            var datatypes = actions.Where(x => x.ItemType == typeof(IDataTypeDefinition) && x.RequiresSecondPass == true);
 
-            // delete only by key 
-            if (item == null && !string.IsNullOrEmpty(keyString))
-                item = _dataTypeService.GetDataTypeDefinitionByName(keyString);
-
-            if (item != null)
+            foreach(var action in datatypes)
             {
-                LogHelper.Info<DataTypeHandler>("Deleting datatype: {0}", () => item.Name);
-                _dataTypeService.Delete(item);
-                return uSyncAction.SetAction(true, keyString, typeof(IDataTypeDefinition), ChangeType.Delete, "Removed");
+                var attempt = Import(action.FileName);
+                if (attempt.Success)
+                {
+                    ImportSecondPass(action.FileName, attempt.Item);
+                }
             }
 
-            return uSyncAction.Fail(keyString, typeof(IDataTypeDefinition), ChangeType.Delete, "Not found");
-            */
-
-            return uSyncAction.SetAction(true, keyString, typeof(IDataTypeDefinition), ChangeType.NoChange, "No change on mapping pass");
-
+            return actions;
         }
-
-        public IEnumerable<uSyncAction> ExportAll(string folder)
-        {
-            LogHelper.Info<DataTypeHandler>("Exporting all DataTypes");
-
-            //Do nothing as the datatypes will have been exported by the other handler
-            return new List<uSyncAction>();
-        }
-
-        public uSyncAction ExportToDisk(IDataTypeDefinition item, string folder)
-        {
-            return uSyncAction.Fail(Path.GetFileName(folder), typeof(IDataTypeDefinition), "item already exported");
-        }
-
-        public override uSyncAction ReportItem(string file)
-        {
-            LogHelper.Debug<DataTypeHandler>("Report: {0}", () => file);
-
-            var node = XElement.Load(file);
-
-            LogHelper.Debug<DataTypeHandler>("Report: {0}", () => node.ToString());
-
-            var update = uSyncCoreContext.Instance.DataTypeSerializer.IsUpdate(node);
-            return uSyncActionHelper<IDataTypeDefinition>.ReportAction(update, node.NameFromNode());
-        }
-
     }
+    */
 }
+

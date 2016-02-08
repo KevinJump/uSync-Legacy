@@ -13,6 +13,7 @@
     {
         private static uSyncBackOfficeContext _instance;
         private SortedList<int, ISyncHandler> handlers;
+        private SortedList<int, ISyncPostImportHandler> postImportHandlers;
 
         public Helpers.ActionTracker Tracker; 
 
@@ -48,7 +49,6 @@
             handlers = new SortedList<int, ISyncHandler>();
 
             var types = TypeFinder.FindClassesOfType<ISyncHandler>();
-
             LogHelper.Info<uSyncBackOfficeContext>("Loading up Sync Handlers : {0}", () => types.Count());
             foreach (var t in types)
             {
@@ -59,6 +59,28 @@
                     handlers.Add(typeInstance.Priority, typeInstance);
                 }
             }
+
+
+            //
+            // Handlers can Impliment a post import handler, this is good for do things after everything has ran
+            // at least once (example DataTypes need to run before and after DocTypes)
+            //
+            postImportHandlers = new SortedList<int, ISyncPostImportHandler>();
+
+            var postImportTypes = TypeFinder.FindClassesOfType<ISyncPostImportHandler>();
+            LogHelper.Info<uSyncBackOfficeContext>("Loading up Post Import Handlers : {0}", () => postImportTypes.Count());
+
+            foreach (var t in types)
+            {
+                var typeInstance = Activator.CreateInstance(t) as ISyncPostImportHandler;
+                if (typeInstance != null)
+                {
+                    LogHelper.Debug<uSyncBackOfficeContext>("Adding Instance: {0}", () => typeInstance.Name);
+                    postImportHandlers.Add(typeInstance.Priority, typeInstance);
+                }
+            }
+
+
 
             uSyncCoreContext.Instance.Init();
             _config = new uSyncBackOfficeConfig();
@@ -92,9 +114,29 @@
                 if (HandlerEnabled(handler.Name))
                 {
                     var syncFolder = System.IO.Path.Combine(folder, handler.SyncFolder);
-
                     LogHelper.Debug<uSyncApplicationEventHandler>("# Import Calling Handler: {0}", () => handler.Name);
                     importActions.AddRange(handler.ImportAll(syncFolder, force));
+                }
+            }
+
+
+            //
+            // some things need processing once everything else is imported
+            // the anything that impliments ISyncPostImportHandler gets called here.
+            //
+            var postImports = importActions.Where(x => x.Success && x.Change > ChangeType.NoChange && x.RequiresPostProcessing);
+
+            LogHelper.Debug<uSyncApplicationEventHandler>("Running: Post Import on {0} actions", ()=> postImports.Count());
+            foreach (var handler in postImportHandlers.Select(x => x.Value))
+            {
+                if (HandlerEnabled(handler.Name))
+                {
+                    foreach (var action in postImports)
+                    {
+                        var syncFolder = System.IO.Path.Combine(folder, handler.SyncFolder);
+                        LogHelper.Debug<uSyncApplicationEventHandler>("# Post Import Processing: {0}", () => handler.Name);
+                        handler.ProcessPostImport(syncFolder, postImports);
+                    }
                 }
             }
 
