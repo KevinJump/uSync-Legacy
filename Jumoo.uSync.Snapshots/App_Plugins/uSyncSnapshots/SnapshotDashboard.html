@@ -1,0 +1,45 @@
+﻿<div id="snapshotDashboard" ng-controller="uSyncSnapshotDashboardController">
+    <div class="row">
+        <div class="span12">
+            <h2>uSync Snapshots</h2>
+            <p>
+                uSync Snapshots are moment in time captures of your umbraco install.
+            </p>
+        </div>
+    </div>
+
+    <div ng-show="loading">
+        loading...
+    </div>
+
+    <div ng-hide="loading">
+
+        <div class="row">
+            <div class="span12">
+                <form class="form-horizontal">
+                    <div class="control-group">
+                        <label for="snapshotName" class="control-label">Snapshot Name : </label>
+					<div class="controls">
+						<input type="text" id="snapshotName" ng-model="snapshotName">
+					</div>
+                    </div>
+                    <div class="control-group">
+					<div class="controls">
+						<button id="btnSnapshot" ng-click="CreateSnapshot()" class="btn btn-default">Create</button>
+					</div>
+                    </div>
+                </form>
+            </div>
+            <div class="span12">
+                <ul>
+                    <li ng-repeat="snapshot in snapshots">
+                        {{snapshot.Name}} - {{snapshot.FileCount}}
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>

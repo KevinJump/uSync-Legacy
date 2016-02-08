@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.Migrations.Chau
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.Archetype", "Jumoo.uSync.Archetype\Jumoo.uSync.Archetype.csproj", "{DB2DDA62-9CFC-4052-8C06-70AC63F4C431}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.Snapshots", "Jumoo.uSync.Snapshots\Jumoo.uSync.Snapshots.csproj", "{5119547A-36B5-4D44-A1A7-1C01BC37CA33}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{DB2DDA62-9CFC-4052-8C06-70AC63F4C431}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB2DDA62-9CFC-4052-8C06-70AC63F4C431}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB2DDA62-9CFC-4052-8C06-70AC63F4C431}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5119547A-36B5-4D44-A1A7-1C01BC37CA33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5119547A-36B5-4D44-A1A7-1C01BC37CA33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5119547A-36B5-4D44-A1A7-1C01BC37CA33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5119547A-36B5-4D44-A1A7-1C01BC37CA33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
