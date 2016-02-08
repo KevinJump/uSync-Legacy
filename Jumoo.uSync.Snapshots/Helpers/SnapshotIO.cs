@@ -30,7 +30,6 @@ namespace Jumoo.uSync.Snapshots
             foreach(var file in files)
             {
                 var targetFile = Path.Combine(target, file.Name);
-
                 LogHelper.Debug<SnapshotManager>("Merging File: {0} -> {1}", () => file, ()=> targetFile);
 
                 if (file.Name == "uSyncActions.config" && File.Exists(target))
@@ -159,16 +158,21 @@ namespace Jumoo.uSync.Snapshots
         /// <param name="target"></param>
         public static void ProcessActions(string actionSource, string target)
         {
-            LogHelper.Debug<SnapshotManager>("Processing Actions (not) {0}", () => target);
-
+            LogHelper.Debug<SnapshotManager>("Processing Actions (not) {0}", () => actionSource);
             var actionFile = Path.Combine(actionSource, "uSyncActions.config");
-
             if (File.Exists(actionFile))
             {
-                var tracker = new uSync.BackOffice.Helpers.ActionTracker(actionSource);
+                LogHelper.Debug<SnapshotManager>("ActionFile: {0}", () => actionFile);
+                
+                var tracker = new ActionTracker(actionSource);
                 foreach(var rename in tracker.GetActions(SyncActionType.Rename))
                 {
-                    var targetFile = Path.Combine(target, rename.Name);
+                    LogHelper.Debug<SnapshotManager>("\n\tTarget: {0} \n\tTemp: {1}", () => target, ()=> rename.Name);
+
+                    var targetFile = Path.Combine(target, rename.Name.Trim(new char[] {'\\'}));
+
+                    LogHelper.Debug<SnapshotManager>("Rename: {0}", () => targetFile);
+
                     if (File.Exists(targetFile))
                         File.Delete(targetFile);
                 }
@@ -179,11 +183,9 @@ namespace Jumoo.uSync.Snapshots
                     if (File.Exists(targetFile))
                         File.Delete(targetFile);
                 }
-
+                
             }
             
-
-
         }
 
         /// <summary>
@@ -238,7 +240,7 @@ namespace Jumoo.uSync.Snapshots
                                     // the old file won't be copped across (because we delete the source only
                                     // Files) - but we need to tell uSync its a rename or it will just
                                     // do a recreate. 
-                                    actionTracker.AddAction(SyncActionType.Rename,  file.FullName.Substring(target.Length), itemType);
+                                    actionTracker.AddAction(SyncActionType.Rename,  file.FullName.Substring(source.Length), itemType);
                                     continue;
                                 }
                             }
@@ -249,10 +251,13 @@ namespace Jumoo.uSync.Snapshots
                         // for these a delete followed by a re-create is 
                         // the same as a rename so we are happy. 
                         // 
-                        if (itemType == default(Type))
-                            itemType = typeof(FileInfo);
+                        if (!file.Name.Equals("uSyncActions.config", StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (itemType == default(Type))
+                                itemType = typeof(FileInfo);
 
-                        actionTracker.AddAction(SyncActionType.Delete, key, itemType);
+                            actionTracker.AddAction(SyncActionType.Delete, file.FullName, itemType);
+                        }
                     }
 
                 }

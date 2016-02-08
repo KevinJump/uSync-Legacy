@@ -157,6 +157,7 @@ namespace Jumoo.uSync.Snapshots
                 {
                     LogHelper.Debug<SnapshotManager>("Merging Snapshot: {0} -> {1}", ()=> snapshot.Name, ()=> temp);
                     SnapshotIO.MergeFolder(snapshot.FullName, temp);
+                    LogHelper.Debug<SnapshotManager>("Merged Snapshot: {0}", () => snapshot.Name);
 
                     // process the action file from this snapshop on the merge at this point
                     // we do it like this because we then will delete any renames that have happened

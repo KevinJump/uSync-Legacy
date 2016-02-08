@@ -27,17 +27,14 @@ namespace Jumoo.uSync.BackOffice.Helpers
 
         private void LoadActions()
         {
-            lock(_saveLock)
-            {
-                _actions = new List<SyncAction>();
+            _actions = new List<SyncAction>();
 
-                if (File.Exists(_actionFile))
+            if (File.Exists(_actionFile))
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(List<SyncAction>));
+                using (FileStream fs = new FileStream(_actionFile, FileMode.Open))
                 {
-                    XmlSerializer serializer = new XmlSerializer(typeof(List<SyncAction>));
-                    using (FileStream fs = new FileStream(_actionFile, FileMode.Open))
-                    {
-                        _actions = (List<SyncAction>) serializer.Deserialize(fs);
-                    }
+                    _actions = (List<SyncAction>)serializer.Deserialize(fs);
                 }
             }
         }
