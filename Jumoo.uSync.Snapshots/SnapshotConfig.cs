@@ -47,16 +47,25 @@ namespace Jumoo.uSync.Snapshots
 
     public class uSyncSnapshotSettings
     {
+        public string Mode { get; set; }
         public List<uSyncSnapshotFolderSetting> Folders { get; set; }
 
         public uSyncSnapshotSettings()
         {
             Folders = new List<uSyncSnapshotFolderSetting>();
+            Mode = SnapshotConstants.combined;
         }
     }
 
     public class uSyncSnapshotFolderSetting
     {
         public string Path { get; set; }
+    }
+
+    public static class SnapshotConstants
+    {
+        public const string source = "source";
+        public const string target = "target";
+        public const string combined = "combined";
     }
 }

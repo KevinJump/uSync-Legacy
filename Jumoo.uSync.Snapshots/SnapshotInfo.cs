@@ -21,7 +21,22 @@ namespace Jumoo.uSync.Snapshots
         public SnapshotInfo(string folder)
         {
             Folder = folder;
-            Name = Path.GetFileName(folder);
+
+            Name = folder.Substring(folder.LastIndexOf('_') + 1);
+
+            var dateBit = folder.Substring(
+                            folder.LastIndexOf('\\') + 1,
+                            folder.LastIndexOf('_') - folder.LastIndexOf('\\') - 1);
+
+            Name = Name; // + " [" + dateBit + "]";
+
+            DateTime when;
+            if (DateTime.TryParseExact(dateBit, "yyyyMMdd_HHmmss", CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out when))
+            {
+                Created = when;
+            }
+
             FileCount = CountFiles(folder);
             Items = new List<string>();
         }

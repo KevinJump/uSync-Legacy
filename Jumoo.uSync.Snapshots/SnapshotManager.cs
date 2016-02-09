@@ -130,6 +130,53 @@ namespace Jumoo.uSync.Snapshots
             
         }
 
+        public IEnumerable<uSyncAction> Apply(string snapshotName)
+        {
+            var snapshot = FindSnapshot(snapshotName);
+
+            if (snapshot != null && Directory.Exists(snapshot.Folder))
+            {
+                var actions = _backOffice.ImportAll(snapshot.Folder);
+                return actions;
+            }
+
+            return null;
+        }
+
+        public IEnumerable<uSyncAction> Report()
+        {
+            var import = CombineSnapshots(_root);
+
+            if (Directory.Exists(import))
+            {
+                var actions = _backOffice.ImportReport(import);
+                return actions;
+            }
+            return null;
+        }
+
+        public IEnumerable<uSyncAction> Report(string snapshotName)
+        {
+            var snapshot = FindSnapshot(snapshotName);
+
+            if (snapshot != null & Directory.Exists(snapshot.Folder))
+            {
+                var actions = _backOffice.ImportReport(snapshot.Folder);
+                return actions;
+            }
+
+            return null;
+        }
+
+        public bool Delete(string snapshotName)
+        {
+            var snapshot = FindSnapshot(snapshotName);
+
+            if (snapshot != null && Directory.Exists(snapshot.Folder))
+                Directory.Delete(snapshot.Folder, true);
+
+            return true;
+        }
 
         /// <summary>
         ///  takes all the snapshots in a folder and puts them together,
@@ -169,6 +216,27 @@ namespace Jumoo.uSync.Snapshots
             }
 
             return temp;
+        }
+
+        /// <summary>
+        ///  given a name find the snapshot 
+        ///  the name is usally just the bit at the end after the _
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private SnapshotInfo FindSnapshot(string name)
+        {
+            foreach(var folder in Directory.GetDirectories(_root))
+            {
+                var snapName = folder.Substring(folder.LastIndexOf('_') + 1);
+
+                if (name.Equals(snapName))
+                {
+                    return new SnapshotInfo(folder);
+                }
+            }
+
+            return null;
         }
 
     }
