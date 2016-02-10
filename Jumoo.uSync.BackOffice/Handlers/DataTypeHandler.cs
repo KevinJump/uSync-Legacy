@@ -245,13 +245,13 @@ namespace Jumoo.uSync.BackOffice.Handlers
         public override uSyncAction ReportItem(string file)
         {
             LogHelper.Debug<DataTypeHandler>("Report: {0}", () => file);
-
             var node = XElement.Load(file);
 
-            LogHelper.Debug<DataTypeHandler>("Report: {0}", () => node.ToString());
-
             var update = uSyncCoreContext.Instance.DataTypeSerializer.IsUpdate(node);
-            return uSyncActionHelper<IDataTypeDefinition>.ReportAction(update, node.NameFromNode());
+            var action = uSyncActionHelper<IDataTypeDefinition>.ReportAction(update, node.NameFromNode());
+            action.Details = ((ISyncChangeDetail)uSyncCoreContext.Instance.DataTypeSerializer).GetChanges(node);
+            return action;
+
         }
 
         public IEnumerable<uSyncAction> ProcessPostImport(string folder, IEnumerable<uSyncAction> actions)

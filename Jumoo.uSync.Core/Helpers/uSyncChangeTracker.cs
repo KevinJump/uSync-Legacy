@@ -15,7 +15,7 @@ namespace Jumoo.uSync.Core.Helpers
         // if the node name is in this list it doesn't get added to the path
         private static Dictionary<string, string> nodePaths = new Dictionary<string, string>
         {
-            {  "Info", "Core" },
+            { "Info", "Core" },
             { "GenericProperties", "Property" }
         };
 
