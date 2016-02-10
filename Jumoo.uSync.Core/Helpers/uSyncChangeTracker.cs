@@ -155,7 +155,7 @@ namespace Jumoo.uSync.Core.Helpers
                 {
                     changes.Add(new uSyncChange
                     {
-                        Path = path,
+                        Path = path.Substring(0, path.LastIndexOf('.')),
                         Name = source.Name.LocalName,
                         Change = ChangeDetailType.Update,
                         NewVal = source.Value,
