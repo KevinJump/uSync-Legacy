@@ -116,15 +116,40 @@
 							<th>Name</th>
 							<th>Type</th>
 							<th>Change</th>
-							<th>Message</th>
+							<th></th>
 						</tr>
-						</tr>
-						<tr ng-repeat="change in changes" ng-class="{'text-warning' : !change.Success, 'muted' : change.Change == 0 }" ng-show="showChange(change.Change)">
-							<td>{{change.Name}}</td>
-							<td>{{getChangeName(change.Change)}}</td>
-							<td>{{getTypeName(change.ItemType)}}</td>
-							<td>{{change.Message}}</td>
-						</tr>
+						<tbody ng-repeat="change in changes">
+							<tr ng-class="{'text-warning' : !change.Success, 'muted' : change.Change == 0 }" ng-show="showChange(change.Change)">
+								<td>{{change.Name}}</td>
+								<td>{{getChangeName(change.Change)}}</td>
+								<td>{{getTypeName(change.ItemType)}}</td>
+								<td>{{change.Message}}
+									<button ng-show="change.Details != null && change.Details.length > 0" 
+											ng-click="showDetail(change)" class="btn btn-mini">Details</button>
+								</td>
+								
+							</tr>
+							<tr ng-if="change.Details != null && change.Details.length > 0" ng-show="change.showDetail">
+								<td colspan="4">
+									<div class="change-detail">
+										<h4>Changes for : {{change.Name}} <small>({{getTypeName(change.ItemType)}})</small></h4>
+										<table class="table">
+											<tr>
+												<th>Action</th><th>Path</th><th>Name</th><th>Old Value</th><th>New Value</th>
+											</tr>
+											<tr ng-repeat="detail in change.Details" 
+												ng-class="{'text-error' : detail.Change == 2, 'text-success' : detail.Change == 0}">
+												<td>{{getDetailChange(detail.Change)}}</td>
+												<td>{{detail.Path}}</td>
+												<td>{{detail.Name}}</td>
+												<td class="text-error">{{getDetailValue(detail.OldVal)}}</td>
+												<td class="text-success">{{getDetailValue(detail.NewVal)}}</td>
+											</tr>
+										</table>
+									</div>
+								</td>
+							</tr>
+						</tbody>
 					</table>
 				</div>
 			  </div>

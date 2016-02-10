@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Jumoo.uSync.Core.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -24,6 +25,22 @@ namespace Jumoo.uSync.BackOffice.UI
                 return "<i class=\"icon-checkbox\"></i>";
             else
                 return "<i class=\"icon-checkbox-dotted\"></i>";
+        }
+
+        protected string Details(object details)
+        {
+            string changes = "";
+            if (details != null)
+            {
+                var d = (IEnumerable<uSyncChange>)details;
+
+                foreach(var change in d)
+                {
+                    changes += string.Format("[{0}] [{1}] Name: {2}  Old: ({3}) New: ({4}) <br/>", change.Change, change.Path, change.Name, change.OldVal, change.NewVal);
+                }
+            }
+
+            return changes; 
         }
 
         protected void Page_Load(object sender, EventArgs e)

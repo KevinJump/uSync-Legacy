@@ -192,6 +192,43 @@
 	{
 		return (new Date(dateValue) > $scope.minDate);
 	}
+	
+	$scope.detailValues = [ "Node", "Element", "Attribute", "Value" ];
+	$scope.detailTypes = [ "Create", "Update", "Delete", "Error" ] ;
+	
+	$scope.getDetailValueType = function(valueType)
+	{
+		return $scope.detailValues[valueType];
+	}
+	
+	$scope.getDetailChange = function(changeType)
+	{
+		return $scope.detailTypes[changeType];
+	}
+	
+	$scope.getDetailValue = function(val)
+	{
+		if (val == "") 	{
+			return "(blank)";
+		}
+		else if (val == null) {
+			return "-";
+		}
+		return val;
+	}
+	
+	$scope.showDetail = function(change) 
+	{
+		if (change.showDetail == true) 
+		{
+			change.showDetail = false;
+		}
+		else 
+		{
+			change.showDetail = true;
+		}
+	}
+	
 	   
 	$scope.showNoChange = false;
 	

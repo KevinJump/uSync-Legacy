@@ -283,11 +283,13 @@
     <Compile Include="Extensions\XElementTrackerExtension.cs" />
     <Compile Include="Extensions\XElementuSyncTypeExtension.cs" />
     <Compile Include="Extensions\XElementValueExtensions.cs" />
+    <Compile Include="Helpers\uSyncChangeTracker.cs" />
     <Compile Include="Helpers\uSyncContainerHelper.cs" />
     <Compile Include="Helpers\uSyncMediaFileMover.cs" />
     <Compile Include="Helpers\uSyncTreeWalker.cs" />
     <Compile Include="Helpers\uSyncIdMapper.cs" />
     <Compile Include="Helpers\uSyncValueMapper.cs" />
+    <Compile Include="Interfaces\ISyncChangeDetail.cs" />
     <Compile Include="Interfaces\ISyncContainerSerializer.cs" />
     <Compile Include="Interfaces\ISyncSerializerWithFiles.cs" />
     <Compile Include="Interfaces\ISyncSerializerWithParent.cs" />

@@ -1,4 +1,5 @@
 ﻿using Jumoo.uSync.Core;
+using Jumoo.uSync.Core.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,6 +24,8 @@ namespace Jumoo.uSync.BackOffice
         public string FileName { get; private set; }
         public string Name { get; set; }
         public bool RequiresPostProcessing { get; set; }
+        public IEnumerable<uSyncChange> Details { get; set; }
+
 
         internal uSyncAction(bool success, string name, Type type, ChangeType change, string message, Exception ex, string filename, bool postProcess = false) : this()
         {

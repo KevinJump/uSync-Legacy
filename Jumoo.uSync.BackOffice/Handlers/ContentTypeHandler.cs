@@ -274,7 +274,11 @@ namespace Jumoo.uSync.BackOffice.Handlers
         {
             var node = XElement.Load(file);
             var update = uSyncCoreContext.Instance.ContentTypeSerializer.IsUpdate(node);
-            return uSyncActionHelper<IContentType>.ReportAction(update, node.NameFromNode());
+
+            var action = uSyncActionHelper<IContentType>.ReportAction(update, node.NameFromNode());
+            action.Details = ((ISyncChangeDetail)uSyncCoreContext.Instance.ContentTypeSerializer).GetChanges(node);
+
+            return action;
         }
     }
 }

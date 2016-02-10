@@ -130,6 +130,11 @@
                                     <td><%# DataBinder.Eval(Container.DataItem, "Change") %></td>
                                     <td><%# DataBinder.Eval(Container.DataItem, "Message") %></td>
                                 </tr>
+                                <tr id="Details_<%# DataBinder.Eval(Container.DataItem, "Name") %>">
+                                    <td colspan="5">
+                                        <%# Details(Eval("Details"))  %>
+                                    </td>
+                                </tr>
                         </ItemTemplate>
                         <FooterTemplate>
                                 </tbody>

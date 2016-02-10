@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Jumoo.uSync.Core.Helpers;
+
 namespace Jumoo.uSync.Core
 {
     public struct SyncAttempt<T>
@@ -15,6 +17,7 @@ namespace Jumoo.uSync.Core
         public ChangeType Change { get; private set; }
         public string Message { get; private set; }
         public Exception Exception { get; set; }
+        public IEnumerable<uSyncChange> Details { get; set; }
 
         private SyncAttempt(bool success, string name, T item, Type itemType, ChangeType change, string message, Exception ex) : this()
         {
