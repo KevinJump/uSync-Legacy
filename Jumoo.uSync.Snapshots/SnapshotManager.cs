@@ -53,7 +53,7 @@ namespace Jumoo.uSync.Snapshots
 
             var master = CombineSnapshots(_root);
             var snapshot = Path.Combine(_root,
-                string.Format("{0}_{1}", DateTime.Now.ToString("yyyyMMdd_HHmmss"), name.ToSafeFileName()));
+                string.Format("{0}_{1}", DateTime.Now.ToString("yyyyMMdd_HHmmss"), name.ToSafeFileName().Replace('_', '-')));
 
             if (!string.IsNullOrEmpty(master) && Directory.Exists(master))
             {
