@@ -15,7 +15,7 @@
 			<h4>Current Snapshots <small>(located in ~/usync/snapshots)</small></h4>
 		  </div>
 		  <div class="span4">
-			<div class="refresh"><button ng-click="refresh()" class="btn btn-small btn-success"><i class="icon icon-refresh"></i> Refresh</button></div>
+			<div class="refresh"><button ng-click="refresh(true)" class="btn btn-small btn-success"><i class="icon icon-refresh"></i> Refresh</button></div>
 		  </div>
 		 
             <div class="span12">
@@ -30,14 +30,17 @@
 			<table class="table" ng-hide="loading">
 			<thead>
 				<tr>
-					<th>Name</th><th>Items</th><th>Date Created</th><th>Date Applied</th><th>Actions</th>
+					<th>Name</th><th>Items</th><th>Date Created</th><th>Applied</th>
+					<th>Source</th>
+					<th>Actions</th>
 				</tr>
 			</thead>
 			<tr ng-repeat="snapshot in snapshots">
 				<td>{{snapshot.Name}}</td>
 				<td>{{snapshot.FileCount}}</td>
 				<td>{{snapshot.Created | date:'dd-MMM-yyyy HH:mm:ss'}}</td>
-				<td></td>
+				<td><input type="checkbox" readonly ng-checked="isDateSet(snapshot.Applied)" ng-disabled="true" data-tooltip="some thing"></td>
+				<td><span ng-show="snapshot.Local">Local</span><span ng-show="!snapshot.Local">Remote</span></td>
 				<td ng-show="snapshot.FileCount > 0">
 					<span ng-hide="settings.Mode == 'source'">
 						<button class="btn btn-mini" ng-click="apply(snapshot.Name)">Apply</button>

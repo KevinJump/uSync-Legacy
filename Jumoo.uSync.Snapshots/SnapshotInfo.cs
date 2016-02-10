@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Jumoo.uSync.Snapshots.Data;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -12,13 +13,15 @@ namespace Jumoo.uSync.Snapshots
     {
         public string Name { get; set; }
         public DateTime Created { get; set; }
+        public DateTime Applied { get; set; }
+        public bool Local { get; set; }
         public string Folder { get; set; }
 
         public int FileCount { get; set; }
 
         public List<string> Items { get; set; }
 
-        public SnapshotInfo(string folder)
+        public SnapshotInfo(string folder, bool local=false)
         {
             Folder = folder;
 
@@ -39,6 +42,22 @@ namespace Jumoo.uSync.Snapshots
 
             FileCount = CountFiles(folder);
             Items = new List<string>();
+
+            Local = local;
+
+            SnapshotLogger logger = new SnapshotLogger();
+            var log = logger.GetSnapshot(Path.GetFileName(folder));
+            if (log != null)
+            {
+                Local = log.IsLocal;
+                if (log.Applied != null && log.Applied > DateTime.MinValue)
+                {
+                    Applied = log.Applied.Value;
+                }
+            }
+            else {
+                logger.AddSnapshot(this, local);
+            }
         }
 
         private int CountFiles(string folder)

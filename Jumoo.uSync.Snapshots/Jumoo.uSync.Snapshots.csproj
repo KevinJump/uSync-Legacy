@@ -252,6 +252,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\SnapshotLog.cs" />
+    <Compile Include="Data\SnapshotLogger.cs" />
+    <Compile Include="Data\SnapshotRegister.cs" />
     <Compile Include="Helpers\IDHunter.cs" />
     <Compile Include="Helpers\SnapshotIO.cs" />
     <Compile Include="SnapshotConfig.cs" />

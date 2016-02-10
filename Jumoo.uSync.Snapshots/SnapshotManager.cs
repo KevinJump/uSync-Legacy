@@ -6,6 +6,7 @@ using Umbraco.Core;
 using Umbraco.Core.IO;
 using Jumoo.uSync.BackOffice;
 using Umbraco.Core.Logging;
+using Jumoo.uSync.Snapshots.Data;
 
 namespace Jumoo.uSync.Snapshots
 {
@@ -95,7 +96,7 @@ namespace Jumoo.uSync.Snapshots
                 LogHelper.Info<SnapshotManager>("No changes in snapshot - so no folder");
             }
 
-            return new SnapshotInfo(snapshot);
+            return new SnapshotInfo(snapshot, true); ;
         }
 
 
@@ -122,9 +123,9 @@ namespace Jumoo.uSync.Snapshots
                     }
                 }
 
+                MarkApplySnapshots(_root);
                 return actions;
             }
-
 
             return null;
             
@@ -137,8 +138,13 @@ namespace Jumoo.uSync.Snapshots
             if (snapshot != null && Directory.Exists(snapshot.Folder))
             {
                 var actions = _backOffice.ImportAll(snapshot.Folder);
+
+                MarkApplySnapshot(snapshot.Folder, true);
+
                 return actions;
             }
+
+
 
             return null;
         }
@@ -237,6 +243,39 @@ namespace Jumoo.uSync.Snapshots
             }
 
             return null;
+        }
+
+
+        /// <summary>
+        ///  marks all the snapshots in the folder as applied.
+        /// </summary>
+        /// <param name="folder"></param>
+        private void MarkApplySnapshots(string folder)
+        {
+            DirectoryInfo root = new DirectoryInfo(folder);
+            var snapshots = root.GetDirectories().OrderBy(x => x.Name);
+
+            if (snapshots.Any())
+            {
+                foreach (var snapshot in snapshots)
+                {
+                    MarkApplySnapshot(snapshot.FullName);
+                }
+            }
+        }
+
+        /// <summary>
+        ///  marks a single snapshot as applied
+        /// </summary>
+        /// <param name="name"></param>
+        private void MarkApplySnapshot(string folder, bool force = false)
+        {
+            var snap = new SnapshotInfo(folder);
+            if (snap != null)
+            {
+                SnapshotLogger logger = new SnapshotLogger();
+                logger.ApplySnapshot(snap, force);
+            }
         }
 
     }

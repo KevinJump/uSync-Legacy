@@ -1,6 +1,8 @@
 ﻿angular.module('umbraco').controller('uSyncSnapshotDashboardController',
     function ($scope, $http, uSyncSnapshotDashboardService) {
 
+	   $scope.minDate = new Date('2000/1/1');
+	
         $scope.loading = true;
 	   $scope.working = false;
 
@@ -50,11 +52,10 @@
 		
 	}
 	
-	$scope.refresh = function()
+	$scope.refresh = function(hide)
 	{
-		$scope.loading = true; 
 		$scope.noChanges = false;
-		
+		$scope.loading = hide; 
 		GetSnapshots();
 	}
 	
@@ -76,8 +77,12 @@
 				$scope.changes = response.data; 
 				$scope.reporting = false;
 				$scope.reported = true;
+				$scope.refresh(false);
 			   });
+
+
 		}
+		
 	}
 
 	$scope.report = function(name) 
@@ -105,7 +110,7 @@
 		{
 			uSyncSnapshotDashboardService.delete(name)
 			.then(function(response) {
-				$scope.refresh();
+				$scope.refresh(false);
 			});
 		}
 		 
@@ -122,7 +127,9 @@
 			$scope.changes = response.data; 
 			$scope.reporting = false;
 			$scope.reported = true;
+			$scope.refresh(false);
            });
+		   
 	}
 	
 	$scope.reportAll = function() 
@@ -179,6 +186,11 @@
 	{
 		var umbType = changeType.substring(0, changeType.indexOf(','));
 		return umbType.substring(umbType.lastIndexOf('.')+1);
+	}
+	
+	$scope.isDateSet = function(dateValue)
+	{
+		return (new Date(dateValue) > $scope.minDate);
 	}
 	   
 	$scope.showNoChange = false;
