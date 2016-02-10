@@ -74,8 +74,12 @@
                         Sync Target <small>Will run import at startup only</small>
                     </label>
                     <label class="radio">
+                        <asp:RadioButton ID="rbSource" runat="server" GroupName="uSyncMode" />
+                        Sync Source <small>Don't import but save any changes that are made to disk</small>
+                    </label>
+                    <label class="radio">
                         <asp:RadioButton ID="rbManual" runat="server" CssClass="" GroupName="uSyncMode"/> 
-                        Manual Sync <small>No automatic imports or saves.</small>
+                        Manual Sync <small>No automatic imports or saves. (whay not try <a href="">uSync.Snapshots</a>?)</small>
                     </label>
                     <label class="radio">
                         <asp:RadioButton ID="rbOther" runat="server" GroupName="uSyncMode" Enabled="false"/>
@@ -170,7 +174,7 @@
                 <p><small>The handlers do the hard work, of importing and exporting data, they can be turned off in the 
                     config file
                 </small></p>
-                <asp:BulletedList runat="server" ID="uSyncHandlers"></asp:BulletedList>
+                <asp:BulletedList runat="server" ID="uSyncHandlers" Enabled="false"></asp:BulletedList>
             </div>
         </div>
         </asp:Panel>

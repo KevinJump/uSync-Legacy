@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<umbPackage>
+  <files>
+    <file>
+      <guid>Jumoo.uSync.Snapshots.dll</guid>
+      <orgPath>/bin</orgPath>
+      <orgName>Jumoo.uSync.Snapshots.dll</orgName>
+    </file>
+    <file>
+      <guid>package.manifest</guid>
+      <orgPath>/App_Plugins/uSyncSnapshots</orgPath>
+      <orgName>package.manifest</orgName>
+    </file>
+    <file>
+      <guid>snapshotdashboard.css</guid>
+      <orgPath>/App_Plugins/uSyncSnapshots</orgPath>
+      <orgName>snapshotdashboard.css</orgName>
+    </file>
+    <file>
+      <guid>SnapshotDashboard.html</guid>
+      <orgPath>/App_Plugins/uSyncSnapshots</orgPath>
+      <orgName>SnapshotDashboard.html</orgName>
+    </file>
+    <file>
+      <guid>SnapshotDashboardController.js</guid>
+      <orgPath>/App_Plugins/uSyncSnapshots</orgPath>
+      <orgName>SnapshotDashboardController.js</orgName>
+    </file>
+    <file>
+      <guid>SnapshotDashboardService.js</guid>
+      <orgPath>/App_Plugins/uSyncSnapshots</orgPath>
+      <orgName>SnapshotDashboardService.js</orgName>
+    </file>
+  </files>
+  <info>
+    <package>
+      <name>uSync.Snapshots</name>
+      <version>1.0.0.740</version>
+      <license url="http://opensource.org/licenses/MIT">MIT License</license>
+      <url>http://jumoo.uk/usync</url>
+      <requirements>
+        <major>3</major>
+        <minor>0</minor>
+        <patch>0</patch>
+      </requirements>
+    </package>
+    <author>
+      <name>Kevin Jump</name>
+      <website>http://jumoo.uk</website>
+    </author>
+    <readme><![CDATA[ uSync.Snapshots v1 * Requires uSync *
+=================================
+
+uSync snapshots, uses usync to take moment in time snapshots of your umbraco install. 
+
+]]></readme>
+  </info>
+  <DocumentTypes />
+  <Templates />
+  <Stylesheets />
+  <Macros />
+  <DictionaryItems />
+  <Languages />
+  <DataTypes />
+  <Actions>
+    <Action runat="install" alias="addDashboardSection" dashboardAlias="usyncSnapshots">
+      <section>
+        <areas>
+          <area>developer</area>
+        </areas>
+        <tab caption="uSync Snapshots">
+          <control>/App_Plugins/usyncSnapshots/SnapshotDashboard.html</control>
+        </tab>
+      </section>
+    </Action>
+  </Actions>
+</umbPackage>

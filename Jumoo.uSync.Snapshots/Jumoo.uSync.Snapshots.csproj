@@ -283,13 +283,19 @@
     <Content Include="App_Plugins\uSyncSnapshots\SnapshotDashboard.html" />
     <Content Include="App_Plugins\uSyncSnapshots\SnapshotDashboardController.js" />
     <Content Include="App_Plugins\uSyncSnapshots\SnapshotDashboardService.js" />
+    <Content Include="package.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>XCOPY "$(TargetPath)" "$(SolutionDir)Umbraco.Site\Bin\" /q /y
+
+ECHO Coping to Package Folder
+XCOPY "$(TargetPath)" "$(SolutionDir)umbPackage\uSync.Snapshots\" /q /y
+XCOPY "$(ProjectDir)package.xml" "$(SolutionDir)umbPackage\uSync.Snapshots\" /q /y
+XCOPY "$(ProjectDir)App_Plugins\uSyncSnapshots\*.*" "$(SolutionDir)umbPackage\uSync.Snapshots\" /q /y
+
+ECHO Copy to dev4.0 (temp)
 XCOPY "$(TargetPath)" "D:\Development\Web\Umbraco\DevUmbraco7.4.0\Bin\" /q /y
-
-
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
