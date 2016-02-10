@@ -45,28 +45,45 @@ namespace Jumoo.uSync.BackOffice.UI
             rbAutoSync.Checked = false;
             rbTarget.Checked = false;
             rbManual.Checked = false;
-            rbOther.Checked = false; 
+            rbOther.Checked = false;
+            rbSource.Checked = false;
 
             if (settings.Import == true)
             {
                 if (settings.ExportOnSave == true)
                 {
+                    // import true, export on save true,
                     rbAutoSync.Checked = true;
                 }
                 else
                 {
+                    // import true, export on save false
                     rbTarget.Checked = true;
                 }
             }
-            else if (settings.ExportOnSave == false && settings.ExportAtStartup == false)
-            {
-                rbManual.Checked = true;
-            }
             else
             {
-                rbOther.Checked = true;
+                // import false
+                if (settings.ExportAtStartup == false)
+                {
+                    // import false, export false
+                    if (settings.ExportOnSave == true)
+                    {
+                        // import false, export false, exportonSave true 
+                        rbSource.Checked = true;
+                    }
+                    else
+                    {
+                        // import false, export, false, export on save false
+                        rbManual.Checked = true;
+                    }
+                }
+                else
+                {
+                    // import false,export true, ?;
+                    rbOther.Checked = true;
+                }
             }
-
         }
 
         private void SetupPage()
@@ -161,6 +178,13 @@ namespace Jumoo.uSync.BackOffice.UI
 
                 mode = "Manual";
 
+            }
+            else if (rbSource.Checked == true)
+            {
+                settings.ExportAtStartup = false;
+                settings.Import = false;
+                settings.ExportOnSave = true;
+                mode = "Source";
             }
             uSyncBackOfficeContext.Instance.Configuration.SaveSettings(settings);
 
