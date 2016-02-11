@@ -1,4 +1,5 @@
 ﻿<div id="snapshotDashboard" ng-controller="uSyncSnapshotDashboardController" class="usync-snapshots">
+    <div ng-show="isInError" class="alert alert-danger">Error: {{errorMsg}}</div>
     <div class="row">
         <div class="span8">
             <h3>uSync Snapshots <small>(site mode: {{settings.Mode}})</small></h3>
@@ -108,7 +109,7 @@
 					</div>
 					<div class="span4">
 						<div class="report-controls">
-							show 'no change' items <input ng-model="showNoChange" type="checkbox" class="form-control"> 
+							show 'no change' items <input ng-model="showNoChange" type="checkbox" class="form-control" no-Dirty-Check> 
 						</div>
 					</div>
 					<table class="table" ng-show="showNoChange || getChangeCount() > 0">

@@ -4,7 +4,7 @@
           <area>developer</area>
         </areas>
         <tab caption="uSync Backoffice">
-          <control>/App_Plugins/usync/BackOffice/uSyncBackOfficeDashboard.ascx</control>
+          <control>/App_Plugins/usync/uSyncDashboard.html</control>
         </tab>
     </section>
 </dashBoard>
