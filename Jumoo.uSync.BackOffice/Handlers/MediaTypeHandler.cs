@@ -255,8 +255,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
             var node = XElement.Load(file);
             var update = uSyncCoreContext.Instance.MediaTypeSerializer.IsUpdate(node);
             var action = uSyncActionHelper<IMediaType>.ReportAction(update, node.NameFromNode());
-
-            action.Details = ((ISyncChangeDetail)uSyncCoreContext.Instance.MediaTypeSerializer).GetChanges(node);
+            if (action.Change > ChangeType.NoChange)
+                action.Details = ((ISyncChangeDetail)uSyncCoreContext.Instance.MediaTypeSerializer).GetChanges(node);
 
             return action;
         }

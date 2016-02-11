@@ -181,7 +181,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
             var node = XElement.Load(file);
             var update = uSyncCoreContext.Instance.DictionarySerializer.IsUpdate(node);
             var action = uSyncActionHelper<IDictionaryItem>.ReportAction(update, node.NameFromNode(), "Dictionary Items often get their order mixed up");
-            action.Details = ((ISyncChangeDetail)uSyncCoreContext.Instance.DictionarySerializer).GetChanges(node);
+            if (action.Change > ChangeType.NoChange)
+                action.Details = ((ISyncChangeDetail)uSyncCoreContext.Instance.DictionarySerializer).GetChanges(node);
 
             return action;
         }

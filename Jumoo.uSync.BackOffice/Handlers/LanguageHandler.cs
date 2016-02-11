@@ -130,7 +130,8 @@
             var node = XElement.Load(file);
             var update = uSyncCoreContext.Instance.LanguageSerializer.IsUpdate(node);
             var action = uSyncActionHelper<ILanguage>.ReportAction(update, node.NameFromNode());
-            action.Details = ((ISyncChangeDetail)uSyncCoreContext.Instance.LanguageSerializer).GetChanges(node);
+            if (action.Change > ChangeType.NoChange)
+                action.Details = ((ISyncChangeDetail)uSyncCoreContext.Instance.LanguageSerializer).GetChanges(node);
 
             return action;
         }

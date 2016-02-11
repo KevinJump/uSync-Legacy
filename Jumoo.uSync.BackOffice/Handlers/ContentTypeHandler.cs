@@ -275,7 +275,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
             var update = uSyncCoreContext.Instance.ContentTypeSerializer.IsUpdate(node);
 
             var action = uSyncActionHelper<IContentType>.ReportAction(update, node.NameFromNode());
-            action.Details = ((ISyncChangeDetail)uSyncCoreContext.Instance.ContentTypeSerializer).GetChanges(node);
+            if (action.Change > ChangeType.NoChange)
+                action.Details = ((ISyncChangeDetail)uSyncCoreContext.Instance.ContentTypeSerializer).GetChanges(node);
 
             return action;
         }
