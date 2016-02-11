@@ -7,7 +7,7 @@
         $scope.reporting = false;
         $scope.reported = false;
         $scope.showSettings = false;
-        $scope.showTechnical = false; 
+        $scope.showTechnical = false;
 
         LoadSettings();
 
@@ -16,19 +16,24 @@
             .then(function (response) {
                 $scope.settings = response.data;
                 $scope.getuSyncMode();
-                $scope.loading = false; 
+                $scope.loading = false;
             });
         }
 
-        $scope.updateSettings = function() {
-            uSyncDashboardService.updateSettings($scope.uSyncMode) 
-            .then(function(response) {
+        $scope.updateSettings = function () {
+            $scope.clearError();
+
+            uSyncDashboardService.updateSettings($scope.uSyncMode)
+            .then(function (response) {
                 alert('settings updated, you will need to restart your site to see the changes');
+            }, function (error) {
+                $scope.working = false;
+                $scope.setError(error.data);
             })
 
         }
 
-        $scope.toggleSettings = function() {
+        $scope.toggleSettings = function () {
             $scope.showSettings = !$scope.showSettings;
         }
 
@@ -36,8 +41,7 @@
             $scope.showTechnical = !$scope.showTechnical;
         }
 
-        $scope.getuSyncMode = function() 
-        {
+        $scope.getuSyncMode = function () {
             if ($scope.settings.settings.Import) {
                 if ($scope.settings.settings.ExportOnSave) {
                     $scope.uSyncMode = 'auto'
@@ -48,8 +52,7 @@
             }
             else {
                 if (!$scope.settings.settings.ExportAtStartup) {
-                    if ($scope.settings.settings.ExportOnSave)
-                    {
+                    if ($scope.settings.settings.ExportOnSave) {
                         $scope.uSyncMode = 'source';
                     }
                     else {
@@ -64,6 +67,8 @@
 
         /* Back Office functions */
         $scope.import = function (force) {
+            $scope.clearError();
+
             $scope.reporting = true;
             $scope.reported = false;
             $scope.reportName = "Import";
@@ -73,10 +78,15 @@
                 $scope.changes = response.data;
                 $scope.reporting = false;
                 $scope.reported = true;
+            }, function (error) {
+                $scope.working = false;
+                $scope.setError(error.data);
             });
         }
 
         $scope.report = function () {
+            $scope.clearError();
+
             $scope.reporting = true;
             $scope.reported = false;
             $scope.reportName = "Report";
@@ -86,10 +96,15 @@
                 $scope.changes = response.data;
                 $scope.reporting = false;
                 $scope.reported = true;
+            }, function (error) {
+                $scope.working = false;
+                $scope.setError(error.data);
             });
         }
 
         $scope.export = function () {
+            $scope.clearError();
+
             $scope.reporting = true;
             $scope.reported = false;
             $scope.reportName = "Export";
@@ -99,6 +114,9 @@
                 $scope.changes = response.data;
                 $scope.reporting = false;
                 $scope.reported = true;
+            }, function (error) {
+                $scope.working = false;
+                $scope.setError(error.data);
             });
         }
 
@@ -185,5 +203,13 @@
             return false;
         }
 
+        $scope.setError = function (error) {
+            $scope.errorMsg = error.Message + ' - ' + error.ExceptionMessage;
+            $scope.isInError = true;
+        }
 
+        $scope.clearError = function () {
+            $scope.errorMsg = "";
+            $scope.isInError = false;
+        }
     });
