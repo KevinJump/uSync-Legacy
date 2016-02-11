@@ -18,6 +18,9 @@
 
             reporter: function() {
                 return $http.get(serviceRoot + 'Report');
+            },
+            updateSettings: function (mode) {
+                return $http.get(serviceRoot + 'UpdateSyncMode/?mode=' + mode);
             }
         }
     });

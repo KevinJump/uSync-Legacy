@@ -30,14 +30,15 @@
                     </label>
                     <label class="radio">
                         <input type="radio" ng-model="uSyncMode" value="manual" />
-                        Manual Sync <small>No automatic imports or saves. (whay not try <a href="">uSync.Snapshots</a>?)</small>
+                        Manual Sync <small>No automatic imports or saves. 
+                        (whay not try <a href="https://our.umbraco.org/projects/developer-tools/usyncSnapshots/">uSync.Snapshots</a>?)</small>
                     </label>
                     <label class="radio">
                         <input type="radio" ng-model="uSyncMode" value="other" enabled="false" />
                         Other <small>Some other weird setup - see your usyncBackOffice.config</small>
                     </label>
                     <div class="pull-right">
-                        <button class="btn btn-default" ng-click="saveSettings()">Save Settings</button>
+                        <button class="btn btn-default" ng-click="updateSettings()">Save Settings</button>
                     </div>
                 </div>
             </div>

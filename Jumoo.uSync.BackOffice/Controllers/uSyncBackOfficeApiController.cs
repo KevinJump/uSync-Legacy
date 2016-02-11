@@ -46,7 +46,42 @@ namespace Jumoo.uSync.BackOffice.Controllers
                 settings = uSyncBackOfficeContext.Instance.Configuration.Settings,
             };
 
-            return settings; 
+            return settings;
+        }
+
+        [HttpGet]
+        public bool UpdateSyncMode(string mode)
+        {
+            var settings = uSyncBackOfficeContext.Instance.Configuration.Settings;
+
+            switch (mode.ToLower())
+            {
+                case "auto":
+                    settings.ExportAtStartup = false;
+                    settings.ExportOnSave = true;
+                    settings.Import = true;
+                    break;
+                case "target":
+                    settings.ExportAtStartup = false;
+                    settings.ExportOnSave = false;
+                    settings.Import = true;
+                    break;
+                case "source":
+                    settings.ExportAtStartup = false;
+                    settings.ExportOnSave = true;
+                    settings.Import = false;
+                    break;
+                case "manual":
+                    settings.ExportAtStartup = false;
+                    settings.ExportOnSave = false;
+                    settings.Import = false;
+                    break;
+                case "other":
+                    return false; 
+            }
+
+            uSyncBackOfficeContext.Instance.Configuration.SaveSettings(settings);
+            return true; 
         }
     }
 

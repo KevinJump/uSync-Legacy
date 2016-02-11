@@ -20,6 +20,14 @@
             });
         }
 
+        $scope.updateSettings = function() {
+            uSyncDashboardService.updateSettings($scope.uSyncMode) 
+            .then(function(response) {
+                alert('settings updated, you will need to restart your site to see the changes');
+            })
+
+        }
+
         $scope.toggleSettings = function() {
             $scope.showSettings = !$scope.showSettings;
         }
