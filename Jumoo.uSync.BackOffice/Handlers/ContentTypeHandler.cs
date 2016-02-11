@@ -90,14 +90,13 @@ namespace Jumoo.uSync.BackOffice.Handlers
             List<uSyncAction> actions = new List<uSyncAction>();
 
             var folders = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.DocumentTypeContainer);
-            foreach(var fldr in folders)
-            {                
+            foreach (var fldr in folders)
+            {
                 var container = _contentTypeService.GetContentTypeContainer(fldr.Key);
                 actions.Add(ExportContainer(container, folder));
 
                 actions.AddRange(Export(fldr.Id, folder));
             }
-
             var nodes = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.DocumentType);
             foreach(var node in nodes)
             {

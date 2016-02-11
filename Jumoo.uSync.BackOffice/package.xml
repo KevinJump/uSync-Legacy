@@ -8,15 +8,37 @@
       <orgName>Jumoo.uSync.BackOffice.dll</orgName>
     </file>
     <file>
-      <guid>Jumoo.uSync.BackOffice.UI.dll</guid>
-      <orgPath>/bin</orgPath>
-      <orgName>Jumoo.uSync.BackOffice.UI.dll</orgName>
-    </file>
-    <file>
       <guid>uSyncBackOffice.Config</guid>
       <orgPath>/Config</orgPath>
       <orgName>uSyncBackOffice.Config</orgName>
     </file>
+    <!-- dashboard -->
+    <file>
+      <guid>package.manifest</guid>
+      <orgPath>/App_Plugins/uSync</orgPath>
+      <orgName>package.manifest</orgName>
+    </file>
+    <file>
+      <guid>uSyncDashboard.css</guid>
+      <orgPath>/App_Plugins/uSync</orgPath>
+      <orgName>uSyncDashboard.css</orgName>
+    </file>
+    <file>
+      <guid>uSyncDashboard.html</guid>
+      <orgPath>/App_Plugins/uSync</orgPath>
+      <orgName>usyncDashboard.html</orgName>
+    </file>
+    <file>
+      <guid>uSyncDashboardController.js</guid>
+      <orgPath>/App_Plugins/uSync</orgPath>
+      <orgName>uSyncDashboardController.js</orgName>
+    </file>
+    <file>
+      <guid>uSyncDashboardService.js</guid>
+      <orgPath>/App_Plugins/uSync</orgPath>
+      <orgName>uSyncDashboardService.js</orgName>
+    </file>
+      
     <!-- core -->
     <file>
       <guid>Jumoo.uSync.Core.dll</guid>
@@ -27,11 +49,6 @@
       <guid>uSyncCore.Config</guid>
       <orgPath>/Config</orgPath>
       <orgName>uSyncCore.Config</orgName>
-    </file>
-    <file>
-      <guid>uSyncBackOfficeDashboard.ascx</guid>
-      <orgPath>/App_Plugins/uSync/BackOffice</orgPath>
-      <orgName>uSyncBackOfficeDashboard.ascx</orgName>
     </file>
   </files>
   <info>
@@ -72,7 +89,7 @@ This version syncs: DocTypes, MediaTypes, DataTypes, Macros, Languages, Dictiona
           <area>developer</area>
         </areas>
         <tab caption="uSync BackOffice">
-          <control>/App_Plugins/usync/BackOffice/uSyncBackOfficeDashboard.ascx</control>
+          <control>/App_Plugins/usync/uSyncDashboard.html</control>
         </tab>
       </section>
     </Action>

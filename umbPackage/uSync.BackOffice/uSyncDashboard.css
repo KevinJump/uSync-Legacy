@@ -1,0 +1,21 @@
+﻿.usync-dash .report-detail {
+	padding-top: 1em;
+}
+
+.usync-dash .report-controls {
+	text-align: right;
+}
+
+.usync-dash input[type='checkbox'] {
+	margin-top: 0;
+}
+
+.usync-dash .change-detail {
+    background-color: #eee;
+    padding: 0 1em 0.5em;
+    margin-top: -1.2em;
+}
+
+.usync-dash .change-detail h4 {
+    font-weight: 600;
+}

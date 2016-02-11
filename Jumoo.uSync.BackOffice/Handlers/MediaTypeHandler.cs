@@ -85,7 +85,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
         public IEnumerable<uSyncAction> Export(int parent, string folder)
         {
             List<uSyncAction> actions = new List<uSyncAction>();
-
             var folders = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.MediaTypeContainer);
             foreach (var fldr in folders)
             {
@@ -94,7 +93,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
                 actions.AddRange(Export(fldr.Id, folder));
             }
-
             var nodes = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.MediaType);
             foreach (var node in nodes)
             {
@@ -185,6 +183,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
         {
             ContentTypeService.SavedMediaType += ContentTypeService_SavedMediaType;
             ContentTypeService.DeletedMediaType += ContentTypeService_DeletedMediaType;
+
             ContentTypeService.DeletedMediaTypeContainer += ContentTypeService_DeletedMediaTypeContainer;
             ContentTypeService.SavedMediaTypeContainer += ContentTypeService_SavedMediaTypeContainer;
         }

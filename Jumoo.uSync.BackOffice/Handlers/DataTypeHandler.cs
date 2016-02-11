@@ -65,7 +65,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
         public IEnumerable<uSyncAction> ExportAll(string folder)
         {
-            LogHelper.Info<DataTypeHandler>("Exporting all DataTypes");
+            LogHelper.Info<DataTypeHandler>("Exporting all DataTypes.");
 
             return Export(-1, folder);
         }
@@ -85,7 +85,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
                 actions.AddRange(Export(fldr.Id, folder));
             }
-
             var nodes = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.DataType);
             foreach (var node in nodes)
             {
@@ -97,8 +96,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
             return actions;
         }
-
-
 
 
         public uSyncAction ExportToDisk(IDataTypeDefinition item, string folder)
@@ -172,12 +169,10 @@ namespace Jumoo.uSync.BackOffice.Handlers
             return path;
         }
 
-
         public void RegisterEvents()
         {
             DataTypeService.Saved += DataTypeService_Saved;
             DataTypeService.Deleted += DataTypeService_Deleted;
-
             DataTypeService.SavedContainer += DataTypeService_SavedContainer;
             DataTypeService.DeletedContainer += DataTypeService_DeletedContainer;
         }

@@ -333,6 +333,7 @@ ECHO Coping to Package Folder
 XCOPY "$(TargetPath)" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
 XCOPY "$(ProjectDir)uSyncBackOffice.config" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
 XCOPY "$(ProjectDir)package.xml" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
+XCOPY "$(ProjectDir)App_Plugins\uSync\*.*" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
 
 </PostBuildEvent>
   </PropertyGroup>
