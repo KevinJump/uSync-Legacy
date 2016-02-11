@@ -14,7 +14,7 @@ using Jumoo.uSync.Core.Helpers;
 
 namespace Jumoo.uSync.Core.Serializers
 {
-    public class MediaTypeSerializer : ContentTypeBaseSerializer<IMediaType>
+    public class MediaTypeSerializer : ContentTypeBaseSerializer<IMediaType>, ISyncChangeDetail
     {
         public MediaTypeSerializer(string itemType) : base (itemType)
         { }
@@ -278,5 +278,66 @@ namespace Jumoo.uSync.Core.Serializers
             return (!nodeHash.Equals(itemHash));
         }
 
+
+        #region ISyncChangeDetail : Support for detailed change reports
+        public IEnumerable<uSyncChange> GetChanges(XElement node)
+        {
+            if (node.Name.LocalName == "EntityFolder")
+                return GetContainerChanges(node);
+
+            var nodeHash = node.GetSyncHash();
+            if (string.IsNullOrEmpty(nodeHash))
+                return null;
+
+            var key = node.Element("Info").Element("Key");
+            if (key == null)
+                return null;
+
+            Guid itemGuid = Guid.Empty;
+            if (!Guid.TryParse(key.Value, out itemGuid))
+                return null;
+
+            var item = _contentTypeService.GetMediaType(itemGuid);
+            if (item == null)
+            {
+                return uSyncChangeTracker.NewItem(key.Value);
+            }
+
+            var attempt = Serialize(item);
+            if (attempt.Success)
+            {
+                return uSyncChangeTracker.GetChanges(node, attempt.Item, "");
+            }
+            else
+            {
+                return uSyncChangeTracker.ChangeError(key.Value);
+            }
+        }
+
+        private IEnumerable<uSyncChange> GetContainerChanges(XElement node)
+        {
+            var nodeHash = node.GetSyncHash();
+            if (string.IsNullOrEmpty(nodeHash))
+                return null;
+
+            var key = node.Attribute("Key").ValueOrDefault(Guid.Empty);
+            if (key == Guid.Empty)
+                return null;
+
+            var item = _contentTypeService.GetMediaTypeContainer(key);
+            if (item == null)
+                return uSyncChangeTracker.NewItem(node.Attribute("Name").ValueOrDefault("unknown"));
+
+            var attempt = SerializeContainer(item);
+            if (attempt.Success)
+            {
+                return uSyncChangeTracker.GetChanges(node, attempt.Item, "");
+            }
+            else
+            {
+                return uSyncChangeTracker.ChangeError(node.Attribute("Name").ValueOrDefault("unknown"));
+            }
+        }
+        #endregion
     }
 }

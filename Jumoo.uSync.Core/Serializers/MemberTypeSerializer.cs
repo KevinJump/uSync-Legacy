@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
+using Jumoo.uSync.Core.Helpers;
 
 namespace Jumoo.uSync.Core.Serializers
 {
-    public class MemberTypeSerializer : ContentTypeBaseSerializer<IMemberType>
+    public class MemberTypeSerializer : ContentTypeBaseSerializer<IMemberType>, ISyncChangeDetail
     {
         public MemberTypeSerializer(string type) : base(type)
         {
@@ -110,7 +111,33 @@ namespace Jumoo.uSync.Core.Serializers
 
         }
 
+        #region ISyncChangeDetail : Support for detailed change reports
+        public IEnumerable<uSyncChange> GetChanges(XElement node)
+        {
+            var nodeHash = node.GetSyncHash();
+            if (string.IsNullOrEmpty(nodeHash))
+                return null;
 
+            var aliasNode = node.Element("Info").Element("Alias");
+            if (aliasNode == null)
+                return null;
+
+            var item = _memberTypeService.Get(aliasNode.Value);
+            if (item == null)
+            {
+                return uSyncChangeTracker.NewItem(aliasNode.Value);
+            }
+
+            var attempt = Serialize(item);
+            if (attempt.Success)
+            {
+                return uSyncChangeTracker.GetChanges(node, attempt.Item, "");
+            }
+            else
+            {
+                return uSyncChangeTracker.ChangeError(aliasNode.Value);
+            }
+        }
+        #endregion
     }
-  
-}
+}    

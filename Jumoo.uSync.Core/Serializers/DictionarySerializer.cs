@@ -1,4 +1,5 @@
 ﻿using Jumoo.uSync.Core.Extensions;
+using Jumoo.uSync.Core.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ using Umbraco.Core.Services;
 
 namespace Jumoo.uSync.Core.Serializers
 {
-    public class DictionarySerializer : SyncBaseSerializer<IDictionaryItem>
+    public class DictionarySerializer : SyncBaseSerializer<IDictionaryItem>, ISyncChangeDetail
     {
         IPackagingService _packagingService;
         ILocalizationService _localizationService; 
@@ -120,5 +121,33 @@ namespace Jumoo.uSync.Core.Serializers
 
             return (!nodeHash.Equals(itemHash));
         }
+
+        #region ISyncChangeDetail : Support for detailed change reports
+        public IEnumerable<uSyncChange> GetChanges(XElement node)
+        {
+            var nodeHash = node.GetSyncHash();
+            if (string.IsNullOrEmpty(nodeHash))
+                return null;
+
+            var key = node.Attribute("Key");
+            if (key == null)
+                return null;
+
+            var item = _localizationService.GetDictionaryItemByKey(key.Value);
+            if (item == null)
+                return uSyncChangeTracker.NewItem(key.Value);
+
+            var attempt = Serialize(item);
+            if (attempt.Success)
+            {
+                return uSyncChangeTracker.GetChanges(node, attempt.Item, "");
+            }
+            else
+            {
+                return uSyncChangeTracker.ChangeError(key.Value);
+            }
+        }
+        #endregion
+
     }
 }

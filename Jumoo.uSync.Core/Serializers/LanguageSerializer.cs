@@ -11,10 +11,11 @@ using Jumoo.uSync.Core.Interfaces;
 using System.Xml.Linq;
 using Jumoo.uSync.Core.Extensions;
 using Umbraco.Core.Logging;
+using Jumoo.uSync.Core.Helpers;
 
 namespace Jumoo.uSync.Core.Serializers
 {
-    public class LanguageSerializer : SyncBaseSerializer<ILanguage>
+    public class LanguageSerializer : SyncBaseSerializer<ILanguage>, ISyncChangeDetail
     {
         private IPackagingService _packagingService;
         private ILocalizationService _localizationService;
@@ -89,5 +90,36 @@ namespace Jumoo.uSync.Core.Serializers
 
             return (!nodeHash.Equals(itemHash));
         }
+
+        #region ISyncChangeDetail : Support for detailed change reports
+        public IEnumerable<uSyncChange> GetChanges(XElement node)
+        {
+            var nodeHash = node.GetSyncHash();
+            if (string.IsNullOrEmpty(nodeHash))
+                return null;
+
+            var culture = node.Attribute("CultureAlias");
+            if (culture == null)
+                return null;
+
+            var item = ApplicationContext.Current.Services.LocalizationService.GetLanguageByIsoCode(culture.Value);
+            if (item == null)
+            {
+                return uSyncChangeTracker.NewItem(culture.Value);
+            }
+
+            var attempt = Serialize(item);
+            if (attempt.Success)
+            {
+                return uSyncChangeTracker.GetChanges(node, attempt.Item, "");
+            }
+            else
+            {
+                return uSyncChangeTracker.ChangeError(culture.Value);
+            }
+        }
+        #endregion
+
+
     }
 }

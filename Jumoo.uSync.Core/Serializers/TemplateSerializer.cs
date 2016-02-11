@@ -15,6 +15,7 @@ using System.Xml.Linq;
 using Umbraco.Core.Logging;
 
 using Jumoo.uSync.Core.Extensions;
+using Jumoo.uSync.Core.Helpers;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -27,7 +28,7 @@ namespace Jumoo.uSync.Core.Serializers
     /// 
     ///  but now, you can't just rely on usync to copy templates. 
     /// </summary>
-    public class TemplateSerializer : SyncBaseSerializer<ITemplate>
+    public class TemplateSerializer : SyncBaseSerializer<ITemplate>, ISyncChangeDetail
     {
         IFileService _fileService;
         public TemplateSerializer(string itemType) : base(itemType)
@@ -141,5 +142,41 @@ namespace Jumoo.uSync.Core.Serializers
 
             return (!nodeHash.Equals(itemHash));
         }
+
+
+        #region ISyncChangeDetail : Support for detailed change reports
+        public IEnumerable<uSyncChange> GetChanges(XElement node)
+        {
+            var nodeHash = node.GetSyncHash();
+            if (string.IsNullOrEmpty(nodeHash))
+                return null;
+
+            var key = node.Element("Key");
+            if (key == null)
+                return null;
+
+            Guid templateGuid = Guid.Empty;
+            if (!Guid.TryParse(key.Value, out templateGuid))
+                return null;
+
+            var item = _fileService.GetTemplate(templateGuid);
+            if (item == null)
+            {
+                return uSyncChangeTracker.NewItem(key.Value);
+            }
+
+            var attempt = Serialize(item);
+            if (attempt.Success)
+            {
+                return uSyncChangeTracker.GetChanges(node, attempt.Item, "");
+            }
+            else
+            {
+                return uSyncChangeTracker.ChangeError(key.Value);
+            }
+        }
+        #endregion
+
+
     }
 }

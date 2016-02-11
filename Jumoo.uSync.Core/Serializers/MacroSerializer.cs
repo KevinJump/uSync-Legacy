@@ -11,10 +11,11 @@ using Umbraco.Core.Services;
 
 using Jumoo.uSync.Core.Extensions;
 using Umbraco.Core.Logging;
+using Jumoo.uSync.Core.Helpers;
 
 namespace Jumoo.uSync.Core.Serializers
 {
-    public class MacroSerializer : SyncBaseSerializer<IMacro>
+    public class MacroSerializer : SyncBaseSerializer<IMacro>, ISyncChangeDetail
     {
         private IPackagingService _packaingService; 
         public MacroSerializer(string itemType) : base(itemType)
@@ -133,5 +134,34 @@ namespace Jumoo.uSync.Core.Serializers
 
             return (!nodeHash.Equals(itemHash));
         }
+
+        #region ISyncChangeDetail : Support for detailed change reports
+        public IEnumerable<uSyncChange> GetChanges(XElement node)
+        {
+            var nodeHash = node.GetSyncHash();
+            if (string.IsNullOrEmpty(nodeHash))
+                return null;
+
+            var aliasNode = node.Element("alias");
+            if (aliasNode == null)
+                return null;
+
+            var item = ApplicationContext.Current.Services.MacroService.GetByAlias(aliasNode.Value);
+            if (item == null)
+            {
+                return uSyncChangeTracker.NewItem(aliasNode.Value);
+            }
+
+            var attempt = Serialize(item);
+            if (attempt.Success)
+            {
+                return uSyncChangeTracker.GetChanges(node, attempt.Item, "");
+            }
+            else
+            {
+                return uSyncChangeTracker.ChangeError(aliasNode.Value);
+            }
+        }
+        #endregion
     }
 }

@@ -387,7 +387,7 @@ namespace Jumoo.uSync.Core.Serializers
                 return uSyncChangeTracker.NewItem(defNode.Value);
 
             var attempt = Serialize(item);
-            if (!attempt.Success)
+            if (attempt.Success)
             {
                 return uSyncChangeTracker.GetChanges(node, attempt.Item, "");
             }

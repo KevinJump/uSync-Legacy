@@ -129,7 +129,10 @@ namespace Jumoo.uSync.BackOffice.Handlers
         {
             var node = XElement.Load(file);
             var update = uSyncCoreContext.Instance.MacroSerializer.IsUpdate(node);
-            return uSyncActionHelper<IMacro>.ReportAction(update, node.NameFromNode());
+            var action = uSyncActionHelper<IMacro>.ReportAction(update, node.NameFromNode());
+            action.Details = ((ISyncChangeDetail)uSyncCoreContext.Instance.MacroSerializer).GetChanges(node);
+
+            return action;
         }
 
 

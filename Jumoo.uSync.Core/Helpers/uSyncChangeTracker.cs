@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Jumoo.uSync.Core.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Umbraco.Core.Logging;
 
 namespace Jumoo.uSync.Core.Helpers
 {
@@ -21,14 +23,16 @@ namespace Jumoo.uSync.Core.Helpers
 
         // when the node is called something here, we lookup the value in the pair
         // and use that instead (so we can get names for properties)
-        private static Dictionary<string, string> nodeKeys = new Dictionary<string, string>()
+        private static Dictionary<string, ChangeKeyPair> nodeKeys = new Dictionary<string, ChangeKeyPair>()
         {
-            { "GenericProperty", "Key" }
+            { "GenericProperty", new ChangeKeyPair("Key", ChangeValueType.Element) },
+            { "PreValue", new ChangeKeyPair("Alias", ChangeValueType.Attribute) }
         };
 
-        private static Dictionary<string, string> nodeNames = new Dictionary<string, string>()
+        private static Dictionary<string, ChangeKeyPair> nodeNames = new Dictionary<string, ChangeKeyPair>()
         {
-            { "GenericProperty", "Name" }
+            { "GenericProperty", new ChangeKeyPair("Name", ChangeValueType.Element) },
+            { "PreValue", new ChangeKeyPair("Alias", ChangeValueType.Attribute) }
         };
 
         /// <summary>
@@ -65,8 +69,8 @@ namespace Jumoo.uSync.Core.Helpers
                             Path = path,
                             Name = sourceAttrib.Name.LocalName,
                             Change = ChangeDetailType.Delete,
-                            ValueType = ChangeValueType.Attribute
-                            
+                            ValueType = ChangeValueType.Attribute,
+                            OldVal = "attribute"
                         });
                     }
                     else
@@ -98,7 +102,8 @@ namespace Jumoo.uSync.Core.Helpers
                         {
                             Path = path,
                             Name = targetAttrib.Name.LocalName,
-                            Change = ChangeDetailType.Create
+                            Change = ChangeDetailType.Create,
+                            OldVal = "attribute"
                         });
                     }
                 }
@@ -134,9 +139,18 @@ namespace Jumoo.uSync.Core.Helpers
                             if (nodeNames.ContainsKey(sourceChild.Name.LocalName))
                             {
                                 // get the property name from the nodes in this 
-                                var nameNode = sourceChild.Element(nodeNames[sourceChild.Name.LocalName]);
-                                if (nameNode != null)
-                                    childPath = nameNode.Value;
+                                var changePair = nodeNames[sourceChild.Name.LocalName];
+                                switch(changePair.Type)
+                                {
+                                    case ChangeValueType.Element:
+                                        var nameNode = sourceChild.Element(changePair.Name);
+                                        if (nameNode != null)
+                                            childPath = nameNode.Value;
+                                        break;
+                                    case ChangeValueType.Attribute:
+                                        childPath = sourceChild.Attribute(changePair.Name).ValueOrDefault(childPath);
+                                        break;
+                                }
                             }
                         }
                         else
@@ -201,12 +215,21 @@ namespace Jumoo.uSync.Core.Helpers
             // for many things we use a value below the element as the key for the element.
             if (nodeKeys.ContainsKey(node.Name.LocalName))
             {
-                key.Key = nodeKeys[node.Name.LocalName];
+                var keyPair = nodeKeys[node.Name.LocalName];
+                key.Key = keyPair.Name;
                 key.Value = node.Name.LocalName;
-                var keyNode = node.Element(key.Key);
-                if (keyNode != null)
+                key.Type = keyPair.Type;
+
+                switch (keyPair.Type)
                 {
-                    key.Value = keyNode.Value;
+                    case ChangeValueType.Element:
+                        var keyNode = node.Element(key.Key);
+                        if (keyNode != null)
+                            key.Value = keyNode.Value;
+                        break;
+                    case ChangeValueType.Attribute:
+                        key.Value = node.Attribute(key.Key).ValueOrDefault(key.Value);
+                        break;
                 }
             }
 
@@ -220,10 +243,16 @@ namespace Jumoo.uSync.Core.Helpers
 
             if (nodeNames.ContainsKey(node.Name.LocalName))
             {
-                var nameNode = node.Element(nodeNames[node.Name.LocalName]);
-                if (nameNode != null)
+                var keypair = nodeNames[node.Name.LocalName];
+                switch(keypair.Type)
                 {
-                    return nameNode.Value;
+                    case ChangeValueType.Element:
+                        var nameNode = node.Element(keypair.Name);
+                        if (nameNode != null)
+                            return nameNode.Value;
+                        break;
+                    case ChangeValueType.Attribute:
+                        return node.Attribute(keypair.Name).ValueOrDefault(key);
                 }
             }
 
@@ -234,8 +263,20 @@ namespace Jumoo.uSync.Core.Helpers
         {
             if (key.Value != node.Name.LocalName)
             {
-                return target.Elements()
-                    .FirstOrDefault(x => x.Element(key.Key) != null && x.Element(key.Key).Value == key.Value);
+                switch(key.Type)
+                {
+                    case ChangeValueType.Element:
+                        return target.Elements()
+                            .FirstOrDefault(x => x.Element(key.Key) != null && x.Element(key.Key).Value == key.Value);
+                    case ChangeValueType.Attribute:
+                        return target.Elements()
+                            .FirstOrDefault(x => x.Attribute(key.Key) != null && x.Attribute(key.Key).Value == key.Value);
+                    default:
+                        return target.Elements()
+                            .FirstOrDefault(x => x.Element(key.Key) != null && x.Element(key.Key).Value == key.Value);
+
+                }
+
             }
             else
             {
@@ -274,6 +315,7 @@ namespace Jumoo.uSync.Core.Helpers
         {
             public string Key { get; set; }
             public string Value { get; set; }
+            public ChangeValueType Type { get; set; }
         }
 
     }
@@ -300,5 +342,19 @@ namespace Jumoo.uSync.Core.Helpers
     public enum ChangeValueType
     {
         Node, Element, Attribute, Value
+    }
+
+    public class ChangeKeyPair
+    {
+        public ChangeKeyPair()
+        { }
+
+        public ChangeKeyPair(string n, ChangeValueType t)
+        {
+            Name = n; Type = t;
+        }
+
+        public string Name { get; set; }
+        public ChangeValueType Type { get; set; }
     }
 }

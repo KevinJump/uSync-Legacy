@@ -151,7 +151,9 @@
         {
             var node = XElement.Load(file);
             var update = uSyncCoreContext.Instance.TemplateSerializer.IsUpdate(node);
-            return uSyncActionHelper<ITemplate>.ReportAction(update, node.NameFromNode());
+            var action = uSyncActionHelper<ITemplate>.ReportAction(update, node.NameFromNode());
+            action.Details = ((ISyncChangeDetail)uSyncCoreContext.Instance.TemplateSerializer).GetChanges(node);
+            return action;
         }
 
     }

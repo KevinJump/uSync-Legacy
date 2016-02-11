@@ -334,6 +334,8 @@ namespace Jumoo.uSync.Core.Serializers
             return (!nodeHash.Equals(itemHash));            
         }
 
+
+        #region ISyncChangeDetail : Support for detailed change reports
         public IEnumerable<uSyncChange> GetChanges(XElement node)
         {
             if (node.Name.LocalName == "EntityFolder")
@@ -343,14 +345,18 @@ namespace Jumoo.uSync.Core.Serializers
             if (string.IsNullOrEmpty(nodeHash))
                 return null;
 
-            var aliasNode = node.Element("Info").Element("Alias");
-            if (aliasNode == null)
+            var key = node.Element("Info").Element("Key");
+            if (key == null)
                 return null;
 
-            var item = _contentTypeService.GetContentType(aliasNode.Value);
+            Guid itemGuid = Guid.Empty;
+            if (!Guid.TryParse(key.Value, out itemGuid))
+                return null;
+
+            var item = _contentTypeService.GetContentType(itemGuid);
             if (item == null)
             {
-                return uSyncChangeTracker.NewItem(aliasNode.Value);
+                return uSyncChangeTracker.NewItem(key.Value);
             }
 
             var attempt = Serialize(item);
@@ -360,7 +366,7 @@ namespace Jumoo.uSync.Core.Serializers
             }
             else
             {
-                return uSyncChangeTracker.ChangeError(aliasNode.Value);
+                return uSyncChangeTracker.ChangeError(key.Value);
             }
         }
 
@@ -388,5 +394,6 @@ namespace Jumoo.uSync.Core.Serializers
                 return uSyncChangeTracker.ChangeError(node.Attribute("Name").ValueOrDefault("unknown"));
             }
         }
+        #endregion
     }
 }

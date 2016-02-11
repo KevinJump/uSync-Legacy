@@ -276,6 +276,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BackOffice.cs" />
+    <Compile Include="Controllers\uSyncBackOfficeApiController.cs" />
     <Compile Include="Controllers\uSyncBackOfficeController.cs" />
     <Compile Include="Handlers\ContentTypeHandler.cs" />
     <Compile Include="Handlers\DataTypeMappingHandler.cs" />
@@ -312,10 +313,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="App_Plugins\uSync\package.manifest" />
     <None Include="packages.config" />
     <None Include="uSyncBackOffice.Config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Plugins\uSync\uSyncDashboard.css" />
+    <Content Include="App_Plugins\uSync\uSyncDashboardController.js" />
+    <Content Include="App_Plugins\uSync\uSyncDashboard.html" />
+    <Content Include="App_Plugins\uSync\uSyncDashboardService.js" />
     <Content Include="package.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
