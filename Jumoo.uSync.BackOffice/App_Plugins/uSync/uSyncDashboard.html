@@ -1,0 +1,152 @@
+﻿<div id="uSyncDashboard" ng-controller="uSyncDashboardController" class="usync-dash">
+    <div class="row">
+        <div class="span12">
+            <h3>uSync 
+                <small>(uSync.BackOffice {{settings.backOfficeVersion}})</small>
+                <small>(uSync.Core {{settings.coreVersion}})</small>
+            </h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span12">
+            <h4>Import / Export</h4>
+            <p>
+                Perfom import and exports of your stuff - these actions are 
+                processed agains the files in {{settings.Folder}}
+            </p>
+            <div class="span6">
+                <p>
+                    <button class="btn btn-info" ng-click="report()">Report</button>
+                    <small class="muted">Find out what will change if you import</small>
+                </p>
+                <p>
+                    <button class="btn btn-success" ng-click="import(false)">Import</button>
+                    <small class="muted">Import on the things that have changed</small>
+                </p>
+            </div>
+            <div class="span6">
+                <p>
+                    <button class="btn btn-mini btn-warning" ng-click="import(true)">Full Import</button>
+                    <small class="muted">Import everything (even if it's the same)</small>
+                </p>
+                <p>
+                    <button class="btn btn-mini btn-inverse" ng-click="export()">Full Export</button>
+                    <small class="muted">Export everything to disk (wipes current folder)</small>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span6">
+            <div class="usync-info">
+                <h4>Setup <small>(Mode: {{uSyncMode}}) <a href="#" ng-click="toggleSettings()">show</a></small></h4>
+                <div ng-show="showSettings">
+                    <p>Choose how uSync behaves on your site</p>
+                    <label class="radio">
+                        <input type="radio" ng-model="uSyncMode" value="auto" />
+                        Auto Sync <small>Run import at startup, save changes to disk when they occur</small>
+                    </label>
+                    <label class="radio">
+                        <input type="radio" ng-model="uSyncMode" value="target" />
+                        Sync Target <small>Will run import at startup only</small>
+                    </label>
+                    <label class="radio">
+                        <input type="radio" ng-model="uSyncMode" value="source" />
+                        Sync Source <small>Don't import but save any changes that are made to disk</small>
+                    </label>
+                    <label class="radio">
+                        <input type="radio" ng-model="uSyncMode" value="manual" />
+                        Manual Sync <small>No automatic imports or saves. (whay not try <a href="">uSync.Snapshots</a>?)</small>
+                    </label>
+                    <label class="radio">
+                        <input type="radio" ng-model="uSyncMode" value="other" enabled="false" />
+                        Other <small>Some other weird setup - see your usyncBackOffice.config</small>
+                    </label>
+                    <div class="pull-right">
+                        <button class="btn btn-default" ng-click="saveSettings()">Save Settings</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="span6">
+            <h4>Technical Bits <small><a href='#' ng-click="toggleTechnical()">show</a></small></h4>
+            <ul ng-show="showTechnical">
+                <li ng-repeat="handler in settings.settings.Handlers">
+                    {{handler.Name}} <em>({{handler.Enabled}})</em>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span12">
+            <div class="report-detail">
+                <div ng-show="reporting">
+                    <ul class="usync-progress animated -half-second" style="list-style: none;position:relative;">
+                        <li class="umb-load-indicator__bubble"></li>
+                        <li class="umb-load-indicator__bubble"></li>
+                        <li class="umb-load-indicator__bubble"></li>
+                    </ul>
+                </div>
+
+                <div ng-show="reported">
+                    <div class="span8">
+                        <h4>{{reportName}} Processed <small>{{changes.length}} items, {{getChangeCount()}} Changes</small></h4>
+                    </div>
+                    <div class="span4">
+                        <div class="report-controls">
+                            show 'no change' items <input ng-model="showNoChange" type="checkbox" class="form-control">
+                        </div>
+                    </div>
+                    <table class="table" ng-show="showNoChange || getChangeCount() > 0">
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Change</th>
+                            <th></th>
+                        </tr>
+                        <tbody ng-repeat="change in changes">
+                            <tr ng-class="{'text-warning' : !change.Success, 'muted' : change.Change == 0 }" ng-show="showChange(change.Change)">
+                                <td>{{change.Name}}</td>
+                                <td>{{getChangeName(change.Change)}}</td>
+                                <td>{{getTypeName(change.ItemType)}}</td>
+                                <td>
+                                    {{change.Message}}
+                                    <button ng-show="change.Details != null && change.Details.length > 0"
+                                            ng-click="showDetail(change)" class="btn btn-mini">
+                                        Details
+                                    </button>
+                                </td>
+
+                            </tr>
+                            <tr ng-if="change.Details != null && change.Details.length > 0" ng-show="change.showDetail">
+                                <td colspan="4">
+                                    <div class="change-detail">
+                                        <h4>Changes for : {{change.Name}} <small>({{getTypeName(change.ItemType)}})</small></h4>
+                                        <table class="table">
+                                            <tr>
+                                                <th>Action</th>
+                                                <th>Path</th>
+                                                <th>Name</th>
+                                                <th>Old Value</th>
+                                                <th>New Value</th>
+                                            </tr>
+                                            <tr ng-repeat="detail in change.Details"
+                                                ng-class="{'text-error' : detail.Change == 2, 'text-success' : detail.Change == 0}">
+                                                <td>{{getDetailChange(detail.Change)}}</td>
+                                                <td>{{detail.Path}}</td>
+                                                <td>{{detail.Name}}</td>
+                                                <td class="text-error">{{getDetailValue(detail.OldVal)}}</td>
+                                                <td class="text-success">{{getDetailValue(detail.NewVal)}}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

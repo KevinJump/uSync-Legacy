@@ -11,6 +11,7 @@ using Umbraco.Web.WebApi;
 namespace Jumoo.uSync.BackOffice.Controllers
 {
     [PluginController("uSync")]
+    [Obsolete("Consider using uSyncBackOfficeApiController")]
     public class uSyncBackOfficeController : UmbracoAuthorizedApiController
     {
         public static object _apiLock;
