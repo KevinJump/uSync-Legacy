@@ -191,6 +191,9 @@ namespace Jumoo.uSync.Snapshots
         /// </summary>
         private string CombineSnapshots(string folder)
         {
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+
             var temp = IOHelper.MapPath(
                 Path.Combine(SystemDirectories.Data, "temp", "usync", "snapshots"));
 
