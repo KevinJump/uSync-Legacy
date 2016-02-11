@@ -48,10 +48,12 @@
       <name>Kevin Jump</name>
       <website>http://jumoo.uk</website>
     </author>
-    <readme><![CDATA[ uSync.Snapshots v1 * Requires uSync *
-=================================
+    <readme>
+      <![CDATA[ uSync.Snapshots v1 * Requires uSync * 
+===================================== 
 
-uSync snapshots, uses usync to take moment in time snapshots of your umbraco install. 
+uSync snapshots works alongside uSync to let you take in time 
+snapshots of your umbraco site. Only the changes you make between snapshots are tracked, making it easy to see and source control the things you have done to your site. 
 
 ]]></readme>
   </info>

@@ -25,9 +25,10 @@ namespace Jumoo.uSync.Snapshots
                 if (System.IO.File.Exists(configFile))
                 {
                     XmlSerializer serializer = new XmlSerializer(typeof(uSyncSnapshotSettings));
-                    using (FileStream fs = new FileStream(configFile, FileMode.Open))
+                    string xml = File.ReadAllText(configFile);
+                    using (TextReader reader = new StringReader(xml))
                     {
-                        Settings = (uSyncSnapshotSettings)serializer.Deserialize(fs);
+                        Settings = (uSyncSnapshotSettings)serializer.Deserialize(reader);
                     }
                 }
 

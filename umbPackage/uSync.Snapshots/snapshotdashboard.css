@@ -41,3 +41,13 @@
 .new-snapshot label.control-label {
     margin-top: 0.4em;
 }
+
+.change-detail {
+    background-color: #eee;
+    padding: 0 1em 0.5em;
+    margin-top: -1.2em;
+}
+
+.change-detail h4 {
+    font-weight: 600;
+}

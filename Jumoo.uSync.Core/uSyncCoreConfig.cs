@@ -26,9 +26,10 @@ namespace Jumoo.uSync.Core
                 if (System.IO.File.Exists(configFile))
                 {
                     XmlSerializer serializer = new XmlSerializer(typeof(uSyncCoreSettings));
-                    using (FileStream fs = new FileStream(configFile, FileMode.Open))
+                    string xml = File.ReadAllText(configFile);
+                    using (TextReader reader = new StringReader(xml))
                     {
-                        Settings = (uSyncCoreSettings)serializer.Deserialize(fs);
+                        Settings = (uSyncCoreSettings)serializer.Deserialize(reader);
                     }
                 }
             }
@@ -58,17 +59,23 @@ namespace Jumoo.uSync.Core
 
         public void SaveSettings()
         {
-            var configFile = IOHelper.MapPath(
-                Path.Combine(SystemDirectories.Config, "uSyncCore.config"));
+            try {
+                var configFile = IOHelper.MapPath(
+                    Path.Combine(SystemDirectories.Config, "uSyncCore.config"));
 
-            if (File.Exists(configFile))
-                File.Delete(configFile);
+                if (File.Exists(configFile))
+                    File.Delete(configFile);
 
-            XmlSerializer serializer = new XmlSerializer(typeof(uSyncCoreSettings));
+                XmlSerializer serializer = new XmlSerializer(typeof(uSyncCoreSettings));
 
-            using (StreamWriter w = new StreamWriter(configFile))
+                using (StreamWriter w = new StreamWriter(configFile))
+                {
+                    serializer.Serialize(w, Settings);
+                }
+            }
+            catch(Exception ex)
             {
-                serializer.Serialize(w, Settings);
+                LogHelper.Warn<uSyncCoreConfig>("Unable to save settings to disk: {0}", () => ex.ToString());
             }
         }
 

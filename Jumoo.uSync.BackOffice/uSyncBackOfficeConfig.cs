@@ -34,9 +34,10 @@ namespace Jumoo.uSync.BackOffice
                 if (System.IO.File.Exists(configFile))
                 {
                     XmlSerializer serializer = new XmlSerializer(typeof(uSyncBackOfficeSettings));
-                    using (FileStream fs = new FileStream(configFile, FileMode.Open))
+                    string xml = File.ReadAllText(configFile);
+                    using (TextReader reader = new StringReader(xml))
                     {
-                        _settings = (uSyncBackOfficeSettings)serializer.Deserialize(fs);
+                        _settings = (uSyncBackOfficeSettings)serializer.Deserialize(reader);
                     }
                 }
             }
@@ -79,17 +80,24 @@ namespace Jumoo.uSync.BackOffice
 
         public void SaveSettings(uSyncBackOfficeSettings settings)
         {
-            var configFile = IOHelper.MapPath(
-                Path.Combine(SystemDirectories.Config, "uSyncBackOffice.Config"));
-
-            if (File.Exists(configFile))
-                File.Delete(configFile);
-
-            XmlSerializer serializer = new XmlSerializer(typeof(uSyncBackOfficeSettings));
-
-            using (StreamWriter w = new StreamWriter(configFile))
+            try
             {
-                serializer.Serialize(w, settings);
+                var configFile = IOHelper.MapPath(
+                    Path.Combine(SystemDirectories.Config, "uSyncBackOffice.Config"));
+
+                if (File.Exists(configFile))
+                    File.Delete(configFile);
+
+                XmlSerializer serializer = new XmlSerializer(typeof(uSyncBackOfficeSettings));
+
+                using (StreamWriter w = new StreamWriter(configFile))
+                {
+                    serializer.Serialize(w, settings);
+                }
+            }
+            catch(Exception ex)
+            {
+                LogHelper.Warn<uSyncBackOfficeConfig>("Unable to save settings to disk: {0}", () => ex.ToString());
             }
         }
     }
