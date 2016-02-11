@@ -280,6 +280,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Plugins\uSyncSnapshots\snapshotdashboard.css" />
     <Content Include="App_Plugins\uSyncSnapshots\SnapshotDashboard.html" />
     <Content Include="App_Plugins\uSyncSnapshots\SnapshotDashboardController.js" />
     <Content Include="App_Plugins\uSyncSnapshots\SnapshotDashboardService.js" />
