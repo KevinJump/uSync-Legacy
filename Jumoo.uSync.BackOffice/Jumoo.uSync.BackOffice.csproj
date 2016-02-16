@@ -279,7 +279,6 @@
     <Compile Include="Controllers\uSyncBackOfficeApiController.cs" />
     <Compile Include="Controllers\uSyncBackOfficeController.cs" />
     <Compile Include="Handlers\ContentTypeHandler.cs" />
-    <Compile Include="Handlers\DataTypeMappingHandler.cs" />
     <Compile Include="Handlers\DataTypeHandler.cs" />
     <Compile Include="Handlers\DictionaryHandler.cs" />
     <Compile Include="Handlers\LanguageHandler.cs" />

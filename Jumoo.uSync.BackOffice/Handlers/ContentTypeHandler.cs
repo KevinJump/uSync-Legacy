@@ -89,14 +89,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
         {
             List<uSyncAction> actions = new List<uSyncAction>();
 
-            var folders = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.DocumentTypeContainer);
-            foreach (var fldr in folders)
-            {
-                var container = _contentTypeService.GetContentTypeContainer(fldr.Key);
-                actions.Add(ExportContainer(container, folder));
-
-                actions.AddRange(Export(fldr.Id, folder));
-            }
             var nodes = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.DocumentType);
             foreach(var node in nodes)
             {
@@ -143,33 +135,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
             }
         }
 
-        public uSyncAction ExportContainer(EntityContainer item, string folder)
-        {
-            if (item == null)
-                return uSyncAction.Fail(Path.GetFileName(folder), typeof(IContentType), "folder not set");
-
-            try
-            {
-                var attempt = uSyncCoreContext.Instance.ContentTypeSerializer.SerializeContainer(item);
-                var filename = string.Empty;
-
-                if (attempt.Success)
-                {
-                    filename = uSyncIOHelper.SavePath(
-                        folder, SyncFolder, GetEntityPath(item), "def");
-
-                    uSyncIOHelper.SaveNode(attempt.Item, filename);
-                }
-
-                return uSyncActionHelper<XElement>.SetAction(attempt, filename);
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Warn<ContentTypeHandler>("Error saving content type container: {0}", () => ex.ToString());
-                return uSyncAction.Fail(item.Name, item.GetType(), ChangeType.Export, ex);
-            }
-        }
-
         private string GetEntityPath(IUmbracoEntity item)
         {
             string path = string.Empty;
@@ -194,23 +159,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
         {
             ContentTypeService.SavedContentType += ContentTypeService_SavedContentType;
             ContentTypeService.DeletedContentType += ContentTypeService_DeletedContentType;
-            ContentTypeService.SavedContentTypeContainer += ContentTypeService_SavedContentTypeContainer;
-            ContentTypeService.DeletedContentTypeContainer += ContentTypeService_DeletedContentTypeContainer;
-        }
-
-        private void ContentTypeService_DeletedContentTypeContainer(IContentTypeService sender, Umbraco.Core.Events.DeleteEventArgs<EntityContainer> e)
-        {
-
-            if (uSyncEvents.Paused)
-                return;
-
-            foreach (var item in e.DeletedEntities)
-            {
-                LogHelper.Info<ContentTypeHandler>("Delete: Container Deleted", () => item.Name);
-                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetEntityPath(item), "def");
-
-                uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, item.Key, item.Name, typeof(EntityContainer));
-            }
         }
 
         private void ContentTypeService_DeletedContentType(IContentTypeService sender, Umbraco.Core.Events.DeleteEventArgs<IContentType> e)
@@ -226,22 +174,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, item.Key, item.Alias, typeof(IContentType));
             }
         }
-
-        private void ContentTypeService_SavedContentTypeContainer(IContentTypeService sender, Umbraco.Core.Events.SaveEventArgs<EntityContainer> e)
-        {
-            if (uSyncEvents.Paused)
-                return;
-
-            foreach(var item in e.SavedEntities)
-            {
-                LogHelper.Info<ContentTypeHandler>("Save: Container Saved: {0}", ()=> item.Name);
-                var action = ExportContainer(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
-
-                if (action.Success)
-                    NameChecker.ManageOrphanFiles(Constants.Packaging.DocumentTypeNodeName, item.Key, action.FileName);
-            }
-        }
-
 
         private void ContentTypeService_SavedContentType(IContentTypeService sender, Umbraco.Core.Events.SaveEventArgs<IContentType> e)
         {
