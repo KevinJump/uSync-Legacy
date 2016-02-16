@@ -14,6 +14,7 @@ using Umbraco.Core.Services;
 using Jumoo.uSync.Core.Helpers;
 using Jumoo.uSync.Core.Extensions;
 using Umbraco.Core.Logging;
+using System.Web;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -48,7 +49,13 @@ namespace Jumoo.uSync.Core.Serializers
             var editorAlias = node.Attribute("Id").ValueOrDefault(string.Empty);
             var dbType = node.Attribute("DatabaseType").ValueOrDefault(string.Empty);
             var databaseType = !string.IsNullOrEmpty(dbType) ? dbType.EnumParse<DataTypeDatabaseType>(true) : DataTypeDatabaseType.Ntext;
+            var folder = node.Attribute("Folder").ValueOrDefault(string.Empty);
 
+            var folderId = -1;
+            if (!string.IsNullOrEmpty(folder))
+            {
+                folderId = GetFolders(folder);
+            }
 
             if (item == null && !string.IsNullOrEmpty(name))
             {
@@ -82,6 +89,8 @@ namespace Jumoo.uSync.Core.Serializers
                 if (item.DatabaseType != databaseType)
                     item.DatabaseType = databaseType;
 
+                if (folderId != -1 && item.ParentId != folderId)
+                    item.ParentId = folderId;
 
                 _dataTypeService.Save(item);
 
@@ -91,6 +100,65 @@ namespace Jumoo.uSync.Core.Serializers
             _dataTypeService.Save(item);
             return SyncAttempt<IDataTypeDefinition>.Succeed(item.Name, item, ChangeType.Import);
 
+        }
+
+        private int GetFolders(string folder)
+        {
+            var folders = folder.Split('/');
+            var rootFolder = HttpUtility.UrlDecode(folders[0]);
+
+            var rootId = -1;
+            var root = _dataTypeService.GetContainers(rootFolder, 1).FirstOrDefault();
+            if (root == null)
+            {
+                var attempt = _dataTypeService.CreateContainer(-1, rootFolder);
+                if (attempt == false)
+                {
+                    LogHelper.Warn<DataTypeSerializer>("Cant' create folder: Doh!");
+                    return -1;
+                }
+                rootId = attempt.Result.Entity.Id;
+            }
+            else
+            {
+                rootId = root.Id;
+            }
+
+            if (rootId != -1)
+            {
+                var current = _dataTypeService.GetContainer(rootId);
+                for(int i = 1; i < folders.Length;i++)
+                {
+                    var name = HttpUtility.UrlDecode(folders[i]);
+                    current = TryCreateContainer(name, current);
+                }
+
+                return current.Id;
+            }
+
+            return -1;
+        }
+
+        private EntityContainer TryCreateContainer(string name, EntityContainer parent)
+        {
+            LogHelper.Debug<ContentTypeSerializer>("TryCreate: {0} under {1}", () => name, () => parent.Name);
+
+            var children = _entityService.GetChildren(parent.Id).ToArray();
+
+            if (children.Any(x => x.Name.InvariantEquals(name)))
+            {
+                var folderId = children.Single(x => x.Name.InvariantEquals(name)).Id;
+                return _dataTypeService.GetContainer(folderId);
+            }
+
+            // else - create 
+            var attempt = _dataTypeService.CreateContainer(parent.Id, name);
+            if (attempt == true)
+                return _dataTypeService.GetContainer(attempt.Result.Entity.Id);
+
+            LogHelper.Warn<ContentTypeSerializer>("Can't create child folders {0} you doctypes might be flat", () => name);
+
+            return null;
         }
 
         internal override SyncAttempt<IDataTypeDefinition> DesearlizeSecondPassCore(IDataTypeDefinition item, XElement node)
@@ -216,6 +284,18 @@ namespace Jumoo.uSync.Core.Serializers
                     new XAttribute("Id", item.PropertyEditorAlias),
                     new XAttribute("DatabaseType", item.DatabaseType.ToString())                    
                     );
+
+
+                if (item.Level != 1)
+                {
+                    var folders = _dataTypeService.GetContainers(item)
+                        .OrderBy(x => x.Level)
+                        .Select(x => HttpUtility.UrlEncode(x.Name));
+
+                    if (folders.Any())
+                        node.Add(new XAttribute("Folder", string.Join("/", folders.ToArray())));
+
+                }
 
                 node.Add(SerializePreValues(item, node));
 

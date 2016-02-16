@@ -17,12 +17,14 @@ namespace Jumoo.uSync.Core.Serializers
     {
         internal readonly string _itemType;
         internal IDataTypeService _dataTypeService;
+        internal IEntityService _entityService;
 
 
         public DataTypeSyncBaseSerializer(string itemType)
         {
             _itemType = itemType;
             _dataTypeService = ApplicationContext.Current.Services.DataTypeService;
+            _entityService = ApplicationContext.Current.Services.EntityService;
 
         }
 
@@ -73,32 +75,7 @@ namespace Jumoo.uSync.Core.Serializers
 
         public SyncAttempt<IDataTypeDefinition> DeserializeContainer(XElement node)
         {
-            var name = node.Attribute("Name").ValueOrDefault(string.Empty);
-            var key = node.Attribute("Key").ValueOrDefault(Guid.Empty);
-            var parentId = node.Attribute("ParentId").ValueOrDefault(-1);
-
-            var item = _dataTypeService.GetContainer(key);
-            if (item == null)
-            {
-                var attempt = _dataTypeService.CreateContainer(parentId, name);
-                if (attempt.Success)
-                    item = _dataTypeService.GetContainer(attempt.Result.Entity.Id);
-            }
-
-            if (item != null)
-            {
-                if (item.Name != name)
-                    item.Name = name;
-
-                if (item.Key != key)
-                    item.Key = key;
-
-                _dataTypeService.SaveContainer(item);
-
-                return SyncAttempt<IDataTypeDefinition>.Succeed(item.Name, null, ChangeType.Import);
-            }
-
-            return SyncAttempt<IDataTypeDefinition>.Fail(name, ChangeType.ImportFail);
+            return SyncAttempt<IDataTypeDefinition>.Succeed(node.Name.LocalName, null, ChangeType.NoChange);
         }
 
         public SyncAttempt<XElement> SerializeContainer(EntityContainer item)

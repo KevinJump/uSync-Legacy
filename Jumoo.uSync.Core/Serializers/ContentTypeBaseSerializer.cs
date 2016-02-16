@@ -19,13 +19,15 @@ namespace Jumoo.uSync.Core.Serializers
     {
         internal IContentTypeService _contentTypeService;
         internal IDataTypeService _dataTypeService;
-        internal IMemberTypeService _memberTypeService; 
+        internal IMemberTypeService _memberTypeService;
+        internal IEntityService _entityService; 
 
         public ContentTypeBaseSerializer(string itemType): base(itemType)
         {
             _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
             _dataTypeService = ApplicationContext.Current.Services.DataTypeService;
             _memberTypeService = ApplicationContext.Current.Services.MemberTypeService;
+            _entityService = ApplicationContext.Current.Services.EntityService;
         }
 
         #region ContentTypeBase Deserialize Helpers
@@ -528,7 +530,7 @@ namespace Jumoo.uSync.Core.Serializers
             return properties;
         }
 
-    
+   
         // special case for two pass, you can tell it to only first step
         public SyncAttempt<T> Deserialize(XElement node, bool forceUpdate, bool onePass = false)
         {

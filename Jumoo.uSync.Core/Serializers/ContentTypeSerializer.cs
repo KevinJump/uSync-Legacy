@@ -17,6 +17,7 @@ using System.IO;
 using Umbraco.Core.IO;
 using System.Globalization;
 using Jumoo.uSync.Core.Helpers;
+using System.Web;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -49,17 +50,29 @@ namespace Jumoo.uSync.Core.Serializers
 
             // you need the parent to create, so do it here...
             var parent = default(IContentType);
+            var parentId = -1;
+            var folderId = -1;
             var parentAlias = info.Element("Master");
             if (parentAlias != null && !string.IsNullOrEmpty(parentAlias.Value))
             {
                 var masterKey = parentAlias.Attribute("Key").ValueOrDefault(Guid.Empty);
-                if (masterKey != null)
+                if (masterKey != Guid.Empty)
                 {
                     parent = _contentTypeService.GetContentType(masterKey);
                 }
 
                 if (parent == null)
                     parent = _contentTypeService.GetContentType(parentAlias.Value);
+
+                if (parent != null)
+                    parentId = parent.Id;
+            }
+
+            if (parentId == -1)
+            {
+                // work out if this content item is in a folder.
+                folderId  = GetContentFolders(info, item);
+                parentId = folderId;
             }
 
             var alias = info.Element("Alias").Value;
@@ -74,20 +87,19 @@ namespace Jumoo.uSync.Core.Serializers
             if (item == null)
             {
                 LogHelper.Debug<ContentTypeSerializer>("Creating new ContentType");
-                if (parent != default(IMediaType))
-                {
-                    item = new ContentType(parent, alias);
-                }
-                else
-                {
-                    item = new ContentType(-1) { Alias = alias };
-                }
+                item = new ContentType(-1) {
+                    Alias = alias
+                };
 
                 if (parent != null)
                     item.AddContentType(parent);
             }
 
             DeserializeBase(item, info);
+            if (folderId != -1)
+            {
+                item.SetLazyParentId(new Lazy<int>( ()=> parentId));
+            }
 
 
             if (item.Key != key)
@@ -123,6 +135,7 @@ namespace Jumoo.uSync.Core.Serializers
             DeserializeTemplates(item, info);
 
             _contentTypeService.Save(item);
+
             // Update Structure (Happens in second pass)
             // need to consider if we also call it here
             // as that will simplify single calling apps,
@@ -133,37 +146,76 @@ namespace Jumoo.uSync.Core.Serializers
             return SyncAttempt<IContentType>.Succeed(item.Name, item, ChangeType.Import);
         }
 
-        public override SyncAttempt<IContentType> DeserializeContainer(XElement node)
+        private int GetContentFolders(XElement info, IContentType item)
         {
-            var name = node.Attribute("Name").ValueOrDefault(string.Empty);
-            var key = node.Attribute("Key").ValueOrDefault(Guid.Empty);
-            var parentId = node.Attribute("ParentId").ValueOrDefault(-1);
-
-            var item = _contentTypeService.GetContentTypeContainer(key);
-            if (item == null)
+            var path = info.Element("Folder").ValueOrDefault(string.Empty);
+            if (!string.IsNullOrEmpty(path))
             {
-                var attempt = _contentTypeService.CreateContentTypeContainer(parentId, name);
-                if (attempt.Success)
-                    item = _contentTypeService.GetContentTypeContainer(attempt.Result.Entity.Id);
+                // create the folders at each level, and then return the topmost folder as the id (we set it as parent)
+                var folders = path.Split('/');
+                var rootFolder = HttpUtility.UrlDecode(folders[0]);
+
+                var rootId = -1;
+                var root = _contentTypeService.GetContentTypeContainers(rootFolder, 1).FirstOrDefault();
+                if (root == null)
+                {
+                    var attempt = _contentTypeService.CreateContentTypeContainer(-1, rootFolder);
+                    if (attempt == false)
+                    {
+                        // something amis
+                        LogHelper.Warn<ContentTypeSerializer>("Can't create the root folder something is not right - you doc types might be a little flat");
+                        return -1;
+                    }
+                    rootId = attempt.Result.Entity.Id;
+                }
+                else {
+                    rootId = root.Id;
+                }
+
+                if (rootId != -1)
+                {
+                    var current = _contentTypeService.GetContentTypeContainer(rootId);
+
+                    for (int i = 1; i < folders.Length; i++)
+                    {
+                        var name = HttpUtility.UrlDecode(folders[i]);
+                        current = TryCreateContainer(name, current);
+                    }
+
+                    return current.Id;
+                }
             }
 
-            if (item != null)
-            {
-                if (item.Name != name)
-                    item.Name = name;
-
-                if (item.Key != key)
-                    item.Key = key;
-
-                _contentTypeService.SaveContentTypeContainer(item);
-
-                return SyncAttempt<IContentType>.Succeed(item.Name, null, ChangeType.Import);
-            }
-
-            return SyncAttempt<IContentType>.Fail(name, ChangeType.ImportFail);
+            return -1;
         }
 
+        private EntityContainer TryCreateContainer(string name, EntityContainer parent)
+        {
+            LogHelper.Debug<ContentTypeSerializer>("TryCreate: {0} under {1}", () => name, () => parent.Name);
 
+            var children = _entityService.GetChildren(parent.Id).ToArray();
+
+            if (children.Any(x => x.Name.InvariantEquals(name)))
+            {
+                var folderId = children.Single(x => x.Name.InvariantEquals(name)).Id;
+                return _contentTypeService.GetContentTypeContainer(folderId);
+            }
+
+            // else - create 
+            var attempt = _contentTypeService.CreateContentTypeContainer(parent.Id, name);
+            if (attempt == true)
+                return _contentTypeService.GetContentTypeContainer(attempt.Result.Entity.Id);
+
+            LogHelper.Warn<ContentTypeSerializer>("Can't create child folders {0} you doctypes might be flat", () => name);
+
+            return null;
+        }
+
+        public override SyncAttempt<IContentType> DeserializeContainer(XElement node)
+        {
+            /* NOT DOING THIS - FOLDERS ARE CREATED BY THE DOCTYPES ON A AS NEEDED BASIS */
+            return SyncAttempt<IContentType>.Succeed(node.Name.LocalName, ChangeType.NoChange);
+        }
 
         private void DeserializeCompositions(IContentType item, XElement info)
         {
@@ -249,6 +301,20 @@ namespace Jumoo.uSync.Core.Serializers
             if (master != null)
                 info.Add(new XElement("Master", master.Alias,
                             new XAttribute("Key", master.Key)));
+
+            if (item.Level != 1 && master == null)
+            {
+                // we must be in a folder. 
+                var folders = _contentTypeService.GetContentTypeContainers(item)
+                    .OrderBy(x => x.Level)
+                    .Select(x => HttpUtility.UrlEncode(x.Name));
+
+                if (folders.Any())
+                {
+                    string path = string.Join("/", folders.ToArray());
+                    info.Add(new XElement("Folder", path)); 
+                }
+            }
 
             var compositionsNode = new XElement("Compositions");
             var compositions = item.ContentTypeComposition;
