@@ -54,7 +54,7 @@
   <info>
     <package>
       <name>uSync.BackOffice</name>
-      <version>3.1.0.740</version>
+      <version>3.1.1.740</version>
       <license url="http://opensource.org/licenses/MIT">MIT License</license>
       <url>http://jumoo.uk/uSync</url>
       <requirements>
@@ -68,7 +68,7 @@
       <website>http://jumoo.uk</website>
     </author>
     <readme>
-      <![CDATA[ uSync.BackOffice 3.1.0.740 (for Umbraco 7.4+) 
+      <![CDATA[ uSync.BackOffice 3.1.1.740 (for Umbraco 7.4+) 
 =======================================
 New version of usync, writes and read the database elements of your umbraco installation to disk and back, great for multi-development environments, and deployment.
 
