@@ -4,6 +4,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Xml.Linq;
 
     using Umbraco.Core;
@@ -16,17 +17,21 @@ namespace Jumoo.uSync.BackOffice.Handlers
     using System.Collections.Generic;
     using Core.Extensions;
     using Umbraco.Core.Models.EntityBase;
-    public class MediaTypeHandler : uSyncBaseHandler<IMediaType>, ISyncHandler
+    public class MediaTypeHandler : uSyncBaseHandler<IMediaType>, ISyncHandler, ISyncPostImportHandler
     {
         public string Name { get { return "uSync: MediaTypeHandler"; } }
         public int Priority { get { return uSyncConstants.Priority.MediaTypes; } }
         public string SyncFolder { get { return "MediaType"; } }
 
         private IContentTypeService _contentTypeService;
+        private IEntityService _entityService;
 
         public MediaTypeHandler()
         {
             _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
+            _entityService = ApplicationContext.Current.Services.EntityService;
+
+            RequiresPostProcessing = true;
         }
 
 
@@ -85,8 +90,13 @@ namespace Jumoo.uSync.BackOffice.Handlers
         public IEnumerable<uSyncAction> Export(int parent, string folder)
         {
             List<uSyncAction> actions = new List<uSyncAction>();
+            var folders = _entityService.GetChildren(parent, UmbracoObjectTypes.MediaTypeContainer);
+            foreach (var fldr in folders)
+            {
+                actions.AddRange(Export(fldr.Id, folder));
+            }
 
-            var nodes = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.MediaType);
+            var nodes = _entityService.GetChildren(parent, UmbracoObjectTypes.MediaType);
             foreach (var node in nodes)
             {
                 var item = _contentTypeService.GetMediaType(node.Key);
@@ -111,7 +121,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
                 if (attempt.Success)
                 {
-                    filename = uSyncIOHelper.SavePath(folder, SyncFolder, GetEntityPath(item), "def");
+                    filename = uSyncIOHelper.SavePath(folder, SyncFolder, GetItemPath(item), "def");
                     uSyncIOHelper.SaveNode(attempt.Item,filename);
                 }
                 return uSyncActionHelper<XElement>.SetAction(attempt, filename);
@@ -125,25 +135,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
             }
         }
 
-        private string GetEntityPath(IUmbracoEntity item)
-        {
-            string path = string.Empty;
-            if (item != null)
-            {
-                if (item.ParentId > 0)
-                {
-                    var parent = ApplicationContext.Current.Services.EntityService.Get(item.ParentId);
-                    if (parent != null)
-                    {
-                        path = GetEntityPath(parent);
-                    }
-                }
-
-                path = Path.Combine(path, item.Name.ToSafeFileName());
-            }
-
-            return path;
-        }
 
         public void RegisterEvents()
         {
@@ -159,7 +150,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             foreach (var item in e.DeletedEntities)
             {
                 LogHelper.Info<MediaTypeHandler>("Delete: Deleting uSync File for item: {0}", () => item.Name);
-                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetEntityPath(item), "def");
+                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetItemPath(item), "def");
 
                 uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, item.Key, item.Alias, typeof(IMediaType));
             }
@@ -190,6 +181,34 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 action.Details = ((ISyncChangeDetail)uSyncCoreContext.Instance.MediaTypeSerializer).GetChanges(node);
 
             return action;
+        }
+
+        public IEnumerable<uSyncAction> ProcessPostImport(string filepath, IEnumerable<uSyncAction> actions)
+        {
+            if (actions.Any() && actions.Any(x => x.ItemType == typeof(IMediaType)))
+            {
+                return CleanEmptyContainers(filepath, -1);
+            }
+            return null;
+        }
+
+        private IEnumerable<uSyncAction> CleanEmptyContainers(string folder, int parentId)
+        {
+            var actions = new List<uSyncAction>();
+
+            var folders = _entityService.GetChildren(parentId, UmbracoObjectTypes.MediaTypeContainer).ToArray();
+            foreach (var fldr in folders)
+            {
+                actions.AddRange(CleanEmptyContainers(folder, fldr.Id));
+
+                if (!_entityService.GetChildren(fldr.Id).Any())
+                {
+                    actions.Add(uSyncAction.SetAction(true, fldr.Name, typeof(EntityContainer), ChangeType.Delete, "Empty Container"));
+                    _contentTypeService.DeleteMediaTypeContainer(fldr.Id);
+                }
+            }
+
+            return actions;
         }
 
     }

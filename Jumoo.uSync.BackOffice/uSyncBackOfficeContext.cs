@@ -131,12 +131,11 @@
             {
                 if (HandlerEnabled(handler.Name))
                 {
-                    foreach (var action in postImports)
-                    {
-                        var syncFolder = System.IO.Path.Combine(folder, handler.SyncFolder);
-                        LogHelper.Debug<uSyncApplicationEventHandler>("# Post Import Processing: {0}", () => handler.Name);
-                        handler.ProcessPostImport(syncFolder, postImports);
-                    }
+                    var syncFolder = System.IO.Path.Combine(folder, handler.SyncFolder);
+                    LogHelper.Debug<uSyncApplicationEventHandler>("# Post Import Processing: {0}", () => handler.Name);
+                    var postActions = handler.ProcessPostImport(syncFolder, postImports);
+                    if (postActions != null)
+                        importActions.AddRange(postActions);
                 }
             }
 

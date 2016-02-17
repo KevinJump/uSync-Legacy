@@ -11,7 +11,8 @@
     using Umbraco.Core.Logging;
     using Umbraco.Core.Models.EntityBase;
     using System;
-
+    using Umbraco.Core;
+    using Umbraco.Core.Models;
     abstract public class uSyncBaseHandler<T>
     {
         // do things that get imported by this handler then require some form of 
@@ -113,7 +114,27 @@
 
         virtual public string GetItemPath(T item)
         {
-            return ((IUmbracoEntity)item).Name;
+            return GetEntityPath((IUmbracoEntity)item);
+        }
+
+        internal string GetEntityPath(IUmbracoEntity item)
+        {
+            string path = string.Empty;
+            if (item != null)
+            {
+                if (item.ParentId > 0)
+                {
+                    var parent = ApplicationContext.Current.Services.EntityService.Get(item.ParentId);
+                    if (parent != null)
+                    {
+                        path = GetEntityPath(parent);
+                    }
+                }
+
+                path = Path.Combine(path, item.Name.ToSafeFileName());
+            }
+            return path;
+
         }
 
         /// <summary>
@@ -159,5 +180,6 @@
         }
 
         abstract public uSyncAction ReportItem(string file);
+
     }
 }

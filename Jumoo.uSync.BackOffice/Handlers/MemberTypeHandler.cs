@@ -57,7 +57,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
                 if (attempt.Success)
                 {
-                    filename = uSyncIOHelper.SavePath(folder, SyncFolder, GetContentPath(item), "def");
+                    filename = uSyncIOHelper.SavePath(folder, SyncFolder, GetItemPath(item), "def");
 
                     uSyncIOHelper.SaveNode(attempt.Item, filename);
                 }
@@ -69,26 +69,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 LogHelper.Warn<MemberTypeHandler>("Error saving membertype: {0}", ()=> item.Name);
                 return uSyncAction.Fail(item.Name, typeof(IMemberType), ChangeType.Export);
             }
-        }
-
-        private string GetContentPath(IMemberType item)
-        {
-            string path = string.Empty;
-            if (item != null)
-            {
-                if (item.ParentId != 0)
-                {
-                    var parent = _memberTypeService.Get(item.ParentId);
-                    if (parent != null)
-                    {
-                        path = GetContentPath(parent);
-                    }
-                }
-
-                path = Path.Combine(path, item.Alias.ToSafeFileName());
-            }
-
-            return path;
         }
 
         public override SyncAttempt<IMemberType> Import(string filePath, bool force = false)
@@ -125,7 +105,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             foreach(var item in e.DeletedEntities)
             {
                 LogHelper.Info<MediaTypeHandler>("Delete: Remove usync files for {0}", () => item.Name);
-                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetContentPath(item), "def");
+                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetItemPath(item), "def");
 
                 uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, item.Key, item.Alias, typeof(IMemberType));
             }

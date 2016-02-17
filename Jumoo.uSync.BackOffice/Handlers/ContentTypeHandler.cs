@@ -2,6 +2,7 @@
 namespace Jumoo.uSync.BackOffice.Handlers
 {
     using System;
+    using System.Linq;
     using System.Xml.Linq;
     using System.IO;
 
@@ -17,7 +18,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
     using System.Collections.Generic;
     using Umbraco.Core.Models.EntityBase;
     using Umbraco.Core.Events;
-    public class ContentTypeHandler : uSyncBaseHandler<IContentType>, ISyncHandler
+    public class ContentTypeHandler : uSyncBaseHandler<IContentType>, ISyncHandler, ISyncPostImportHandler
     {
         // sets our running order in usync. 
         public int Priority { get { return uSyncConstants.Priority.ContentTypes; } }
@@ -25,10 +26,14 @@ namespace Jumoo.uSync.BackOffice.Handlers
         public string SyncFolder { get { return Constants.Packaging.DocumentTypeNodeName; } }
 
         private IContentTypeService _contentTypeService ;
+        private IEntityService _entityService;
 
         public ContentTypeHandler()
         {
             _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
+            _entityService = ApplicationContext.Current.Services.EntityService;
+
+            RequiresPostProcessing = true;
         }
 
         public override SyncAttempt<IContentType> Import(string filePath, bool force = false)
@@ -88,8 +93,13 @@ namespace Jumoo.uSync.BackOffice.Handlers
         public IEnumerable<uSyncAction> Export(int parent, string folder)
         {
             List<uSyncAction> actions = new List<uSyncAction>();
+            var folders = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.DocumentTypeContainer);
+            foreach (var fldr in folders)
+            {
+                actions.AddRange(Export(fldr.Id, folder));
+            }
 
-            var nodes = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.DocumentType);
+            var nodes = _entityService.GetChildren(parent, UmbracoObjectTypes.DocumentType);
             foreach(var node in nodes)
             {
                 var item = _contentTypeService.GetContentType(node.Key);
@@ -119,7 +129,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
                     filename = uSyncIOHelper.SavePath(
                             folder,
                             SyncFolder,
-                            GetEntityPath(item),
+                            GetItemPath(item),
                             "def");
 
                     uSyncIOHelper.SaveNode(attempt.Item, filename);
@@ -135,26 +145,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
             }
         }
 
-        private string GetEntityPath(IUmbracoEntity item)
-        {
-            string path = string.Empty;
-            if (item != null)
-            {
-                if (item.ParentId > 0)
-                {
-                    var parent = ApplicationContext.Current.Services.EntityService.Get(item.ParentId);
-                    if (parent != null)
-                    {
-                        path = GetEntityPath(parent);
-                    }
-                }
-
-                path = Path.Combine(path, item.Name.ToSafeFileName());
-            }
-
-            return path;
-        }
-                
         public void RegisterEvents()
         {
             ContentTypeService.SavedContentType += ContentTypeService_SavedContentType;
@@ -169,7 +159,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             foreach (var item in e.DeletedEntities)
             {
                 LogHelper.Info<ContentTypeHandler>("Delete: Removing uSync files for Item: {0}", () => item.Name);
-                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetEntityPath(item), "def");
+                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetItemPath(item), "def");
 
                 uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, item.Key, item.Alias, typeof(IContentType));
             }
@@ -212,5 +202,33 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
             return action;
         }
+
+        public IEnumerable<uSyncAction> ProcessPostImport(string filepath, IEnumerable<uSyncAction> actions)
+        {
+            if (actions.Any() && actions.Any(x => x.ItemType == typeof(IContentType)))
+            {
+                return CleanEmptyContainers(filepath, -1);
+            }
+            return null;
+        }
+
+        private IEnumerable<uSyncAction> CleanEmptyContainers(string folder, int parentId)
+        {
+            var actions = new List<uSyncAction>();
+            var folders = _entityService.GetChildren(parentId, UmbracoObjectTypes.DocumentTypeContainer).ToArray();
+            foreach (var fldr in folders)
+            {
+                actions.AddRange(CleanEmptyContainers(folder, fldr.Id));
+
+                if (!_entityService.GetChildren(fldr.Id).Any())
+                {
+                    // delete a folder with this name
+                    actions.Add(uSyncAction.SetAction(true, fldr.Name, typeof(EntityContainer), ChangeType.Delete, "Empty Container"));
+                    _contentTypeService.DeleteContentTypeContainer(fldr.Id);
+                }
+            }
+            return actions;
+        }
+
     }
 }

@@ -24,9 +24,13 @@ namespace Jumoo.uSync.BackOffice.Handlers
         public string SyncFolder { get { return Constants.Packaging.DataTypeNodeName; } }
 
         IDataTypeService _dataTypeService;
+        IEntityService _entityService;
+
         public DataTypeHandler()
         {
             _dataTypeService = ApplicationContext.Current.Services.DataTypeService;
+            _entityService = ApplicationContext.Current.Services.EntityService;
+
             RequiresPostProcessing = true;
         }
 
@@ -77,6 +81,12 @@ namespace Jumoo.uSync.BackOffice.Handlers
         {
             List<uSyncAction> actions = new List<uSyncAction>();
 
+            var folders = _entityService.GetChildren(parent, UmbracoObjectTypes.DataTypeContainer);
+            foreach (var fldr in folders)
+            {
+                actions.AddRange(Export(fldr.Id, folder));
+            }
+
             var nodes = ApplicationContext.Current.Services.EntityService.GetChildren(parent, UmbracoObjectTypes.DataType);
             foreach (var node in nodes)
             {
@@ -102,7 +112,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
                 if (attempt.Success)
                 {
-                    filename = uSyncIOHelper.SavePath(folder, SyncFolder, GetEntityPath(item), item.Name.ToSafeAlias());
+                    filename = uSyncIOHelper.SavePath(folder, SyncFolder, GetItemPath(item), item.Name.ToSafeAlias());
                     uSyncIOHelper.SaveNode(attempt.Item, filename);
                 }
 
@@ -112,26 +122,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
             {
                 return uSyncAction.Fail(item.Name, item.GetType(), ChangeType.Export, ex);
             }
-        }
-
-        private string GetEntityPath(IUmbracoEntity item)
-        {
-            string path = string.Empty;
-            if (item != null)
-            {
-                if (item.ParentId > 0)
-                {
-                    var parent = ApplicationContext.Current.Services.EntityService.Get(item.ParentId);
-                    if (parent != null)
-                    {
-                        path = GetEntityPath(parent);
-                    }
-                }
-
-                path = Path.Combine(path, item.Name.ToSafeFileName());
-            }
-
-            return path;
         }
 
         public void RegisterEvents()
@@ -148,7 +138,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             foreach (var item in e.DeletedEntities)
             {
                 LogHelper.Info<DataTypeHandler>("Delete: Deleting uSync File for item: {0}", () => item.Name);
-                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, item.Name.ToSafeAlias());
+                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetItemPath(item), item.Name.ToSafeAlias());
 
                 uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, item.Key, item.Name, typeof(IDataTypeDefinition));
             }
@@ -185,39 +175,47 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
         public IEnumerable<uSyncAction> ProcessPostImport(string folder, IEnumerable<uSyncAction> actions)
         {
-            // we get passed actions that need a second pass.
-            var datatypes = actions.Where(x => x.ItemType == typeof(IDataTypeDefinition));
-
-            foreach (var action in datatypes)
+            if (actions.Any())
             {
-                LogHelper.Debug<DataTypeHandler>("Post Processing: {0} {1}", () => action.Name, () => action.FileName);
-                var attempt = Import(action.FileName);
-                if (attempt.Success)
+                // we get passed actions that need a second pass.
+                var datatypes = actions.Where(x => x.ItemType == typeof(IDataTypeDefinition));
+
+                if (datatypes.Any())
                 {
-                    ImportSecondPass(action.FileName, attempt.Item);
+
+                    foreach (var action in datatypes)
+                    {
+                        LogHelper.Debug<DataTypeHandler>("Post Processing: {0} {1}", () => action.Name, () => action.FileName);
+                        var attempt = Import(action.FileName);
+                        if (attempt.Success)
+                        {
+                            ImportSecondPass(action.FileName, attempt.Item);
+                        }
+                    }
+
+                    return CleanEmptyContainers(folder, -1);
+                }
+            }
+            return null;
+        }
+
+        private IEnumerable<uSyncAction> CleanEmptyContainers(string folder, int parentId)
+        {
+            var actions = new List<uSyncAction>();
+
+            var folders = _entityService.GetChildren(parentId, UmbracoObjectTypes.DataTypeContainer).ToArray();
+            foreach (var fldr in folders)
+            {
+                actions.AddRange(CleanEmptyContainers(folder, fldr.Id));
+
+                if (!_entityService.GetChildren(fldr.Id).Any())
+                {
+                    actions.Add(uSyncAction.SetAction(true, fldr.Name, typeof(EntityContainer), ChangeType.Delete, "Empty Container"));
+                    _dataTypeService.DeleteContainer(fldr.Id);
                 }
             }
 
             return actions;
-        }
-
-        private void CleanEmptyContainers(string folder, int parentId)
-        {
-            var folders = ApplicationContext.Current.Services.EntityService.GetChildren(parentId, UmbracoObjectTypes.DataTypeContainer);
-            foreach (var fldr in folders)
-            {
-                var container = _dataTypeService.GetContainer(fldr.Key);
-
-                if (!container.HasChildren)
-                {
-                    // delete a folder with this name
-                    uSyncIOHelper.ArchiveRelativeFile(folder, container.Name.ToSafeAlias());
-                } 
-                else
-                {
-                    CleanEmptyContainers(folder, container.Id);
-                }
-            }
         }
     }
 }
