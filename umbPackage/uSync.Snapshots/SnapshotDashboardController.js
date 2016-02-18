@@ -242,7 +242,12 @@
 
         $scope.showNoChange = false;
 
-        $scope.showChange = function (changeValue) {
+        $scope.showChange = function (changeValue, success) {
+
+            if (!$scope.showNoChange && (!success && changeValue == 4)) { //we don't show failed deletes. they just clutter it all up
+                return false;
+            }
+
             if ($scope.showNoChange || changeValue > 0) {
                 return true;
             }

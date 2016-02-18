@@ -120,7 +120,7 @@
 							<th></th>
 						</tr>
 						<tbody ng-repeat="change in changes">
-							<tr ng-class="{'text-warning' : !change.Success, 'muted' : change.Change == 0 }" ng-show="showChange(change.Change)">
+							<tr ng-class="{'text-warning' : !change.Success, 'muted' : change.Change == 0 }" ng-show="showChange(change.Change, change.Success)">
 								<td>{{change.Name}}</td>
 								<td>{{getChangeName(change.Change)}}</td>
 								<td>{{getTypeName(change.ItemType)}}</td>

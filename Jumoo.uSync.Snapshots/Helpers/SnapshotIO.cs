@@ -20,7 +20,7 @@ namespace Jumoo.uSync.Snapshots
         // given two folders, will merge them (treating source files as newer)
         public static void MergeFolder(string source, string target)
         {
-            LogHelper.Debug<SnapshotManager>("Merge Folder: {0} -> {1}", () => source, () => target);
+            //LogHelper.Debug<SnapshotManager>("Merge Folder: {0} -> {1}", () => source, () => target);
             DirectoryInfo sourceDir = new DirectoryInfo(source);
 
             if (!Directory.Exists(target))
@@ -30,7 +30,7 @@ namespace Jumoo.uSync.Snapshots
             foreach(var file in files)
             {
                 var targetFile = Path.Combine(target, file.Name);
-                LogHelper.Debug<SnapshotManager>("Merging File: {0} -> {1}", () => file, ()=> targetFile);
+                //LogHelper.Debug<SnapshotManager>("Merging File: {0} -> {1}", () => file, ()=> targetFile);
 
                 if (file.Name == "uSyncActions.config" && File.Exists(target))
                 {
@@ -165,23 +165,36 @@ namespace Jumoo.uSync.Snapshots
                 LogHelper.Debug<SnapshotManager>("ActionFile: {0}", () => actionFile);
                 
                 var tracker = new ActionTracker(actionSource);
-                foreach(var rename in tracker.GetActions(SyncActionType.Rename))
+
+                var fileActions = tracker.GetActions(typeof(FileInfo));
+
+                if (fileActions.Any())
                 {
-                    LogHelper.Debug<SnapshotManager>("\n\tTarget: {0} \n\tTemp: {1}", () => target, ()=> rename.Name);
 
-                    var targetFile = Path.Combine(target, rename.Name.Trim(new char[] {'\\'}));
+                    var renames = fileActions.Where(x => x.Action == SyncActionType.Rename);
+                    LogHelper.Debug<SnapshotManager>("Processing Renames: {0}", () => renames.Count());
+                    foreach (var rename in renames)
+                    {
+                        LogHelper.Debug<SnapshotManager>("\n\tTarget: {0} \n\tTemp: {1}", () => target, () => rename.Name);
 
-                    LogHelper.Debug<SnapshotManager>("Rename: {0}", () => targetFile);
+                        var targetFile = Path.Combine(target, rename.Name.Trim(new char[] { '\\' }));
 
-                    if (File.Exists(targetFile))
-                        File.Delete(targetFile);
-                }
+                        LogHelper.Debug<SnapshotManager>("Rename: {0}", () => targetFile);
 
-                foreach(var delete in tracker.GetActions(SyncActionType.Delete))
-                {
-                    var targetFile = Path.Combine(target, delete.Name);
-                    if (File.Exists(targetFile))
-                        File.Delete(targetFile);
+                        LogHelper.Debug<SnapshotManager>("Removing File: {0}", () => targetFile);
+                        if (File.Exists(targetFile))
+                            File.Delete(targetFile);
+                    }
+
+                    var deletes = fileActions.Where(x => x.Action == SyncActionType.Delete);
+                    LogHelper.Debug<SnapshotManager>("Processing Deletes: {0}", ()=>  deletes.Count());
+                    foreach (var delete in tracker.GetActions(SyncActionType.Delete))
+                    {
+                        var targetFile = Path.Combine(target, delete.Name.Trim('\\'));
+                        LogHelper.Debug<SnapshotManager>("Removing File: {0}", () => targetFile);
+                        if (File.Exists(targetFile))
+                            File.Delete(targetFile);
+                    }
                 }
                 
             }
@@ -232,7 +245,10 @@ namespace Jumoo.uSync.Snapshots
                         {
                             if (!string.IsNullOrEmpty(key))
                             {
-                                if (IDHunter.FindInFiles(target, key))
+                                var keyGuid = Guid.Empty;
+                                var newName = IDHunter.FindInFiles(target, key);
+
+                                if (!string.IsNullOrEmpty(newName))
                                 {
                                     // if we have found the key in another file in the target
                                     // then it's a rename. 
@@ -240,8 +256,27 @@ namespace Jumoo.uSync.Snapshots
                                     // the old file won't be copped across (because we delete the source only
                                     // Files) - but we need to tell uSync its a rename or it will just
                                     // do a recreate. 
-                                    actionTracker.AddAction(SyncActionType.Rename,  file.FullName.Substring(source.Length), itemType);
-                                    continue;
+                                    if (Guid.TryParse(key, out keyGuid))
+                                    {
+                                        actionTracker.AddAction(SyncActionType.Rename, keyGuid, newName, itemType);
+                                    }
+                                    else
+                                    {
+                                        actionTracker.AddAction(SyncActionType.Rename, key, itemType);
+                                    }
+                                }
+                                else
+                                {
+                                    // it's a delete of a known thing in umbraco - our delete action needs to point to the object 
+                                    if (Guid.TryParse(key, out keyGuid))
+                                    {
+                                        actionTracker.AddAction(SyncActionType.Delete, keyGuid, node.NameFromNode(), itemType);
+                                    }
+                                    else
+                                    {
+                                        // not a guid based key 
+                                        actionTracker.AddAction(SyncActionType.Delete, key, itemType);
+                                    }
                                 }
                             }
                         }
@@ -253,11 +288,13 @@ namespace Jumoo.uSync.Snapshots
                         // 
                         if (!file.Name.Equals("uSyncActions.config", StringComparison.OrdinalIgnoreCase))
                         {
-                            if (itemType == default(Type))
-                                itemType = typeof(FileInfo);
-
-                            actionTracker.AddAction(SyncActionType.Delete, file.FullName, itemType);
+                            // for all non-umbraco and umbraco elements we add this delete, it is to tell
+                            // snapshots that the actual file is to be deleted too. 
+                            actionTracker.AddAction(SyncActionType.Delete, file.FullName.Substring(source.Length), typeof(FileInfo));
                         }
+
+                        // delete the file from the target 
+                        // 
                     }
 
                 }

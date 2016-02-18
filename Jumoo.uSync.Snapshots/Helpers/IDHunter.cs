@@ -31,10 +31,10 @@ namespace Jumoo.uSync.Snapshots
             return key;
         }
 
-        public static bool FindInFiles(string folder, string key)
+        public static string FindInFiles(string folder, string key)
         {
             if (!Directory.Exists(folder))
-                return false;
+                return string.Empty;
 
             foreach(var file in Directory.GetFiles(folder, "*.config"))
             {
@@ -46,18 +46,19 @@ namespace Jumoo.uSync.Snapshots
                     if (node != null)
                     {
                         if (key == GetItemId(node))
-                            return true;
+                            return node.NameFromNode();
                     }
                 }
             }
 
             foreach(var dir in Directory.GetDirectories(folder))
             {
-                if (FindInFiles(dir, key))
-                    return true;
+                var name = FindInFiles(dir, key);
+                if (name != string.Empty)
+                    return name;
             }
 
-            return false;
+            return string.Empty;
         }
 
         /// <summary>
