@@ -42,6 +42,10 @@ namespace Jumoo.uSync.Core.Helpers
         public static List<uSyncChange> GetChanges(XElement source, XElement target, string path)
         {
             List<uSyncChange> changes = new List<uSyncChange>();
+
+            if (source == null || target == null)
+                return changes; 
+
             if (source.Name.LocalName != target.Name.LocalName)
             {
                 changes.Add(new uSyncChange

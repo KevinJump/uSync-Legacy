@@ -14,6 +14,9 @@ namespace Jumoo.uSync.Core.Extensions
     {
         public static string GetSyncHash(this XElement node)
         {
+            if (node == null)
+                return string.Empty;
+
             XElement copy = new XElement(node);
 
             // strip ids and stuff.
