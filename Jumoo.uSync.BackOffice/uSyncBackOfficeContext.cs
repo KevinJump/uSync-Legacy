@@ -106,8 +106,15 @@
                 folder = Configuration.Settings.Folder;
 
             LogHelper.Info<uSyncApplicationEventHandler>("Running Full uSync Import");
-
             List<uSyncAction> importActions = new List<uSyncAction>();
+
+            var stopFile = System.IO.Path.Combine(folder, "usync.stop");
+            if (!force && System.IO.File.Exists(stopFile))
+            {
+                LogHelper.Info<uSyncApplicationEventHandler>("usync.stop file exists, exiting");
+                importActions.Add(uSyncAction.Fail("uSync.Stop", typeof(String), "usync stop file exiting"));
+                return importActions;
+            }
 
             foreach (var handler in handlers.Select(x => x.Value))
             {
@@ -118,7 +125,6 @@
                     importActions.AddRange(handler.ImportAll(syncFolder, force));
                 }
             }
-
 
             //
             // some things need processing once everything else is imported
@@ -138,6 +144,15 @@
                         importActions.AddRange(postActions);
                 }
             }
+
+
+            var onceFile = System.IO.Path.Combine(folder, "usync.once");
+            if (System.IO.File.Exists(onceFile))
+            {
+                System.IO.File.Move(onceFile, stopFile);
+                LogHelper.Debug<uSyncApplicationEventHandler>("Renamed once to stop, for next time");
+            }
+
 
             return importActions;
         }
