@@ -60,6 +60,7 @@ namespace Jumoo.uSync.BackOffice
                     Folder = "~/uSync/data/",
                     ArchiveFolder = "~/uSync/Archive/",
                     BackupFolder = "~/uSync/Backup/",
+                    DontThrowErrors = false, 
 
                     Handlers = new List<HandlerConfig>()
                 };
@@ -130,6 +131,8 @@ namespace Jumoo.uSync.BackOffice
         public string ArchiveFolder { get; set; }
         public string BackupFolder { get; set; }
         public int MaxArchiveVersionCount { get; set; }
+
+        public bool DontThrowErrors { get; set; }
 
         public List<HandlerConfig> Handlers {get;set;}
     }

@@ -61,44 +61,56 @@ namespace Jumoo.uSync.BackOffice
 
             var settings = uSyncBackOffice.Configuration.Settings;
 
-            uSyncEvents.fireStarting(new uSyncEventArgs());
+            try {
+                uSyncEvents.fireStarting(new uSyncEventArgs());
 
-            List<uSyncAction> setupActions = new List<uSyncAction>();
+                List<uSyncAction> setupActions = new List<uSyncAction>();
 
-            // some settings based decisions...
-            if (settings.Import)
-            {
-                setupActions.AddRange(uSyncBackOffice.ImportAll());
+                // some settings based decisions...
+                if (settings.Import)
+                {
+                    setupActions.AddRange(uSyncBackOffice.ImportAll());
+                }
+
+                if (settings.ExportAtStartup ||
+                    (settings.ExportOnSave && !Directory.Exists(settings.MappedFolder())))
+                {
+                    setupActions.AddRange(uSyncBackOffice.ExportAll());
+                }
+
+                if (settings.ExportOnSave)
+                {
+                    uSyncBackOffice.SetupEvents();
+                }
+
+                if (settings.WatchForFileChanges)
+                {
+                    uSyncFileWatcher.Init(settings.MappedFolder());
+                }
+
+                uSyncEvents.fireInitilized(new uSyncEventArgs());
+
+                uSyncActionLogger.LogActions(setupActions);
+
+                // we write a log - when there have been changes, a zero run doesn't get
+                // a file written to disk.
+                if (setupActions.Any(x => x.Change > ChangeType.NoChange))
+                    uSyncActionLogger.SaveActionLog("Startup", setupActions);
+
+
+                sw.Stop();
+                LogHelper.Info<uSyncApplicationEventHandler>("uSync Complete ({0}ms)", () => sw.ElapsedMilliseconds);
             }
-
-            if (settings.ExportAtStartup ||
-                (settings.ExportOnSave && !Directory.Exists(settings.MappedFolder())))
+            catch(Exception ex)
             {
-                setupActions.AddRange(uSyncBackOffice.ExportAll());
+                if (settings.DontThrowErrors)
+                {
+                    LogHelper.Info<uSyncApplicationEventHandler>("No Throw errors is set, so uSync won't YSOD");
+                    LogHelper.Error<uSyncApplicationEventHandler>("Error During Setup:", ex);
+                }
+                else
+                    throw ex;
             }
-
-            if (settings.ExportOnSave)
-            {
-                uSyncBackOffice.SetupEvents();
-            }
-
-            if (settings.WatchForFileChanges)
-            {
-                uSyncFileWatcher.Init(settings.MappedFolder());
-            }
-
-            uSyncEvents.fireInitilized(new uSyncEventArgs());
-
-            uSyncActionLogger.LogActions(setupActions);
-
-            // we write a log - when there have been changes, a zero run doesn't get
-            // a file written to disk.
-            if ( setupActions.Any(x => x.Change > ChangeType.NoChange))
-                uSyncActionLogger.SaveActionLog("Startup", setupActions);
-
-
-            sw.Stop();
-            LogHelper.Info<uSyncApplicationEventHandler>("uSync Complete ({0}ms)", () => sw.ElapsedMilliseconds);
         }
 
 
