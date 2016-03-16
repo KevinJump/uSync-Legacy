@@ -70,7 +70,7 @@
 
                 if (attempt.Success)
                 {
-                    LogHelper.Info<TemplateHandler>("Item Path: {0}", () => GetItemPath(item));
+                    LogHelper.Debug<TemplateHandler>("Item Path: {0}", () => GetItemPath(item));
                     filename = uSyncIOHelper.SavePath(folder, SyncFolder, GetItemPath(item), item.Alias.ToSafeAlias());
                     uSyncIOHelper.SaveNode(attempt.Item, filename);
 

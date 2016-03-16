@@ -50,9 +50,7 @@ namespace Jumoo.uSync.Core.Helpers
             List<uSyncChange> changes = new List<uSyncChange>();
             if (source == null || target == null)
                 return changes;
-
-            LogHelper.Debug<uSyncChange>("GetChanges: [{0} = {3} {1} = {4}] [{2}]", () => source.Name.LocalName, () => target.Name.LocalName, () => path, ()=> source.Value, ()=> target.Value);
-
+            
             if (source.Name.LocalName != target.Name.LocalName)
             {
                 changes.Add(new uSyncChange
@@ -131,7 +129,6 @@ namespace Jumoo.uSync.Core.Helpers
 
                     if (targetChild == null)
                     {
-                        LogHelper.Debug<uSyncChange>("Target Missing");
                         // missing
                         changes.Add(new uSyncChange
                         {
@@ -143,7 +140,6 @@ namespace Jumoo.uSync.Core.Helpers
                     }
                     else
                     {
-                        LogHelper.Debug<uSyncChange>("Target Found");
                         // get the path... 
                         var childPath = "";
                         if (!nodePaths.ContainsKey(sourceChild.Name.LocalName))
@@ -180,7 +176,6 @@ namespace Jumoo.uSync.Core.Helpers
                 // compare element value
                 if (source.Value != target.Value)
                 {
-                    LogHelper.Debug<uSyncChange>("[{0}] Values Differ: {1} {2}", () => source.Name.LocalName, ()=> source.Value, ()=> target.Value);
                     changes.Add(new uSyncChange
                     {
                         Path = path.Substring(0, path.LastIndexOf('.')),
@@ -215,8 +210,6 @@ namespace Jumoo.uSync.Core.Helpers
                     }
                 }
             }
-
-            LogHelper.Debug<uSyncChange>("<<< GetChanges: ({0})", () => changes.Count());
             return changes;
         }
 
@@ -285,8 +278,6 @@ namespace Jumoo.uSync.Core.Helpers
 
         private static XElement GetElement(ChangeDetailKey key, string name, XElement node, XElement target)
         {
-            LogHelper.Debug<uSyncChange>("Looking for Element: [{0}] {1} {2} in {3}", ()=>key.Type, () => key.Key, () => key.Value, ()=> target.Name.LocalName);
-
             if (key.Value != node.Name.LocalName)
             {
                 switch(key.Type)

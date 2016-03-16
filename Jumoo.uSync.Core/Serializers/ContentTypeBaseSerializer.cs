@@ -458,8 +458,6 @@ namespace Jumoo.uSync.Core.Serializers
         {
             var structureNode = new XElement("Structure");
 
-            LogHelper.Debug<Events>("BASE: Content Types: {0}", () => item.AllowedContentTypes.Count());
-
             SortedList<string, Guid> allowedAliases = new SortedList<string, Guid>();
             foreach(var allowedType in item.AllowedContentTypes.OrderBy(x => x.Alias))
             {

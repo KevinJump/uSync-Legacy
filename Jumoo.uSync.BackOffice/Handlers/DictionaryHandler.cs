@@ -121,7 +121,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 var topItem = GetTop(item.Key);
 
                 if (topItem == null)
-                    LogHelper.Info<DictionaryHandler>("Null Top: {0}", () => item.ItemKey);
+                    LogHelper.Debug<DictionaryHandler>("Null Top: {0}", () => item.ItemKey);
 
                 if (item.Key != topItem.Key)
                 {
@@ -160,16 +160,16 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
         private IDictionaryItem GetTop(Guid? id)
         {
-            LogHelper.Info<DictionaryHandler>("Get Top: {0}", () => id.Value);
+            LogHelper.Debug<DictionaryHandler>("Get Top: {0}", () => id.Value);
 
             var item = ApplicationContext.Current.Services.LocalizationService.GetDictionaryItemById(id.Value);
             if (item == null)
             {
-                LogHelper.Info<DictionaryHandler>("Failed to Get Item: {0}", () => id.Value);
+                LogHelper.Warn<DictionaryHandler>("Failed to Get Item: {0}", () => id.Value);
                 return null;
             }
 
-            LogHelper.Info<DictionaryHandler>("Get Top: {0}", () => item.ItemKey);
+            LogHelper.Debug<DictionaryHandler>("Get Top: {0}", () => item.ItemKey);
             if (item.ParentId.HasValue && item.ParentId.Value != Guid.Empty)
                 return GetTop(item.ParentId);
 
