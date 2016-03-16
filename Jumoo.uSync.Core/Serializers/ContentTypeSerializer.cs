@@ -241,6 +241,22 @@ namespace Jumoo.uSync.Core.Serializers
             }
         }
 
+        private XElement SerializeTemplates(IContentType item)
+        {
+            var templatesNode = new XElement("AllowedTemplates");
+
+            if (item.AllowedTemplates.Any())
+            {
+                foreach (var template in item.AllowedTemplates.OrderBy(x => x.Alias))
+                {
+                    templatesNode.Add(new XElement("Template", template.Alias));
+                }
+            }
+
+            return templatesNode;
+        }
+
+
         private void DeserializeTemplates(IContentType item, XElement info)
         {
             var nodeTemplates = info.Element("AllowedTemplates");
@@ -260,7 +276,7 @@ namespace Jumoo.uSync.Core.Serializers
                     templates.Add(iTemplate);
                 }
             }
-
+            /*
             List<ITemplate> templatesToRemove = new List<ITemplate>();
             foreach (var itemTemplate in item.AllowedTemplates)
             {
@@ -274,6 +290,9 @@ namespace Jumoo.uSync.Core.Serializers
             {
                 item.RemoveTemplate(rTemplate);
             }
+            */
+
+            item.AllowedTemplates = templates;
         }
 
         public override SyncAttempt<IContentType> DesearlizeSecondPass(IContentType item, XElement node)
@@ -318,7 +337,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             var compositionsNode = new XElement("Compositions");
             var compositions = item.ContentTypeComposition;
-            foreach (var composition in compositions)
+            foreach (var composition in compositions.OrderBy(x => x.Key))
             {
                 compositionsNode.Add(new XElement("Composition", composition.Alias,
                     new XAttribute("Key", composition.Key))
@@ -332,6 +351,11 @@ namespace Jumoo.uSync.Core.Serializers
             else
                 info.Add(new XElement("DefaultTemplate", ""));
 
+
+            var templates = SerializeTemplates(item);
+            if (templates != null)
+                info.Add(templates);
+
             // Structure
             var structure = SerializeStructure(item);
 
@@ -342,7 +366,7 @@ namespace Jumoo.uSync.Core.Serializers
             var tabs = SerializeTabs(item);
 
             var node = new XElement(Constants.Packaging.DocumentTypeNodeName,
-                                        info,
+                                        info,                                        
                                         structure,
                                         properties,
                                         tabs);
