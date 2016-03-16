@@ -35,6 +35,12 @@ namespace Jumoo.uSync.Core.Helpers
             { "PreValue", new ChangeKeyPair("Alias", ChangeValueType.Attribute) }
         };
 
+        // nodes where we match them on the internal values of the elements. 
+        private static List<string> nodesByVal = new List<string>()
+        {
+            { "Template" }, {"Tab"}
+        };
+
         /// <summary>
         ///  gets the changes between to xml files, will recurse down a tree and 
         ///  note any changes in attribute, value or elements. 
@@ -42,9 +48,10 @@ namespace Jumoo.uSync.Core.Helpers
         public static List<uSyncChange> GetChanges(XElement source, XElement target, string path)
         {
             List<uSyncChange> changes = new List<uSyncChange>();
-
             if (source == null || target == null)
-                return changes; 
+                return changes;
+
+            LogHelper.Debug<uSyncChange>("GetChanges: [{0} = {3} {1} = {4}] [{2}]", () => source.Name.LocalName, () => target.Name.LocalName, () => path, ()=> source.Value, ()=> target.Value);
 
             if (source.Name.LocalName != target.Name.LocalName)
             {
@@ -124,6 +131,7 @@ namespace Jumoo.uSync.Core.Helpers
 
                     if (targetChild == null)
                     {
+                        LogHelper.Debug<uSyncChange>("Target Missing");
                         // missing
                         changes.Add(new uSyncChange
                         {
@@ -135,6 +143,7 @@ namespace Jumoo.uSync.Core.Helpers
                     }
                     else
                     {
+                        LogHelper.Debug<uSyncChange>("Target Found");
                         // get the path... 
                         var childPath = "";
                         if (!nodePaths.ContainsKey(sourceChild.Name.LocalName))
@@ -171,6 +180,7 @@ namespace Jumoo.uSync.Core.Helpers
                 // compare element value
                 if (source.Value != target.Value)
                 {
+                    LogHelper.Debug<uSyncChange>("[{0}] Values Differ: {1} {2}", () => source.Name.LocalName, ()=> source.Value, ()=> target.Value);
                     changes.Add(new uSyncChange
                     {
                         Path = path.Substring(0, path.LastIndexOf('.')),
@@ -199,12 +209,14 @@ namespace Jumoo.uSync.Core.Helpers
                             Path = path,
                             Name = name,
                             Change = ChangeDetailType.Delete,
-                            ValueType = ChangeValueType.Element
+                            ValueType = ChangeValueType.Element, 
+                            OldVal = name
                         });
                     }
                 }
             }
 
+            LogHelper.Debug<uSyncChange>("<<< GetChanges: ({0})", () => changes.Count());
             return changes;
         }
 
@@ -237,6 +249,11 @@ namespace Jumoo.uSync.Core.Helpers
                 }
             }
 
+            if (nodesByVal.Contains(node.Name.LocalName))
+            {
+                key.Value = node.Value;
+            }
+
             return key;
         }
 
@@ -260,27 +277,38 @@ namespace Jumoo.uSync.Core.Helpers
                 }
             }
 
+            if (nodesByVal.Contains(node.Name.LocalName))
+                return node.Value;
+
             return key;
         }
 
         private static XElement GetElement(ChangeDetailKey key, string name, XElement node, XElement target)
         {
+            LogHelper.Debug<uSyncChange>("Looking for Element: [{0}] {1} {2} in {3}", ()=>key.Type, () => key.Key, () => key.Value, ()=> target.Name.LocalName);
+
             if (key.Value != node.Name.LocalName)
             {
                 switch(key.Type)
                 {
                     case ChangeValueType.Element:
                         return target.Elements()
-                            .FirstOrDefault(x => x.Element(key.Key) != null && x.Element(key.Key).Value == key.Value);
+                            .Where(x => x.Element(key.Key) != null && x.Element(key.Key).Value == key.Value)
+                            .FirstOrDefault();
                     case ChangeValueType.Attribute:
                         return target.Elements()
-                            .FirstOrDefault(x => x.Attribute(key.Key) != null && x.Attribute(key.Key).Value == key.Value);
+                            .Where(x => x.Attribute(key.Key) != null && x.Attribute(key.Key).Value == key.Value)
+                            .FirstOrDefault();
+                    case ChangeValueType.Node:
+                        return target.Elements()
+                            .Where(x => x.Name.LocalName == key.Key && x.Value == key.Value)
+                            .FirstOrDefault();
                     default:
                         return target.Elements()
-                            .FirstOrDefault(x => x.Element(key.Key) != null && x.Element(key.Key).Value == key.Value);
+                            .Where(x => x.Name.LocalName == key.Key && x.Value == key.Value)
+                            .FirstOrDefault();
 
                 }
-
             }
             else
             {
