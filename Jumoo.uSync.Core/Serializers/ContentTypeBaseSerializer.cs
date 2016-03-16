@@ -461,7 +461,7 @@ namespace Jumoo.uSync.Core.Serializers
             LogHelper.Debug<Events>("BASE: Content Types: {0}", () => item.AllowedContentTypes.Count());
 
             SortedList<string, Guid> allowedAliases = new SortedList<string, Guid>();
-            foreach(var allowedType in item.AllowedContentTypes)
+            foreach(var allowedType in item.AllowedContentTypes.OrderBy(x => x.Alias))
             {
                 IContentTypeBase allowed = LookupById(allowedType.Id.Value);
                 if (allowed != null)
@@ -477,6 +477,7 @@ namespace Jumoo.uSync.Core.Serializers
             }
             return structureNode;            
         }
+
 
         /// <summary>
         ///  as with structure, we want to export properties in a consistant order
