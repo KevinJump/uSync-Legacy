@@ -11,4 +11,10 @@ namespace Jumoo.uSync.Core.Interfaces
         bool ImportFile(T item, string folder);
         bool ExportFile(T item, string folder);
     }
+
+    public interface ISyncFileHander2<T>
+    {
+        string ImportFile(T item, string folder);
+        string ExportFile(T item, string folder);
+    }
 }
