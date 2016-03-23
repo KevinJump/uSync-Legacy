@@ -48,7 +48,7 @@ namespace Jumoo.uSync.Content
             uSyncCoreContext.Instance.MediaSerializer.DesearlizeSecondPass(item, node);
 
             string mediaFolder = Path.Combine(Path.GetDirectoryName(file), mediaFolderName);
-            uSyncCoreContext.Instance.MediaFileMover.ImportFile(item, mediaFolder);
+            uSyncCoreContext.Instance.MediaFileMover.ImportFileValue(node, item, mediaFolder);
         }
 
         public IEnumerable<uSyncAction> ExportAll(string folder)

@@ -5,19 +5,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Umbraco.Core.Models;
-using Umbraco.Core.IO;
 using Newtonsoft.Json;
 using Jumoo.uSync.Core.Interfaces;
+
 using Umbraco.Core;
+using Umbraco.Core.IO;
+using Umbraco.Core.Models;
 using Umbraco.Core.Logging;
+
+using System.Xml.Linq;
 
 namespace Jumoo.uSync.Core.Helpers
 {
-    public class uSyncMediaFileMover : ISyncFileHandler<IMedia>
+    public class uSyncMediaFileMover : ISyncFileHander2<IMedia>
     {
 
+        [Obsolete("use ImportFileValue(XElement, IMedia, string")]
         public bool ImportFile(IMedia item, string folder)
+        {
+            return false; 
+        }
+
+        public bool ImportFileValue(XElement node, IMedia item, string folder)
         {
             // 
             // if we have move media = false, we don't actually move 
@@ -28,7 +37,8 @@ namespace Jumoo.uSync.Core.Helpers
                 LogHelper.Debug<uSyncMediaFileMover>("Media moving is off - media file not being moved");
                 return true;
             }
-            
+
+            LogHelper.Debug<uSyncMediaFileMover>("\n--------------------- FILE MOVE ---------------");
 
 
             bool changes = false; 
@@ -60,6 +70,12 @@ namespace Jumoo.uSync.Core.Helpers
                     }
 
                 }
+            }
+
+            var umbracoFileValue = "";
+            if (node.Element("umbracoFile") != null)
+            {
+                umbracoFileValue = node.Element("umbracoFile").Value;
             }
 
             foreach(var file in Directory.GetFiles(folder, "*.*"))
@@ -98,9 +114,33 @@ namespace Jumoo.uSync.Core.Helpers
             }
 
             if (changes)
+            {
+                // if we are using image cropper then umbracoFile value will have been blasted a bit by the upload
+                // we need to set it back here...
+                // var newUmbracoFileValue = item.GetValue<string>("umbracoFile");
+
+                if (IsJson(umbracoFileValue))
+                {
+                    var newUmbracoFileValue = item.GetValue<string>("umbracoFile");
+
+                    var oldObj = JsonConvert.DeserializeObject<dynamic>(umbracoFileValue);
+                    var newSrc = newUmbracoFileValue;
+                    if (IsJson(newUmbracoFileValue))
+                    {
+                        newSrc = JsonConvert.DeserializeObject<dynamic>(newUmbracoFileValue).src;
+                    }
+                    oldObj.src = newSrc;
+
+                    var fileVal = JsonConvert.SerializeObject(oldObj);
+                    LogHelper.Debug<uSyncMediaFileMover>("JSON Value: {0}", ()=> fileVal);
+                    IContentBase baseItem = (IContentBase)item;
+                    baseItem.SetValue("umbracoFile", fileVal );
+                }
+
                 ApplicationContext.Current.Services.MediaService.Save(item);
+            }
             
-            return true;
+            return changes;
         }
 
 
@@ -174,6 +214,5 @@ namespace Jumoo.uSync.Core.Helpers
             }
             return true;
         }
-
-    }
+   }
 }

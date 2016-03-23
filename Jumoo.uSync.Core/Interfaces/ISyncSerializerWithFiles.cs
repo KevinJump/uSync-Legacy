@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Jumoo.uSync.Core.Interfaces
 {
@@ -12,9 +13,8 @@ namespace Jumoo.uSync.Core.Interfaces
         bool ExportFile(T item, string folder);
     }
 
-    public interface ISyncFileHander2<T>
+    public interface ISyncFileHander2<T> : ISyncFileHandler<T>
     {
-        string ImportFile(T item, string folder);
-        string ExportFile(T item, string folder);
+        bool ImportFileValue(XElement node, T item, string folder);
     }
 }
