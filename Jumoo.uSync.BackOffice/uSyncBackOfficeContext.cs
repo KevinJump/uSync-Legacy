@@ -102,6 +102,8 @@
 
         public IEnumerable<uSyncAction> ImportAll(string folder = null, bool force = false)
         {
+            uSyncEvents.Paused = true; 
+
             if (string.IsNullOrEmpty(folder))
                 folder = Configuration.Settings.Folder;
 
@@ -153,6 +155,7 @@
                 LogHelper.Debug<uSyncApplicationEventHandler>("Renamed once to stop, for next time");
             }
 
+            uSyncEvents.Paused = false; 
 
             return importActions;
         }
