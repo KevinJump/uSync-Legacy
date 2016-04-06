@@ -35,7 +35,7 @@ namespace Jumoo.uSync.Core
         public ISyncSerializerWithParent<IContent> ContentSerializer { get; private set; }
         public ISyncSerializerWithParent<IMedia> MediaSerializer { get; private set; }
 
-        public ISyncFileHandler<IMedia> MediaFileMover { get; private set; }
+        public ISyncFileHander2<IMedia> MediaFileMover { get; private set; }
 
         public uSyncCoreConfig Configuration { get; set; }
 

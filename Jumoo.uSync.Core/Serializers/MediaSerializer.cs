@@ -31,12 +31,17 @@ namespace Jumoo.uSync.Core.Serializers
             var update = node.Attribute("updated").ValueOrDefault(DateTime.Now);
 
             var item = _mediaService.GetById(guid);
-            if (item == null || item.Trashed)
+            if (item == null)
             {
                 item = _mediaService.CreateMedia(name, parentId, mediaTypeAlias);
             }
             else
             {
+                if (item.Trashed)
+                {
+                    item.ChangeTrashedState(false);
+                }
+
                 if (!forceUpdate)
                 {
                     if (DateTime.Compare(update, item.UpdateDate.ToLocalTime()) < 0)
