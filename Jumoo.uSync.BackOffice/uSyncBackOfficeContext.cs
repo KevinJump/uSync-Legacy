@@ -116,6 +116,7 @@
             {
                 LogHelper.Info<uSyncApplicationEventHandler>("usync.stop file exists, exiting");
                 importActions.Add(uSyncAction.Fail("uSync.Stop", typeof(String), "usync stop file: exiting import"));
+                uSyncEvents.Paused = false; 
                 return importActions;
             }
 
