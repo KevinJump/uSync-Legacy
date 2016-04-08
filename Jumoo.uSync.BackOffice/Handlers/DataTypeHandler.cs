@@ -17,6 +17,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
     using Jumoo.uSync.BackOffice.Helpers;
     using Core.Extensions;
     using Umbraco.Core.Models.EntityBase;
+    using System.Timers;
+
     public class DataTypeHandler : uSyncBaseHandler<IDataTypeDefinition>, ISyncHandler, ISyncPostImportHandler
     {
         public string Name { get { return "uSync: DataTypeHandler"; } }
@@ -124,10 +126,45 @@ namespace Jumoo.uSync.BackOffice.Handlers
             }
         }
 
+        private static Timer _saveTimer;
+        private static Queue<int> _saveQueue;
+        private static object _saveLock;
+
         public void RegisterEvents()
         {
             DataTypeService.Saved += DataTypeService_Saved;
             DataTypeService.Deleted += DataTypeService_Deleted;
+
+            // delay trigger - used (upto and including umb 7.4.2
+            // saved event on a datatype is called before prevalues
+            // are saved - so we just wait a little while before 
+            // we save our datatype... 
+            //  not ideal but them's the breaks.
+            //
+            //
+            //
+            _saveTimer = new Timer(4064); // 1/2 a perfect wait.
+            _saveTimer.Elapsed += _saveTimer_Elapsed;
+
+            _saveQueue = new Queue<int>();
+            _saveLock = new object();
+        }
+
+        private void _saveTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            lock( _saveLock)
+            {
+                while (_saveQueue.Count > 0 )
+                {
+                    int id = _saveQueue.Dequeue();
+
+                    var item = _dataTypeService.GetDataTypeDefinitionById(id);
+                    if (item != null)
+                    {
+                        SaveToDisk(item);
+                    }
+                }
+            }
         }
 
         private void DataTypeService_Deleted(IDataTypeService sender, Umbraco.Core.Events.DeleteEventArgs<IDataTypeDefinition> e)
@@ -144,19 +181,30 @@ namespace Jumoo.uSync.BackOffice.Handlers
             }
         }
 
+
         private void DataTypeService_Saved(IDataTypeService sender, Umbraco.Core.Events.SaveEventArgs<IDataTypeDefinition> e)
         {
             if (uSyncEvents.Paused)
                 return;
 
-            foreach (var item in e.SavedEntities)
+            lock (_saveLock)
             {
-                LogHelper.Info<DataTypeHandler>("Save: Saving uSync file for item: {0}", () => item.Name);
-                var action = ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
-                if (action.Success)
+                _saveTimer.Stop();
+                _saveTimer.Start();
+                foreach (var item in e.SavedEntities)
                 {
-                    NameChecker.ManageOrphanFiles(SyncFolder, item.Key, action.FileName);
+                    _saveQueue.Enqueue(item.Id);
                 }
+            }
+        }
+
+        private void SaveToDisk(IDataTypeDefinition item)
+        {
+            LogHelper.Info<DataTypeHandler>("Save: Saving uSync file for item: {0}", () => item.Name);
+            var action = ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+            if (action.Success)
+            {
+                NameChecker.ManageOrphanFiles(SyncFolder, item.Key, action.FileName);
             }
         }
 
