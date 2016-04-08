@@ -122,6 +122,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             }
             catch (Exception ex)
             {
+                LogHelper.Warn<DataTypeHandler>("Failed to save {0} - {1}", ()=> item.Name, () => ex.ToString());
                 return uSyncAction.Fail(item.Name, item.GetType(), ChangeType.Export, ex);
             }
         }
