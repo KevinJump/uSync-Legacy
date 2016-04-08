@@ -110,11 +110,12 @@
             LogHelper.Info<uSyncApplicationEventHandler>("Running Full uSync Import");
             List<uSyncAction> importActions = new List<uSyncAction>();
 
-            var stopFile = System.IO.Path.Combine(folder, "usync.stop");
+            var stopFile = Umbraco.Core.IO.IOHelper.MapPath(System.IO.Path.Combine(folder, "usync.stop"));
+            LogHelper.Debug<uSyncApplicationEventHandler>("Checking for stop file: {0}", () => stopFile);
             if (!force && System.IO.File.Exists(stopFile))
             {
                 LogHelper.Info<uSyncApplicationEventHandler>("usync.stop file exists, exiting");
-                importActions.Add(uSyncAction.Fail("uSync.Stop", typeof(String), "usync stop file exiting"));
+                importActions.Add(uSyncAction.Fail("uSync.Stop", typeof(String), "usync stop file: exiting import"));
                 return importActions;
             }
 
@@ -148,7 +149,8 @@
             }
 
 
-            var onceFile = System.IO.Path.Combine(folder, "usync.once");
+            var onceFile = Umbraco.Core.IO.IOHelper.MapPath(System.IO.Path.Combine(folder, "usync.once"));
+            LogHelper.Debug<uSyncApplicationEventHandler>("Looking for once file: {0}", () => onceFile);
             if (System.IO.File.Exists(onceFile))
             {
                 System.IO.File.Move(onceFile, stopFile);
