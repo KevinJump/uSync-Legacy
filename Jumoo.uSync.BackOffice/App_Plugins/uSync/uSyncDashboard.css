@@ -19,3 +19,7 @@
 .usync-dash .change-detail h4 {
     font-weight: 600;
 }
+
+.usync-dash .usync-info label {
+    display: block; 
+}
