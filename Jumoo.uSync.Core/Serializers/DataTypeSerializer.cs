@@ -143,7 +143,7 @@ namespace Jumoo.uSync.Core.Serializers
         {
             LogHelper.Debug<ContentTypeSerializer>("TryCreate: {0} under {1}", () => name, () => parent.Name);
 
-            var children = _entityService.GetChildren(parent.Id).ToArray();
+            var children = _entityService.GetChildren(parent.Id, UmbracoObjectTypes.DataTypeContainer).ToArray();
 
             if (children.Any(x => x.Name.InvariantEquals(name)))
             {
