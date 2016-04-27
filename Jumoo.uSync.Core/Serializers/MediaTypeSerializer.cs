@@ -44,7 +44,7 @@ namespace Jumoo.uSync.Core.Serializers
                 }
                 catch(Exception ex)
                 {
-                    LogHelper.Warn<MediaTypeSerializer>("Wobbler looking for media type: {0}", () => key);
+                    LogHelper.Warn<MediaTypeSerializer>("Wobbler looking for media type: {0} {1}", () => key, ()=> ex.ToString());
                 }
             }
 

@@ -66,7 +66,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             }
             catch( Exception ex)
             {
-                LogHelper.Warn<MemberTypeHandler>("Error saving membertype: {0}", ()=> item.Name);
+                LogHelper.Warn<MemberTypeHandler>("Error saving membertype: {0} {1}", ()=> item.Name, ()=> ex);
                 return uSyncAction.Fail(item.Name, typeof(IMemberType), ChangeType.Export);
             }
         }
