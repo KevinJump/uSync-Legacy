@@ -66,7 +66,7 @@ namespace Jumoo.uSync.Core.Serializers
             // are going to set them all later so should be fine. 
             //
             var contentType = ApplicationContext.Current.Services.ContentTypeService.GetContentType(type);
-            if (item.ContentTypeId != contentType.Id)
+            if (contentType != null && item.ContentTypeId != contentType.Id)
             {
                 item.ChangeContentType(contentType);
             }
