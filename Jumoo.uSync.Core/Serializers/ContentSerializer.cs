@@ -61,6 +61,16 @@ namespace Jumoo.uSync.Core.Serializers
             if (item.Trashed)
                 item.ChangeTrashedState(false);
 
+            //
+            // Change doctype if it changes, we could lose values here, but we 
+            // are going to set them all later so should be fine. 
+            //
+            var contentType = ApplicationContext.Current.Services.ContentTypeService.GetContentType(type);
+            if (item.ContentTypeId != contentType.Id)
+            {
+                item.ChangeContentType(contentType);
+            }
+
             var template = ApplicationContext.Current.Services.FileService.GetTemplate(templateAlias);
             if (template != null)
                 item.Template = template;
