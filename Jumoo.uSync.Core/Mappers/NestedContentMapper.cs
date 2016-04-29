@@ -60,7 +60,7 @@ namespace Jumoo.uSync.NestedContent
                 }
             }
 
-            return JsonConvert.SerializeObject(array);
+            return JsonConvert.SerializeObject(array, Formatting.Indented);
         }
 
         public string GetImportValue(int dataTypeDefinitionId, string content)
@@ -100,7 +100,7 @@ namespace Jumoo.uSync.NestedContent
                 }
             }
 
-            return JsonConvert.SerializeObject(array);
+            return JsonConvert.SerializeObject(array, Formatting.Indented);
 
         }
     }
