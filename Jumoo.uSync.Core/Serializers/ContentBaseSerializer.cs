@@ -84,12 +84,15 @@ namespace Jumoo.uSync.Core.Serializers
             if (mapping != null)
             {
                 LogHelper.Debug<Events>("Mapping Content Import: {0} {1}", () => mapping.EditorAlias, () => mapping.MappingType);
-
                 IContentMapper mapper = ContentMapperFactory.GetMapper(mapping);
 
                 if (mapper != null)
                 {
                     return mapper.GetImportValue(propType.DataTypeDefinitionId, content);
+                }
+                else
+                {
+                    LogHelper.Warn<Events>("Attempted to find a mapper for {0} {1}, but couldn't", () => mapping.EditorAlias, () => mapping.MappingType);
                 }
             }
 
@@ -134,6 +137,8 @@ namespace Jumoo.uSync.Core.Serializers
                 string xml = "";
                 xml = GetExportIds(prop.PropertyType, propNode);
 
+                LogHelper.Debug<Events>("Mapped Value: <{0}>{1}</{0}>", ()=> propNode.Name.ToString(), ()=>xml);
+
 
                 var updatedNode = XElement.Parse(
                     string.Format("<{0}>{1}</{0}>", propNode.Name.ToString(), xml), LoadOptions.PreserveWhitespace);
@@ -163,7 +168,9 @@ namespace Jumoo.uSync.Core.Serializers
 
                     if (mapper != null)
                     {
-                        return mapper.GetExportValue(propType.DataTypeDefinitionId, val);
+                        // we need to check if we got a cdata section, in and wrap it again on the way out.
+
+                        return ReplaceInnerXml(value, mapper.GetExportValue(propType.DataTypeDefinitionId, val));
                     }
                 }
             }
@@ -175,6 +182,18 @@ namespace Jumoo.uSync.Core.Serializers
             var reader = parent.CreateReader();
             reader.MoveToContent();
             return reader.ReadInnerXml();
+        }
+
+        private string ReplaceInnerXml(XElement parent, string value)
+        {
+            var reader = parent.CreateReader();
+            reader.MoveToContent();
+            string xml = reader.ReadInnerXml();
+            if (xml.StartsWith("<![CDATA["))
+            {
+                return string.Format("<![CDATA[{0}]]>", value);
+            }
+            return value;
         }
 
         virtual public SyncAttempt<T> DesearlizeSecondPass(T item, XElement node)
