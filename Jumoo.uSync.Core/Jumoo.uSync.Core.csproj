@@ -300,7 +300,7 @@
     <Compile Include="Mappers\ContentDataTypeMapper.cs" />
     <Compile Include="Mappers\ContentIdMapping.cs" />
     <Compile Include="Mappers\ContentMapperFactory.cs" />
-    <Compile Include="Mappers\GripMapper.cs" />
+    <Compile Include="Mappers\GridMapper.cs" />
     <Compile Include="Mappers\IContentMapper.cs" />
     <Compile Include="Mappers\ImageCropperMapper.cs" />
     <Compile Include="Mappers\NestedContentMapper.cs" />
