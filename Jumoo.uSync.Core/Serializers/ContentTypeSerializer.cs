@@ -112,7 +112,7 @@ namespace Jumoo.uSync.Core.Serializers
             // _contentTypeService.Save(item);
 
             // Update Properties
-            DeserializeProperties((IContentTypeBase)item, node);
+            var msg = DeserializeProperties((IContentTypeBase)item, node);
 
             // Update Tabs
             DeserializeTabSortOrder((IContentTypeBase)item, node);
@@ -143,7 +143,7 @@ namespace Jumoo.uSync.Core.Serializers
             // structure twice.
             // DeserializeStructure((IContentTypeBase)item, node);
 
-            return SyncAttempt<IContentType>.Succeed(item.Name, item, ChangeType.Import);
+            return SyncAttempt<IContentType>.Succeed(item.Name, item, ChangeType.Import, msg);
         }
 
         private int GetContentFolders(XElement info, IContentType item)

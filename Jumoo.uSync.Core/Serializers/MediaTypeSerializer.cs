@@ -94,7 +94,7 @@ namespace Jumoo.uSync.Core.Serializers
                 item.SetLazyParentId(new Lazy<int>(() => parentId));
             }
 
-            DeserializeProperties(item, node);
+            var msg = DeserializeProperties(item, node);
 
             DeserializeTabSortOrder(item, node);
 
@@ -103,7 +103,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             _contentTypeService.Save(item);
 
-            return SyncAttempt<IMediaType>.Succeed(item.Name, item, ChangeType.Import);          
+            return SyncAttempt<IMediaType>.Succeed(item.Name, item, ChangeType.Import, msg);          
         }
 
         private int GetMediaFolders(XElement info, IMediaType item)

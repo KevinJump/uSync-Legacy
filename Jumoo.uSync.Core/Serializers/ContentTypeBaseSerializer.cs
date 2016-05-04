@@ -20,7 +20,14 @@ namespace Jumoo.uSync.Core.Serializers
         internal IContentTypeService _contentTypeService;
         internal IDataTypeService _dataTypeService;
         internal IMemberTypeService _memberTypeService;
-        internal IEntityService _entityService; 
+        internal IEntityService _entityService;
+
+        // all content/media cached lists - they are used when 
+        // creating new properties to make sure we don't YSOD the site.
+        // 
+        private List<IContentType> _allContentTypes;
+        private List<IMediaType> _allMediaTypes;
+
 
         public ContentTypeBaseSerializer(string itemType): base(itemType)
         {
@@ -138,8 +145,13 @@ namespace Jumoo.uSync.Core.Serializers
             item.AllowedContentTypes = allowedTypes;
         }
 
-        internal void DeserializeProperties(IContentTypeBase item, XElement node)
+        internal string DeserializeProperties(IContentTypeBase item, XElement node)
         {
+            string message = ""; 
+            // clear our type cache, we use it to check for clashes in compistions.
+            _allMediaTypes = null;
+            _allContentTypes = null;
+
             List<string> propertiesToRemove = new List<string>();
             Dictionary<string, string> propertiesToMove = new Dictionary<string, string>();
             Dictionary<PropertyGroup, string> tabsToBlank = new Dictionary<PropertyGroup, string>();
@@ -191,10 +203,20 @@ namespace Jumoo.uSync.Core.Serializers
 
                     if (property == null)
                     {
-                        // create the property
-                        LogHelper.Debug<Events>("Creating new Property: {0} {1}", ()=> item.Alias,  ()=> alias);
-                        property = new PropertyType(dataTypeDefinition, alias);
-                        newProperty = true;
+                        // for doctypes we need to check the compositions, we cant create a property here
+                        // that exists further down the composition tree. 
+                        
+                        if (CanCreateProperty(item, alias))
+                        {
+                            LogHelper.Debug<Events>("Creating new Property: {0} {1}", () => item.Alias, () => alias);
+                            property = new PropertyType(dataTypeDefinition, alias);
+                            newProperty = true;
+                        }
+                        else
+                        {
+                            message = string.Format("Property: {0} was not created because of clash (try running import again)", alias);
+                        }
+
                     }
 
                     if (property != null)
@@ -352,6 +374,8 @@ namespace Jumoo.uSync.Core.Serializers
                     // blank.Key.PropertyTypes.Remove(blank.Value);
                 }
             }
+
+            return message; 
 
         }
 
@@ -615,6 +639,42 @@ namespace Jumoo.uSync.Core.Serializers
             }
 
             return item;
+        }
+
+
+        /// <summary>
+        ///  does a check to see that no doctype/media type below 
+        ///  what we are looking at has the property we want to 
+        ///  create, if it doesn, we warn and carry on. a double
+        ///  import fixes this 
+        /// </summary>
+        /// <param name="alias"></param>
+        /// <returns></returns>
+        private bool CanCreateProperty(IContentTypeBase item, string alias)
+        {
+            bool canCreate = true;
+
+            switch (_itemType)
+            {
+                case Constants.Packaging.DocumentTypeNodeName:
+                    if (_allContentTypes == null)
+                        _allContentTypes = _contentTypeService.GetAllContentTypes().ToList();
+
+                    var allProperties = _allContentTypes.Where(x => x.ContentTypeComposition.Any(y => y.Id == item.Id)).Select(x => x.PropertyTypes);
+                    if (allProperties.Any(x => x.Any(y => y.Alias == alias)))
+                        canCreate = false;
+                    break;
+                case "MediaType":
+                    if (_allMediaTypes == null)
+                        _allMediaTypes = _contentTypeService.GetAllMediaTypes().ToList();
+
+                    var allMediaProperties = _allMediaTypes.Where(x => x.ContentTypeComposition.Any(y => y.Id == item.Id)).Select(x => x.PropertyTypes);
+                    if (allMediaProperties.Any(x => x.Any(y => y.Alias == alias)))
+                        canCreate = false;
+                    break;
+            }
+            return canCreate;
+
         }
         #endregion
 

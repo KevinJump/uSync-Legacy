@@ -58,13 +58,13 @@ namespace Jumoo.uSync.Core.Serializers
 
             DeserializeBase(item, info);
 
-            DeserializeProperties(item, node);
+            var msg = DeserializeProperties(item, node);
 
             DeserializeTabSortOrder(item, node);
 
             _memberTypeService.Save(item);
 
-            return SyncAttempt<IMemberType>.Succeed(item.Name, item, ChangeType.Import);
+            return SyncAttempt<IMemberType>.Succeed(item.Name, item, ChangeType.Import, msg);
         }
 
         internal override SyncAttempt<XElement> SerializeCore(IMemberType item)
