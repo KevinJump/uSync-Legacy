@@ -214,6 +214,7 @@ namespace Jumoo.uSync.Core.Serializers
                         }
                         else
                         {
+                            LogHelper.Warn<Events>("Can't create {0} : already used by a composed doctype - a second import might fix this", ()=> alias);
                             message = string.Format("Property: {0} was not created because of clash (try running import again)", alias);
                         }
 
