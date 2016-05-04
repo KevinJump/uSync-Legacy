@@ -43,7 +43,6 @@ namespace Jumoo.uSync.Core.Mappers
         /// <returns></returns>
         private string ProcessGridValues(string content, bool import)
         {
-            LogHelper.Debug<GridMapper>("Mapping: Import = {0}", () => import);
             var usyncMappings = uSyncCoreContext.Instance.Configuration.Settings.ContentMappings;
 
             var grid = JsonConvert.DeserializeObject<JObject>(content);
@@ -70,14 +69,10 @@ namespace Jumoo.uSync.Core.Mappers
                                 {
 
                                     var grid_alias = string.Format("grid.{0}", alias);
-                                    LogHelper.Debug<GridMapper>("GridMapper: {0}", ()=> grid_alias);
-
                                     var mapping = usyncMappings.SingleOrDefault(x => x.EditorAlias == grid_alias);
                                     if (mapping != null)
                                     {
                                         var propertyName = mapping.Settings;
-
-                                        LogHelper.Debug<GridMapper>("Looking for Mapper Values: {0}", () => propertyName);
 
                                         if (propertyName != null)
                                         {
