@@ -32,8 +32,18 @@ namespace Jumoo.uSync.Core.Mappers
         }
 
 
+        /// <summary>
+        ///  Grid imports and exports are near identical, but they do involve a lot 
+        ///  of walking through the Grid JSON, so this function does all that and 
+        ///  then just calls the import or export of the grid value depending
+        ///  on what type it is (in the usync.config file)
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="import"></param>
+        /// <returns></returns>
         private string ProcessGridValues(string content, bool import)
         {
+            LogHelper.Debug<GridMapper>("Mapping: Import = {0}", () => import);
             var usyncMappings = uSyncCoreContext.Instance.Configuration.Settings.ContentMappings;
 
             var grid = JsonConvert.DeserializeObject<JObject>(content);
@@ -58,25 +68,40 @@ namespace Jumoo.uSync.Core.Mappers
                                 var alias = editor.Value<string>("alias");
                                 if (alias.IsNullOrWhiteSpace() == false)
                                 {
+
                                     var grid_alias = string.Format("grid.{0}", alias);
+                                    LogHelper.Debug<GridMapper>("GridMapper: {0}", ()=> grid_alias);
+
                                     var mapping = usyncMappings.SingleOrDefault(x => x.EditorAlias == grid_alias);
                                     if (mapping != null)
                                     {
                                         var propertyName = mapping.Settings;
+
+                                        LogHelper.Debug<GridMapper>("Looking for Mapper Values: {0}", () => propertyName);
+
                                         if (propertyName != null)
                                         {
                                             var mapper = ContentMapperFactory.GetMapper(mapping);
                                             if (mapper != null)
                                             {
-                                                var propValue = control.Value<string>(propertyName);
+                                                var propValue = control.Value<object>(propertyName);
+                                                var mappedValue = "";
                                                 if (import)
-                                                {
-                                                    control[propertyName] = mapper.GetImportValue(0, propValue);
-                                                }
+                                                    mappedValue = mapper.GetImportValue(0, propValue.ToString());
+                                                else
+                                                    mappedValue = mapper.GetExportValue(0, propValue.ToString());
+
+                                                if (!IsJson(mappedValue))
+                                                    control[propertyName] = mappedValue;
                                                 else
                                                 {
-                                                    control[propertyName] = mapper.GetExportValue(0, propValue);
+                                                    var mappedJson = JsonConvert.DeserializeObject<JObject>(mappedValue);
+                                                    if (mappedJson != null)
+                                                    {
+                                                        control[propertyName] = mappedJson;
+                                                    }
                                                 }
+                                                
                                             }
                                         }
                                     }
