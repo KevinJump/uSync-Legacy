@@ -35,7 +35,7 @@ namespace Jumoo.uSync.NestedContent
                 if (doctype == null)
                     continue;
 
-                foreach(var propertyType in doctype.PropertyTypes)
+                foreach(var propertyType in doctype.CompositionPropertyTypes)
                 {
                     object alias = nestedObject[propertyType.Alias];
                     if (alias != null)
@@ -75,7 +75,7 @@ namespace Jumoo.uSync.NestedContent
                 if (doctype == null)
                     continue;
 
-                foreach (var propertyType in doctype.PropertyTypes)
+                foreach (var propertyType in doctype.CompositionPropertyTypes)
                 {
                     object alias = nestedObject[propertyType.Alias];
                     if (alias != null)
