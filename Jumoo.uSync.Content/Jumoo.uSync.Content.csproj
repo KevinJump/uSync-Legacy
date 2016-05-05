@@ -275,6 +275,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseContentHandler.cs" />
+    <Compile Include="ContentEdition.cs" />
     <Compile Include="ContentHandler.cs" />
     <Compile Include="MediaHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
