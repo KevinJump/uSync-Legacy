@@ -98,6 +98,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             DeserializeTabSortOrder(item, node);
 
+            DeserializeCompositions(item, info);
             // this really needs to happen in a seperate step.
             // DeserializeStructure(item, node);
 
@@ -178,6 +179,25 @@ namespace Jumoo.uSync.Core.Serializers
             return SyncAttempt<IMediaType>.Succeed(node.Name.LocalName, ChangeType.NoChange);
         }
 
+        private void DeserializeCompositions(IMediaType item, XElement info)
+        {
+            var comps = info.Element("Compositions");
+            if (comps != null && comps.HasElements)
+            {
+                foreach (var composistion in comps.Elements("Composition"))
+                {
+                    var compAlias = composistion.Value;
+                    var compKey = composistion.Attribute("Key").ValueOrDefault(Guid.Empty);
+                    IMediaType type = null;
+                    if (compKey != Guid.Empty)
+                        type = _contentTypeService.GetMediaType(compKey);
+                    if (type == null)
+                        type = _contentTypeService.GetMediaType(compAlias);
+                    if (type != null)
+                        item.AddContentType(type);
+                }
+            }
+        }
 
         public override SyncAttempt<IMediaType> DesearlizeSecondPass(IMediaType item, XElement node)
         {
@@ -218,6 +238,16 @@ namespace Jumoo.uSync.Core.Serializers
                     info.Add(new XElement("Folder", path));
                 }
             }
+
+            var compositionsNode = new XElement("Compositions");
+            var compositions = item.ContentTypeComposition;
+            foreach (var composition in compositions.OrderBy(x => x.Key))
+            {
+                compositionsNode.Add(new XElement("Composition", composition.Alias,
+                    new XAttribute("Key", composition.Key))
+                    );
+            }
+            info.Add(compositionsNode);
 
             var tabs = SerializeTabs(item);
 
