@@ -159,13 +159,13 @@ namespace Jumoo.uSync.Core.Serializers
                 return true;
 
             DateTime updateTime = node.Attribute("updated").ValueOrDefault(DateTime.Now);
-            if (DateTime.Compare(updateTime, item.UpdateDate) <= 0)
+            if ((updateTime - item.UpdateDate).TotalSeconds > 1)
             {
-                return false;
+                return true;
             }
             else
             {
-                return true;
+                return false;
             }
 
         }
