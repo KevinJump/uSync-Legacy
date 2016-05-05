@@ -6,6 +6,7 @@
                 <small>(uSync.BackOffice {{settings.backOfficeVersion}})</small>
                 <small>
                     (uSync.Core {{settings.coreVersion}})
+                    {{settings.addOns}}
                     <button class="btn btn-mini btn-link" ng-click="toggleSettings()">[config]</button>
                 </small>
             </h3>
@@ -67,21 +68,21 @@
             </p>
             <div class="span6">
                 <p>
-                    <button class="btn btn-info" ng-click="report()">Report</button>
+                    <button class="btn btn-info" ng-click="report()" ng-disabled="reporting">Report</button>
                     <small class="muted">Find out what will change if you import</small>
                 </p>
                 <p>
-                    <button class="btn btn-success" ng-click="import(false)">Import</button>
+                    <button class="btn btn-success" ng-click="import(false)" ng-disabled="reporting">Import</button>
                     <small class="muted">Import on the things that have changed</small>
                 </p>
             </div>
             <div class="span6">
                 <p>
-                    <button class="btn btn-mini btn-warning" ng-click="import(true)">Full Import</button>
+                    <button class="btn btn-mini btn-warning" ng-click="import(true)" ng-disabled="reporting">Full Import</button>
                     <small class="muted">Import everything (even if it's the same)</small>
                 </p>
                 <p>
-                    <button class="btn btn-mini btn-inverse" ng-click="export()">Full Export</button>
+                    <button class="btn btn-mini btn-inverse" ng-click="export()" ng-disabled="reporting">Full Export</button>
                     <small class="muted">Export everything to disk (wipes current folder)</small>
                 </p>
             </div>
