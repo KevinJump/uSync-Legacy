@@ -53,14 +53,30 @@ namespace Jumoo.uSync.Core.Serializers
             var parentId = -1;
             // var folderId = -1;
 
-            /*
+            
             var parentAlias = info.Element("Master");
             if (parentAlias != null && !string.IsNullOrEmpty(parentAlias.Value))
             {
-                parent = _contentTypeService.GetMediaType(parentAlias.Value);
-                parentId = parent.Id;
+                // legacy master upgrade - when master is set we coming from
+                // an old version of umbraco, under 7.4.x we can't have master types
+                // for media, so we make the master a composition.
+
+                // because we didn't support compostions while we where writing out
+                // the master value we can 'assume' that the compositions node is 
+                // empty? 
+                LogHelper.Debug<MediaTypeSerializer>("Master -> Composition: {0}", () => parentAlias.Value);
+
+                var parent = _contentTypeService.GetMediaType(parentAlias.Value);
+
+                XElement compositionsNode = info.Element("Compositions");
+                if (compositionsNode == null)
+                    compositionsNode = new XElement("Compositions");
+
+                compositionsNode.Add(new XElement("Composition", parentAlias.Value, new XAttribute("Key", parent.Key)));
+                info.Add(compositionsNode);
             }
 
+            /*
             if (parentId == -1)
             {
                 folderId = GetMediaFolders(info, item);
@@ -94,9 +110,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             DeserializeBase(item, info);
 
-            if (parentId != -1) {
-                item.SetLazyParentId(new Lazy<int>(() => parentId));
-            }
+            item.SetLazyParentId(new Lazy<int>(() => parentId));
 
             var msg = DeserializeProperties(item, node);
 
@@ -191,6 +205,8 @@ namespace Jumoo.uSync.Core.Serializers
                 foreach (var composistion in comps.Elements("Composition"))
                 {
                     var compAlias = composistion.Value;
+
+                    LogHelper.Debug<MediaTypeSerializer>("Composition: {0}", () => compAlias);
                     var compKey = composistion.Attribute("Key").ValueOrDefault(Guid.Empty);
                     IMediaType type = null;
                     if (compKey != Guid.Empty)
