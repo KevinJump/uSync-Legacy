@@ -49,10 +49,11 @@ namespace Jumoo.uSync.Core.Serializers
             }
 
             // you need the parent to create, so do it here...
-            var parent = default(IMediaType);
+            // var parent = default(IMediaType);
             var parentId = -1;
-            var folderId = -1;
+            // var folderId = -1;
 
+            /*
             var parentAlias = info.Element("Master");
             if (parentAlias != null && !string.IsNullOrEmpty(parentAlias.Value))
             {
@@ -65,6 +66,9 @@ namespace Jumoo.uSync.Core.Serializers
                 folderId = GetMediaFolders(info, item);
                 parentId = folderId; 
             }
+            */
+
+            parentId = GetMediaFolders(info, item);
 
             var alias = info.Element("Alias").Value;
 
@@ -90,7 +94,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             DeserializeBase(item, info);
 
-            if (folderId != -1) {
+            if (parentId != -1) {
                 item.SetLazyParentId(new Lazy<int>(() => parentId));
             }
 
@@ -222,11 +226,15 @@ namespace Jumoo.uSync.Core.Serializers
 
             var info = SerializeInfo(item);
 
+            /*
             var masterItem = item.CompositionAliases().FirstOrDefault();
             if (masterItem != null)
                 info.Add(new XElement("Master", masterItem));
 
-            if (item.Level != 1 && masterItem == null)
+            // in v7.4.x media can't have a parent (it's compositons only)
+            */
+
+            if (item.Level != 1)
             {
                 var folders = _contentTypeService.GetMediaTypeContainers(item)
                     .OrderBy(x => x.Level)
