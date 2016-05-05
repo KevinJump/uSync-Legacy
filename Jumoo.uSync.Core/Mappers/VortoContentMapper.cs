@@ -57,22 +57,26 @@ namespace Jumoo.uSync.Core.Mappers
                         // map some vorto values here.... 
                         var vorto = JsonConvert.DeserializeObject<uSyncVortoValue>(value);
 
-                        var newValue = new uSyncVortoValue();
-                        newValue.DtdGuid = vorto.DtdGuid;
-                        newValue.Values = new Dictionary<string, object>();
 
-                        foreach (var v in vorto.Values)
+                        if (vorto.Values.Any())
                         {
-                            var mapped = "";
-                            if (import)
-                                mapped = mapper.GetImportValue(dtd.Id, (string)v.Value);
-                            else
-                                mapped = mapper.GetExportValue(dtd.Id, (string)v.Value);
+                            var newValue = new uSyncVortoValue();
+                            newValue.DtdGuid = vorto.DtdGuid;
+                            newValue.Values = new Dictionary<string, object>();
 
-                            newValue.Values.Add(v.Key, mapper.GetExportValue(dtd.Id, mapped));
+                            foreach (var v in vorto.Values)
+                            {
+                                var mapped = "";
+                                if (import)
+                                    mapped = mapper.GetImportValue(dtd.Id, (string)v.Value);
+                                else
+                                    mapped = mapper.GetExportValue(dtd.Id, (string)v.Value);
+
+                                newValue.Values.Add(v.Key, mapper.GetExportValue(dtd.Id, mapped));
+                            }
+
+                            value = JsonConvert.SerializeObject(newValue, Formatting.None);
                         }
-
-                        value = JsonConvert.SerializeObject(newValue, Formatting.None);
                     }
                 }
             }
