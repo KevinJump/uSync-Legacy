@@ -34,7 +34,7 @@ namespace Jumoo.uSync.ContentMappers
                 if (doctype == null)
                     continue;
 
-                foreach(var propertyType in doctype.CompositionPropertyTypes)
+                foreach (var propertyType in doctype.CompositionPropertyTypes)
                 {
                     object alias = nestedObject[propertyType.Alias];
                     if (alias != null)
@@ -42,17 +42,11 @@ namespace Jumoo.uSync.ContentMappers
                         var dataType = _dataTypeService.GetDataTypeDefinitionById(propertyType.DataTypeDefinitionId);
                         if (dataType != null)
                         {
-                            uSyncContentMapping mapping =
-                                uSyncCoreContext.Instance.Configuration.Settings.ContentMappings.SingleOrDefault(x => x.EditorAlias == dataType.PropertyEditorAlias);
-
-                            if (mapping != null)
+                            IContentMapper mapper = ContentMapperFactory.GetMapper(dataType.PropertyEditorAlias);
+                            if (mapper != null)
                             {
-                                IContentMapper mapper = ContentMapperFactory.GetMapper(mapping);
-                                if (mapper != null)
-                                {
-                                    nestedObject[propertyType.Alias] =
-                                        mapper.GetExportValue(dataType.Id, nestedObject[propertyType.Alias].ToString());
-                                }
+                                nestedObject[propertyType.Alias] =
+                                    mapper.GetExportValue(dataType.Id, nestedObject[propertyType.Alias].ToString());
                             }
                         }
                     }
@@ -82,17 +76,11 @@ namespace Jumoo.uSync.ContentMappers
                         var dataType = _dataTypeService.GetDataTypeDefinitionById(propertyType.DataTypeDefinitionId);
                         if (dataType != null)
                         {
-                            uSyncContentMapping mapping =
-                                uSyncCoreContext.Instance.Configuration.Settings.ContentMappings.SingleOrDefault(x => x.EditorAlias == dataType.PropertyEditorAlias);
-
-                            if (mapping != null)
+                            IContentMapper mapper = ContentMapperFactory.GetMapper(dataType.PropertyEditorAlias);
+                            if (mapper != null)
                             {
-                                IContentMapper mapper = ContentMapperFactory.GetMapper(mapping);
-                                if (mapper != null)
-                                {
-                                    nestedObject[propertyType.Alias] =
-                                        mapper.GetImportValue(dataType.Id, nestedObject[propertyType.Alias].ToString());
-                                }
+                                nestedObject[propertyType.Alias] =
+                                    mapper.GetImportValue(dataType.Id, nestedObject[propertyType.Alias].ToString());
                             }
                         }
                     }
