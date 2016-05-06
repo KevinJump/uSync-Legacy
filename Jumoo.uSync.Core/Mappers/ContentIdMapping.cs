@@ -14,6 +14,9 @@ namespace Jumoo.uSync.Core.Mappers
     {
         public string GetExportValue(int dataTypeDefinitionId, string value)
         {
+            if (string.IsNullOrWhiteSpace(value))
+                return value; 
+
             Dictionary<string, string> replacements = new Dictionary<string, string>();
 
             foreach (Match m in Regex.Matches(value, @"\d{4,9}"))
