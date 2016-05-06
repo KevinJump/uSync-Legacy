@@ -42,44 +42,37 @@ namespace Jumoo.uSync.ContentMappers
             var propEditor = config.Value<string>("propertyEditorAlias");
             var docTypeGuid = Guid.Parse(config.Value<string>("guid"));
 
-            var mapping =
-                uSyncCoreContext.Instance.Configuration.Settings.ContentMappings
-                .SingleOrDefault(x => x.EditorAlias == propEditor);
+            IContentMapper mapper = ContentMapperFactory.GetMapper(propEditor);
 
-            if (mapping != null)
+            if (mapper != null)
             {
-                IContentMapper mapper = ContentMapperFactory.GetMapper(mapping);
-
-                if (mapper != null)
+                var dtd = _dataTypeService.GetDataTypeDefinitionById(docTypeGuid);
+                if (dtd != null)
                 {
-                    var dtd = _dataTypeService.GetDataTypeDefinitionById(docTypeGuid);
-                    if (dtd != null)
+
+                    LogHelper.Debug<VortoContentMapper>("Vorto: {0}", () => value);
+                    // map some vorto values here.... 
+                    var vorto = JsonConvert.DeserializeObject<uSyncVortoValue>(value);
+
+
+                    if (vorto.Values.Any())
                     {
+                        var newValue = new uSyncVortoValue();
+                        newValue.DtdGuid = vorto.DtdGuid;
+                        newValue.Values = new Dictionary<string, object>();
 
-                        LogHelper.Debug<VortoContentMapper>("Vorto: {0}", () => value);
-                        // map some vorto values here.... 
-                        var vorto = JsonConvert.DeserializeObject<uSyncVortoValue>(value);
-
-
-                        if (vorto.Values.Any())
+                        foreach (var v in vorto.Values)
                         {
-                            var newValue = new uSyncVortoValue();
-                            newValue.DtdGuid = vorto.DtdGuid;
-                            newValue.Values = new Dictionary<string, object>();
+                            var mapped = "";
+                            if (import)
+                                mapped = mapper.GetImportValue(dtd.Id, (string)v.Value);
+                            else
+                                mapped = mapper.GetExportValue(dtd.Id, (string)v.Value);
 
-                            foreach (var v in vorto.Values)
-                            {
-                                var mapped = "";
-                                if (import)
-                                    mapped = mapper.GetImportValue(dtd.Id, (string)v.Value);
-                                else
-                                    mapped = mapper.GetExportValue(dtd.Id, (string)v.Value);
-
-                                newValue.Values.Add(v.Key, mapper.GetExportValue(dtd.Id, mapped));
-                            }
-
-                            value = JsonConvert.SerializeObject(newValue, Formatting.None);
+                            newValue.Values.Add(v.Key, mapper.GetExportValue(dtd.Id, mapped));
                         }
+
+                        value = JsonConvert.SerializeObject(newValue, Formatting.None);
                     }
                 }
             }
