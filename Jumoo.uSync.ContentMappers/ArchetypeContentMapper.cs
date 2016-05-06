@@ -1,13 +1,17 @@
 ﻿using System.Linq;
-using Archetype.Models;
-using Jumoo.uSync.Core;
-using Jumoo.uSync.Core.Mappers;
-using Newtonsoft.Json;
+
 using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
 
-namespace Jumoo.uSync.Archetype
+using Newtonsoft.Json;
+
+using Jumoo.uSync.Core;
+using Jumoo.uSync.Core.Mappers;
+
+using Archetype.Models;
+
+namespace Jumoo.uSync.ContentMappers
 {
     public class ArchetypeContentMapper : IContentMapper
     {
