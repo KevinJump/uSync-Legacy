@@ -2,10 +2,14 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using Umbraco.Core;
+using Umbraco.Core.Configuration;
+using Umbraco.Core.IO;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 
@@ -49,6 +53,13 @@ namespace Jumoo.uSync.Core.Mappers
             if (grid == null)
                 return content;
 
+            var gridConfig = UmbracoConfig.For.GridConfig(
+                ApplicationContext.Current.ProfilingLogger.Logger,
+                ApplicationContext.Current.ApplicationCache.RuntimeCache,
+                new DirectoryInfo(HttpContext.Current.Server.MapPath(SystemDirectories.AppPlugins)),
+                new DirectoryInfo(HttpContext.Current.Server.MapPath(SystemDirectories.Config)),
+                HttpContext.Current.IsDebuggingEnabled);
+
             var sections = GetArray(grid, "sections");
             foreach (var section in sections.Cast<JObject>())
             {
@@ -70,6 +81,20 @@ namespace Jumoo.uSync.Core.Mappers
 
                                     var grid_alias = string.Format("grid.{0}", alias);
                                     var mapping = usyncMappings.SingleOrDefault(x => x.EditorAlias == grid_alias);
+                                    if (mapping == null)
+                                    {
+                                        // leblender style lookup, look for the name (from the config)
+                                        var config = gridConfig.EditorsConfig.Editors.FirstOrDefault(x => x.Alias == alias);
+                                        if (config != null)
+                                        {
+                                            var view = config.View;
+                                            if (view.IndexOf('/') > 0)
+                                                view = view.Substring(view.LastIndexOf('/'));
+
+                                            mapping = usyncMappings.SingleOrDefault(x => x.View == view);
+                                        }
+                                    }
+
                                     if (mapping != null)
                                     {
                                         var propertyName = mapping.Settings;
