@@ -138,6 +138,10 @@
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Web.XmlTransform, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MiniProfiler, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b44f9351044011a3, processorArchitecture=MSIL">
       <HintPath>..\packages\MiniProfiler.2.1.0\lib\net40\MiniProfiler.dll</HintPath>
       <Private>True</Private>
@@ -261,6 +265,7 @@
     <Compile Include="DocTypeGridMapper.cs" />
     <Compile Include="LeBlenderContentMapper.cs" />
     <Compile Include="NestedContentMapper.cs" />
+    <Compile Include="PackageActions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VortoContentMapper.cs" />
   </ItemGroup>
@@ -289,10 +294,12 @@ XCOPY "$(TargetPath)" "$(SolutionDir)umbPackage\uSync.ContentMappers\" /q /y
 XCOPY "$(ProjectDir)Config\uSyncCore.config.install.xdt" "$(SolutionDir)umbPackage\uSync.ContentMappers\" /q /y
 XCOPY "$(ProjectDir)Config\uSyncCore.config.uninstall.xdt" "$(SolutionDir)umbPackage\uSync.ContentMappers\" /q /y
 XCOPY "$(ProjectDir)package.xml" "$(SolutionDir)umbPackage\uSync.ContentMappers\" /q /y
+XCOPY "$(TargetDir)Microsoft.Web.XmlTransform.dll" "$(SolutionDir)umbPackage\uSync.ContentMappers\" /q /y
 
 XCOPY "$(TargetPath)" "$(SolutionDir)umbPackage\uSync.ContentEdition\" /q /y
 XCOPY "$(ProjectDir)Config\uSyncCore.config.install.xdt" "$(SolutionDir)umbPackage\uSync.ContentEdition\" /q /y
 XCOPY "$(ProjectDir)Config\uSyncCore.config.uninstall.xdt" "$(SolutionDir)umbPackage\uSync.ContentEdition\" /q /y
+XCOPY "$(TargetDir)Microsoft.Web.XmlTransform.dll" "$(SolutionDir)umbPackage\uSync.ContentEdition\" /q /y
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

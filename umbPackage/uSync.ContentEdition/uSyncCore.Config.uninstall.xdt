@@ -5,5 +5,6 @@
     <uSyncContentMapping Alias="Our.Umbraco.NestedContent" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.NestedContentMapper,Jumoo.uSync.ContentMappers" xdt:Transform="Remove"/>
     <uSyncContentMapping Alias="Our.Umbraco.Vorto" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.VortoContentMapper, Jumoo.uSync.ContentMappers" xdt:Transform="Remove"/>
     <uSyncContentMapping Alias="grid.docType" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.DocTypeGridMapper, Jumoo.uSync.ContentMappers" Settings="value" xdt:Transform="Remove" />
+    <uSyncContentMapping Alias="grid.leBlender" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.LeBlenderContentMapper, Jumoo.uSync.ContentMappers" xdt:Transform="Remove"/>
   </ContentMappings>
 </uSyncCoreSettings>
