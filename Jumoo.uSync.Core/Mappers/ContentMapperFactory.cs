@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Jumoo.uSync.Core.Mappers
 {
@@ -32,6 +33,17 @@ namespace Jumoo.uSync.Core.Mappers
                 default:
                     return null;
             }
+        }
+
+        public static IContentMapper GetMapper(string alias)
+        {
+            var mapping = uSyncCoreContext.Instance.Configuration.Settings.ContentMappings
+                .SingleOrDefault(x => x.EditorAlias == alias);
+
+            if (mapping == null)
+                return null;
+            else
+                return GetMapper(mapping);
         }
     }
 }
