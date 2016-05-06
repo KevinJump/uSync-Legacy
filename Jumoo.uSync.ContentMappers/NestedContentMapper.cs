@@ -1,16 +1,15 @@
-﻿using Jumoo.uSync.Core;
-using Jumoo.uSync.Core.Mappers;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
+
 using Umbraco.Core;
 using Umbraco.Core.Services;
 
-namespace Jumoo.uSync.NestedContent
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+using Jumoo.uSync.Core;
+using Jumoo.uSync.Core.Mappers;
+
+namespace Jumoo.uSync.ContentMappers
 {
     public class NestedContentMapper : IContentMapper
     {

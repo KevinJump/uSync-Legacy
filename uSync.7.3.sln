@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Umbraco.Site", "Umbraco.Site\Umbraco.Site.csproj", "{CDC6D1E7-3387-4F93-A7D2-B666ED655CDE}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.Content", "Jumoo.uSync.Content\Jumoo.uSync.Content.csproj", "{A07D22E1-8E57-4D1E-9CA5-EFF4087E7A52}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.Snapshots", "Jumoo.uSync.Snapshots\Jumoo.uSync.Snapshots.csproj", "{5119547A-36B5-4D44-A1A7-1C01BC37CA33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.ContentMappers", "Jumoo.uSync.ContentMappers\Jumoo.uSync.ContentMappers.csproj", "{8F96B572-835D-4C55-BFE9-F2AE4FC40247}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{5119547A-36B5-4D44-A1A7-1C01BC37CA33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5119547A-36B5-4D44-A1A7-1C01BC37CA33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5119547A-36B5-4D44-A1A7-1C01BC37CA33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F96B572-835D-4C55-BFE9-F2AE4FC40247}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F96B572-835D-4C55-BFE9-F2AE4FC40247}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F96B572-835D-4C55-BFE9-F2AE4FC40247}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F96B572-835D-4C55-BFE9-F2AE4FC40247}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
