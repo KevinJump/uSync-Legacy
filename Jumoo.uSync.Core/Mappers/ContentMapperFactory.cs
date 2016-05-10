@@ -8,7 +8,6 @@ namespace Jumoo.uSync.Core.Mappers
         public static IContentMapper GetCustomMapper(string typeDefinition)
         {
             Type mapperType = Type.GetType(typeDefinition);
-
             if (mapperType == null)
             {
                 return null;
@@ -23,7 +22,7 @@ namespace Jumoo.uSync.Core.Mappers
             switch (mapping.MappingType)
             {
                 case ContentMappingType.Content:
-                    return new ContentIdMapper();
+                    return new ContentIdMapper(mapping.RegEx);
                 case ContentMappingType.DataType:
                     return new ContentDataTypeMapper();
                 case ContentMappingType.DataTypeKeys:
