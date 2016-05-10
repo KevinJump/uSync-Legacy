@@ -13,7 +13,10 @@ namespace Jumoo.uSync.Core.Mappers
     class ContentIdMapper : IContentMapper
     {
         private string _exportRegex; 
+        public ContentIdMapper(string regex)
         {
+            if (!regex.IsNullOrWhiteSpace())
+                _exportRegex = regex;
             else
                 _exportRegex = @"\d{4,9}";
         }
