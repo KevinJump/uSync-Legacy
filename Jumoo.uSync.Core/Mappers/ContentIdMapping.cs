@@ -12,6 +12,12 @@ namespace Jumoo.uSync.Core.Mappers
 {
     class ContentIdMapper : IContentMapper
     {
+        private string _exportRegex; 
+        {
+            else
+                _exportRegex = @"\d{4,9}";
+        }
+
         public string GetExportValue(int dataTypeDefinitionId, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -19,7 +25,7 @@ namespace Jumoo.uSync.Core.Mappers
 
             Dictionary<string, string> replacements = new Dictionary<string, string>();
 
-            foreach (Match m in Regex.Matches(value, @"\d{4,9}"))
+            foreach (Match m in Regex.Matches(value, _exportRegex))
             {
                 int id;
                 if (int.TryParse(m.Value, out id))

@@ -78,23 +78,10 @@ namespace Jumoo.uSync.Core.Serializers
 
         internal string GetImportIds(PropertyType propType, string content)
         {
-            var mapping = uSyncCoreContext.Instance.Configuration.Settings.ContentMappings
-                .SingleOrDefault(x => x.EditorAlias == propType.PropertyEditorAlias);
+            var mapper = ContentMapperFactory.GetMapper(propType.PropertyEditorAlias);
 
-            if (mapping != null)
-            {
-                LogHelper.Debug<Events>("Mapping Content Import: {0} {1}", () => mapping.EditorAlias, () => mapping.MappingType);
-                IContentMapper mapper = ContentMapperFactory.GetMapper(mapping);
-
-                if (mapper != null)
-                {
-                    return mapper.GetImportValue(propType.DataTypeDefinitionId, content);
-                }
-                else
-                {
-                    LogHelper.Warn<Events>("Attempted to find a mapper for {0} {1}, but couldn't", () => mapping.EditorAlias, () => mapping.MappingType);
-                }
-            }
+            if (mapper != null)
+                return mapper.GetImportValue(propType.DataTypeDefinitionId, content);
 
             return content;
         }
