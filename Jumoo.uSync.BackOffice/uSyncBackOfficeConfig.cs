@@ -110,6 +110,11 @@ namespace Jumoo.uSync.BackOffice
 
         [XmlAttribute(AttributeName = "Enabled")]
         public bool Enabled { get; set; }
+
+        // handler modes ? 
+        // Syncronize (So new, copies, deletes, renames)
+        // Contribute (adds only, nothing else is pushed)
+
     }
 
 
