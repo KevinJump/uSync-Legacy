@@ -41,7 +41,9 @@
     <readme>
       <![CDATA[ uSync3 : uSync.ContentEdition 3.2.0.740
 ======================
-Content Edition Extended uSync.BackOffice with Handlers for Content and Media
+Content Edition Extended uSync.BackOffice with Handlers for Content and Media.
+
+Now includes mappers for : The Grid, Archetype, Nested Content, Vorot, LeBelnder & DocTypeGrid Editor
 ]]>
     </readme>
   </info>
