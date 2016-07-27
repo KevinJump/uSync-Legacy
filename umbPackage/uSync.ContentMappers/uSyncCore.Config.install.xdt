@@ -1,10 +1,17 @@
 ﻿<?xml version="1.0"?>
 <uSyncCoreSettings xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
   <ContentMappings>
-    <uSyncContentMapping Alias="Imulus.Archetype" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.ArchetypeContentMapper,Jumoo.uSync.ContentMappers" xdt:Transform="Insert"/>
-    <uSyncContentMapping Alias="Our.Umbraco.NestedContent" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.NestedContentMapper,Jumoo.uSync.ContentMappers" xdt:Transform="Insert"/>
-    <uSyncContentMapping Alias="Our.Umbraco.Vorto" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.VortoContentMapper, Jumoo.uSync.ContentMappers" xdt:Transform="Insert"/>
-    <uSyncContentMapping Alias="grid.docType" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.DocTypeGridMapper, Jumoo.uSync.ContentMappers" Settings="value" xdt:Transform="Insert" />
-    <uSyncContentMapping Alias="grid.leBlender" View="LeBlendereditor.html" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.LeBlenderContentMapper, Jumoo.uSync.ContentMappers" xdt:Transform="Insert"/>
+
+    <uSyncContentMapping Alias="Imulus.Archetype" xdt:Transform="Remove" xdt:Locator="Match(Alias)" />
+    <uSyncContentMapping Alias="Our.Umbraco.Vorto" xdt:Transform="Remove" xdt:Locator="Match(Alias)" />
+    <uSyncContentMapping Alias="Our.Umbraco.Vorto" xdt:Transform="Remove" xdt:Locator="Match(Alias)" />
+    <uSyncContentMapping Alias="grid.docType" xdt:Transform="Remove" xdt:Locator="Match(Alias)" />
+    <uSyncContentMapping Alias="grid.leBlender" xdt:Transform="Remove" xdt:Locator="Match(Alias)" />
+
+    <uSyncContentMapping Alias="Imulus.Archetype" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.ArchetypeContentMapper,Jumoo.uSync.ContentMappers" xdt:Transform="Insert" xdt:Locator="Match(Alias)"/>
+    <uSyncContentMapping Alias="Our.Umbraco.NestedContent" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.NestedContentMapper,Jumoo.uSync.ContentMappers" xdt:Transform="Insert" xdt:Locator="Match(Alias)"/>
+    <uSyncContentMapping Alias="Our.Umbraco.Vorto" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.VortoContentMapper, Jumoo.uSync.ContentMappers" xdt:Transform="Insert" xdt:Locator="Match(Alias)"/>
+    <uSyncContentMapping Alias="grid.docType" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.DocTypeGridMapper, Jumoo.uSync.ContentMappers" xdt:Transform="Insert" xdt:Locator="Match(Alias)" />
+    <uSyncContentMapping Alias="grid.leBlender" View="LeBlendereditor.html" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.LeBlenderContentMapper, Jumoo.uSync.ContentMappers" xdt:Transform="Insert" xdt:Locator="Match(Alias)"/>
   </ContentMappings>
 </uSyncCoreSettings>
