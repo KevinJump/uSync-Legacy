@@ -1,4 +1,5 @@
 ﻿using Jumoo.uSync.Core;
+using Jumoo.uSync.Core.Extensions;
 using Jumoo.uSync.Core.Helpers;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.Xml.Linq;
 using Umbraco.Core.IO;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models.EntityBase;
+using Umbraco.Core.Models;
 
 namespace Jumoo.uSync.BackOffice
 {
@@ -178,6 +180,70 @@ namespace Jumoo.uSync.BackOffice
             }
         }
 
+        public static IEnumerable<uSyncHistory> GetActionHistory(bool loadHistory)
+        {
+            var history = new List<uSyncHistory>();
+
+            var folderPath = IOHelper.MapPath(Path.Combine(SystemDirectories.Data, "temp", "uSync"));
+
+            if (!Directory.Exists(folderPath))
+                return history;
+
+            var dir = new DirectoryInfo(folderPath);
+
+            foreach(var file in dir.GetFiles("*.config"))
+            {
+                history.Add(LoadHistoryData(file));
+            }
+
+            return history;
+        }
+
+        public static uSyncHistory LoadHistoryData(FileInfo file)
+        {
+            var info = new uSyncHistory();
+
+
+            info.name = Path.GetFileNameWithoutExtension(file.Name);
+            info.path = file.FullName;
+
+            XElement data = XElement.Load(file.FullName);
+            if (data != null)
+            {
+                info.type = data.Attribute("Name").ValueOrDefault("");
+                info.date = data.Attribute("DateTime").ValueOrDefault("");
+
+                info.actions = new List<uSyncAction>(); 
+
+                var actions = data.Element("Actions");
+                if (actions != null && actions.HasElements)
+                {
+                    foreach(var action in actions.Elements("Action"))
+                    {
+                        var name = action.Attribute("Name").ValueOrDefault("");
+                        var type = action.Attribute("Type").ValueOrDefault("");
+                        var message = action.Attribute("Message").ValueOrDefault("");
+                        var success = action.Attribute("Success").ValueOrDefault(true);
+                        var change = action.Attribute("Change").ValueOrDefault("NoChange");
+                        var changeType = (ChangeType)Enum.Parse(typeof(ChangeType), change, true);
+
+                        var umbType = Type.GetType(string.Format("Umbraco.Core.Models.{0},Umbraco.Core", type));
+                        if (umbType == null)
+                            umbType = typeof(Umbraco.Core.Models.EntityBase.IEntity);
+
+                        info.actions.Add(uSyncAction.SetAction(
+                            success, 
+                            name, 
+                            umbType, 
+                            changeType,
+                            message));
+                    }
+                }
+            }
+
+            return info; 
+        }
+
         /// <summary>
         ///  makes sure the log folder doesn't become masssssssive!
         /// </summary>
@@ -212,5 +278,15 @@ namespace Jumoo.uSync.BackOffice
             }
         }
 
+    }
+
+    public class uSyncHistory
+    {
+        public string name { get; set; }
+        public string path { get; set; }
+        public string type { get; set; }
+        public string date { get; set; }
+
+        public List<uSyncAction> actions { get; set; }
     }
 }

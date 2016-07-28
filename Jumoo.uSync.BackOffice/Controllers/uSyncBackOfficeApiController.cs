@@ -11,6 +11,8 @@ using Umbraco.Web.Editors;
 using Umbraco.Web.Mvc;
 using Umbraco.Web.WebApi;
 
+using Jumoo.uSync.BackOffice.Licence;
+
 namespace Jumoo.uSync.BackOffice.Controllers
 {
     [PluginController("uSync")]
@@ -36,6 +38,12 @@ namespace Jumoo.uSync.BackOffice.Controllers
 
 
             var actions = uSyncBackOfficeContext.Instance.ExportAll();
+
+            // we write a log - when there have been changes, a zero run doesn't get
+            // a file written to disk.
+            if (actions.Any(x => x.Change > ChangeType.NoChange))
+                uSyncActionLogger.SaveActionLog("Export", actions);
+
             return actions;
         }
 
@@ -43,7 +51,15 @@ namespace Jumoo.uSync.BackOffice.Controllers
         public IEnumerable<uSyncAction> Import(bool force)
         {
             var actions = uSyncBackOfficeContext.Instance.ImportAll(force: force);
+
+            // we write a log - when there have been changes, a zero run doesn't get
+            // a file written to disk.
+            if (actions.Any(x => x.Change > ChangeType.NoChange))
+                uSyncActionLogger.SaveActionLog("Import", actions);
+
             return actions;
+
+
         }
 
         [HttpGet]
@@ -62,6 +78,7 @@ namespace Jumoo.uSync.BackOffice.Controllers
                 }
             }
 
+            var l = new GoodwillLicence();
 
             var settings = new BackOfficeSettings()
             {
@@ -69,6 +86,7 @@ namespace Jumoo.uSync.BackOffice.Controllers
                 coreVersion = uSyncCoreContext.Instance.Version,
                 addOns = addOnString,
                 settings = uSyncBackOfficeContext.Instance.Configuration.Settings,
+                licenced = l.IsLicenced()
             };
 
             return settings;
@@ -108,6 +126,13 @@ namespace Jumoo.uSync.BackOffice.Controllers
             uSyncBackOfficeContext.Instance.Configuration.SaveSettings(settings);
             return true; 
         }
+
+
+        [HttpGet]
+        public IEnumerable<uSyncHistory> GetHistory()
+        {
+            return uSyncActionLogger.GetActionHistory(false);
+        }
     }
 
     public class BackOfficeSettings
@@ -116,8 +141,11 @@ namespace Jumoo.uSync.BackOffice.Controllers
         public string coreVersion { get; set; }
         public string addOns { get; set; }
         public uSyncBackOfficeSettings settings { get; set; }
+
+        public bool licenced { get; set; }
     }
 
+ 
     public interface IuSyncAddOn
     {
         string GetVersionInfo();

@@ -8,6 +8,7 @@
         $scope.reported = false;
         $scope.showSettings = false;
         $scope.showTechnical = false;
+        $scope.contentEdition = false; 
 
         LoadSettings();
 
@@ -15,10 +16,23 @@
             uSyncDashboardService.getSettings()
             .then(function (response) {
                 $scope.settings = response.data;
+
+                if ($scope.settings.addOns.indexOf("uSync.Content") > -1) {
+                    $scope.contentEdition = true;
+                }
                 $scope.getuSyncMode();
                 $scope.loading = false;
+
+                $scope.loadHistory();
             });
-        }
+        };
+
+        $scope.loadHistory = function () {
+            uSyncDashboardService.getHistory()
+            .then(function (response) {
+                $scope.history = response.data;
+            });
+        };
 
         $scope.updateSettings = function () {
             $scope.clearError();
@@ -78,6 +92,8 @@
                 $scope.changes = response.data;
                 $scope.reporting = false;
                 $scope.reported = true;
+
+                $scope.loadHistory();
             }, function (error) {
                 $scope.working = false;
                 $scope.setError(error.data);
@@ -109,6 +125,8 @@
             $scope.reported = false;
             $scope.reportName = "Export";
 
+            $scope.loadHistory();
+
             uSyncDashboardService.exporter()
             .then(function (response) {
                 $scope.changes = response.data;
@@ -122,10 +140,10 @@
 
 
         /* results display */
-        $scope.getChangeCount = function () {
+        $scope.getChangeCount = function (changes) {
             var count = 0;
 
-            angular.forEach($scope.changes, function (val, key) {
+            angular.forEach(changes, function (val, key) {
                 if (val.Change > 0) {
                     count++;
                 }
@@ -133,6 +151,7 @@
 
             return count;
         }
+
         $scope.changeVals = [
             'NoChange',
             'Import',

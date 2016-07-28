@@ -21,6 +21,9 @@
             },
             updateSettings: function (mode) {
                 return $http.get(serviceRoot + 'UpdateSyncMode/?mode=' + mode);
+            },
+            getHistory: function () {
+                return $http.get(serviceRoot + 'GetHistory');
             }
         }
     });
