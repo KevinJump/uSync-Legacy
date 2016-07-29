@@ -37,3 +37,8 @@
 .usync-tabs > li > a {
     padding: 0.5em;
 }
+
+.usync-button {
+    text-align: center;
+    margin: 2em 0;
+}

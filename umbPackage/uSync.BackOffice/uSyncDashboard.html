@@ -21,7 +21,7 @@
                                 <span class="text-success">
                                     {{settings.addOns}}
                                 </span>
-                                <button class="btn btn-mini btn-link" ng-click="toggleSettings()">[config]</button>
+                                <button class="btn btn-mini" ng-click="toggleSettings()">config</button>
                             </small>
                         </h3>
                     </div>
@@ -100,6 +100,7 @@
                                 <button class="btn btn-success" ng-click="import(false)" ng-disabled="reporting">Import</button>
                                 <small class="muted">Import on the things that have changed</small>
                             </p>
+
                         </div>
                         <div class="span6">
                             <p>
@@ -109,6 +110,11 @@
                             <p>
                                 <button class="btn btn-mini btn-inverse" ng-click="export()" ng-disabled="reporting">Full Export</button>
                                 <small class="muted">Export everything to disk (wipes current folder)</small>
+                            </p>
+                            <hr />
+                            <p>
+                                <button class="btn btn-mini btn-default" ng-click="loadActions()">view uSync Actions</button>
+                                <small class="muted">uSync Actions track things like deletes</small>
                             </p>
                         </div>
                         <div class="span12"><hr /></div>
@@ -134,11 +140,12 @@
                                         show 'no change' items <input ng-model="showNoChange" type="checkbox" class="form-control" no-Dirty-Check>
                                     </div>
                                 </div>
-                                <table class="table" ng-show="showNoChange || getChangeCount() > 0">
+                                <table class="table" ng-show="showNoChange || getChangeCount(changes) > 0">
                                     <tr>
                                         <th>Name</th>
                                         <th>Type</th>
                                         <th>Change</th>
+                                        <th></th>
                                         <th></th>
                                     </tr>
                                     <tbody ng-repeat="change in changes">
@@ -148,6 +155,8 @@
                                             <td>{{getTypeName(change.ItemType)}}</td>
                                             <td>
                                                 {{change.Message}}
+                                            </td>
+                                            <td>
                                                 <button ng-show="change.Details != null && change.Details.length > 0"
                                                         ng-click="showDetail(change)" class="btn btn-mini">
                                                     Details
@@ -156,7 +165,7 @@
 
                                         </tr>
                                         <tr ng-if="change.Details != null && change.Details.length > 0" ng-show="change.showDetail">
-                                            <td colspan="4">
+                                            <td colspan="5">
                                                 <div class="change-detail">
                                                     <h4>Changes for : {{change.Name}} <small>({{getTypeName(change.ItemType)}})</small></h4>
                                                     <table class="table">
@@ -186,6 +195,38 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="row" ng-show="showActions">
+                    <h3 class="page-header">uSync Actions</h3>
+                    <p>
+                        uSync stores actions (like, deletes, and renames of certain types) in a seperate file (uSyncActions.config),
+                        this lets usync handle the bits that are more than changes of properties.
+                    </p>
+                    <p>
+                        Sometimes you can end up with orphand, actions in the action file; they usally do no harm, but if you want
+                        you can remove them here. 
+                    </p>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Action</th>
+                                <th>Type</th>
+                                <th>Key (Guid)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="action in uSyncActions">
+                                <td>{{action.Name}}</td>
+                                <td>{{action.Action}}</td>
+                                <td>{{action.TypeName}}</td>
+                                <td>{{action.Key}}</td>
+                                <td><button class="btn btn-mini" ng-click="removeAction(action.Name, action.TypeName)">Remove</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
            </div>
 
             <div class="tab-pane" id="history">
@@ -195,7 +236,9 @@
                         <p>
                             uSync logs each successful run in ~/app_data/temp/usync, to clear the history
                             just delete these files.
+                            <button class="btn btn-mini btn-danger" ng-click="clearHistory()">Clear History</button>
                         </p>
+                        <div ng-show="historyCleared > 0" class="alert alert-info">Removed {{historyCleared}} history files</div>
                         <table class="table table-hover">
                             <thead>
                                 <tr>
@@ -271,26 +314,26 @@
                     <div class="span6">
                         <h3 class="page-header">Getting Help</h3>
                         <p>
-                            there are a number of places you can go to get help with usync.
+                            There are a number of places you can go to get help with usync.
                         </p>
                         <h4>uSync Forums on our.umbraco.org</h4>
                         <p>
                             The forums are the best place to go to get answers, not least because
                             other people beyond Kevin might answer them
                         </p>
-                        <p>
+                        <div class="usync-button">
                             <a href="https://our.umbraco.org/projects/developer-tools/usync/usync/" class="btn btn-success">
                                 uSync Forums on our.umbraco.org
                             </a>
-                        </p>
+                        </div>
                         <h4>uSync GitHub Repository</h4>
                         <p>
                             If you want to get underneath the hood, and look at the code, then
                             the github repo is the place to look.
                         </p>
-                        <p>
+                        <div class="usync-button">
                             <a href="https://github.com/KevinJump/uSync/" class="btn btn-default">uSync on github</a>
-                        </p>
+                        </div>
                         <h4>Complex Stuff via Jumoo</h4>
                         <p>
                             If you have some complex weired requirements, that you think uSync could
@@ -300,9 +343,9 @@
                             We are always willing to look at adding new features, and we are not
                             immune to doing some bespoke paid for extensions if you really need them.
                         </p>
-                        <p>
+                        <div class="usync-button">
                             <a href="mailto:usync@jumoo.co.uk" class="btn btn-mini btn-default">Contact Us</a>
-                        </p>
+                        </div>
                     </div>
                     <div class="span6">
                         <h3 class="page-header">Helping uSync</h3>
@@ -315,9 +358,9 @@
                             If you want to add a cool feature or just fix that annoying bug, you can
                             do it yourself!.
                         </p>
-                        <p>
+                        <div class="usync-button">
                             <a href="https://github.com/KevinJump/uSync/" class="btn btn-default">uSync on github</a>
-                        </p>
+                        </div>
                         <p>
                             Go look at the uSync github repositiroy, fork it, do some code stuff and 
                             submit a pull request. We'll merge it in and put it in the next release.
@@ -327,9 +370,9 @@
                             If most of that sounded like a forign language, or if you can't be bothered
                             with it. you can still submit bugs to our issue tracker. 
                         </p>
-                        <p>
+                        <div class="usync-button">
                             <a href="https://github.com/KevinJump/uSync/issues" class="btn btn-warning btn-lg">Submit an issue</a>
-                        </p>
+                        </div>
                         <p>
                             We will work with you to get to the bottom of whats going on, and more than
                             likely we'll fix the issue for you. 

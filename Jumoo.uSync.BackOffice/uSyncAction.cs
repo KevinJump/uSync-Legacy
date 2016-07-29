@@ -180,6 +180,29 @@ namespace Jumoo.uSync.BackOffice
             }
         }
 
+        internal static int ClearHistory()
+        {
+            // deletes the files in the history folder.
+            var folderPath = IOHelper.MapPath(Path.Combine(SystemDirectories.Data, "temp", "uSync"));
+
+            if (!Directory.Exists(folderPath))
+                return 0;
+
+            int count = 0;
+            foreach (var file in Directory.GetFiles(folderPath, "*.config"))
+            {
+                if (System.IO.File.Exists(file))
+                {
+                    System.IO.File.Delete(file);
+                    count++;
+                }
+
+            }
+
+            return count; 
+
+        }
+
         public static IEnumerable<uSyncHistory> GetActionHistory(bool loadHistory)
         {
             var history = new List<uSyncHistory>();

@@ -9,6 +9,7 @@
         $scope.showSettings = false;
         $scope.showTechnical = false;
         $scope.contentEdition = false; 
+        $scope.showActions = false;
 
         LoadSettings();
 
@@ -32,6 +33,45 @@
             .then(function (response) {
                 $scope.history = response.data;
             });
+        };
+
+        $scope.loadActions = function () {
+            $scope.reported = false;
+
+            uSyncDashboardService.getuSyncActions()
+            .then(function (response) {
+                $scope.uSyncActions = response.data;
+                if ($scope.uSyncActions == 0) {
+                    alert('there are no usync actions stored');
+                }
+                else {
+                    $scope.showActions = true;
+                }
+            });
+        }
+
+        $scope.removeAction = function (name, type) {
+            var c = confirm("be careful if you delete an action, you can't get it back");
+            if (c) {
+                uSyncDashboardService.removeuSyncAction(name, type)
+                .then(function (response) {
+                    $scope.uSyncActionResponse = response.data;
+                    $scope.loadActions();
+                });
+            }
+
+        }
+
+        $scope.clearHistory = function () {
+            var c = confirm('are you sure ? if you delete the history, there is no way of getting it back');
+
+            if (c) {
+                uSyncDashboardService.clearHistory()
+                .then(function (response) {
+                    $scope.historyCleared = response.data;
+                    $scope.loadHistory();
+                });
+            }
         };
 
         $scope.updateSettings = function () {
@@ -85,6 +125,8 @@
 
             $scope.reporting = true;
             $scope.reported = false;
+            $scope.showActions = false;
+
             $scope.reportName = "Import";
 
             uSyncDashboardService.importer(force)
@@ -105,6 +147,8 @@
 
             $scope.reporting = true;
             $scope.reported = false;
+            $scope.showActions = false;
+
             $scope.reportName = "Report";
 
             uSyncDashboardService.reporter()
@@ -123,6 +167,8 @@
 
             $scope.reporting = true;
             $scope.reported = false;
+            $scope.showActions = false;
+
             $scope.reportName = "Export";
 
             $scope.loadHistory();
@@ -216,6 +262,7 @@
         $scope.showNoChange = false;
 
         $scope.showChange = function (changeValue) {
+            console.log('show:', changeValue)
             if ($scope.showNoChange || changeValue > 0) {
                 return true;
             }

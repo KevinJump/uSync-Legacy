@@ -12,6 +12,7 @@ using Umbraco.Web.Mvc;
 using Umbraco.Web.WebApi;
 
 using Jumoo.uSync.BackOffice.Licence;
+using Jumoo.uSync.BackOffice.Helpers;
 
 namespace Jumoo.uSync.BackOffice.Controllers
 {
@@ -132,6 +133,31 @@ namespace Jumoo.uSync.BackOffice.Controllers
         public IEnumerable<uSyncHistory> GetHistory()
         {
             return uSyncActionLogger.GetActionHistory(false);
+        }
+
+        [HttpGet]
+        public int ClearHistory()
+        {
+            return uSyncActionLogger.ClearHistory();
+        }
+
+        [HttpGet]
+        public IEnumerable<SyncAction> GetActions()
+        {
+            // gets the actions from the uSync Action file....
+            var uSyncFolder = uSyncBackOfficeContext.Instance.Configuration.Settings.MappedFolder();
+            var Tracker = new Helpers.ActionTracker(uSyncFolder);
+            return Tracker.GetAllActions();
+        }
+
+        [HttpGet]
+        public bool RemoveAction(string name, string type)
+        {
+            // gets the actions from the uSync Action file....
+            var uSyncFolder = uSyncBackOfficeContext.Instance.Configuration.Settings.MappedFolder();
+            var Tracker = new Helpers.ActionTracker(uSyncFolder);
+
+            return Tracker.RemoveActions(name, type);
         }
     }
 
