@@ -65,11 +65,14 @@ namespace Jumoo.uSync.Core.Serializers
 
                 foreach (var valueNode in node.Elements("Value"))
                 {
-                    var languageId = valueNode.Attribute("LanguageCultureAlias").Value;
-                    var language = languages.FirstOrDefault(x => x.IsoCode == languageId);
-                    if (language != null)
+                    var languageId = valueNode.Attribute("LanguageCultureAlias").ValueOrDefault("");
+                    if (!string.IsNullOrEmpty(languageId))
                     {
-                        _localizationService.AddOrUpdateDictionaryValue(item, language, valueNode.Value);
+                        var language = languages.FirstOrDefault(x => x.IsoCode == languageId);
+                        if (language != null)
+                        {
+                            _localizationService.AddOrUpdateDictionaryValue(item, language, valueNode.Value);
+                        }
                     }
                 }
 
