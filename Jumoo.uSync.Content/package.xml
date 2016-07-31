@@ -28,12 +28,12 @@
       <orgName>package.manifest</orgName>
     </file>
     <file>
-      <guid>uSyncDashboard.css</guid>
+      <guid>uSyncDashboardContent.html</guid>
       <orgPath>/App_Plugins/uSync.Content</orgPath>
       <orgName>uSyncDashboardContent.html</orgName>
     </file>
     <file>
-      <guid>uSyncDashboard.html</guid>
+      <guid>usyncDashboardContentController.js</guid>
       <orgPath>/App_Plugins/uSync.Content</orgPath>
       <orgName>usyncDashboardContentController.js</orgName>
     </file>

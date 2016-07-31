@@ -35,7 +35,7 @@
   <info>
     <package>
       <name>uSync.Snapshots</name>
-      <version>1.0.0.740</version>
+      <version>1.0.3.740</version>
       <license url="http://opensource.org/licenses/MIT">MIT License</license>
       <url>http://jumoo.uk/usync</url>
       <requirements>
