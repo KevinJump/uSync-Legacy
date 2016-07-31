@@ -1,6 +1,8 @@
 ﻿angular.module('umbraco').controller('uSyncDashboardController',
     function ($scope, $http, uSyncDashboardService) {
 
+        $scope.snapshotsUrl = "/app_plugins/usync/test.html";
+
         $scope.loading = true;
         $scope.uSyncMode = 'other';
 
@@ -8,7 +10,6 @@
         $scope.reported = false;
         $scope.showSettings = false;
         $scope.showTechnical = false;
-        $scope.contentEdition = false; 
         $scope.showActions = false;
 
         LoadSettings();
@@ -18,9 +19,6 @@
             .then(function (response) {
                 $scope.settings = response.data;
 
-                if ($scope.settings.addOns.indexOf("uSync.Content") > -1) {
-                    $scope.contentEdition = true;
-                }
                 $scope.getuSyncMode();
                 $scope.loading = false;
 
@@ -42,7 +40,7 @@
             .then(function (response) {
                 $scope.uSyncActions = response.data;
                 if ($scope.uSyncActions == 0) {
-                    alert('there are no usync actions stored');
+                    console.log('no actions to load.')
                 }
                 else {
                     $scope.showActions = true;

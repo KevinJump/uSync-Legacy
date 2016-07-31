@@ -291,10 +291,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Plugins\uSync.Content\uSyncDashboardContent.html" />
+    <Content Include="App_Plugins\uSync.Content\uSyncDashboardContentController.js" />
     <Content Include="package.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="App_Plugins\uSync.Content\package.manifest" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -303,7 +306,10 @@
 
 ECHO Coping to Package Folder
 XCOPY "$(TargetPath)" "$(SolutionDir)umbPackage\uSync.ContentEdition\" /q /y
-XCOPY "$(ProjectDir)package.xml" "$(SolutionDir)umbPackage\uSync.ContentEdition\" /q /y</PostBuildEvent>
+XCOPY "$(ProjectDir)package.xml" "$(SolutionDir)umbPackage\uSync.ContentEdition\" /q /y
+
+XCOPY "$(ProjectDir)App_Plugins\uSync.Content\*.*" "$(SolutionDir)umbPackage\uSync.ContentEdition\" /q /y
+</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">

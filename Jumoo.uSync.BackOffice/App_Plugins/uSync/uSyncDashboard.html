@@ -4,14 +4,18 @@
     <div class="row">
         <div class="span12">
             <ul class="nav nav-tabs usync-tabs">
-                <li class="active"><a href="#usync" data-toggle="tab">uSync</a></li>
-                <li><a href="#history" data-toggle="tab">History</a></li>
-                <li><a href="#about" data-toggle="tab">About <i ng-show="!settings.licenced" class="icon-alert-alt color-red"></i></a></li>
+                <li class="active"><a href="#usync_tab" data-toggle="tab">uSync</a></li>
+                <li ng-repeat="tab in settings.addOnTabs track by $index">
+                    <a href="#usync_tab_{{$index}}" data-toggle="tab">{{tab.name}}</a>
+                </li>
+                <li><a href="#usync_history" data-toggle="tab">History</a></li>
+                <li><a href="#usync_config" data-toggle="tab">Config</a></li>
+                <li><a href="#usync_about" data-toggle="tab">About <i ng-show="!settings.licenced" class="icon-alert-alt color-red"></i></a></li>
             </ul>
         </div>
 
         <div class="tab-content">
-            <div class="tab-pane active" id="usync">
+            <div class="tab-pane active" id="usync_tab">
                 <!-- usync tab -->
                 <div class="row">
                     <div class="span12">
@@ -21,66 +25,11 @@
                                 <span class="text-success">
                                     {{settings.addOns}}
                                 </span>
-                                <button class="btn btn-mini" ng-click="toggleSettings()">config</button>
                             </small>
                         </h3>
                     </div>
                 </div>
-                <div class="row">
-                    <div ng-show="showSettings">
-                        <div class="span12">
-                            <div ng-show="contentEdition" class="alert alert-success">
-                                uSync.ContentEdition is installed. Content and Media Handlers can now import and export content, as part of
-                                a standard sync.
-                            </div>
-                        </div>
-                        <div class="span6">
-                            <div class="usync-info">
-                                <h4>Setup</h4>
-                                <p>Choose how uSync behaves on your site</p>
-                                <label class="radio">
-                                    <input type="radio" ng-model="uSyncMode" value="auto" />
-                                    Auto Sync <small>Run import at startup, save changes to disk when they occur</small>
-                                </label>
-                                <label class="radio">
-                                    <input type="radio" ng-model="uSyncMode" value="target" />
-                                    Sync Target <small>Will run import at startup only</small>
-                                </label>
-                                <label class="radio">
-                                    <input type="radio" ng-model="uSyncMode" value="source" />
-                                    Sync Source <small>Don't import but save any changes that are made to disk</small>
-                                </label>
-                                <label class="radio">
-                                    <input type="radio" ng-model="uSyncMode" value="manual" />
-                                    Manual Sync <small>
-                                        No automatic imports or saves.
-                                        (whay not try <a href="https://our.umbraco.org/projects/developer-tools/usyncSnapshots/">uSync.Snapshots</a>?)
-                                    </small>
-                                </label>
-                                <label class="radio">
-                                    <input type="radio" ng-model="uSyncMode" value="other" enabled="false" />
-                                    Other <small>Some other weird setup - see your usyncBackOffice.config</small>
-                                </label>
-                                <div class="pull-right">
-                                    <button class="btn btn-default" ng-click="updateSettings()">Save Settings</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="span6">
-                            <h4>Technical Bits</h4>
-                            <p>
-                                Installed handlers, that actually do all the work of getting things to and from disk. You
-                                can turn handlers on and off in the uSyncBackoffice.config file.
-                            </p>
-                            <ul>
-                                <li ng-repeat="handler in settings.settings.Handlers" ng-class="{'muted' : !handler.Enabled}">
-                                    {{handler.Name}} <em>(Enabled: {{handler.Enabled}})</em>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
+                
                 <div class="row">
                     <div class="span12">
                         <h4 class="page-header">Import / Export</h4>
@@ -229,7 +178,7 @@
                 </div>
            </div>
 
-            <div class="tab-pane" id="history">
+            <div class="tab-pane" id="usync_history">
                 <!-- histroy -->
                 <div class="row">
                     <div class="span12">
@@ -285,10 +234,77 @@
                 </div>
             </div>
 
-            <div id="about" class="tab-pane">
+            <div id="usync_config" class="tab-pane">
+                <div class="row">
+                    <div class="span12">
+                        <div ng-show="contentEdition" class="alert alert-success">
+                            uSync.ContentEdition is installed. Content and Media Handlers can now import and export content, as part of
+                            a standard sync.
+                        </div>
+                    </div>
+                    <div class="span6">
+                        <div class="usync-info">
+                            <h4>Setup</h4>
+                            <p>Choose how uSync behaves on your site</p>
+                            <label class="radio">
+                                <input type="radio" ng-model="uSyncMode" value="auto" />
+                                Auto Sync <small>Run import at startup, save changes to disk when they occur</small>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" ng-model="uSyncMode" value="target" />
+                                Sync Target <small>Will run import at startup only</small>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" ng-model="uSyncMode" value="source" />
+                                Sync Source <small>Don't import but save any changes that are made to disk</small>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" ng-model="uSyncMode" value="manual" />
+                                Manual Sync <small>
+                                    No automatic imports or saves.
+                                    (whay not try <a href="https://our.umbraco.org/projects/developer-tools/usyncSnapshots/">uSync.Snapshots</a>?)
+                                </small>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" ng-model="uSyncMode" value="other" enabled="false" />
+                                Other <small>Some other weird setup - see your usyncBackOffice.config</small>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="span6">
+                        <h4>Handlers</h4>
+                        <p>
+                            Installed handlers, that actually do all the work of getting things to and from disk. You
+                            can turn handlers on and off in the uSyncBackoffice.config file.
+                        </p>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Enabled</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="handler in settings.settings.Handlers" ng-class="{'muted' : !handler.Enabled}">
+                                    <td>{{handler.Name}}</td>
+                                    <td>{{handler.Enabled}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="span6">
+                        <div class="text-center">
+                            <button class="btn btn-default" ng-click="updateSettings()">Save Settings</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="usync_about" class="tab-pane">
                 <p>
                     uSync is written and developed by <a href="http://jumoo.uk">Jumoo</a>, and is compleatly
-                    free and open source. [{{settings.licenced}}]
+                    free and open source.
                 </p>
                 <!-- licencing -->
                 <div ng-hide="settings.licenced">
@@ -380,6 +396,10 @@
                     </div>
                 </div>
 
+            </div>
+
+            <div ng-repeat="tab in settings.addOnTabs track by $index" id="usync_tab_{{$index}}" class="tab-pane">
+                <div ng-include="tab.template"></div>
             </div>
         </div>
     </div>

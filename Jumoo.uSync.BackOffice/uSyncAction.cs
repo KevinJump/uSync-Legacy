@@ -219,6 +219,8 @@ namespace Jumoo.uSync.BackOffice
                 history.Add(LoadHistoryData(file));
             }
 
+            history.Reverse();
+
             return history;
         }
 

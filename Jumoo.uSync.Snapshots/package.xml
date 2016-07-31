@@ -64,16 +64,5 @@ snapshots of your umbraco site. Only the changes you make between snapshots are 
   <DictionaryItems />
   <Languages />
   <DataTypes />
-  <Actions>
-    <Action runat="install" alias="addDashboardSection" dashboardAlias="usyncSnapshots">
-      <section>
-        <areas>
-          <area>developer</area>
-        </areas>
-        <tab caption="uSync Snapshots">
-          <control>/App_Plugins/usyncSnapshots/SnapshotDashboard.html</control>
-        </tab>
-      </section>
-    </Action>
-  </Actions>
+  <Actions />
 </umbPackage>

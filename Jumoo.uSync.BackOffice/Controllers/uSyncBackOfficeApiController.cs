@@ -67,6 +67,7 @@ namespace Jumoo.uSync.BackOffice.Controllers
         public BackOfficeSettings GetSettings()
         {
             string addOnString = "";
+            List<BackOfficeTab> addOnTabs = new List<BackOfficeTab>();
 
             var types = TypeFinder.FindClassesOfType<IuSyncAddOn>();
             foreach (var t in types)
@@ -79,6 +80,16 @@ namespace Jumoo.uSync.BackOffice.Controllers
                 }
             }
 
+            var tabTypes = TypeFinder.FindClassesOfType<IuSyncTab>();
+            foreach(var t in tabTypes)
+            {
+                var inst = Activator.CreateInstance(t) as IuSyncTab;
+                if (inst != null)
+                {
+                    addOnTabs.Add(inst.GetTabInfo());
+                }
+            }
+
             var l = new GoodwillLicence();
 
             var settings = new BackOfficeSettings()
@@ -87,7 +98,8 @@ namespace Jumoo.uSync.BackOffice.Controllers
                 coreVersion = uSyncCoreContext.Instance.Version,
                 addOns = addOnString,
                 settings = uSyncBackOfficeContext.Instance.Configuration.Settings,
-                licenced = l.IsLicenced()
+                licenced = l.IsLicenced(),
+                addOnTabs = addOnTabs
             };
 
             return settings;
@@ -169,11 +181,24 @@ namespace Jumoo.uSync.BackOffice.Controllers
         public uSyncBackOfficeSettings settings { get; set; }
 
         public bool licenced { get; set; }
+        public IEnumerable<BackOfficeTab> addOnTabs { get; set; }
+
+    }
+
+    public class BackOfficeTab
+    {
+        public string name { get; set; }
+        public string template { get; set; }
     }
 
  
     public interface IuSyncAddOn
     {
         string GetVersionInfo();
+    }
+
+    public interface IuSyncTab
+    { 
+        BackOfficeTab GetTabInfo();
     }
 }

@@ -3,6 +3,7 @@ namespace Jumoo.uSync.BackOffice
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Specialized;
     using System.IO;
     using System.Xml.Serialization;
 
@@ -70,10 +71,11 @@ namespace Jumoo.uSync.BackOffice
                     _settings.Handlers.Add(new HandlerConfig
                     {
                         Name = handler.Name,
-                        Enabled = true
+                        Enabled = true,
+                        Settings = new List<uSyncHandlerSetting>()
                     });
                 }
-
+         
                 // save the defaults to disk...
                 SaveSettings(_settings);
             }
@@ -115,6 +117,21 @@ namespace Jumoo.uSync.BackOffice
         // Syncronize (So new, copies, deletes, renames)
         // Contribute (adds only, nothing else is pushed)
 
+        [XmlElement("Setting")]
+
+        public List<uSyncHandlerSetting> Settings { get; set; }
+
+
+    }
+
+    [XmlType("Setting")]
+    public class uSyncHandlerSetting
+    {
+        [XmlAttribute(AttributeName = "Key")]
+        public string Key { get; set; }
+
+        [XmlAttribute(AttributeName = "Value")]
+        public string Value { get; set; }
     }
 
 

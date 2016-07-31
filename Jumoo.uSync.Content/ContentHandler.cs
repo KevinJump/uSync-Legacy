@@ -17,11 +17,21 @@ using System.Linq;
 
 namespace Jumoo.uSync.Content
 {
-    public class ContentHandler : BaseContentHandler<IContent>, ISyncHandler
+    public class ContentHandler : BaseContentHandler<IContent>, ISyncHandler, ISyncHandlerConfig
     {
         public string Name { get { return "uSync: ContentHandler"; } }
         public int Priority { get { return uSyncConstants.Priority.Content; } }
         public string SyncFolder { get { return "Content"; } }
+
+        private List<uSyncHandlerSetting> _settings;
+
+        public void LoadHandlerConfig(IEnumerable<uSyncHandlerSetting> settings)
+        {
+            LogHelper.Info<ContentHandler>("Loading Handler Settings {0}", () => settings.Count());
+            _settings = settings.ToList();
+        }
+
+
 
         public override SyncAttempt<IContent> Import(string filePath, int parentId, bool force = false)
         {

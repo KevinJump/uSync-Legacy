@@ -8,12 +8,13 @@
 
     using Umbraco.Core;
     using Umbraco.Core.Logging;
+    using System.Collections.Specialized;
 
     public class uSyncBackOfficeContext
     {
         private static uSyncBackOfficeContext _instance;
         private SortedList<int, ISyncHandler> handlers;
-        private SortedList<int, ISyncPostImportHandler> postImportHandlers;
+        // private SortedList<int, ISyncPostImportHandler> postImportHandlers;
 
         public Helpers.ActionTracker Tracker; 
 
@@ -57,20 +58,24 @@
                 {
                     LogHelper.Debug<uSyncBackOfficeContext>("Adding Instance: {0}", () => typeInstance.Name);
                     handlers.Add(typeInstance.Priority, typeInstance);
+
+                    if (typeInstance is ISyncHandlerConfig)
+                    {
+                        ((ISyncHandlerConfig)typeInstance).LoadHandlerConfig(HandlerSettings(typeInstance.Name));
+                    }
+
                 }
             }
-
 
             //
             // Handlers can Impliment a post import handler, this is good for do things after everything has ran
             // at least once (example DataTypes need to run before and after DocTypes)
             //
-            postImportHandlers = new SortedList<int, ISyncPostImportHandler>();
-
+            /*
             var postImportTypes = TypeFinder.FindClassesOfType<ISyncPostImportHandler>();
             LogHelper.Info<uSyncBackOfficeContext>("Loading up Post Import Handlers : {0}", () => postImportTypes.Count());
 
-            foreach (var t in types)
+            foreach (var t in postImportTypes)
             {
                 var typeInstance = Activator.CreateInstance(t) as ISyncPostImportHandler;
                 if (typeInstance != null)
@@ -79,7 +84,7 @@
                     postImportHandlers.Add(typeInstance.Priority, typeInstance);
                 }
             }
-
+            */
 
 
             uSyncCoreContext.Instance.Init();
@@ -136,6 +141,24 @@
             //
             var postImports = importActions.Where(x => x.Success && x.Change > ChangeType.NoChange && x.RequiresPostProcessing);
 
+            foreach(var handler in handlers.Select(x => x.Value))
+            {
+                if (HandlerEnabled(handler.Name))
+                {
+                    if (handler is ISyncPostImportHandler)
+                    {
+                        var postHandler = (ISyncPostImportHandler)handler; 
+
+                        var syncFolder = System.IO.Path.Combine(folder, handler.SyncFolder);
+                        LogHelper.Debug<uSyncApplicationEventHandler>("# Post Import Processing: {0}", () => handler.Name);
+                        var postActions = postHandler.ProcessPostImport(syncFolder, postImports);
+                        if (postActions != null)
+                            importActions.AddRange(postActions);
+                    }
+                }
+            }
+
+            /*
             LogHelper.Debug<uSyncApplicationEventHandler>("Running: Post Import on {0} actions", ()=> postImports.Count());
             foreach (var handler in postImportHandlers.Select(x => x.Value))
             {
@@ -148,7 +171,7 @@
                         importActions.AddRange(postActions);
                 }
             }
-
+            */
 
             var onceFile = Umbraco.Core.IO.IOHelper.MapPath(System.IO.Path.Combine(folder, "usync.once"));
             LogHelper.Debug<uSyncApplicationEventHandler>("Looking for once file: {0}", () => onceFile);
@@ -221,6 +244,16 @@
             }
 
             return true;
+        }
+
+        private IEnumerable<uSyncHandlerSetting> HandlerSettings(string handlerName)
+        {
+            var handlerConfig = Configuration.Settings.Handlers.Where(x => x.Name == handlerName).FirstOrDefault();
+
+            if (handlerConfig != null && handlerConfig.Settings != null)
+                return handlerConfig.Settings;
+
+            return new List<uSyncHandlerSetting>();
         }
     }
 }
