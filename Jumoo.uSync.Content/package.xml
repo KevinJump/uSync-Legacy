@@ -21,6 +21,23 @@
       <orgPath>/app_data/temp/ucm</orgPath>
       <orgName>uSyncCore.Config.install.xdt</orgName>
     </file>
+    <!-- dashboard -->
+    <file>
+      <guid>package.manifest</guid>
+      <orgPath>/App_Plugins/uSync.Content</orgPath>
+      <orgName>package.manifest</orgName>
+    </file>
+    <file>
+      <guid>uSyncDashboard.css</guid>
+      <orgPath>/App_Plugins/uSync.Content</orgPath>
+      <orgName>uSyncDashboardContent.html</orgName>
+    </file>
+    <file>
+      <guid>uSyncDashboard.html</guid>
+      <orgPath>/App_Plugins/uSync.Content</orgPath>
+      <orgName>usyncDashboardContentController.js</orgName>
+    </file>
+
   </files>
   <info>
     <package>
