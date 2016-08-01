@@ -6,11 +6,43 @@
       <orgPath>/bin</orgPath>
       <orgName>Jumoo.uSync.Content.dll</orgName>
     </file>
+    <file>
+      <guid>Jumoo.uSync.ContentMappers.dll</guid>
+      <orgPath>/bin</orgPath>
+      <orgName>Jumoo.uSync.ContentMappers.dll</orgName>
+    </file>
+    <file>
+      <guid>Microsoft.Web.XmlTransform.dll</guid>
+      <orgPath>/bin</orgPath>
+      <orgName>Microsoft.Web.XmlTransform.dll</orgName>
+    </file>
+    <file>
+      <guid>uSyncCore.Config.install.xdt</guid>
+      <orgPath>/app_data/temp/ucm</orgPath>
+      <orgName>uSyncCore.Config.install.xdt</orgName>
+    </file>
+    <!-- dashboard -->
+    <file>
+      <guid>package.manifest</guid>
+      <orgPath>/App_Plugins/uSync.Content</orgPath>
+      <orgName>package.manifest</orgName>
+    </file>
+    <file>
+      <guid>uSyncDashboardContent.html</guid>
+      <orgPath>/App_Plugins/uSync.Content</orgPath>
+      <orgName>uSyncDashboardContent.html</orgName>
+    </file>
+    <file>
+      <guid>usyncDashboardContentController.js</guid>
+      <orgPath>/App_Plugins/uSync.Content</orgPath>
+      <orgName>usyncDashboardContentController.js</orgName>
+    </file>
+
   </files>
   <info>
     <package>
       <name>uSync.ContentEdition</name>
-      <version>3.1.2.740</version>
+      <version>3.2.0.740</version>
       <license url="http://opensource.org/licenses/MIT">MIT License</license>
       <url>http://jumoo.uk/uSync</url>
       <requirements>
@@ -24,9 +56,11 @@
       <website>http://jumoo.uk</website>
     </author>
     <readme>
-      <![CDATA[ uSync3 : uSync.ContentEdition 3.1.2.740
+      <![CDATA[ uSync3 : uSync.ContentEdition 3.2.0.740
 ======================
-Content Edition Extended uSync.BackOffice with Handlers for Content and Media
+Content Edition Extended uSync.BackOffice with Handlers for Content and Media.
+
+Now includes mappers for : The Grid, Archetype, Nested Content, Vorot, LeBelnder & DocTypeGrid Editor
 ]]>
     </readme>
   </info>
@@ -37,4 +71,7 @@ Content Edition Extended uSync.BackOffice with Handlers for Content and Media
   <DictionaryItems />
   <Languages />
   <DataTypes />
+  <Actions>
+    <Action runat="install" undo="false" alias="UCM.TransformConfig" file="~/config/uSyncCore.config" xdtfile="~/app_data/temp/ucm/uSyncCore.config"></Action>
+  </Actions>
 </umbPackage>

@@ -1,13 +1,17 @@
 ﻿using System.Linq;
-using Archetype.Models;
-using Jumoo.uSync.Core;
-using Jumoo.uSync.Core.Mappers;
-using Newtonsoft.Json;
+
 using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
 
-namespace Jumoo.uSync.Archetype
+using Newtonsoft.Json;
+
+using Jumoo.uSync.Core;
+using Jumoo.uSync.Core.Mappers;
+
+using Archetype.Models;
+
+namespace Jumoo.uSync.ContentMappers
 {
     public class ArchetypeContentMapper : IContentMapper
     {
@@ -36,23 +40,18 @@ namespace Jumoo.uSync.Archetype
                 {
                     IDataTypeDefinition dataType = _dataTypeService.GetDataTypeDefinitionById(property.DataTypeGuid);
 
-                    uSyncContentMapping mapping =
-                        uSyncCoreContext.Instance.Configuration.Settings.ContentMappings.SingleOrDefault(x => x.EditorAlias == dataType.PropertyEditorAlias);
+                    IContentMapper mapper = ContentMapperFactory.GetMapper(dataType.PropertyEditorAlias);
 
-                    if (mapping != null)
+                    if (mapper != null)
                     {
-                        IContentMapper mapper = ContentMapperFactory.GetMapper(mapping);
-
-                        if (mapper != null)
-                        {
-                            typedContent.Fieldsets.AsQueryable()
-                                        .SelectMany(fs => fs.Properties)
-                                        .Where(p => p.Alias == property.Alias)
-                                        .ForEach(pm => pm.Value = mapper.GetExportValue(dataType.Id, pm.Value.ToString()));
-                        }
+                        typedContent.Fieldsets.AsQueryable()
+                                    .SelectMany(fs => fs.Properties)
+                                    .Where(p => p.Alias == property.Alias)
+                                    .ForEach(pm => pm.Value = mapper.GetExportValue(dataType.Id, pm.Value.ToString()));
                     }
                 }
             }
+            
 
             return typedContent.SerializeForPersistence();
         }
@@ -75,20 +74,14 @@ namespace Jumoo.uSync.Archetype
                 {
                     IDataTypeDefinition dataType = _dataTypeService.GetDataTypeDefinitionById(property.DataTypeGuid);
 
-                    uSyncContentMapping mapping =
-                        uSyncCoreContext.Instance.Configuration.Settings.ContentMappings.SingleOrDefault(x => x.EditorAlias == dataType.PropertyEditorAlias);
+                    IContentMapper mapper = ContentMapperFactory.GetMapper(dataType.PropertyEditorAlias);
 
-                    if (mapping != null)
+                    if (mapper != null)
                     {
-                        IContentMapper mapper = ContentMapperFactory.GetMapper(mapping);
-
-                        if (mapper != null)
-                        {
-                            typedContent.Fieldsets.AsQueryable()
-                                        .SelectMany(fs => fs.Properties)
-                                        .Where(p => p.Alias == property.Alias)
-                                        .ForEach(pm => pm.Value = mapper.GetImportValue(dataType.Id, pm.Value.ToString()));
-                        }
+                        typedContent.Fieldsets.AsQueryable()
+                                    .SelectMany(fs => fs.Properties)
+                                    .Where(p => p.Alias == property.Alias)
+                                    .ForEach(pm => pm.Value = mapper.GetImportValue(dataType.Id, pm.Value.ToString()));
                     }
                 }
             }

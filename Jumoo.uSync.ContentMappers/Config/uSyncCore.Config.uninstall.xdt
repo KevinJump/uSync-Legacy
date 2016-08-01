@@ -1,0 +1,10 @@
+﻿<?xml version="1.0"?>
+<uSyncCoreSettings xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+  <ContentMappings>
+    <uSyncContentMapping Alias="Imulus.Archetype" xdt:Transform="Remove" xdt:Locator="Match(Alias)"/>
+    <uSyncContentMapping Alias="Our.Umbraco.NestedContent" xdt:Transform="Remove" xdt:Locator="Match(Alias)"/>
+    <uSyncContentMapping Alias="Our.Umbraco.Vorto" xdt:Transform="Remove" xdt:Locator="Match(Alias)"/>
+    <uSyncContentMapping Alias="grid.docType" xdt:Transform="Remove" xdt:Locator="Match(Alias)"/>
+    <uSyncContentMapping Alias="grid.leBlender" xdt:Transform="Remove" xdt:Locator="Match(Alias)"/>
+  </ContentMappings>
+</uSyncCoreSettings>

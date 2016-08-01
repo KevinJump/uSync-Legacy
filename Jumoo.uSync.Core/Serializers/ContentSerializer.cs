@@ -46,7 +46,7 @@ namespace Jumoo.uSync.Core.Serializers
                 {
                     DateTime updateTime = node.Attribute("updated").ValueOrDefault(DateTime.Now);
 
-                    if (DateTime.Compare(updateTime, item.UpdateDate.ToLocalTime()) <= 0)
+                    if ((updateTime - item.UpdateDate).TotalSeconds < 0)
                     {
                         // the import is older than the content on this site;
                         return SyncAttempt<IContent>.Succeed(item.Name, item, ChangeType.NoChange);

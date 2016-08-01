@@ -1,15 +1,15 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
+
 using Umbraco.Core;
-using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 
-namespace Jumoo.uSync.Core.Mappers
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+using Jumoo.uSync.Core;
+using Jumoo.uSync.Core.Mappers;
+
+namespace Jumoo.uSync.ContentMappers
 {
     public class DocTypeGridMapper : IContentMapper
     {
@@ -81,29 +81,23 @@ namespace Jumoo.uSync.Core.Mappers
                     var dataType = _dataTypeService.GetDataTypeDefinitionById(propertyType.DataTypeDefinitionId);
                     if (dataType != null)
                     {
-                        var mapping = uSyncCoreContext.Instance.Configuration.Settings.ContentMappings
-                            .SingleOrDefault(x => x.EditorAlias == dataType.PropertyEditorAlias);
-
-                        if (mapping != null)
+                        var mapper = ContentMapperFactory.GetMapper(dataType.PropertyEditorAlias);
+                        if (mapper != null)
                         {
-                            var mapper = ContentMapperFactory.GetMapper(mapping);
-                            if (mapper != null)
-                            {
-                                string mappedValue = "";
-                                if (import)
-                                    mappedValue = mapper.GetImportValue(dataType.Id, docValue[propertyType.Alias].ToString());
-                                else
-                                    mappedValue = mapper.GetExportValue(dataType.Id, docValue[propertyType.Alias].ToString());
+                            string mappedValue = "";
+                            if (import)
+                                mappedValue = mapper.GetImportValue(dataType.Id, docValue[propertyType.Alias].ToString());
+                            else
+                                mappedValue = mapper.GetExportValue(dataType.Id, docValue[propertyType.Alias].ToString());
 
-                                if (!IsJson(mappedValue))
-                                    docValue[propertyType.Alias] = mappedValue;
-                                else
+                            if (!IsJson(mappedValue))
+                                docValue[propertyType.Alias] = mappedValue;
+                            else
+                            {
+                                var mappedJson = JsonConvert.DeserializeObject<JObject>(mappedValue);
+                                if (mappedJson != null)
                                 {
-                                    var mappedJson = JsonConvert.DeserializeObject<JObject>(mappedValue);
-                                    if (mappedJson != null)
-                                    {
-                                        docValue[propertyType.Alias] = mappedJson;
-                                    }
+                                    docValue[propertyType.Alias] = mappedJson;
                                 }
                             }
                         }

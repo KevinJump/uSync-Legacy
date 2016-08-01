@@ -23,3 +23,22 @@
 .usync-dash .usync-info label {
     display: block; 
 }
+
+.usync-tabs {
+    font-size: 150%;
+    margin-bottom: 10px;
+}
+
+.usync-tabs i {
+    float: right;
+    padding: 0 0.2em;
+}
+
+.usync-tabs > li > a {
+    padding: 0.5em;
+}
+
+.usync-button {
+    text-align: center;
+    margin: 2em 0;
+}

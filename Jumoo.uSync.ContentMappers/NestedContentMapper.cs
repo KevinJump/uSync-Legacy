@@ -1,16 +1,15 @@
-﻿using Jumoo.uSync.Core;
-using Jumoo.uSync.Core.Mappers;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
+
 using Umbraco.Core;
 using Umbraco.Core.Services;
 
-namespace Jumoo.uSync.NestedContent
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+using Jumoo.uSync.Core;
+using Jumoo.uSync.Core.Mappers;
+
+namespace Jumoo.uSync.ContentMappers
 {
     public class NestedContentMapper : IContentMapper
     {
@@ -35,7 +34,7 @@ namespace Jumoo.uSync.NestedContent
                 if (doctype == null)
                     continue;
 
-                foreach(var propertyType in doctype.CompositionPropertyTypes)
+                foreach (var propertyType in doctype.CompositionPropertyTypes)
                 {
                     object alias = nestedObject[propertyType.Alias];
                     if (alias != null)
@@ -43,17 +42,11 @@ namespace Jumoo.uSync.NestedContent
                         var dataType = _dataTypeService.GetDataTypeDefinitionById(propertyType.DataTypeDefinitionId);
                         if (dataType != null)
                         {
-                            uSyncContentMapping mapping =
-                                uSyncCoreContext.Instance.Configuration.Settings.ContentMappings.SingleOrDefault(x => x.EditorAlias == dataType.PropertyEditorAlias);
-
-                            if (mapping != null)
+                            IContentMapper mapper = ContentMapperFactory.GetMapper(dataType.PropertyEditorAlias);
+                            if (mapper != null)
                             {
-                                IContentMapper mapper = ContentMapperFactory.GetMapper(mapping);
-                                if (mapper != null)
-                                {
-                                    nestedObject[propertyType.Alias] =
-                                        mapper.GetExportValue(dataType.Id, nestedObject[propertyType.Alias].ToString());
-                                }
+                                nestedObject[propertyType.Alias] =
+                                    mapper.GetExportValue(dataType.Id, nestedObject[propertyType.Alias].ToString());
                             }
                         }
                     }
@@ -83,17 +76,11 @@ namespace Jumoo.uSync.NestedContent
                         var dataType = _dataTypeService.GetDataTypeDefinitionById(propertyType.DataTypeDefinitionId);
                         if (dataType != null)
                         {
-                            uSyncContentMapping mapping =
-                                uSyncCoreContext.Instance.Configuration.Settings.ContentMappings.SingleOrDefault(x => x.EditorAlias == dataType.PropertyEditorAlias);
-
-                            if (mapping != null)
+                            IContentMapper mapper = ContentMapperFactory.GetMapper(dataType.PropertyEditorAlias);
+                            if (mapper != null)
                             {
-                                IContentMapper mapper = ContentMapperFactory.GetMapper(mapping);
-                                if (mapper != null)
-                                {
-                                    nestedObject[propertyType.Alias] =
-                                        mapper.GetImportValue(dataType.Id, nestedObject[propertyType.Alias].ToString());
-                                }
+                                nestedObject[propertyType.Alias] =
+                                    mapper.GetImportValue(dataType.Id, nestedObject[propertyType.Alias].ToString());
                             }
                         }
                     }

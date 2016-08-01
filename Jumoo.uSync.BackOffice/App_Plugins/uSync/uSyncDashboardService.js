@@ -21,6 +21,18 @@
             },
             updateSettings: function (mode) {
                 return $http.get(serviceRoot + 'UpdateSyncMode/?mode=' + mode);
+            },
+            getHistory: function () {
+                return $http.get(serviceRoot + 'GetHistory');
+            },
+            clearHistory: function () {
+                return $http.get(serviceRoot + "ClearHistory");
+            },
+            getuSyncActions: function () {
+                return $http.get(serviceRoot + "GetActions");
+            },
+            removeuSyncAction: function (name, type) {
+                return $http.get(serviceRoot + "RemoveAction/?name=" + name + "&type=" + type);
             }
         }
     });

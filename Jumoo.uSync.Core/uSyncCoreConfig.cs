@@ -166,6 +166,12 @@ namespace Jumoo.uSync.Core
 
         [XmlAttribute(AttributeName = "Settings")]
         public string Settings { get; set; }
+
+        [XmlAttribute(AttributeName = "Regex")]
+        public string RegEx { get; set; }
+
+        [XmlAttribute(AttributeName = "View")]
+        public string View { get; set; }
     }
 
     public enum ContentMappingType

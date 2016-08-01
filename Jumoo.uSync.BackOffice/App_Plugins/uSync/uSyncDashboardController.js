@@ -1,6 +1,8 @@
 ﻿angular.module('umbraco').controller('uSyncDashboardController',
     function ($scope, $http, uSyncDashboardService) {
 
+        $scope.snapshotsUrl = "/app_plugins/usync/test.html";
+
         $scope.loading = true;
         $scope.uSyncMode = 'other';
 
@@ -8,6 +10,7 @@
         $scope.reported = false;
         $scope.showSettings = false;
         $scope.showTechnical = false;
+        $scope.showActions = false;
 
         LoadSettings();
 
@@ -15,10 +18,59 @@
             uSyncDashboardService.getSettings()
             .then(function (response) {
                 $scope.settings = response.data;
+
                 $scope.getuSyncMode();
                 $scope.loading = false;
+
+                $scope.loadHistory();
+            });
+        };
+
+        $scope.loadHistory = function () {
+            uSyncDashboardService.getHistory()
+            .then(function (response) {
+                $scope.history = response.data;
+            });
+        };
+
+        $scope.loadActions = function () {
+            $scope.reported = false;
+
+            uSyncDashboardService.getuSyncActions()
+            .then(function (response) {
+                $scope.uSyncActions = response.data;
+                if ($scope.uSyncActions == 0) {
+                    console.log('no actions to load.')
+                }
+                else {
+                    $scope.showActions = true;
+                }
             });
         }
+
+        $scope.removeAction = function (name, type) {
+            var c = confirm("be careful if you delete an action, you can't get it back");
+            if (c) {
+                uSyncDashboardService.removeuSyncAction(name, type)
+                .then(function (response) {
+                    $scope.uSyncActionResponse = response.data;
+                    $scope.loadActions();
+                });
+            }
+
+        }
+
+        $scope.clearHistory = function () {
+            var c = confirm('are you sure ? if you delete the history, there is no way of getting it back');
+
+            if (c) {
+                uSyncDashboardService.clearHistory()
+                .then(function (response) {
+                    $scope.historyCleared = response.data;
+                    $scope.loadHistory();
+                });
+            }
+        };
 
         $scope.updateSettings = function () {
             $scope.clearError();
@@ -71,6 +123,8 @@
 
             $scope.reporting = true;
             $scope.reported = false;
+            $scope.showActions = false;
+
             $scope.reportName = "Import";
 
             uSyncDashboardService.importer(force)
@@ -78,6 +132,8 @@
                 $scope.changes = response.data;
                 $scope.reporting = false;
                 $scope.reported = true;
+
+                $scope.loadHistory();
             }, function (error) {
                 $scope.working = false;
                 $scope.setError(error.data);
@@ -89,6 +145,8 @@
 
             $scope.reporting = true;
             $scope.reported = false;
+            $scope.showActions = false;
+
             $scope.reportName = "Report";
 
             uSyncDashboardService.reporter()
@@ -107,7 +165,11 @@
 
             $scope.reporting = true;
             $scope.reported = false;
+            $scope.showActions = false;
+
             $scope.reportName = "Export";
+
+            $scope.loadHistory();
 
             uSyncDashboardService.exporter()
             .then(function (response) {
@@ -122,10 +184,10 @@
 
 
         /* results display */
-        $scope.getChangeCount = function () {
+        $scope.getChangeCount = function (changes) {
             var count = 0;
 
-            angular.forEach($scope.changes, function (val, key) {
+            angular.forEach(changes, function (val, key) {
                 if (val.Change > 0) {
                     count++;
                 }
@@ -133,6 +195,7 @@
 
             return count;
         }
+
         $scope.changeVals = [
             'NoChange',
             'Import',
@@ -197,6 +260,7 @@
         $scope.showNoChange = false;
 
         $scope.showChange = function (changeValue) {
+            console.log('show:', changeValue)
             if ($scope.showNoChange || changeValue > 0) {
                 return true;
             }
