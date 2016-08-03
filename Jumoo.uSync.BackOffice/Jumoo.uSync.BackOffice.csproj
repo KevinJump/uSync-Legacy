@@ -316,6 +316,8 @@
     <None Include="App_Plugins\uSync\package.manifest" />
     <None Include="packages.config" />
     <None Include="uSyncBackOffice.Config" />
+    <None Include="_config\dashboard.config.uninstall.xdt" />
+    <None Include="_config\dashboard.config.install.xdt" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Plugins\uSync\uSyncDashboard.css" />
@@ -334,6 +336,7 @@ XCOPY "$(TargetPath)" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
 XCOPY "$(ProjectDir)uSyncBackOffice.config" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
 XCOPY "$(ProjectDir)package.xml" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
 XCOPY "$(ProjectDir)App_Plugins\uSync\*.*" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
+XCOPY "$(ProjectDir)_config\*.xdt" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
 
 </PostBuildEvent>
   </PropertyGroup>
