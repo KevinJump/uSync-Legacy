@@ -80,7 +80,9 @@ namespace Jumoo.uSync.BackOffice.Helpers
 
             if (fileKey == Guid.Empty)
                 fileKey = node.Attribute("Key").ValueOrDefault(Guid.Empty);
-                
+
+            if (fileKey == Guid.Empty)
+                fileKey = node.Attribute("guid").ValueOrDefault(Guid.Empty);
 
             return fileKey;
         }
