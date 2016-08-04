@@ -23,7 +23,7 @@ namespace Jumoo.uSync.Content
         public int Priority { get { return uSyncConstants.Priority.Media; } }
         public string SyncFolder { get { return "Media"; } }
 
-        public MediaHandler()
+        public MediaHandler() : base("media")
         {
             // we need to instancate media content, (unlike the others). 
             // because we need to tell the mover where to put our files.

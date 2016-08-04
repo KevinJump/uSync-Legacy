@@ -47,6 +47,8 @@
 
         public void Init()
         {
+            uSyncCoreContext.Instance.Init();
+
             handlers = new SortedList<int, ISyncHandler>();
 
             var types = TypeFinder.FindClassesOfType<ISyncHandler>();
@@ -87,7 +89,6 @@
             */
 
 
-            uSyncCoreContext.Instance.Init();
             _config = new uSyncBackOfficeConfig();
 
             Tracker = new Helpers.ActionTracker(_config.Settings.MappedFolder());
