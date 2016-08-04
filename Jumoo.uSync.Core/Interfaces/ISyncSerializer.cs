@@ -7,11 +7,16 @@ using System.Xml.Linq;
 
 namespace Jumoo.uSync.Core.Interfaces
 {
-    public interface ISyncSerializer<T>
+    public interface ISyncSerializer<T> : ISyncSerializerBase
     {
         SyncAttempt<XElement> Serialize(T item);
         SyncAttempt<T> DeSerialize(XElement node, bool forceUpdate);
 
         bool IsUpdate(XElement node);
+    }
+
+    public interface ISyncSerializerBase
+    {
+
     }
 }

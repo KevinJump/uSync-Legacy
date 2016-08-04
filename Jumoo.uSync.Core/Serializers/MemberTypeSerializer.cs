@@ -13,9 +13,11 @@ namespace Jumoo.uSync.Core.Serializers
 {
     public class MemberTypeSerializer : ContentTypeBaseSerializer<IMemberType>, ISyncChangeDetail
     {
-        public MemberTypeSerializer(string type) : base(type)
-        {
-        }
+        public MemberTypeSerializer() :
+            base("MemberType") { }
+
+        public MemberTypeSerializer(string type) 
+            : base(type) { }
 
         internal override SyncAttempt<IMemberType> DeserializeCore(XElement node)
         {

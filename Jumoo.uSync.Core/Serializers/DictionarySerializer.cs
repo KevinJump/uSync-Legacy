@@ -19,6 +19,13 @@ namespace Jumoo.uSync.Core.Serializers
         IPackagingService _packagingService;
         ILocalizationService _localizationService; 
 
+        public DictionarySerializer() :
+            base (Constants.Packaging.DictionaryItemNodeName)
+        {
+            _packagingService = ApplicationContext.Current.Services.PackagingService;
+            _localizationService = ApplicationContext.Current.Services.LocalizationService;
+        }
+
         public DictionarySerializer(string itemType) : base(itemType)
         {
             _packagingService = ApplicationContext.Current.Services.PackagingService;

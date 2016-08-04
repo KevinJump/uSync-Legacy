@@ -20,7 +20,13 @@ namespace Jumoo.uSync.Core.Serializers
 {
     public class DataTypeSerializer : DataTypeSyncBaseSerializer, ISyncChangeDetail
     {
-        public DataTypeSerializer(string type) : base (type)
+
+        public DataTypeSerializer() :
+            base(Constants.Packaging.DataTypeNodeName)
+        { }
+
+        public DataTypeSerializer(string type) :
+            base (type)
         { }
 
         internal override SyncAttempt<IDataTypeDefinition> DeserializeCore(XElement node)
