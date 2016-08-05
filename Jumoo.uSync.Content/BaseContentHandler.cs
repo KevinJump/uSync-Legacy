@@ -116,7 +116,7 @@ namespace Jumoo.uSync.Content
 
             if (Directory.Exists(mappedFolder))
             {
-                foreach(var file in Directory.GetFiles(mappedFolder, "*.config"))
+                foreach(var file in Directory.GetFiles(mappedFolder, string.Format("{0}.config", _exportFileName)))
                 {
                     actions.Add(ReportItem(file));
                 }
