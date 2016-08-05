@@ -67,7 +67,22 @@ namespace Jumoo.uSync.Core.Serializers
                     var prop = item.Properties[propertyTypeAlias];
                     string newValue = GetImportIds(prop.PropertyType, GetImportXml(property));
                     LogHelper.Debug<Events>("#### BASE: Setting property: [{0}] to {1}", () => propertyTypeAlias, ()=> newValue);
-                    item.SetValue(propertyTypeAlias, newValue);
+
+                    try {
+                        item.SetValue(propertyTypeAlias, newValue);
+                    }
+                    catch( InvalidOperationException ex) {
+                        // umbraco 7.5+ can throw an exception if you try to set a value with the wrong type
+                        // e.g. put a guid into an int 
+                        // It can happen if a mapping fails (it might on the first pass when we don't yet have the item we 
+                        // want to map to imported) we need to capture that, and carry one
+                        //
+                        // Ported from LocalGovKit PR https://github.com/KevinJump/LocalGovStarterKit/pull/4
+                        // 
+                        LogHelper.Warn<ContentBaseSerializer<T>>(
+                            "Setting a value didn't work. Tried to set value '{0}' to the property '{1}' on '{2}'. Exception: {3}", 
+                            ()=> newValue, ()=> propertyTypeAlias, ()=> item.Name, ()=> ex.Message);
+                    }
                 }
             }
         }
