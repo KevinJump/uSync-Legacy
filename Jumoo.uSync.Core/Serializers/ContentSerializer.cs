@@ -93,8 +93,18 @@ namespace Jumoo.uSync.Core.Serializers
                     var newValue = GetImportIds(propType, GetImportXml(property));
 
                     LogHelper.Debug<Events>("#### Setting property: [{0}] to {1}", () => propertyTypeAlias, () => newValue);
-                    item.SetValue(propertyTypeAlias, newValue );
+                    try
+                    {
+                        item.SetValue(propertyTypeAlias, newValue);
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        LogHelper.Warn<ContentBaseSerializer<T>>(
+                            "Setting a value didn't work. Tried to set value '{0}' to the property '{1}' on '{2}'. Exception: {3}",
+                            () => newValue, () => propertyTypeAlias, () => item.Name, () => ex.Message);
+                    }
                 }
+
             }
 
             PublishOrSave(item, published);
