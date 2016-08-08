@@ -1,9 +1,11 @@
-Edit \BuildPackage\Package.build.xml and change BasePackageVersion to the version you wish to create (must be in the format 1.2.3.4) 
+Build all the uSync Packages
+----------------------------
 
-The last digit is the build number and not used for the product version.
+Each Package has it's own folder with build file, umbraco package.xml and nuspec file.
 
-Execute \BuildPackage\build.bat
+The build files are all very similar; most of the packages, have a dll, some app_plugin files and config
 
-Check \BuildPackage\Package to find both the Umbraco and NuGet package files ready to roll
+The Umbraco package for BackOffice also contains the Core Dlls, and the Umbraco Package for Content includes the Mappers DLL.
 
-If you ever need to change the Umbraco.Core dependency (currently v7.4.0), you will need to update the version in both \BuildPackage\Package.build.xml & \BuildPackage\package.nuspec
+When versions are updated, make sure you also increase the depencendies in the nuspec files.
+
