@@ -85,6 +85,7 @@
       <NuSpecFile Include="$(BuildDir)\package.nuspec" />      
       <BinFile Include="$(ProjectDir)\Bin\Release\$(ProjectNamespace).dll" />
       <ConfigFiles Include="$(ProjectDir)\Config\*.*" />
+      <BackOfficeConfig Include="$(ProjectDir)\Config\uSyncBackOffice.config" />
       <ReadMe Include="$(BuildDir)\readme.txt" />
 
       <!-- the umbraco package also has core in it. -->
@@ -102,7 +103,7 @@
 
     <Copy SourceFiles="@(BinFile)" DestinationFolder="$(BuildPackageDir)\bin" />
     <Copy SourceFiles="@(BinFile)" DestinationFolder="$(BuildNuGetDir)\lib\net45" />
-    <Copy SourceFiles="@(ConfigFiles)" DestinationFolder="$(BuildPackageDir)\config" />
+    <Copy SourceFiles="@(BackOfficeConfig)" DestinationFolder="$(BuildPackageDir)\config" />
     <Copy SourceFiles="@(ConfigFiles)" DestinationFolder="$(BuildNuGetDir)\content\config" />
 
 
