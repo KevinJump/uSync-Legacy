@@ -138,7 +138,6 @@
 				ManifestFile="$(BuildNuGetDir)\package.nuspec"
 				WorkingDirectory="$(BuildNuGetDir)"
         Title="$(ProjectName)"
-        Description="@(Readme->'%(Identity)', '%0a%0d')"
 				Version="$(PackageVersion)"
 				Files="@(ManifestFiles)" />
   </Target>
