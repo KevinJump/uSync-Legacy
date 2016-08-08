@@ -333,13 +333,14 @@ namespace Jumoo.uSync.Core.Serializers
 
                 if (propertyNode == null)
                 {
-                    LogHelper.Debug<uSync.Core.Events>("Looking up property type by alias {0}", ()=> property.Alias);
+                    LogHelper.Debug<uSync.Core.Events>("Remove Check: Looking up property type by alias {0} to stop accedental removal", ()=> property.Alias);
                     propertyNode = propertyNodes
                         .SingleOrDefault(x => x.Element("Alias").Value == property.Alias);
                 }
 
                 if (propertyNode == null)
                 {
+                    LogHelper.Debug<uSync.Core.Events>("Removing Property: (no match on system) {0}", () => property.Alias);
                     propertiesToRemove.Add(property.Alias);
                 }
             }
