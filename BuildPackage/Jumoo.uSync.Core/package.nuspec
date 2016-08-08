@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+    <metadata>
+        <id>uSync.Core</id>
+        <version>5.4.0.740</version>
+        <title>uSync Core for Umbraco</title>
+        <authors>Kevin Jump</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Core serailize/deserialization library for uSync, on it's own it does nothing, other than give you a load of API calls to do stuff.</description>
+        <summary>Core elements for uSync3 +</summary>
+        <releaseNotes>v5.1 media mover enhancements 
+v5.2.0 - Better Content Mappers, inc Archetype mapper.
+v5.3.0 - Umbraco 7.4 Container Support
+v5.4 - Moved Content Mappers to their own project. 
+v5.3.1 - Fixes to how Containers are handled
+
+v5.3.4 - Config updates for 3rd party media and content pickers.
+ 
+v5 - version issues with old nuget packages
+v3 - works with Umbraco 7.3 really well</releaseNotes>
+        <dependencies>
+            <dependency id="UmbracoCms" version="7.4.0" />
+        </dependencies>
+    </metadata>
+</package>

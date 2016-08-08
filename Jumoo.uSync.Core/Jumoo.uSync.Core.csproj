@@ -320,29 +320,13 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="uSyncCore.Config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="package.xml" />
+    <None Include="Config\uSyncCore.Config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>ECHO Copying to Site
-XCOPY "$(TargetPath)" "$(SolutionDir)Umbraco.Site\Bin\" /q /y
-XCOPY "$(ProjectDir)uSyncCore.config" "$(SolutionDir)Umbraco.Site\Config\uSyncCore.config" /q /y /I
-
-ECHO Coping to Package Folder
-XCOPY "$(TargetPath)" "$(SolutionDir)umbPackage\uSync.Core\" /q /y
-XCOPY "$(ProjectDir)uSyncCore.config" "$(SolutionDir)umbPackage\uSync.Core\" /q /y
-XCOPY "$(ProjectDir)package.xml" "$(SolutionDir)umbPackage\uSync.Core\" /q /y
-
-XCOPY "$(TargetPath)" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
-XCOPY "$(ProjectDir)uSyncCore.config" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
-
-
-
-</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">

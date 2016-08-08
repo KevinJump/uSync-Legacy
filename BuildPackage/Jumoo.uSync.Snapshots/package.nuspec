@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+    <metadata>
+        <id>uSync.Snapshots</id>
+        <version>1.0.2.740</version>
+        <title>uSync Snapshots</title>
+        <authors>Kevin Jump</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>take snapshots, to track changes in your umbraco site - then move them about between umbraco sites.</description>
+        <releaseNotes>1.0 Initial release built on top of usync 3.1.0
+
+1.0.1 - updates dependencies.
+1.0.2 - rename/delete fixes</releaseNotes>
+        <dependencies>
+            <dependency id="UmbracoCms" version="7.4.0" />
+            <dependency id="uSync" version="3.1.1.740" />
+        </dependencies>
+    </metadata>
+</package>

@@ -281,26 +281,10 @@
     <None Include="packages.config" />
     <None Include="Config\uSyncCore.Config.install.xdt" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="package.xml" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>ECHO Copying to Site
-XCOPY "$(TargetPath)" "$(SolutionDir)Umbraco.Site\Bin\" /q /y
-
-ECHO Coping to Package Folder
-XCOPY "$(TargetPath)" "$(SolutionDir)umbPackage\uSync.ContentMappers\" /q /y
-XCOPY "$(ProjectDir)Config\uSyncCore.config.install.xdt" "$(SolutionDir)umbPackage\uSync.ContentMappers\" /q /y
-XCOPY "$(ProjectDir)Config\uSyncCore.config.uninstall.xdt" "$(SolutionDir)umbPackage\uSync.ContentMappers\" /q /y
-XCOPY "$(ProjectDir)package.xml" "$(SolutionDir)umbPackage\uSync.ContentMappers\" /q /y
-XCOPY "$(TargetDir)Microsoft.Web.XmlTransform.dll" "$(SolutionDir)umbPackage\uSync.ContentMappers\" /q /y
-
-XCOPY "$(TargetPath)" "$(SolutionDir)umbPackage\uSync.ContentEdition\" /q /y
-XCOPY "$(ProjectDir)Config\uSyncCore.config.install.xdt" "$(SolutionDir)umbPackage\uSync.ContentEdition\" /q /y
-XCOPY "$(ProjectDir)Config\uSyncCore.config.uninstall.xdt" "$(SolutionDir)umbPackage\uSync.ContentEdition\" /q /y
-XCOPY "$(TargetDir)Microsoft.Web.XmlTransform.dll" "$(SolutionDir)umbPackage\uSync.ContentEdition\" /q /y
-</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

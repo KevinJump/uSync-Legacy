@@ -99,7 +99,7 @@ namespace Jumoo.uSync.Core.Serializers
                     }
                     catch (InvalidOperationException ex)
                     {
-                        LogHelper.Warn<ContentBaseSerializer<T>>(
+                        LogHelper.Warn<ContentSerializer>(
                             "Setting a value didn't work. Tried to set value '{0}' to the property '{1}' on '{2}'. Exception: {3}",
                             () => newValue, () => propertyTypeAlias, () => item.Name, () => ex.Message);
                     }

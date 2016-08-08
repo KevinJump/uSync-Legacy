@@ -315,30 +315,20 @@
     <None Include="app.config" />
     <None Include="App_Plugins\uSync\package.manifest" />
     <None Include="packages.config" />
-    <None Include="uSyncBackOffice.Config" />
-    <None Include="_config\dashboard.config.uninstall.xdt" />
-    <None Include="_config\dashboard.config.install.xdt" />
+    <None Include="Config\uSyncBackOffice.Config" />
+    <None Include="Config\dashboard.config.uninstall.xdt" />
+    <None Include="Config\dashboard.config.install.xdt" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Plugins\uSync\uSyncDashboard.css" />
     <Content Include="App_Plugins\uSync\uSyncDashboardController.js" />
     <Content Include="App_Plugins\uSync\uSyncDashboard.html" />
     <Content Include="App_Plugins\uSync\uSyncDashboardService.js" />
-    <Content Include="package.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>XCOPY "$(TargetPath)" "$(SolutionDir)Umbraco.Site\Bin\" /q /y
-XCOPY "$(ProjectDir)uSyncBackOffice.config" "$(SolutionDir)Umbraco.Site\Config\uSyncBackOffice.config" /q /y /I
-
-ECHO Coping to Package Folder
-XCOPY "$(TargetPath)" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
-XCOPY "$(ProjectDir)uSyncBackOffice.config" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
-XCOPY "$(ProjectDir)package.xml" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
-XCOPY "$(ProjectDir)App_Plugins\uSync\*.*" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
-XCOPY "$(ProjectDir)_config\*.xdt" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
-
-</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">

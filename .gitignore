@@ -9,6 +9,7 @@
 *.userosscache
 *.sln.docstates
 
+nuget.exe
 .vs/
 snapshots/
 App_Browsers/
