@@ -124,6 +124,10 @@ namespace Jumoo.uSync.HealthChecker
 
         }
 
+
+        // some clever checking to see if the key in the file matches the ond on the db
+        // although to be honest, the report check will do this, because they will
+        // be marked as changes.
         private IEnumerable<HealthCheckStatus> CheckKeys()
         {
             List<HealthCheckStatus> status = new List<HealthCheckStatus>();
