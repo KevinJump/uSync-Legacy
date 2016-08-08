@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>uSync</id>
@@ -16,7 +16,6 @@
       v3 - Complete upgrade works with Umbraco 7.3 only.
     </releaseNotes>
     <licenseUrl>https://opensource.org/licenses/MPL-2.0</licenseUrl>
-    <language>en-GB</language>
     <tags>umbraco umbraco7 developer backoffice</tags>
     <dependencies>
       <dependency id="uSync.Core" version="5.4.0.740" />

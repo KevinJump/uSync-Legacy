@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <dashBoard xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
   
- <section alias="usyncBackOffice" xdt:Transform="Remove" xdt:Locator="Match(Alias)" />
- <section alias="uSyncDashboardSection" xdt:Transform="Remove" xdt:Locator="Match(Alias)" />
+ <section alias="usyncBackOffice" xdt:Transform="Remove" xdt:Locator="Match(alias)" />
+ <section alias="uSyncDashboardSection" xdt:Transform="Remove" xdt:Locator="Match(alias)" />
 
- <section alias="usyncBackOffice" xdt:Transform="Insert" xdt:Locator="Match(Alias)">
+ <section alias="usyncBackOffice" xdt:Transform="Insert" xdt:Locator="Match(alias)">
     <areas>
       <area>developer</area>
     </areas>
