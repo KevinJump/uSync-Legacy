@@ -123,7 +123,7 @@ namespace Jumoo.uSync.BackOffice
         [XmlAttribute("EnableMissing")]
         public bool EnableMissing { get; set; }
 
-        [XmlElement("HanlderConfig")]
+        [XmlElement("HandlerConfig")]
         public List<HandlerConfig> Handlers { get; set; }
     }
 

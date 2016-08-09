@@ -282,12 +282,14 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Enabled</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="handler in settings.settings.Handlers" ng-class="{'muted' : !handler.Enabled}">
+                                <tr ng-repeat="handler in settings.settings.Handlers[0].Handlers" ng-class="{'muted' : !handler.Enabled}">
                                     <td>{{handler.Name}}</td>
                                     <td>{{handler.Enabled}}</td>
+                                    <td>{{handler.Actions}}</td>
                                 </tr>
                             </tbody>
                         </table>

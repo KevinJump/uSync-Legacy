@@ -14,6 +14,7 @@
     {
         private static uSyncBackOfficeContext _instance;
         private SortedList<int, ISyncHandler> handlers;
+
         // private SortedList<int, ISyncPostImportHandler> postImportHandlers;
 
         public Helpers.ActionTracker Tracker; 
@@ -47,26 +48,7 @@
 
         public void Init()
         {
-            var avalibleHandlers = new SortedList<int, ISyncHandler>();
-
-            var types = TypeFinder.FindClassesOfType<ISyncHandler>();
-            LogHelper.Info<uSyncBackOfficeContext>("Loading up Sync Handlers : {0}", () => types.Count());
-            foreach (var t in types)
-            {
-                var typeInstance = Activator.CreateInstance(t) as ISyncHandler;
-                if (typeInstance != null)
-                {
-                    LogHelper.Debug<uSyncBackOfficeContext>("Adding Instance: {0}", () => typeInstance.Name);
-                    avalibleHandlers.Add(typeInstance.Priority, typeInstance);
-
-                    if (typeInstance is ISyncHandlerConfig)
-                    {
-                        ((ISyncHandlerConfig)typeInstance).LoadHandlerConfig(HandlerSettings(typeInstance.Name));
-                    }
-                }
-            }
-
-            handlers = GetHandlersFromGroup("default", true);
+            LoadAssemblyHandlers();
 
             //
             // Handlers can Impliment a post import handler, this is good for do things after everything has ran
@@ -92,6 +74,30 @@
             _config = new uSyncBackOfficeConfig();
 
             Tracker = new Helpers.ActionTracker(_config.Settings.MappedFolder());
+        }
+
+
+        private void LoadAssemblyHandlers()
+        {
+            handlers = new SortedList<int, ISyncHandler>();
+
+            var types = TypeFinder.FindClassesOfType<ISyncHandler>();
+            LogHelper.Info<uSyncBackOfficeContext>("Loading up Sync Handlers : {0}", () => types.Count());
+            foreach (var t in types)
+            {
+                var typeInstance = Activator.CreateInstance(t) as ISyncHandler;
+                if (typeInstance != null)
+                {
+                    LogHelper.Debug<uSyncBackOfficeContext>("Adding Instance: {0}", () => typeInstance.Name);
+                    handlers.Add(typeInstance.Priority, typeInstance);
+
+                    if (typeInstance is ISyncHandlerConfig)
+                    {
+                        ((ISyncHandlerConfig)typeInstance).LoadHandlerConfig(HandlerSettings(typeInstance.Name));
+                    }
+                }
+            }
+
         }
 
         public void SetupEvents()
@@ -278,40 +284,10 @@
         }
 
         #region Handlers 
-        /// <summary>
-        ///  gets you all the valid handlers for a group, the default behavior for uSync is to include 
-        ///  handlers that are not configured, so if includedDefault = true this is what happens
-        ///  
-        ///  but if you are calling this for another group, then you can set that to false (or leave it)
-        ///  and you will just get the handlers that are :
-        ///  
-        ///  a) on the system (i.e exist in a dll somewhere)
-        ///  and 
-        ///  b) in the config file. 
-        /// </summary>
-        public SortedList<int, ISyncHandler> GetHandlersFromGroup(string handlerGroupName, bool includedDefault = false)
-        {
-            SortedList<int, ISyncHandler> validHandlers = new SortedList<int, ISyncHandler>();
-            foreach(var h in handlers)
-            {
-                if (HandlerInGroup(h.Value.Name, handlerGroupName))
-                {
-                    validHandlers.Add(h.Key, h.Value);
-                }
-                else
-                {
-                    if (includedDefault)
-                    {
-                        validHandlers.Add(h.Key, h.Value);
-                    }
-                }
-            }
-
-            return validHandlers;
-        }
 
         private bool HandlerInGroup(string handlerName, string group)
         {
+            LogHelper.Debug<uSyncBackOfficeConfig>("Looking for Handler {0} in Group {1}", () => handlerName, () => group);
             var hGroup = Configuration.Settings.Handlers.FirstOrDefault(x => x.Group.Equals(group, StringComparison.InvariantCultureIgnoreCase));
             if (hGroup != null)
             {
@@ -325,11 +301,9 @@
         {
             var validActions = new string[] { "all", action.ToLower() }; 
 
-            var hGroup = Configuration.Settings.Handlers.FirstOrDefault(x => x.Group.Equals(group, StringComparison.InvariantCultureIgnoreCase));
+            var hGroup = Configuration.Settings.Handlers.FirstOrDefault(x => x.Group.Equals(group, StringComparison.OrdinalIgnoreCase));
             if (hGroup != null)
             {
-                
-
                 var handlerConfig = hGroup.Handlers.Where(x => x.Name == handlerName).FirstOrDefault();
 
                 if (handlerConfig != null)
@@ -348,6 +322,7 @@
                     }
                 }
 
+                LogHelper.Debug<uSyncApplicationEventHandler>("Handler {0} is missing in group \"{1}\" and default setting is {2}", () => handlerName, ()=> group, () => hGroup.EnableMissing);
                 // return the group default (i.e if true, we include handlers not in this group) 
                 return hGroup.EnableMissing;
             }
