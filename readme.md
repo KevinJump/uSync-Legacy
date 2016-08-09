@@ -16,8 +16,9 @@ It will save:
 * Macros
 * Languages
 * Dictionary Items
+* MemberTypes
 
-You can use uSync.ContentEdition to manage content and media if you also want to write them to disk.
+You can use **uSync.ContentEdition** to manage content and media if you also want to write them to disk.
 
 The basics workings of uSync
 -
