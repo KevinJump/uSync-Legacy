@@ -67,9 +67,10 @@ there are a number of uSync packages, that make up the uSync suite, most of the 
 you don't need to worry about them, but they can be used in diffrent ways to give you
 more control over how your data is handled.
 
-uSync (BackOffice
+uSync (BackOffice)
 -
-This is the main uSync package, it reads and writes the umbraco elements to disk. (uSync/data folder)
+This is the main uSync package, it reads and writes the umbraco elements to disk. (uSync/data folder), 
+It contains the Handlers and the main dashboard for uSync. 
 
 uSync.Core
 -
