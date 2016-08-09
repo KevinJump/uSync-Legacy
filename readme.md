@@ -1,51 +1,90 @@
-uSync 3
+uSync 
 =
-uSync lets you serialize the settings and configuration elements of an Umbraco site, to and from the database, 
-making it easier to have multiple developers working on a project and working towards simpler deployment of changes.
 
-For uSync 3 we have decoupled the de/serialization of Umbraco objects from the disk and tracking parts giving us 
-much more flexibility when it comes to what we can do with uSync
+uSync is a Syncronization tool for the Umbraco CMS. It serailizes the database config and data
+within an umbraco site, and reads and writes it to disk as a collection of xml files. 
+
+uSync can be used as part of your source control, continious deployment or site syncronsation plans. 
+
+Out of the box, uSync reads and writes all the database elements to and from the `usync/data` folder.
+It will save:
+
+* Document Types
+* DataTypes
+* MediaTypes
+* Templates
+* Macros
+* Languages
+* Dictionary Items
+
+You can use uSync.ContentEdition to manage content and media if you also want to write them to disk.
+
+The basics workings of uSync
+-
+The main elements of uSync are the Serializers and Handlers:
+
+### Serailizers
+Serializers Mange the transtion between umbraco and the XML that uSync uses,
+they control how the configuration is written in and out, manage things like 
+internal IDs so your settings can move between umbraco installations. 
+
+Serializerrs do the heavy lifiting of usync, and live in the uSync.Core package, 
+you can use this package to programatically import and export data to umbraco. 
+
+### Handlers
+Handlers mange the storing of the XML and passing to the serializers. By default
+this means reading and writing the xml to disk from the uSync folder. Handlers 
+are the entry point for imports and exports, and they capture the save and delete
+events inside of umbraco so that things are saved to disk when you make changes via
+the back office. 
+
+You can add your own handlers by implimenting the `ISyncHandler` interface.
+
+### Mappers 
+Mappers help with the content and media serialization process, they 
+allow uSync to know how to find and map internal ids from within properties on your 
+content. 
+Within umbraco when you use links, and things like content pickers store the internal
+id to link the property to the correct content. Between Umbraco installations these
+ids can change so uSync needs to find them and map them to something more global (often GUIDS).
+
+Mappers allow uSync to do this. as of v3.1 uSync.ContentEdition includes mappers for: 
+* Built in editors *(RTE/Multinode treepicker, Content picker, etc)*
+* The Grid
+* Archetype
+* Nested Content
+* Vorto
+* LeBlender
+* DocTypeGrid
+
+you can roll your own mappers, by implimenting the `IContentMapper` interface and putting 
+settings in `uSyncCore.Config`
+
+Packages
+=
+there are a number of uSync packages, that make up the uSync suite, most of the time
+you don't need to worry about them, but they can be used in diffrent ways to give you
+more control over how your data is handled.
+
+uSync (BackOffice
+-
+This is the main uSync package, it reads and writes the umbraco elements to disk. (uSync/data folder)
 
 uSync.Core
 -
-this is the core of uSync - it contains everything to serialize and de-serialize elements of Umbraco, the serizlizers 
-in the core, allow you to take a database element and give it a generic xml representation, and to take xml and push
-it into Umbraco.
-
-One of the keys to uSync is how it makes the exported data generic allowing you to move it between installations; usync
-converts internal id's to strings and transferable GUID values so when you get to another install everything is still
-linked. 
-
-Also for speed the serialization in core come with change detection allowing for you to only import changes when things
-are actually different - this makes a significant difference to the speed at which a site can be imported, and is 
-especially important if you are using usync as part of a site's start-up process.
-
-uSync.BackOffice
--
-
-Backoffice replicates the functionality of the traditional uSync package using the core as the engine for change. 
-
-by using the core, we have been able to make the back office elements of uSync much more robust and flexible. Changes 
-are now tracked better, renames and deletes can be followed across installations more reliably, and we can report what
-changes are going to happen before imports are ran. 
-
-BackOffice also uses implements a Type handler so it can be extended to sync other things - by implementing ISyncHanlder interface
-you can have your items synced at the same time as uSync performs it's own synchronisation. 
+Core contains the serializers controlling the access to the umbraco system. Core allows you 
+to pass and consume the xml representations of your umbraco site, it doesn't write anything to disk
 
 uSync.ContentEdition
 -
-Content Syncing, using the Core, content edition is now two additional Sync Handlers for uSync BackOffice. when you install the content Edition dll, the back office picks this up, and run media and content handlers after all the other items are installed. 
+Content Edition is a set of additional handlers, to control Content and Media. 
 
-Media is also extracted from the site, and stored in a _uSyncMedia under each media node, this means you can move the uSync folder and get all the media too *although things like image croppers directly inside content don't get picked up, so you might want to copy media over aswell :(*
 uSync.Snapshots
 -
+Snapshots is a diffrent approach to saving the umbraco settings. the standard uSync saves all changes
+as they are made into the standard uSync folder. 
 
-Snapshots allows you to take snapshots of you're site and create point in time changesets. 
+Snapshots allows you to capture a series of changes into a single snapshot, which can then be moved around
+either as part of a wider collection or as a single change. 
 
-each changeset contains the changes that have occured on you're site since the last time you took a snapshot, these changesets,
-can then be deployed to a site, and uSync will combine them and bring all the changes through - giving you a much more incremental
-way of managing changes on you're site.
-
-Snapshots will (soon) come with a command line interface that will allow you to create changes programatically and potentially
-use the changesets as part of a deployment process.
 
