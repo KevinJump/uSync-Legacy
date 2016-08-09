@@ -63,12 +63,15 @@ namespace Jumoo.uSync.BackOffice
                     BackupFolder = "~/uSync/Backup/",
                     DontThrowErrors = false, 
 
-                    Handlers = new List<HandlerConfig>()
+                    Handlers = new List<HandlerGroup>()
+                    {
+                        new HandlerGroup()
+                    }
                 };
 
                 foreach(var handler in uSyncBackOfficeContext.Instance.Handlers)
                 {
-                    _settings.Handlers.Add(new HandlerConfig
+                    _settings.Handlers[0].Handlers.Add(new HandlerConfig
                     {
                         Name = handler.Name,
                         Enabled = true,
@@ -105,13 +108,54 @@ namespace Jumoo.uSync.BackOffice
         }
     }
 
+    public class HandlerGroup
+    {
+        public HandlerGroup() 
+        {
+            Group = "Default";
+            EnableMissing = true;
+            Handlers = new List<HandlerConfig>();
+        }
+
+        [XmlAttribute("Group")]
+        public string Group { get; set; }
+
+        [XmlAttribute("EnableMissing")]
+        public bool EnableMissing { get; set; }
+
+        [XmlElement("HanlderConfig")]
+        public List<HandlerConfig> Handlers { get; set; }
+    }
+
+
     public class HandlerConfig
     {
+        public HandlerConfig()
+        {
+            Actions = "All";
+        }
+
         [XmlAttribute(AttributeName = "Name")]
         public string Name { get; set; }
 
         [XmlAttribute(AttributeName = "Enabled")]
         public bool Enabled { get; set; }
+
+        /// <summary>
+        ///  Actions, what the handler will do
+        ///  CommaSeperated list of options
+        ///
+        ///  For BackOffice these values can be
+        /// 
+        ///   All - Do everything
+        ///   Import - Do imports
+        ///   Export - Do Exports
+        ///   Events - Listen for the saves and deletes
+        ///  
+        /// </summary>
+
+        [XmlAttribute(AttributeName = "Actions")]
+        public string Actions { get; set; }
 
         // handler modes ? 
         // Syncronize (So new, copies, deletes, renames)
@@ -156,6 +200,7 @@ namespace Jumoo.uSync.BackOffice
 
         public bool DontThrowErrors { get; set; }
 
-        public List<HandlerConfig> Handlers {get;set;}
+        [XmlElement("Handlers")]
+        public List<HandlerGroup> Handlers {get;set;}
     }
 }
