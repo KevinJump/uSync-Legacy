@@ -24,10 +24,6 @@ namespace Jumoo.uSync.Core.Serializers
         internal IContentService _contentService;
         internal IMediaService _mediaService;
 
-        public virtual int Priority { get { return uSyncConstants.Serailization.DefaultPriority;  } }
-
-        public abstract string SerializerType { get; }
-
         public ContentBaseSerializer(string type) : base(type)
         {
             _contentService = ApplicationContext.Current.Services.ContentService;
