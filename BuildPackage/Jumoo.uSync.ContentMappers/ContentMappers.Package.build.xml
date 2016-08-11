@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Package">
+  
+  <!-- uSync.ContentMappers Package Build -->
+
+  <!-- IMPORTS -->
+  <PropertyGroup>
+    <BuildProcessRoot>$(MSBuildProjectDirectory)\..</BuildProcessRoot>
+    <MSBuildCommunityTasksPath>$(BuildProcessRoot)\Tools\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
+    <MSBuildUmbracoTasksPath>$(BuildProcessRoot)\Tools\MSBuildUmbracoTasks</MSBuildUmbracoTasksPath>
+    <MSBuildNugetTasksPath>$(BuildProcessRoot)\Tools\MSBuildNugetTasks</MSBuildNugetTasksPath>
+    <AppVeyorUmbracoPath>$(BuildProcessRoot)\Tools\AppVeyorUmbraco</AppVeyorUmbracoPath>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
+  <Import Project="$(MSBuildUmbracoTasksPath)\MSBuild.Umbraco.Tasks.Targets" />
+  <Import Project="$(MSBuildNugetTasksPath)\MSBuild.NuGet.Tasks.Targets" />
+  <Import Project="$(AppVeyorUmbracoPath)\AppVeyorUmbraco.Targets" />
+  
+  <PropertyGroup>
+    <ProjectName>uSync ContentMappers</ProjectName>
+    <ProjectNamespace>Jumoo.uSync.ContentMappers</ProjectNamespace>
+    <PackageVersion>3.2.1.750</PackageVersion>
+    <VersionSuffix></VersionSuffix>
+    <MinUmbracoVersion>7.5.0</MinUmbracoVersion>
+  </PropertyGroup>
+
+  <!-- project folders -->
+  <PropertyGroup>
+    <!-- build folders -->
+    <RootDir>$(BuildProcessRoot)\..</RootDir>
+
+    <OutputDir>$(BuildProcessRoot)\Package</OutputDir>
+
+    <BuildDir>$(MSBuildProjectDirectory)</BuildDir>
+    <BuildPackageDir>$(BuildDir)\PackageBuild</BuildPackageDir>
+    <BuildNuGetDir>$(BuildDir)\NugetBuild</BuildNuGetDir>
+
+    <!-- Project Folders -->  
+    <ProjectDir>$(RootDir)\$(ProjectNamespace)</ProjectDir>
+    <ProjectFile>$(ProjectNamespace).csproj</ProjectFile>
+
+    <ProjectConfigDir>$(ProjectDir)\Config</ProjectConfigDir>
+    <AppPluginDir>$(ProjectDir)\App_Plugns</AppPluginDir>
+
+    <MappersDir>$(RootDir)\Jumoo.uSync.ContentMappers</MappersDir>
+
+
+  </PropertyGroup>
+
+
+  <!-- TARGETS -->
+  <Target Name="GenProductVersion">
+    <GetProductVersion BuildVersion="$(PackageVersion)" BuildSuffix="$(VersionSuffix)">
+      <Output TaskParameter="ProductVersion" PropertyName="ProductVersion"/>
+    </GetProductVersion>
+  </Target>
+
+  <!-- CLEAN -->
+  <Target Name="Clean" DependsOnTargets="GenProductVersion">
+    <RemoveDir Directories="$(BuildNuGetDir)" Condition="Exists('$(BuildNuGetDir)')" />
+
+    <MakeDir Directories="$(OutputDir)" />
+    <MakeDir Directories="$(BuildDir)" />
+    <MakeDir Directories="$(BuildNuGetDir)" />
+  </Target>
+
+  <!-- UPDATE PROJECT ASSEMBLEY VERSION -->
+  <Target Name="UpdateAssemblyInfo" DependsOnTargets="Clean">
+    <FileUpdate Encoding="ASCII" Files="$(ProjectDir)\Properties\AssemblyInfo.cs" Regex="AssemblyVersion\(&quot;.*&quot;\)\]" ReplacementText="AssemblyVersion(&quot;$(PackageVersion)&quot;)]" />
+    <FileUpdate Encoding="ASCII" Files="$(ProjectDir)\Properties\AssemblyInfo.cs" Regex="AssemblyFileVersion\(&quot;.*&quot;\)\]" ReplacementText="AssemblyFileVersion(&quot;$(PackageVersion)&quot;)]" />
+    <FileUpdate Encoding="ASCII" Files="$(ProjectDir)\Properties\AssemblyInfo.cs" Regex="AssemblyInformationalVersion\(&quot;.*&quot;\)\]" ReplacementText="AssemblyInformationalVersion(&quot;$(ProductVersion)&quot;)]" />
+  </Target>
+
+  <!-- COMPILE -->
+  <Target Name="Compile" DependsOnTargets="UpdateAssemblyInfo">
+    <MSBuild Projects="$(ProjectDir)\$(ProjectFile)" />
+  </Target>
+
+  <!-- Prepare Files -->
+  <Target Name="PrepareFiles" DependsOnTargets="Compile">
+    <ItemGroup>
+      <CoreNuSpecFile Include="$(BuildDir)\package.nuspec" />      
+      <CoreBinFile Include="$(ProjectDir)\Bin\Release\$(ProjectNamespace).dll" />
+      <CoreConfigFiles Include="$(ProjectDir)\Config\*.*" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(CoreNuSpecFile)" DestinationFiles="$(BuildNuGetDir)\package.nuspec" />
+    <Copy SourceFiles="@(CoreBinFile)" DestinationFolder="$(BuildNuGetDir)\lib\net45" />
+    <Copy SourceFiles="@(CoreConfigFiles)" DestinationFolder="$(BuildNuGetDir)\content\config" />
+  </Target>
+
+  <!-- Nuget Pacakge Manifest -->
+  <Target Name="ManifestNuGet" DependsOnTargets="PrepareFiles">
+    <ItemGroup>
+      <ManifestFiles Include="$(BuildNuGetDir)\**\*" Exclude="$(BuildNuGetDir)\package.nuspec" />
+    </ItemGroup>
+    <MSBuild.NuGet.Tasks.ManifestUpdate
+				ManifestFile="$(BuildNuGetDir)\package.nuspec"
+				WorkingDirectory="$(BuildNuGetDir)"
+        Title="$(ProjectName)"
+        Description="@(Readme->'%(Identity)', '%0a%0d')"
+				Version="$(PackageVersion)"
+				Files="@(ManifestFiles)" />
+  </Target>
+
+  <!-- PACKAGE -->
+  <Target Name="Package" DependsOnTargets="ManifestNuGet">
+    <MSBuild.NuGet.Tasks.Pack NuGetExePath="$(RootDir)\BuildPackage\NuGet.exe"
+          ManifestFile="$(BuildNuGetDir)\package.nuspec"
+          BasePath="$(BuildNuGetDir)"
+          Version="$(PackageVersion)"
+          OutputDirectory="$(OutputDir)" />
+
+    
+    <RemoveDir Directories="$(BuildNuGetDir)" Condition="Exists('$(BuildNuGetDir)')" />
+  </Target>
+
+</Project>

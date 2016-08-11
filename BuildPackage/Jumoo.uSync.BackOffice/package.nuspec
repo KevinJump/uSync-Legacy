@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>uSync</id>
+    <version>3.1.6.740</version>
+    <title>uSync BackOffice for Umbraco</title>
+    <authors>Kevin Jump</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>uSync serializes and deserializes umbraco item configuration to and from disk. letting you have mutiple umbraco installs with the same settings and items.</description>
+    <summary>Configuration Serialization for Umbraco.</summary>
+    <releaseNotes>
+      
+      v.3.0.4. - core updates
+      v.3.0.3 - minor log fixes
+      v.3.1.0 - Umbraco 7.4 Container Updates
+      v.3.2.0 - Handler Groups, 
+
+      v3 - Complete upgrade works with Umbraco 7.3 only.
+    </releaseNotes>
+    <licenseUrl>https://opensource.org/licenses/MPL-2.0</licenseUrl>
+    <tags>umbraco umbraco7 developer backoffice</tags>
+    <dependencies>
+      <dependency id="uSync.Core" version="5.4.0.740" />
+    </dependencies>
+  </metadata>
+</package>

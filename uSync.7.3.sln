@@ -17,6 +17,49 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.ContentMappers"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.HealthChecker", "Jumoo.uSync.HealthChecker\Jumoo.uSync.HealthChecker.csproj", "{551DD278-64C1-498D-AA7A-0A6F8DC461D1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildPackage", "BuildPackage", "{2908711F-BB6B-4A41-A36B-2A71B3F65479}"
+	ProjectSection(SolutionItems) = preProject
+		BuildPackage\Full.Package.build.xml = BuildPackage\Full.Package.build.xml
+		BuildPackage\uSync.Package.build.xml = BuildPackage\uSync.Package.build.xml
+		BuildPackage\uSync.package.nuspec = BuildPackage\uSync.package.nuspec
+		BuildPackage\uSync.Package.xml = BuildPackage\uSync.Package.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Jumoo.uSync.Core", "Jumoo.uSync.Core", "{01CD3FD6-BD7E-4200-BE8B-5FE2F12DA199}"
+	ProjectSection(SolutionItems) = preProject
+		BuildPackage\Jumoo.uSync.Core\Core.Package.build.xml = BuildPackage\Jumoo.uSync.Core\Core.Package.build.xml
+		BuildPackage\Jumoo.uSync.Core\package.nuspec = BuildPackage\Jumoo.uSync.Core\package.nuspec
+		BuildPackage\Jumoo.uSync.Core\package.xml = BuildPackage\Jumoo.uSync.Core\package.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Jumoo.uSync.BackOffice", "Jumoo.uSync.BackOffice", "{E10E12B7-850F-4D86-9DD6-62E16B521C94}"
+	ProjectSection(SolutionItems) = preProject
+		BuildPackage\Jumoo.uSync.BackOffice\BackOffice.Package.build.xml = BuildPackage\Jumoo.uSync.BackOffice\BackOffice.Package.build.xml
+		BuildPackage\Jumoo.uSync.BackOffice\package.nuspec = BuildPackage\Jumoo.uSync.BackOffice\package.nuspec
+		BuildPackage\Jumoo.uSync.BackOffice\Package.xml = BuildPackage\Jumoo.uSync.BackOffice\Package.xml
+		BuildPackage\Jumoo.uSync.BackOffice\readme.txt = BuildPackage\Jumoo.uSync.BackOffice\readme.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Jumoo.uSync.Content", "Jumoo.uSync.Content", "{C4570818-CC2D-4BEF-A012-AF42C0F7D6A2}"
+	ProjectSection(SolutionItems) = preProject
+		BuildPackage\Jumoo.uSync.Content\Content.Package.build.xml = BuildPackage\Jumoo.uSync.Content\Content.Package.build.xml
+		BuildPackage\Jumoo.uSync.Content\package.nuspec = BuildPackage\Jumoo.uSync.Content\package.nuspec
+		BuildPackage\Jumoo.uSync.Content\package.xml = BuildPackage\Jumoo.uSync.Content\package.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Jumoo.uSync.ContentMappers", "Jumoo.uSync.ContentMappers", "{F1BEDD23-0A8C-43CF-9A3F-0D24E0F1CFC6}"
+	ProjectSection(SolutionItems) = preProject
+		BuildPackage\Jumoo.uSync.ContentMappers\ContentMappers.Package.build.xml = BuildPackage\Jumoo.uSync.ContentMappers\ContentMappers.Package.build.xml
+		BuildPackage\Jumoo.uSync.ContentMappers\package.nuspec = BuildPackage\Jumoo.uSync.ContentMappers\package.nuspec
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Jumoo.uSync.Snapshots", "Jumoo.uSync.Snapshots", "{61244C4A-BC11-44D7-B959-3FF138A5B006}"
+	ProjectSection(SolutionItems) = preProject
+		BuildPackage\Jumoo.uSync.Snapshots\package.nuspec = BuildPackage\Jumoo.uSync.Snapshots\package.nuspec
+		BuildPackage\Jumoo.uSync.Snapshots\package.xml = BuildPackage\Jumoo.uSync.Snapshots\package.xml
+		BuildPackage\Jumoo.uSync.Snapshots\Snapshots.Package.build.xml = BuildPackage\Jumoo.uSync.Snapshots\Snapshots.Package.build.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,5 +97,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{01CD3FD6-BD7E-4200-BE8B-5FE2F12DA199} = {2908711F-BB6B-4A41-A36B-2A71B3F65479}
+		{E10E12B7-850F-4D86-9DD6-62E16B521C94} = {2908711F-BB6B-4A41-A36B-2A71B3F65479}
+		{C4570818-CC2D-4BEF-A012-AF42C0F7D6A2} = {2908711F-BB6B-4A41-A36B-2A71B3F65479}
+		{F1BEDD23-0A8C-43CF-9A3F-0D24E0F1CFC6} = {2908711F-BB6B-4A41-A36B-2A71B3F65479}
+		{61244C4A-BC11-44D7-B959-3FF138A5B006} = {2908711F-BB6B-4A41-A36B-2A71B3F65479}
 	EndGlobalSection
 EndGlobal

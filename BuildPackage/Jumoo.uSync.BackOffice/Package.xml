@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<umbPackage>
+  <info>
+    <package>
+      <name>uSync.BackOffice</name>
+      <version>3.1.6.740</version>
+      <license url="https://opensource.org/licenses/MPL-2.0">Mozilla Public License 2.0</license>
+      <url>http://jumoo.uk/uSync</url>
+      <requirements>
+        <major>7</major>
+        <minor>4</minor>
+        <patch>0</patch>
+      </requirements>
+    </package>
+    <author>
+      <name>Kevin Jump</name>
+      <website>http://jumoo.uk</website>
+    </author>
+    <readme>
+      <![CDATA[
+      uSync (for Umbraco 7.4+) 
+      ========================
+      Push and pull all the database config and elements of your umbraco solution to and from the disk. 
+      
+      Helps with Source Control, Continious Deployment and Multi Team Development.
+
+      This version syncs: DocTypes, MediaTypes, DataTypes, Macros, Languages, Dictionary Items, Templates and MemberTypes.]]>
+    </readme>
+  </info>
+
+  <DocumentTypes />
+  <Templates />
+  <Stylesheets />
+  <Macros />
+  <DictionaryItems />
+  <Languages />
+  <DataTypes />
+
+  <Actions>
+    <Action runat="install" alias="addDashboardSection" dashboardAlias="usyncBackOffice">
+      <section>
+        <areas>
+          <area>developer</area>
+        </areas>
+        <tab caption="uSync BackOffice">
+          <control>/App_Plugins/usync/uSyncDashboard.html</control>
+        </tab>
+      </section>
+    </Action>
+  </Actions>
+
+  <control />
+
+  <files />
+
+</umbPackage>
