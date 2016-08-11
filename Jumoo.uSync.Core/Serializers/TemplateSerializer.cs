@@ -31,6 +31,7 @@ namespace Jumoo.uSync.Core.Serializers
     public class TemplateSerializer : SyncBaseSerializer<ITemplate>, ISyncChangeDetail
     {
         IFileService _fileService;
+        public override string SerializerType { get { return uSyncConstants.Serailization.Template; } }
 
         public TemplateSerializer() :
             base(Constants.Packaging.TemplateNodeName)

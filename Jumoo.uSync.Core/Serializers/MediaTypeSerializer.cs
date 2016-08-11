@@ -17,6 +17,9 @@ namespace Jumoo.uSync.Core.Serializers
 {
     public class MediaTypeSerializer : ContentTypeBaseSerializer<IMediaType>, ISyncChangeDetail
     {
+
+        public override string SerializerType { get { return uSyncConstants.Serailization.MediaType; } }
+
         public MediaTypeSerializer() 
             : base("MediaType") { }
 

@@ -17,7 +17,9 @@ namespace Jumoo.uSync.Core.Serializers
     public class DictionarySerializer : SyncBaseSerializer<IDictionaryItem>, ISyncChangeDetail
     {
         IPackagingService _packagingService;
-        ILocalizationService _localizationService; 
+        ILocalizationService _localizationService;
+        public override string SerializerType { get { return uSyncConstants.Serailization.Dictionary; } }
+
 
         public DictionarySerializer() :
             base (Constants.Packaging.DictionaryItemNodeName)

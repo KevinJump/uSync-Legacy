@@ -16,6 +16,14 @@ namespace Jumoo.uSync.Core.Serializers
 {
     public class ContentSerializer : ContentBaseSerializer<IContent>
     {
+        public override string SerializerType
+        {
+            get
+            {
+                return uSyncConstants.Serailization.Content;
+            }
+        }
+
         public ContentSerializer() : base(string.Empty)
         { }
 

@@ -13,6 +13,8 @@ namespace Jumoo.uSync.Core.Serializers
 {
     public class MemberTypeSerializer : ContentTypeBaseSerializer<IMemberType>, ISyncChangeDetail
     {
+        public override string SerializerType { get { return uSyncConstants.Serailization.MemberType; } }
+
         public MemberTypeSerializer() :
             base("MemberType") { }
 

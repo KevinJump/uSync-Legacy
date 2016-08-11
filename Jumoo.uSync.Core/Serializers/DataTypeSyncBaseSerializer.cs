@@ -19,6 +19,8 @@ namespace Jumoo.uSync.Core.Serializers
         internal IDataTypeService _dataTypeService;
         internal IEntityService _entityService;
 
+        public int Priority { get { return uSyncConstants.Serailization.DefaultPriority; } }
+        public string SerializerType { get { return uSyncConstants.Serailization.DataType; } }
 
         public DataTypeSyncBaseSerializer(string itemType)
         {

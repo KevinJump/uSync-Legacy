@@ -76,35 +76,35 @@ namespace Jumoo.uSync.Core
             if (Serailizers != null)
             {
                 // we load the known shortcuts here. (to maintain the backwards compatability 
-                if (Serailizers["ContentTypeSerializer"] is ContentTypeSerializer )
-                    ContentTypeSerializer = (ContentTypeSerializer)Serailizers["ContentTypeSerializer"];
+                if (Serailizers[uSyncConstants.Serailization.ContentType] is ContentTypeSerializer )
+                    ContentTypeSerializer = (ContentTypeSerializer)Serailizers[uSyncConstants.Serailization.ContentType];
 
-                if (Serailizers["MediaTypeSerializer"] is MediaTypeSerializer)
-                    MediaTypeSerializer = (MediaTypeSerializer)Serailizers["MediaTypeSerializer"];
+                if (Serailizers[uSyncConstants.Serailization.MediaType] is MediaTypeSerializer)
+                    MediaTypeSerializer = (MediaTypeSerializer)Serailizers[uSyncConstants.Serailization.MediaType];
 
-                if (Serailizers["MemberTypeSerializer"] is MemberTypeSerializer)
-                    MemberTypeSerializer = (MemberTypeSerializer)Serailizers["MemberTypeSerializer"];
+                if (Serailizers[uSyncConstants.Serailization.MemberType] is MemberTypeSerializer)
+                    MemberTypeSerializer = (MemberTypeSerializer)Serailizers[uSyncConstants.Serailization.MemberType];
 
-                if (Serailizers["TemplateSerializer"] is TemplateSerializer)
-                    TemplateSerializer = (TemplateSerializer)Serailizers["TemplateSerializer"];
+                if (Serailizers[uSyncConstants.Serailization.Template] is TemplateSerializer)
+                    TemplateSerializer = (TemplateSerializer)Serailizers[uSyncConstants.Serailization.Template];
 
-                if (Serailizers["LanguageSerializer"] is LanguageSerializer)
-                    LanguageSerializer = (LanguageSerializer)Serailizers["LanguageSerializer"];
+                if (Serailizers[uSyncConstants.Serailization.Language] is LanguageSerializer)
+                    LanguageSerializer = (LanguageSerializer)Serailizers[uSyncConstants.Serailization.Language];
 
-                if (Serailizers["DictionarySerializer"] is DictionarySerializer)
-                    DictionarySerializer = (DictionarySerializer)Serailizers["DictionarySerializer"];
+                if (Serailizers[uSyncConstants.Serailization.Dictionary] is DictionarySerializer)
+                    DictionarySerializer = (DictionarySerializer)Serailizers[uSyncConstants.Serailization.Dictionary];
 
-                if (Serailizers["MacroSerializer"] is MacroSerializer)
-                    MacroSerializer = (MacroSerializer)Serailizers["MacroSerializer"];
+                if (Serailizers[uSyncConstants.Serailization.Macro] is MacroSerializer)
+                    MacroSerializer = (MacroSerializer)Serailizers[uSyncConstants.Serailization.Macro];
 
-                if (Serailizers["DataTypeSerializer"] is DataTypeSerializer)
-                    DataTypeSerializer = (DataTypeSerializer)Serailizers["DataTypeSerializer"];
+                if (Serailizers[uSyncConstants.Serailization.DataType] is DataTypeSerializer)
+                    DataTypeSerializer = (DataTypeSerializer)Serailizers[uSyncConstants.Serailization.DataType];
 
-                if (Serailizers["ContentSerializer"] is ContentSerializer)
-                    ContentSerializer = (ContentSerializer)Serailizers["ContentSerializer"];
+                if (Serailizers[uSyncConstants.Serailization.Content] is ContentSerializer)
+                    ContentSerializer = (ContentSerializer)Serailizers[uSyncConstants.Serailization.Content];
 
-                if (Serailizers["MediaSerializer"] is MediaSerializer)
-                    MediaSerializer = (MediaSerializer)Serailizers["MediaSerializer"];
+                if (Serailizers[uSyncConstants.Serailization.Media] is MediaSerializer)
+                    MediaSerializer = (MediaSerializer)Serailizers[uSyncConstants.Serailization.Media];
             }
 
             MediaFileMover = new uSyncMediaFileMover();
@@ -119,11 +119,29 @@ namespace Jumoo.uSync.Core
             Serailizers = new Dictionary<string, ISyncSerializerBase>();
 
             var types = TypeFinder.FindClassesOfType<ISyncSerializerBase>();
-            foreach(var type in types)
+            foreach (var type in types)
             {
                 var instance = Activator.CreateInstance(type) as ISyncSerializerBase;
                 LogHelper.Debug<uSyncCoreContext>("Adding Serializer: {0}", () => type.Name);
-                Serailizers.Add(type.Name, instance);
+
+                if (!this.Serailizers.ContainsKey(instance.SerializerType))
+                {
+                    Serailizers.Add(instance.SerializerType, instance);
+                }
+                else
+                {
+                    // we need to see if the new serializer of the same type has a higher priority
+                    // then the one we already have...
+                    var currentPriority = Serailizers[instance.SerializerType].Priority;
+                    LogHelper.Debug<uSyncCoreContext>("Duplicate Serializer Found: {0} comparing priorites", () => instance.SerializerType);
+
+                    if (instance.Priority > currentPriority)
+                    {
+                        LogHelper.Debug<uSyncCoreContext>("Loading new Serializer for {0} {1}", () => instance.SerializerType, ()=> type.Name);
+                        Serailizers.Remove(instance.SerializerType);
+                        Serailizers.Add(instance.SerializerType, instance);
+                    }
+                }
             }
         }
 

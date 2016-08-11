@@ -17,7 +17,9 @@ namespace Jumoo.uSync.Core.Serializers
 {
     public class MacroSerializer : SyncBaseSerializer<IMacro>, ISyncChangeDetail
     {
-        private IPackagingService _packaingService; 
+        private IPackagingService _packaingService;
+
+        public override string SerializerType { get { return uSyncConstants.Serailization.Macro; } }
 
         public MacroSerializer() : 
             base(Constants.Packaging.MacroNodeName)

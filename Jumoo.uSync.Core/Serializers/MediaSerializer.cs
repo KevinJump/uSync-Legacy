@@ -17,6 +17,8 @@ namespace Jumoo.uSync.Core.Serializers
         public MediaSerializer() : base(string.Empty)
         { }
 
+        public override string SerializerType { get { return uSyncConstants.Serailization.Media; } }
+
         internal override SyncAttempt<IMedia> DeserializeCore(XElement node, int parentId, bool forceUpdate)
         {
             var nodeGuid = node.Attribute("guid");

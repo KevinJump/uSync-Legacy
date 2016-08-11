@@ -23,6 +23,10 @@ namespace Jumoo.uSync.Core.Serializers
 {
     public class ContentTypeSerializer : ContentTypeBaseSerializer<IContentType>, ISyncChangeDetail
     {
+        public override string SerializerType
+        {
+            get { return uSyncConstants.Serailization.ContentType; }
+        }
 
         public ContentTypeSerializer() :
             base(Constants.Packaging.DocumentTypeNodeName)

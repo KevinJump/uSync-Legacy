@@ -20,7 +20,7 @@ namespace Jumoo.uSync.Core.Serializers
 {
     public class DataTypeSerializer : DataTypeSyncBaseSerializer, ISyncChangeDetail
     {
-
+        
         public DataTypeSerializer() :
             base(Constants.Packaging.DataTypeNodeName)
         { }

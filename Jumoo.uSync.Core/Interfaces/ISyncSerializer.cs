@@ -17,6 +17,7 @@ namespace Jumoo.uSync.Core.Interfaces
 
     public interface ISyncSerializerBase
     {
-
+        string SerializerType { get; }
+        int Priority { get; }
     }
 }
