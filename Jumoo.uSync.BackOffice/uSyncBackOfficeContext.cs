@@ -9,6 +9,7 @@
     using Umbraco.Core;
     using Umbraco.Core.Logging;
     using System.Collections.Specialized;
+    using System.Diagnostics;
 
     public class uSyncBackOfficeContext
     {
@@ -48,6 +49,8 @@
 
         public void Init()
         {
+            uSyncCoreContext.Instance.Init();
+
             LoadAssemblyHandlers();
 
             //
@@ -186,9 +189,13 @@
             {
                 if (HandlerEnabled(handler.Name, "import", groupName))
                 {
+                    var sw = Stopwatch.StartNew();
+
                     var syncFolder = System.IO.Path.Combine(folder, handler.SyncFolder);
                     LogHelper.Debug<uSyncApplicationEventHandler>("# Import Calling Handler: {0}", () => handler.Name);
                     actions.AddRange(handler.ImportAll(syncFolder, force));
+                    sw.Stop();
+                    LogHelper.Debug<uSyncApplicationEventHandler>("# Handler {0} Complete ({1}ms)", () => handler.Name, ()=> sw.ElapsedMilliseconds);
                 }
             }
 
@@ -252,8 +259,12 @@
             {
                 if (HandlerEnabled(handler.Name, "import", groupName))
                 {
+                    var sw = Stopwatch.StartNew();
                     var syncFolder = System.IO.Path.Combine(folder, handler.SyncFolder);
                     actions.AddRange(handler.Report(syncFolder));
+                    sw.Stop();
+                    LogHelper.Debug<uSyncApplicationEventHandler>("Report Complete: {0} ({1}ms)", () => handler.Name, () => sw.ElapsedMilliseconds);
+
                 }
             }
 
@@ -311,7 +322,7 @@
                     {
                         var actions = handlerConfig.Actions.ToLower().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                         var valid = actions.Any(x => validActions.Contains(x));
-                        LogHelper.Debug<uSyncApplicationEventHandler>("Handler: {0} is Enabled Checking Action {1} = {2}", () => handlerName, () => action, () => valid);
+                        LogHelper.Debug<uSyncApplicationEventHandler>("Handler: {0} {1} = {2}", () => handlerName, () => action, () => valid);
                         return valid;
                     }
                     else
