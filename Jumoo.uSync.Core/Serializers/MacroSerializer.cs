@@ -18,6 +18,13 @@ namespace Jumoo.uSync.Core.Serializers
     public class MacroSerializer : SyncBaseSerializer<IMacro>, ISyncChangeDetail
     {
         private IPackagingService _packaingService; 
+
+        public MacroSerializer() : 
+            base(Constants.Packaging.MacroNodeName)
+        {
+            _packaingService = ApplicationContext.Current.Services.PackagingService;
+        }
+
         public MacroSerializer(string itemType) : base(itemType)
         {
             _packaingService = ApplicationContext.Current.Services.PackagingService;

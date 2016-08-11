@@ -70,7 +70,6 @@
             */
 
 
-            uSyncCoreContext.Instance.Init();
             _config = new uSyncBackOfficeConfig();
 
             Tracker = new Helpers.ActionTracker(_config.Settings.MappedFolder());

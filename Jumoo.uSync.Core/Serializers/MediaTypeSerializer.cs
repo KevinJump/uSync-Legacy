@@ -17,8 +17,11 @@ namespace Jumoo.uSync.Core.Serializers
 {
     public class MediaTypeSerializer : ContentTypeBaseSerializer<IMediaType>, ISyncChangeDetail
     {
-        public MediaTypeSerializer(string itemType) : base (itemType)
-        { }
+        public MediaTypeSerializer() 
+            : base("MediaType") { }
+
+        public MediaTypeSerializer(string itemType) 
+            : base (itemType) { }
 
         internal override SyncAttempt<IMediaType> DeserializeCore(XElement node)
         {

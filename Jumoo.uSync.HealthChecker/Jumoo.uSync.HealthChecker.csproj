@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8F96B572-835D-4C55-BFE9-F2AE4FC40247}</ProjectGuid>
+    <ProjectGuid>{551DD278-64C1-498D-AA7A-0A6F8DC461D1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Jumoo.uSync.ContentMappers</RootNamespace>
-    <AssemblyName>Jumoo.uSync.ContentMappers</AssemblyName>
+    <RootNamespace>Jumoo.uSync.HealthChecker</RootNamespace>
+    <AssemblyName>Jumoo.uSync.HealthChecker</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,10 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Archetype, Version=1.12.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Archetype.Binaries.1.12.4\lib\net40\Archetype.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="AutoMapper, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.3.0.0\lib\net40\AutoMapper.dll</HintPath>
       <Private>True</Private>
@@ -138,16 +134,12 @@
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Web.XmlTransform, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="MiniProfiler, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b44f9351044011a3, processorArchitecture=MSIL">
       <HintPath>..\packages\MiniProfiler.2.1.0\lib\net40\MiniProfiler.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MySql.Data, Version=6.9.8.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.6.9.8\lib\net45\MySql.Data.dll</HintPath>
+    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -260,32 +252,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArchetypeContentMapper.cs" />
-    <Compile Include="ContentMappers.cs" />
-    <Compile Include="DocTypeGridMapper.cs" />
-    <Compile Include="LeBlenderContentMapper.cs" />
-    <Compile Include="NestedContentMapper.cs" />
-    <Compile Include="PackageActions.cs" />
+    <Compile Include="uSyncHealthCheck.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VortoContentMapper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Jumoo.uSync.BackOffice\Jumoo.uSync.BackOffice.csproj">
+      <Project>{d6314004-6249-4535-a305-b65946205418}</Project>
+      <Name>Jumoo.uSync.BackOffice</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Jumoo.uSync.Core\Jumoo.uSync.Core.csproj">
       <Project>{b356fe24-54b5-462f-b6fe-ee99a38695d7}</Project>
       <Name>Jumoo.uSync.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="Config\uSyncCore.Config.uninstall.xdt" />
-    <None Include="packages.config" />
-    <None Include="Config\uSyncCore.Config.install.xdt" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

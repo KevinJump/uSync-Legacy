@@ -19,8 +19,9 @@ namespace Jumoo.uSync.Content
         internal IMediaService _mediaService; 
 
         internal const string mediaFolderName = "_uSyncMedia";
+        internal string _exportFileName = "content";
 
-        public BaseContentHandler()
+        public BaseContentHandler(string fileName)
         {
             _contentService = ApplicationContext.Current.Services.ContentService;
             _mediaService = ApplicationContext.Current.Services.MediaService;
@@ -29,6 +30,10 @@ namespace Jumoo.uSync.Content
         #region BaseImport
 
         abstract public SyncAttempt<T> Import(string file, int parentId, bool force = false);
+        virtual public SyncAttempt<T> ImportRedirect(string file, bool force = false)
+        {
+            return SyncAttempt<T>.Succeed(file, ChangeType.NoChange);
+        }
         virtual public void ImportSecondPass(string file, T item) {}
 
         public IEnumerable<uSyncAction> ImportAll(string folder, bool force)
@@ -62,7 +67,7 @@ namespace Jumoo.uSync.Content
 
             if (Directory.Exists(folder))
             {
-                foreach (string file in Directory.GetFiles(folder, "*.config"))
+                foreach (string file in Directory.GetFiles(folder, string.Format("{0}.config", _exportFileName)))
                 {
                     var attempt = Import(file, parentId, force);
                     if (attempt.Success && attempt.Change > ChangeType.NoChange && attempt.Item != null)
@@ -73,6 +78,13 @@ namespace Jumoo.uSync.Content
                     if (attempt.Item != null)
                         itemId = ((IContentBase)attempt.Item).Id;
 
+                    actions.Add(uSyncActionHelper<T>.SetAction(attempt, file));
+                }
+
+                // redirects...
+                foreach(string file in Directory.GetFiles(folder, "redirect.config"))
+                {
+                    var attempt = ImportRedirect(file, force);
                     actions.Add(uSyncActionHelper<T>.SetAction(attempt, file));
                 }
 
@@ -104,7 +116,7 @@ namespace Jumoo.uSync.Content
 
             if (Directory.Exists(mappedFolder))
             {
-                foreach(var file in Directory.GetFiles(mappedFolder, "*.config"))
+                foreach(var file in Directory.GetFiles(mappedFolder, string.Format("{0}.config", _exportFileName)))
                 {
                     actions.Add(ReportItem(file));
                 }

@@ -116,6 +116,14 @@ namespace Jumoo.uSync.BackOffice.Helpers
                 File.Delete(file);
 
 
+            // redirectcheck
+            var redirect = Path.Combine(Path.GetDirectoryName(file), "redirect.config");
+            LogHelper.Debug<NameChecker>("Checking for Redirect: {0}", () => redirect);
+            if (File.Exists(redirect))
+                File.Delete(redirect);
+
+
+
             // delete if empty
             var folder = new DirectoryInfo(orphanDir);
             if (folder.GetFileSystemInfos().Length == 0)
