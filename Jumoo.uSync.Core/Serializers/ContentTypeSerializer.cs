@@ -393,6 +393,19 @@ namespace Jumoo.uSync.Core.Serializers
             if (string.IsNullOrEmpty(nodeHash))
                 return true;
 
+            var keyNode = node.Element("Info").Element("Key");
+            if (keyNode == null)
+                return true;
+
+            var keyGuid = keyNode.ValueOrDefault(Guid.Empty);
+            if (keyGuid == null)
+                return true;
+
+            var item = _contentTypeService.GetContentType(keyGuid);
+            if (item == null)
+                return true;
+
+            /*
             var aliasNode = node.Element("Info").Element("Alias");
             if (aliasNode == null)
                 return true;
@@ -400,6 +413,7 @@ namespace Jumoo.uSync.Core.Serializers
             var item = _contentTypeService.GetContentType(aliasNode.Value);
             if (item == null)
                 return true;
+            */
 
             var attempt = Serialize(item);
             if (!attempt.Success)

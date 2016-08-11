@@ -70,6 +70,7 @@ namespace Jumoo.uSync.Core
             MediaSerializer = new MediaSerializer();
             */
 
+            LogHelper.Debug<uSyncCoreContext>("Initializing uSync.Core");
 
             LoadSerializers();
 
@@ -122,7 +123,7 @@ namespace Jumoo.uSync.Core
             foreach (var type in types)
             {
                 var instance = Activator.CreateInstance(type) as ISyncSerializerBase;
-                LogHelper.Debug<uSyncCoreContext>("Adding Serializer: {0}", () => type.Name);
+                LogHelper.Debug<uSyncCoreContext>("Adding Serializer: {0}:{1}", ()=> instance.SerializerType, () => type.Name);
 
                 if (!this.Serailizers.ContainsKey(instance.SerializerType))
                 {

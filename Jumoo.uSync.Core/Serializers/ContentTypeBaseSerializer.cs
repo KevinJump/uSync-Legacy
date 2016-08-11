@@ -502,6 +502,7 @@ namespace Jumoo.uSync.Core.Serializers
             return structureNode;            
         }
 
+        // private Dictionary<int, IDataTypeDefinition> _dtdCache; 
 
         /// <summary>
         ///  as with structure, we want to export properties in a consistant order
@@ -522,8 +523,17 @@ namespace Jumoo.uSync.Core.Serializers
                 propNode.Add(new XElement("Key", property.Key));
                 propNode.Add(new XElement("Name", property.Name));
                 propNode.Add(new XElement("Alias", property.Alias));
+                /*
+                if (_dtdCache == null)
+                    _dtdCache = new Dictionary<int, IDataTypeDefinition>();
 
+                IDataTypeDefinition def = default(IDataTypeDefinition);
+                if (_dtdCache.ContainsKey(property.DataTypeDefinitionId))
+                    def = _dtdCache[property.DataTypeDefinitionId];
+                else 
+                */
                 var def = _dataTypeService.GetDataTypeDefinitionById(property.DataTypeDefinitionId);
+
                 if (def != null)
                     propNode.Add(new XElement("Definition", def.Key));
 
@@ -606,9 +616,18 @@ namespace Jumoo.uSync.Core.Serializers
             return item;
         }
 
+        // private Dictionary<int, IContentTypeBase> _lookupCache; 
+
         private IContentTypeBase LookupById(int id)
         {
             IContentTypeBase item = default(IContentTypeBase);
+            /*
+            if (_lookupCache == null)
+                _lookupCache = new Dictionary<int, IContentTypeBase>();
+
+            if (_lookupCache.ContainsKey(id))
+                return _lookupCache[id];
+            */
             switch (_itemType)
             {
                 case Constants.Packaging.DocumentTypeNodeName:
