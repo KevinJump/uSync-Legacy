@@ -279,7 +279,6 @@
     <Compile Include="ContentHandler.cs" />
     <Compile Include="MediaHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UrlRedirect\RedirectSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jumoo.uSync.BackOffice\Jumoo.uSync.BackOffice.csproj">

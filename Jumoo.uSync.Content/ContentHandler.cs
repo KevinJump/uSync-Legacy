@@ -15,7 +15,6 @@ using Umbraco.Core.Services;
 using Umbraco.Core.Logging;
 using System.Linq;
 
-using Jumoo.uSync.Content.UrlRedirect;
 
 namespace Jumoo.uSync.Content
 {
@@ -28,7 +27,6 @@ namespace Jumoo.uSync.Content
         private List<uSyncHandlerSetting> _settings;
 
         private bool _exportRedirects;
-        private RedirectSerializer _redirectSerializer;
 
         public ContentHandler() :
             base("content")
@@ -38,17 +36,6 @@ namespace Jumoo.uSync.Content
         {
             LogHelper.Info<ContentHandler>("Loading Handler Settings {0}", () => settings.Count());
             _settings = settings.ToList();
-
-            _exportRedirects = true;
-
-            // load up the redirect serializer (it's not part of core) 
-            if (_exportRedirects && uSyncCoreContext.Instance.Serailizers.Any(x => x.Key == "RedirectSerializer"))
-            {
-                if (uSyncCoreContext.Instance.Serailizers["RedirectSerializer"] is RedirectSerializer)
-                {
-                    _redirectSerializer = (RedirectSerializer)uSyncCoreContext.Instance.Serailizers["RedirectSerializer"];
-                }
-            }
         }
 
         public override SyncAttempt<IContent> Import(string filePath, int parentId, bool force = false)
@@ -67,21 +54,6 @@ namespace Jumoo.uSync.Content
             // uSyncCoreContext.Instance.ContentSerializer.D
             XElement node = XElement.Load(file);
             uSyncCoreContext.Instance.ContentSerializer.DesearlizeSecondPass(item, node);
-        }
-
-        public override SyncAttempt<IContent> ImportRedirect(string file, bool force = false)
-        {
-            if (_exportRedirects && _redirectSerializer != null)
-            {
-                LogHelper.Debug<ContentHandler>("Importing Redirects: {0}", () => file);
-                if (!System.IO.File.Exists(file))
-                    throw new FileNotFoundException(file);
-
-                var node = XElement.Load(file);
-                return _redirectSerializer.DeSerialize(node, force);
-            }
-
-            return base.ImportRedirect(file, force);
         }
 
         public IEnumerable<uSyncAction> ExportAll(string folder)
@@ -119,7 +91,7 @@ namespace Jumoo.uSync.Content
             return actions;
         }
 
-        private uSyncAction ExportItem(IContent item, string path, string rootFolder, bool redirects = true)
+        private uSyncAction ExportItem(IContent item, string path, string rootFolder)
         {
             if (item == null)
                 return uSyncAction.Fail(Path.GetFileName(path), typeof(IContent), "item not set");
@@ -133,9 +105,6 @@ namespace Jumoo.uSync.Content
                 {
                     filename = uSyncIOHelper.SavePath(rootFolder, SyncFolder, path, "content");
                     uSyncIOHelper.SaveNode(attempt.Item, filename);
-
-                    if (redirects)
-                        ExportRedirects(item, path, rootFolder);
                 }
 
                 return uSyncActionHelper<XElement>.SetAction(attempt, filename);
@@ -147,52 +116,12 @@ namespace Jumoo.uSync.Content
             }
         }
 
-        private void ExportRedirects(IContent item, string path, string rootFolder)
-        {
-            if (_exportRedirects && _redirectSerializer != null)
-            {
-                var redirectAttempt = _redirectSerializer.Serialize(item);
-                if (redirectAttempt.Success && redirectAttempt.Change > ChangeType.NoChange)
-                {
-                    var redirectFile = uSyncIOHelper.SavePath(rootFolder, SyncFolder, path, "redirect");
-                    uSyncIOHelper.SaveNode(redirectAttempt.Item, redirectFile);
-                }
-            }
-        }
 
         public void RegisterEvents()
         {
             ContentService.Saved += ContentService_Saved;
             ContentService.Trashing += ContentService_Trashed;
             ContentService.Copied += ContentService_Copied;
-
-            ContentService.Published += ContentService_Published;
-        }
-
-        private void ContentService_Published(Umbraco.Core.Publishing.IPublishingStrategy sender, Umbraco.Core.Events.PublishEventArgs<IContent> e)
-        {
-            if (uSyncEvents.Paused)
-                return;
-
-            if (_exportRedirects)
-            {
-                foreach (var item in e.PublishedEntities)
-                {
-                    ExportRedirects(item);
-                }
-            }
-        }
-
-        private void ExportRedirects(IContent item)
-        {
-            var path = GetContentPath(item);
-            ExportRedirects(item, path, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
-
-            foreach(var child in item.Children())
-            {
-                ExportRedirects(child);
-            }
-
         }
 
         private void ContentService_Copied(IContentService sender, Umbraco.Core.Events.CopyEventArgs<IContent> e)
@@ -222,7 +151,7 @@ namespace Jumoo.uSync.Content
                 if (!item.Trashed)
                 {
                     var path = GetContentPath(item);
-                    var attempt = ExportItem(item, path, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder, false);
+                    var attempt = ExportItem(item, path, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
                     if (attempt.Success)
                     {
                         NameChecker.ManageOrphanFiles(SyncFolder, item.Key, attempt.FileName);
