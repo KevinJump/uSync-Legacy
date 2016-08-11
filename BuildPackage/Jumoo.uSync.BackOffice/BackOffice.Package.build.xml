@@ -87,6 +87,7 @@
       <ConfigFiles Include="$(ProjectDir)\Config\*.*" />
       <BackOfficeConfig Include="$(ProjectDir)\Config\uSyncBackOffice.config" />
       <ReadMe Include="$(BuildDir)\readme.txt" />
+	  <nugetBuildFiles Include="$(BuildDir)\Build\*.*" />
 
       <!-- the umbraco package also has core in it. -->
       <CoreConfig Include="$(uSyncCoreDir)\Config\uSyncCore.Config" />
@@ -114,6 +115,9 @@
    DestinationFiles="@(AppPluginFiles->'$(BuildPackageDir)\App_Plugins\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(AppPluginFiles)"
    DestinationFiles="@(AppPluginFiles->'$(BuildNuGetDir)\content\App_Plugins\%(RecursiveDir)%(Filename)%(Extension)')" />
+   
+	<Copy SourceFiles="@(nugetBuildFiles)" DestinationFolder="$(BuildNuGetDir)\build" />
+
 
   </Target>
 
