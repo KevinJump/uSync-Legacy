@@ -309,7 +309,6 @@ namespace Jumoo.uSync.Core.Serializers
                 }
 
                 node.Add(SerializePreValues(item, node));
-
                 UpdateDataTypeCache(item);
 
                 return SyncAttempt<XElement>.Succeed(item.Name, node, typeof(IDataTypeDefinition), ChangeType.Export); 
@@ -441,7 +440,7 @@ namespace Jumoo.uSync.Core.Serializers
                 {
                     var i = _dtdCache.FindIndex(x => x.Key == item.Key);
 
-                    if (_dtdCache[i].GetHashCode() != item.GetHashCode())
+                    if (_dtdCache[i].UpdateDate != item.UpdateDate)
                     {
                         _dtdCache[i] = item;
                     }
