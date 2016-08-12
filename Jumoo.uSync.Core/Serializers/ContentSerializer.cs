@@ -100,7 +100,7 @@ namespace Jumoo.uSync.Core.Serializers
                     var propType = item.Properties[propertyTypeAlias].PropertyType;
                     var newValue = GetImportIds(propType, GetImportXml(property));
 
-                    LogHelper.Debug<Events>("#### Setting property: [{0}] to {1}", () => propertyTypeAlias, () => newValue);
+                    // LogHelper.Debug<ContentSerializer>("#### Setting property: [{0}] to {1}", () => propertyTypeAlias, () => newValue);
                     try
                     {
                         item.SetValue(propertyTypeAlias, newValue);
@@ -176,8 +176,10 @@ namespace Jumoo.uSync.Core.Serializers
             if (item == null)
                 return true;
 
-            DateTime updateTime = node.Attribute("updated").ValueOrDefault(DateTime.Now);
-            if ((updateTime - item.UpdateDate).TotalSeconds > 1)
+            DateTime updateTime = node.Attribute("updated").ValueOrDefault(DateTime.Now).ToUniversalTime();
+
+            LogHelper.Debug<ContentSerializer>("IsUpdate: File {0}, DB {1}", () => updateTime, () => item.UpdateDate.ToUniversalTime());
+            if ((updateTime - item.UpdateDate.ToUniversalTime()).TotalSeconds > 1)
             {
                 return true;
             }

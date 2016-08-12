@@ -122,8 +122,8 @@ namespace Jumoo.uSync.Core.Serializers
             if (item == null)
                 return true;
 
-            DateTime updateTime = node.Attribute("updated").ValueOrDefault(DateTime.Now);
-            if (DateTime.Compare(updateTime, item.UpdateDate.ToLocalTime()) <= 0)
+            DateTime updateTime = node.Attribute("updated").ValueOrDefault(DateTime.Now).ToUniversalTime();
+            if (DateTime.Compare(updateTime, item.UpdateDate.ToUniversalTime()) <= 0)
             {
                 return false;
             }

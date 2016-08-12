@@ -66,7 +66,7 @@ namespace Jumoo.uSync.Core.Serializers
                 {
                     var prop = item.Properties[propertyTypeAlias];
                     string newValue = GetImportIds(prop.PropertyType, GetImportXml(property));
-                    LogHelper.Debug<Events>("#### BASE: Setting property: [{0}] to {1}", () => propertyTypeAlias, ()=> newValue);
+                    // LogHelper.Debug<Events>("#### BASE: Setting property: [{0}] to {1}", () => propertyTypeAlias, ()=> newValue);
 
                     try {
                         item.SetValue(propertyTypeAlias, newValue);
@@ -121,7 +121,9 @@ namespace Jumoo.uSync.Core.Serializers
             node.Add(new XAttribute("id", item.Id));
             node.Add(new XAttribute("nodeName", item.Name));
             node.Add(new XAttribute("isDoc", ""));
-            node.Add(new XAttribute("updated", item.UpdateDate));
+            node.Add(new XAttribute("updated", item.UpdateDate.ToUniversalTime()));
+
+            LogHelper.Debug<Events>("Content Updatedate: {0}", () => item.UpdateDate);
 
             foreach (var prop in item.Properties.Where(p => p != null))
             {
@@ -139,7 +141,7 @@ namespace Jumoo.uSync.Core.Serializers
                 string xml = "";
                 xml = GetExportIds(prop.PropertyType, propNode);
 
-                LogHelper.Debug<Events>("Mapped Value: <{0}>{1}</{0}>", ()=> propNode.Name.ToString(), ()=>xml);
+                // LogHelper.Debug<Events>("Mapped Value: <{0}>{1}</{0}>", ()=> propNode.Name.ToString(), ()=>xml);
 
 
                 var updatedNode = XElement.Parse(
