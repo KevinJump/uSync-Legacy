@@ -178,7 +178,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             DateTime updateTime = node.Attribute("updated").ValueOrDefault(DateTime.Now).ToUniversalTime();
 
-            LogHelper.Debug<ContentSerializer>("IsUpdate: File {0}, DB {1}", () => updateTime, () => item.UpdateDate.ToUniversalTime());
+            // LogHelper.Debug<ContentSerializer>("IsUpdate: File {0}, DB {1}", () => updateTime, () => item.UpdateDate.ToUniversalTime());
             if ((updateTime - item.UpdateDate.ToUniversalTime()).TotalSeconds > 1)
             {
                 return true;
