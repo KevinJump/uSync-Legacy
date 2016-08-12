@@ -25,6 +25,7 @@ namespace Jumoo.uSync.Content
         {
             _contentService = ApplicationContext.Current.Services.ContentService;
             _mediaService = ApplicationContext.Current.Services.MediaService;
+            _exportFileName = fileName;
         }
 
         #region BaseImport

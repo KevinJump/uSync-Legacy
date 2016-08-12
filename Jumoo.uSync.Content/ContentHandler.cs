@@ -14,7 +14,7 @@ using Umbraco.Core.Models;
 using Umbraco.Core.Services;
 using Umbraco.Core.Logging;
 using System.Linq;
-
+using Jumoo.uSync.Content.UrlRedirect;
 
 namespace Jumoo.uSync.Content
 {
@@ -27,15 +27,46 @@ namespace Jumoo.uSync.Content
         private List<uSyncHandlerSetting> _settings;
 
         private bool _exportRedirects;
+        private UrlRedirectSerializer _redirectSerailizer;
 
         public ContentHandler() :
             base("content")
         { }
 
+        /// <summary>
+        ///  content handler takes additional settings. 
+        ///  <setting key="redirects" value="true" />
+        /// </summary>
+        /// <param name="settings"></param>
         public void LoadHandlerConfig(IEnumerable<uSyncHandlerSetting> settings)
         {
-            LogHelper.Info<ContentHandler>("Loading Handler Settings {0}", () => settings.Count());
+            LogHelper.Info<ContentHandler>("Loading Handler Settings [{0}]", () => settings.Count());
             _settings = settings.ToList();
+
+            // default redirects are on.
+            _exportRedirects = true;
+
+            if (_settings != null && _settings.Any())
+            {
+                var redirectSetting = _settings.First(x => x.Key.Equals("redirects"));
+                if (redirectSetting != null)
+                {
+                    bool.TryParse(redirectSetting.Value, out _exportRedirects);
+                }
+            }
+
+            LogHelper.Debug<ContentHandler>("Content Handler - Synicng Redirects [{0}]", () => _exportRedirects);
+
+            if (_exportRedirects && uSyncCoreContext.Instance.Serailizers
+                    .Any(x => x.Key == uSyncConstants.Serailization.Redirect))
+            {
+                if (uSyncCoreContext.Instance.Serailizers[uSyncConstants.Serailization.Redirect] is UrlRedirectSerializer )
+                {
+                    _redirectSerailizer = (UrlRedirectSerializer)uSyncCoreContext.Instance
+                                            .Serailizers[uSyncConstants.Serailization.Redirect];
+
+                }
+            }
         }
 
         public override SyncAttempt<IContent> Import(string filePath, int parentId, bool force = false)
@@ -81,7 +112,7 @@ namespace Jumoo.uSync.Content
             var itemPath = Path.Combine(path, item.Name.ToSafeFileName());
             // var itemPath = string.Format("{0}/{1}", path, item.Name.ToSafeFileName());
 
-            actions.Add(ExportItem(item, itemPath, rootFolder));
+            actions.Add(ExportItem(item, itemPath, rootFolder, true));
 
             foreach (var childItem in _contentService.GetChildren(item.Id))
             {
@@ -91,7 +122,7 @@ namespace Jumoo.uSync.Content
             return actions;
         }
 
-        private uSyncAction ExportItem(IContent item, string path, string rootFolder)
+        private uSyncAction ExportItem(IContent item, string path, string rootFolder, bool includeRedirects = false)
         {
             if (item == null)
                 return uSyncAction.Fail(Path.GetFileName(path), typeof(IContent), "item not set");
@@ -105,6 +136,9 @@ namespace Jumoo.uSync.Content
                 {
                     filename = uSyncIOHelper.SavePath(rootFolder, SyncFolder, path, "content");
                     uSyncIOHelper.SaveNode(attempt.Item, filename);
+
+                    if (includeRedirects)
+                        ExportRedirects(item, path, rootFolder);
                 }
 
                 return uSyncActionHelper<XElement>.SetAction(attempt, filename);
@@ -122,6 +156,8 @@ namespace Jumoo.uSync.Content
             ContentService.Saved += ContentService_Saved;
             ContentService.Trashing += ContentService_Trashed;
             ContentService.Copied += ContentService_Copied;
+
+            ContentService.Published += ContentService_Published;
         }
 
         private void ContentService_Copied(IContentService sender, Umbraco.Core.Events.CopyEventArgs<IContent> e)
@@ -186,5 +222,62 @@ namespace Jumoo.uSync.Content
             var update = uSyncCoreContext.Instance.ContentSerializer.IsUpdate(node);
             return uSyncActionHelper<IContent>.ReportAction(update, node.NameFromNode());
         }
+
+        #region URLRedirects 
+
+        private void ExportRedirects(IContent item, string path, string rootFolder)
+        {
+            if (_exportRedirects && _redirectSerailizer != null)
+            {
+                var redirectAttempt = _redirectSerailizer.Serialize(item);
+                if (redirectAttempt.Success && redirectAttempt.Change > ChangeType.NoChange)
+                {
+                    var redirectFile = uSyncIOHelper.SavePath(rootFolder, SyncFolder, path, "redirect");
+                    uSyncIOHelper.SaveNode(redirectAttempt.Item, redirectFile);
+                }
+            }
+        }
+
+        public override SyncAttempt<IContent> ImportRedirect(string file, bool force = false)
+        {
+            if (_exportRedirects && _redirectSerailizer != null)
+            {
+                if (!System.IO.File.Exists(file))
+                    throw new FileNotFoundException(file);
+
+                LogHelper.Debug<ContentHandler>("Importing Redirects: {0}", () => file);
+
+                var node = XElement.Load(file);
+                return _redirectSerailizer.DeSerialize(node, force);
+            }
+
+            return base.ImportRedirect(file, force);
+        }
+
+        private void ContentService_Published(Umbraco.Core.Publishing.IPublishingStrategy sender, Umbraco.Core.Events.PublishEventArgs<IContent> e)
+        {
+            if (uSyncEvents.Paused)
+                return;
+
+            if (_exportRedirects)
+            {
+                foreach(var item in e.PublishedEntities)
+                {
+                    ExportRedirectsForItem(item);
+                }
+            }
+        }
+
+        private void ExportRedirectsForItem(IContent item)
+        {
+            var path = GetContentPath(item);
+            ExportRedirects(item, path, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+            foreach(var child in item.Children())
+            {
+                ExportRedirectsForItem(child);
+            }
+        }
+
+        #endregion
     }
 }
