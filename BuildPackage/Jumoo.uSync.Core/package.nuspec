@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>uSync.Core</id>
-        <version>5.4.0.740</version>
+        <version>5.4.1.740</version>
         <title>uSync Core for Umbraco</title>
         <authors>Kevin Jump</authors>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>

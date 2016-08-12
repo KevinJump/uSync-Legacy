@@ -16,6 +16,7 @@ using Jumoo.uSync.Core.Extensions;
 using Umbraco.Core.Logging;
 
 using Jumoo.uSync.Core.Mappers;
+using System.Globalization;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -121,9 +122,8 @@ namespace Jumoo.uSync.Core.Serializers
             node.Add(new XAttribute("id", item.Id));
             node.Add(new XAttribute("nodeName", item.Name));
             node.Add(new XAttribute("isDoc", ""));
-            node.Add(new XAttribute("updated", item.UpdateDate.ToUniversalTime()));
+            node.Add(new XAttribute("updated", item.UpdateDate.ToString("yyyy-MM-ddTHH:mm:ss.fffffff'Z'")));
 
-            LogHelper.Debug<Events>("Content Updatedate: {0}", () => item.UpdateDate);
 
             foreach (var prop in item.Properties.Where(p => p != null))
             {
