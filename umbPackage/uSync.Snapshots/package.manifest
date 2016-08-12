@@ -1,9 +1,0 @@
-﻿{
-	javascript: [
-		'~/App_Plugins/uSyncSnapshots/SnapshotDashboardController.js',
-		'~/App_Plugins/uSyncSnapshots/SnapshotDashboardService.js'
-	],
-	css : [
-		'~/App_Plugins/uSyncSnapshots/snapshotdashboard.css'
-	]
-}
