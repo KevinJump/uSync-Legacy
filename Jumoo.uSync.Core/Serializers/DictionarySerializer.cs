@@ -102,9 +102,22 @@ namespace Jumoo.uSync.Core.Serializers
 
         internal override SyncAttempt<XElement> SerializeCore(IDictionaryItem item)
         {
+            /*
             var node = _packagingService.Export(item, true);
+            */
+            var node = new XElement(Constants.Packaging.DictionaryItemNodeName,
+                new XAttribute("Key", item.ItemKey));
+
+            foreach(var translation in item.Translations.OrderBy(x => x.Language.IsoCode))
+            {
+                node.Add(new XElement("Value",
+                    new XAttribute("LanguageId", translation.LanguageId),
+                    new XAttribute("LanguageCultureAlias", translation.Language.IsoCode),
+                    new XCData(translation.Value)));
+            }
+
             return SyncAttempt<XElement>.SucceedIf(
-                node != null, 
+                node != null,
                 node != null ? item.ItemKey : node.NameFromNode(),
                 node,
                 typeof(IDictionaryItem),

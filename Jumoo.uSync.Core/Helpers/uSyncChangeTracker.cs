@@ -26,13 +26,15 @@ namespace Jumoo.uSync.Core.Helpers
         private static Dictionary<string, ChangeKeyPair> nodeKeys = new Dictionary<string, ChangeKeyPair>()
         {
             { "GenericProperty", new ChangeKeyPair("Key", ChangeValueType.Element) },
-            { "PreValue", new ChangeKeyPair("Alias", ChangeValueType.Attribute) }
+            { "PreValue", new ChangeKeyPair("Alias", ChangeValueType.Attribute) },
+            { "Value", new ChangeKeyPair("LanguageCultureAlias", ChangeValueType.Attribute) }
         };
 
         private static Dictionary<string, ChangeKeyPair> nodeNames = new Dictionary<string, ChangeKeyPair>()
         {
             { "GenericProperty", new ChangeKeyPair("Name", ChangeValueType.Element) },
-            { "PreValue", new ChangeKeyPair("Alias", ChangeValueType.Attribute) }
+            { "PreValue", new ChangeKeyPair("Alias", ChangeValueType.Attribute) },
+            { "Value", new ChangeKeyPair("LanguageCultureAlias", ChangeValueType.Attribute) }
         };
 
         // nodes where we match them on the internal values of the elements. 
@@ -40,6 +42,14 @@ namespace Jumoo.uSync.Core.Helpers
         {
             { "Template" }, {"Tab"}
         };
+
+        /// <summary>
+        ///  attributes we ignore (becuase they are internal ids we don't care about)
+        /// </summary>
+        private static List<string> ignoreAttribs = new List<string>()
+        {
+            { "LanguageId" }, { "Id" }
+        }; 
 
         /// <summary>
         ///  gets the changes between to xml files, will recurse down a tree and 
@@ -70,31 +80,34 @@ namespace Jumoo.uSync.Core.Helpers
             {
                 foreach (var sourceAttrib in source.Attributes())
                 {
-                    var targetAttrib = target.Attribute(sourceAttrib.Name);
-                    if (targetAttrib == null)
+                    if (!ignoreAttribs.Contains(sourceAttrib.Name.LocalName))
                     {
-                        changes.Add(new uSyncChange
-                        {
-                            Path = path,
-                            Name = sourceAttrib.Name.LocalName,
-                            Change = ChangeDetailType.Delete,
-                            ValueType = ChangeValueType.Attribute,
-                            OldVal = "attribute"
-                        });
-                    }
-                    else
-                    {
-                        if (sourceAttrib.Value != targetAttrib.Value)
+                        var targetAttrib = target.Attribute(sourceAttrib.Name);
+                        if (targetAttrib == null)
                         {
                             changes.Add(new uSyncChange
                             {
                                 Path = path,
                                 Name = sourceAttrib.Name.LocalName,
-                                Change = ChangeDetailType.Update,
-                                OldVal = sourceAttrib.Value,
-                                NewVal = targetAttrib.Value,
-                                ValueType = ChangeValueType.Attribute
+                                Change = ChangeDetailType.Delete,
+                                ValueType = ChangeValueType.Attribute,
+                                OldVal = "attribute"
                             });
+                        }
+                        else
+                        {
+                            if (sourceAttrib.Value != targetAttrib.Value)
+                            {
+                                changes.Add(new uSyncChange
+                                {
+                                    Path = path,
+                                    Name = sourceAttrib.Name.LocalName,
+                                    Change = ChangeDetailType.Update,
+                                    OldVal = sourceAttrib.Value,
+                                    NewVal = targetAttrib.Value,
+                                    ValueType = ChangeValueType.Attribute
+                                });
+                            }
                         }
                     }
                 }
@@ -105,15 +118,18 @@ namespace Jumoo.uSync.Core.Helpers
             {
                 foreach (var targetAttrib in target.Attributes())
                 {
-                    if (source.Attribute(targetAttrib.Name) == null)
+                    if (!ignoreAttribs.Contains(targetAttrib.Name.LocalName))
                     {
-                        changes.Add(new uSyncChange
+                        if (source.Attribute(targetAttrib.Name) == null)
                         {
-                            Path = path,
-                            Name = targetAttrib.Name.LocalName,
-                            Change = ChangeDetailType.Create,
-                            OldVal = "attribute"
-                        });
+                            changes.Add(new uSyncChange
+                            {
+                                Path = path,
+                                Name = targetAttrib.Name.LocalName,
+                                Change = ChangeDetailType.Create,
+                                OldVal = "attribute"
+                            });
+                        }
                     }
                 }
             }
