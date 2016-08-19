@@ -105,10 +105,22 @@ namespace Jumoo.uSync.Core.Serializers
             /*
             var node = _packagingService.Export(item, true);
             */
+            var xml = GetDictionaryElement(item);
+
+            return SyncAttempt<XElement>.SucceedIf(
+                xml != null,
+                xml != null ? item.ItemKey : xml.NameFromNode(),
+                xml,
+                typeof(IDictionaryItem),
+                ChangeType.Export);
+        }
+
+        private XElement GetDictionaryElement(IDictionaryItem item)
+        {
             var node = new XElement(Constants.Packaging.DictionaryItemNodeName,
                 new XAttribute("Key", item.ItemKey));
 
-            foreach(var translation in item.Translations.OrderBy(x => x.Language.IsoCode))
+            foreach (var translation in item.Translations.OrderBy(x => x.Language.IsoCode))
             {
                 node.Add(new XElement("Value",
                     new XAttribute("LanguageId", translation.LanguageId),
@@ -116,12 +128,14 @@ namespace Jumoo.uSync.Core.Serializers
                     new XCData(translation.Value)));
             }
 
-            return SyncAttempt<XElement>.SucceedIf(
-                node != null,
-                node != null ? item.ItemKey : node.NameFromNode(),
-                node,
-                typeof(IDictionaryItem),
-                ChangeType.Export);
+            var children = _localizationService.GetDictionaryItemChildren(item.Key);
+            foreach (var child in children)
+            {
+                node.Add(GetDictionaryElement(child));
+            }
+
+            return node; 
+
         }
 
         public override bool IsUpdate(XElement node)
