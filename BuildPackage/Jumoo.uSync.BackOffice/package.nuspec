@@ -20,7 +20,7 @@
     <licenseUrl>https://opensource.org/licenses/MPL-2.0</licenseUrl>
     <tags>umbraco umbraco7 developer backoffice</tags>
     <dependencies>
-      <dependency id="uSync.Core" version="5.5.0.740" />
+      <dependency id="uSync.Core" version="5.5.1.740" />
     </dependencies>
   </metadata>
 </package>
