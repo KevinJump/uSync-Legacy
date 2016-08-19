@@ -47,7 +47,14 @@ namespace Jumoo.uSync.Core.Serializers
             var item = _contentService.GetById(guid);
             if (item == null)
             {
-                item = _contentService.CreateContent(name, parentId, type);
+                try
+                {
+                    item = _contentService.CreateContent(name, parentId, type);
+                }
+                catch(Exception ex)
+                {
+                    LogHelper.Warn<ContentSerializer>("Unable to create content: {0} - {1}", () => name, () => ex.ToString());
+                }
             }
             else { 
                 // update is different for content, we go on publish times..
