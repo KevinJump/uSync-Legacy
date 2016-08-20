@@ -129,7 +129,7 @@ namespace Jumoo.uSync.Core.Serializers
             }
 
             var children = _localizationService.GetDictionaryItemChildren(item.Key);
-            foreach (var child in children)
+            foreach (var child in children.OrderBy(x => x.Key))
             {
                 node.Add(GetDictionaryElement(child));
             }
