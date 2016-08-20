@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>uSync.ContentEdition</id>
-        <version>3.2.0.740</version>
+        <version>3.2.3.740</version>
         <title>uSync Content Edition for Umbraco</title>
         <authors>Kevin Jump</authors>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
