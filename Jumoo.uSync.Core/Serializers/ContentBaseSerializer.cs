@@ -41,7 +41,12 @@ namespace Jumoo.uSync.Core.Serializers
             // for content, we always call deserialize, because the first step will 
             // do the item lookup, and we want to return item so we can import 
             // as part of a tree. 
-            return DeserializeCore(node, parentId, forceUpdate);
+
+            if (forceUpdate || IsUpdate(node))
+                return DeserializeCore(node, parentId, forceUpdate);
+
+            return SyncAttempt<T>.Succeed(node.NameFromNode(), default(T), ChangeType.NoChange);
+
         }
 
         abstract internal SyncAttempt<T> DeserializeCore(XElement node, int parentId, bool forceUpdate);

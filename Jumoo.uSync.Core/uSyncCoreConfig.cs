@@ -88,10 +88,15 @@ namespace Jumoo.uSync.Core
         {
             Mappings = new List<uSyncValueMapperSettings>();
             ContentMappings = new List<uSyncContentMapping>();
+            ContentMatch = "Newer";
         }
 
         public string MediaStorageFolder { get; set; }
         public bool MoveMedia { get; set; }
+
+        [DefaultValue("Newer")]
+        public string ContentMatch { get; set; }
+
 
         public List<uSyncValueMapperSettings> Mappings { get; set; }
         public List<uSyncContentMapping> ContentMappings { get; set; }
