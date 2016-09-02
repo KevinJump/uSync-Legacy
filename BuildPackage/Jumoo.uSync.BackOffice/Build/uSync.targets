@@ -2,11 +2,11 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 <Target Name="AdduSyncDataToOutput">
 	<ItemGroup>
-		<CustomFilesToInclude Include=".\uSync\**\*">
+    <uSyncFilesToInclude Include=".\uSync\**\*">
 			<Dir>uSync</Dir>
-		</CustomFilesToInclude>
-		<FilesForPackagingFromProject Include="@(CustomFilesToInclude)">
-			<DestinationRelativePath>%(CustomFilesToInclude.Dir)\%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+		</uSyncFilesToInclude>
+		<FilesForPackagingFromProject Include="@(uSyncFilesToInclude)">
+			<DestinationRelativePath>%(uSyncFilesToInclude.Dir)\%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
 		</FilesForPackagingFromProject>
 	</ItemGroup>
 </Target>

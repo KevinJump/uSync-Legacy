@@ -9,13 +9,9 @@
     <description>uSync serializes and deserializes umbraco item configuration to and from disk. letting you have mutiple umbraco installs with the same settings and items.</description>
     <summary>Configuration Serialization for Umbraco.</summary>
     <releaseNotes>
-      
-      v.3.0.4. - core updates
-      v.3.0.3 - minor log fixes
-      v.3.1.0 - Umbraco 7.4 Container Updates
-      v.3.2.0 - Handler Groups, 
-
-      v3 - Complete upgrade works with Umbraco 7.3 only.
+v.3.0.0 - Rebuilt to use CoreApis and be super guid friendly.
+v.3.1.0 - Umbraco 7.4 Container Updates
+v.3.2.0 - Handler Groups
     </releaseNotes>
     <licenseUrl>https://opensource.org/licenses/MPL-2.0</licenseUrl>
     <tags>umbraco umbraco7 developer backoffice</tags>
