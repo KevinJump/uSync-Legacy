@@ -3,12 +3,10 @@
 	<PropertyGroup>
 		<CopyAllFilesToSingleFolderForPackageDependsOn>
 		  AdduSyncDataToOutput;
-		  $(CopyAllFilesToSingleFolderForPackageDependsOn);
 		</CopyAllFilesToSingleFolderForPackageDependsOn>
 
 		<CopyAllFilesToSingleFolderForMsdeployDependsOn>
 		  AdduSyncDataToOutput;
-		  $(CopyAllFilesToSingleFolderForMsdeployDependsOn);
 		</CopyAllFilesToSingleFolderForMsdeployDependsOn>
 	</PropertyGroup>
 </Project>

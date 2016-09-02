@@ -60,6 +60,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Jumoo.uSync.Snapshots", "Ju
 		BuildPackage\Jumoo.uSync.Snapshots\Snapshots.Package.build.xml = BuildPackage\Jumoo.uSync.Snapshots\Snapshots.Package.build.xml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{BB4EE3FD-B8AF-4AF1-A3B1-7CAAD9F6CA84}"
+	ProjectSection(SolutionItems) = preProject
+		BuildPackage\Jumoo.uSync.BackOffice\Build\uSync.props = BuildPackage\Jumoo.uSync.BackOffice\Build\uSync.props
+		BuildPackage\Jumoo.uSync.BackOffice\Build\uSync.targets = BuildPackage\Jumoo.uSync.BackOffice\Build\uSync.targets
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,5 +110,6 @@ Global
 		{C4570818-CC2D-4BEF-A012-AF42C0F7D6A2} = {2908711F-BB6B-4A41-A36B-2A71B3F65479}
 		{F1BEDD23-0A8C-43CF-9A3F-0D24E0F1CFC6} = {2908711F-BB6B-4A41-A36B-2A71B3F65479}
 		{61244C4A-BC11-44D7-B959-3FF138A5B006} = {2908711F-BB6B-4A41-A36B-2A71B3F65479}
+		{BB4EE3FD-B8AF-4AF1-A3B1-7CAAD9F6CA84} = {E10E12B7-850F-4D86-9DD6-62E16B521C94}
 	EndGlobalSection
 EndGlobal
