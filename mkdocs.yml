@@ -10,6 +10,7 @@ pages:
         - 'BackOffice Config' : 'backoffice-config.md'
         - 'Handler Config' : 'handler-config.md'
         - 'Core Config' : 'core-config.md'
+    - 'uSync.ContentEdition': 'contentedition.md'
     - 'The uSync Project' : 'usync-project.md'
 
 theme: readthedocs

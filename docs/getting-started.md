@@ -13,8 +13,10 @@ perform a export of your settings from the site.
 - Data Types
 - Media Types
 - Templates
+- Macros
 - Languages
 - Dictionary Items
+- Member Types *(disabled by default)*
 
 the export will be put in the ```uSync/data``` folder within your umbraco site.
 
