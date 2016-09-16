@@ -1,0 +1,15 @@
+site_name: uSync
+
+repo_url: https://github.com/KevinJump/uSync/tree/Dev-v7_4/docs 
+
+pages:
+    - 'Introduction': 'index.md'
+    - 'Installation': 'install.md'
+    - 'Getting Started' : 'getting-started.md'
+    - 'Config':
+        - 'BackOffice Config' : 'backoffice-config.md'
+        - 'Handler Config' : 'handler-config.md'
+        - 'Core Config' : 'core-config.md'
+    - 'The uSync Project' : 'usync-project.md'
+
+theme: readthedocs
