@@ -8,7 +8,9 @@ let uSync do all the database stuff.
 
 The best way to get usync is via Nuget
 
-``pm>install-package uSync``
+```bash
+PM>Install-Package uSync
+```
 
 If you want you can get it from [Our Umbraco](https://our.umbraco.org/projects/developer-tools/usync/)
 

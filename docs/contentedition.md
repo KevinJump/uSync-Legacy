@@ -1,7 +1,11 @@
 # uSync Content Edition
 
 By default uSync concentrates on the developer and setting elements of Umbraco,
-but **uSync.ContentEdition** expands that to also include Content and Media 
+but **uSync.ContentEdition** expands that to also include Content and Media
+
+```bash
+PM>Install-Package uSync.ContentEdition
+``` 
 
 At its hart uSync.ContentEdition is really just two new uSync Handlers, that get added to the 
 core uSync.BackOffice tool. Once installed these two Handlers all called just like all the 
