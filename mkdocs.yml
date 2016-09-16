@@ -12,5 +12,6 @@ pages:
         - 'Core Config' : 'core-config.md'
     - 'uSync.ContentEdition': 'contentedition.md'
     - 'The uSync Project' : 'usync-project.md'
+    - 'Versions' : 'versions.md'
 
 theme: readthedocs
