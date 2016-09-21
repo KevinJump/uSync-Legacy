@@ -200,6 +200,8 @@ namespace Jumoo.uSync.BackOffice
 
         public bool DontThrowErrors { get; set; }
 
+        public bool UseShortIdNames { get; set; }
+
         [XmlElement("Handlers")]
         public List<HandlerGroup> Handlers {get;set;}
     }

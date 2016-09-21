@@ -72,9 +72,7 @@ namespace Jumoo.uSync.Content
             if (item == null)
                 return actions;
 
-            var itemName = item.Name.ToSafeFileName();
-            if (_useShortName)
-                itemName = item.Id.ToString();
+            var itemName = base.GetItemFileName(item);
 
             var itemPath = Path.Combine(path, itemName);
             // var itemPath = string.Format("{0}/{1}", path, item.Name.ToSafeFileName());
@@ -169,7 +167,7 @@ namespace Jumoo.uSync.Content
 
         private string GetContentPath(IContent item)
         {
-            var path = item.Name.ToSafeFileName();
+            var path = base.GetItemFileName(item);
             if (item.ParentId != -1)
             {
                 path = string.Format("{0}\\{1}", GetContentPath(item.Parent()), path);

@@ -26,6 +26,10 @@ namespace Jumoo.uSync.Content
             _contentService = ApplicationContext.Current.Services.ContentService;
             _mediaService = ApplicationContext.Current.Services.MediaService;
             _exportFileName = fileName;
+
+            // short Id Setting, means we save with id.config not {{name}}.config
+            _useShortName = uSyncBackOfficeContext.Instance.Configuration.Settings.UseShortIdNames;
+
         }
 
         #region BaseImport
@@ -153,7 +157,7 @@ namespace Jumoo.uSync.Content
 
             if (_settings.Any())
             {
-                var idNameSetting = _settings.FirstOrDefault(x => x.Key.Equals("useidname", StringComparison.InvariantCultureIgnoreCase));
+                var idNameSetting = _settings.FirstOrDefault(x => x.Key.Equals("UseShortIdNames", StringComparison.InvariantCultureIgnoreCase));
                 bool idNameVal = false;
                 if (idNameSetting != null && bool.TryParse(idNameSetting.Value, out idNameVal))
                     _useShortName = idNameVal;
@@ -163,5 +167,24 @@ namespace Jumoo.uSync.Content
 
         #endregion
 
+
+
+        protected string GetItemFileName(IContentBase item)
+        {
+            if (item != null)
+            {
+                var itemName = item.Name.ToSafeFileName();
+                if (_useShortName)
+                    itemName = item.Id.ToString();
+
+                return itemName;
+            }
+            else
+            {
+                // we should never really get here, but if for
+                // some reason we do - just return a guid.
+                return Guid.NewGuid().ToString();
+            }
+        }
     }
 }

@@ -71,12 +71,9 @@ namespace Jumoo.uSync.Content
             if (item == null)
                 return actions;
 
-            var itemName = item.Name.ToSafeFileName();
-            if (_useShortName)
-                itemName = item.Id.ToString();
+            var itemName = base.GetItemFileName(item);
 
             var itemPath = Path.Combine(path, itemName);
-
             actions.Add(ExportItem(item, itemPath, root));
 
             foreach (var childItem in _mediaService.GetChildren(item.Id))
@@ -152,7 +149,7 @@ namespace Jumoo.uSync.Content
 
         private string GetMediaPath(IMedia item)
         {
-            var path = item.Name.ToSafeFileName();
+            var path = GetItemFileName(item);
             if (item.ParentId != -1)
             {
                 path = string.Format("{0}\\{1}", GetMediaPath(item.Parent()), path);
