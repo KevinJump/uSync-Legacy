@@ -71,7 +71,11 @@ namespace Jumoo.uSync.Content
             if (item == null)
                 return actions;
 
-            var itemPath = Path.Combine(path, item.Name.ToSafeFileName());
+            var itemName = item.Name.ToSafeFileName();
+            if (_useShortName)
+                itemName = item.Id.ToString();
+
+            var itemPath = Path.Combine(path, itemName);
 
             actions.Add(ExportItem(item, itemPath, root));
 

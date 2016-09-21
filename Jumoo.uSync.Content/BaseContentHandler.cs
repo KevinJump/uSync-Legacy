@@ -135,5 +135,33 @@ namespace Jumoo.uSync.Content
         abstract public uSyncAction ReportItem(string file);
         #endregion
 
+        #region Base Settings Load
+
+        //
+        // implimenting ISyncHanlderConfig for both media and content. 
+
+        private List<uSyncHandlerSetting> _settings;
+
+        protected bool _useShortName { get; set; }
+
+
+
+        public void LoadHandlerConfig(IEnumerable<uSyncHandlerSetting> settings)
+        {
+            LogHelper.Info<ContentHandler>("Loading Handler Settings {0}", () => settings.Count());
+            _settings = settings.ToList();
+
+            if (_settings.Any())
+            {
+                var idNameSetting = _settings.FirstOrDefault(x => x.Key.Equals("useidname", StringComparison.InvariantCultureIgnoreCase));
+                bool idNameVal = false;
+                if (idNameSetting != null && bool.TryParse(idNameSetting.Value, out idNameVal))
+                    _useShortName = idNameVal;
+            }
+        }
+
+
+        #endregion
+
     }
 }

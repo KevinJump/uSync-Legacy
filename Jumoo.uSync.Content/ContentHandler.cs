@@ -24,7 +24,6 @@ namespace Jumoo.uSync.Content
         public int Priority { get { return uSyncConstants.Priority.Content; } }
         public string SyncFolder { get { return "Content"; } }
 
-        private List<uSyncHandlerSetting> _settings;
 
         private bool _exportRedirects;
 
@@ -32,11 +31,6 @@ namespace Jumoo.uSync.Content
             base("content")
         { }
 
-        public void LoadHandlerConfig(IEnumerable<uSyncHandlerSetting> settings)
-        {
-            LogHelper.Info<ContentHandler>("Loading Handler Settings {0}", () => settings.Count());
-            _settings = settings.ToList();
-        }
 
         public override SyncAttempt<IContent> Import(string filePath, int parentId, bool force = false)
         {
@@ -78,7 +72,11 @@ namespace Jumoo.uSync.Content
             if (item == null)
                 return actions;
 
-            var itemPath = Path.Combine(path, item.Name.ToSafeFileName());
+            var itemName = item.Name.ToSafeFileName();
+            if (_useShortName)
+                itemName = item.Id.ToString();
+
+            var itemPath = Path.Combine(path, itemName);
             // var itemPath = string.Format("{0}/{1}", path, item.Name.ToSafeFileName());
 
             actions.Add(ExportItem(item, itemPath, rootFolder));
