@@ -121,7 +121,7 @@
                 folder = Configuration.Settings.Folder;
 
             // the default way uSync.BackOffice calls an import (on import all)
-            return Import("Default", folder, force);
+            return Import(Configuration.Settings.HandlerGroup, folder, force);
         }
 
         public IEnumerable<uSyncAction> ExportAll(string folder = null)
@@ -129,7 +129,7 @@
             if (string.IsNullOrEmpty(folder))
                 folder = Configuration.Settings.Folder;
 
-            return Export("Default", folder);
+            return Export(Configuration.Settings.HandlerGroup, folder);
         }
 
         public IEnumerable<uSyncAction> ImportReport(string folder = null)
@@ -137,7 +137,7 @@
             if (string.IsNullOrEmpty(folder))
                 folder = Configuration.Settings.Folder;
 
-            return Report("Default", folder);
+            return Report(Configuration.Settings.HandlerGroup, folder);
         }
 
         /// <summary>

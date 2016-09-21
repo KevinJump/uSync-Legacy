@@ -181,6 +181,11 @@ namespace Jumoo.uSync.BackOffice
 
     public class uSyncBackOfficeSettings
     {
+        public uSyncBackOfficeSettings()
+        {
+            HandlerGroup = "Default";
+        }
+
         public string MappedFolder()
         {
             return IOHelper.MapPath(Folder);
@@ -201,6 +206,10 @@ namespace Jumoo.uSync.BackOffice
         public bool DontThrowErrors { get; set; }
 
         public bool UseShortIdNames { get; set; }
+
+        public string HandlerGroup { get; set; }
+
+
 
         [XmlElement("Handlers")]
         public List<HandlerGroup> Handlers {get;set;}
