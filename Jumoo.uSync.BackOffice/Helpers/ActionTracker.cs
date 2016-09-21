@@ -31,10 +31,18 @@ namespace Jumoo.uSync.BackOffice.Helpers
 
             if (File.Exists(_actionFile))
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(List<SyncAction>));
-                using (FileStream fs = new FileStream(_actionFile, FileMode.Open))
+                try
                 {
-                    _actions = (List<SyncAction>)serializer.Deserialize(fs);
+                    XmlSerializer serializer = new XmlSerializer(typeof(List<SyncAction>));
+                    using (FileStream fs = new FileStream(_actionFile, FileMode.Open))
+                    {
+                        _actions = (List<SyncAction>)serializer.Deserialize(fs);
+                    }
+                }
+                catch
+                {
+                    // format fail on load.
+                    _actions = new List<SyncAction>();
                 }
             }
         }
