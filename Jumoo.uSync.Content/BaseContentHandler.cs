@@ -10,6 +10,7 @@ using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
+using Jumoo.uSync.BackOffice.Helpers;
 
 namespace Jumoo.uSync.Content
 {
@@ -173,18 +174,15 @@ namespace Jumoo.uSync.Content
         {
             if (item != null)
             {
-                var itemName = item.Name.ToSafeFileName();
                 if (_useShortName)
-                    itemName = item.Id.ToString();
+                    return uSyncIOHelper.GetShortGuidPath(item.Key);
 
-                return itemName;
+                return item.Name.ToSafeFileName();
             }
-            else
-            {
-                // we should never really get here, but if for
-                // some reason we do - just return a guid.
-                return Guid.NewGuid().ToString();
-            }
+
+            // we should never really get here, but if for
+            // some reason we do - just return a guid.
+            return uSyncIOHelper.GetShortGuidPath(Guid.NewGuid());
         }
     }
 }
