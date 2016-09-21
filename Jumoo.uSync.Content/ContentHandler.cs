@@ -92,6 +92,9 @@ namespace Jumoo.uSync.Content
             if (item == null)
                 return uSyncAction.Fail(Path.GetFileName(path), typeof(IContent), "item not set");
 
+            if (!base.IncludeItem(path, item))
+                return uSyncAction.SetAction(true, item.Name, typeof(IContent), ChangeType.NoChange, "Item ignored due to config");
+
             try
             {
                 var attempt = uSyncCoreContext.Instance.ContentSerializer.Serialize(item);

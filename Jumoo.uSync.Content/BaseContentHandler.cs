@@ -29,8 +29,8 @@ namespace Jumoo.uSync.Content
             _exportFileName = fileName;
 
             // short Id Setting, means we save with id.config not {{name}}.config
-            _useShortName = uSyncBackOfficeContext.Instance.Configuration.Settings.UseShortIdNames;
-
+            handlerSettings = new BaseContentHandlerSettings();
+            handlerSettings.UseShortName = uSyncBackOfficeContext.Instance.Configuration.Settings.UseShortIdNames;
         }
 
         #region BaseImport
@@ -147,34 +147,52 @@ namespace Jumoo.uSync.Content
 
         private List<uSyncHandlerSetting> _settings;
 
-        protected bool _useShortName { get; set; }
 
+        protected BaseContentHandlerSettings handlerSettings { get; set; }
 
 
         public void LoadHandlerConfig(IEnumerable<uSyncHandlerSetting> settings)
         {
             LogHelper.Info<ContentHandler>("Loading Handler Settings {0}", () => settings.Count());
+
             _settings = settings.ToList();
 
             if (_settings.Any())
             {
-                var idNameSetting = _settings.FirstOrDefault(x => x.Key.Equals("UseShortIdNames", StringComparison.InvariantCultureIgnoreCase));
-                bool idNameVal = false;
-                if (idNameSetting != null && bool.TryParse(idNameSetting.Value, out idNameVal))
-                    _useShortName = idNameVal;
+                foreach(var setting in _settings.ToList())
+                {
+                    switch(setting.Key.ToLower())
+                    {
+                        case "useshortidnames":
+                            bool idNameVal = false;
+                            if (bool.TryParse(setting.Value, out idNameVal))
+                                handlerSettings.UseShortName = idNameVal;
+                            break;
+                        case "root":
+                            handlerSettings.Root = setting.Value;
+                            LogHelper.Info<ContentHandler>("Root Setting: {0}", () => handlerSettings.Root);
+                            break;
+                        case "ignore":
+                            handlerSettings.Ignore = setting.Value;
+                            LogHelper.Info<ContentHandler>("Ignore Setting: {0}", () => handlerSettings.Ignore);
+                            break;
+                        case "include":
+                            handlerSettings.Include = setting.Value;
+                            LogHelper.Info<ContentHandler>("Include Setting: {0}", () => handlerSettings.Include);
+                            break;
+                    }
+                }
             }
         }
 
 
         #endregion
 
-
-
         protected string GetItemFileName(IContentBase item)
         {
             if (item != null)
             {
-                if (_useShortName)
+                if (handlerSettings.UseShortName)
                     return uSyncIOHelper.GetShortGuidPath(item.Key);
 
                 return item.Name.ToSafeFileName();
@@ -184,5 +202,41 @@ namespace Jumoo.uSync.Content
             // some reason we do - just return a guid.
             return uSyncIOHelper.GetShortGuidPath(Guid.NewGuid());
         }
+
+        protected bool IncludeItem(string path, IContentBase item)
+        {
+            var itemPath = Path.Combine(path, item.Name.ToSafeFileName());
+            LogHelper.Info<ContentHandler>("Include Item Test: {0}", () => itemPath);
+
+
+            // if the path starts with the ignore thing, then we don't include it.
+            if (!string.IsNullOrEmpty(handlerSettings.Ignore)
+                && itemPath.StartsWith(handlerSettings.Ignore, StringComparison.InvariantCultureIgnoreCase))
+            {
+                LogHelper.Info<ContentHandler>("Ignoring: {0} {1}", () => itemPath, ()=> handlerSettings.Ignore);
+                return false;
+            }
+
+            // if root is set but the path DOESN'T start with it we don't include it.
+            if (!string.IsNullOrEmpty(handlerSettings.Root)
+                && !itemPath.StartsWith(handlerSettings.Root, StringComparison.InvariantCultureIgnoreCase))
+            {
+                LogHelper.Info<ContentHandler>("Not under root: {0} {1}", () => itemPath, ()=> handlerSettings.Root);
+                return false;
+            }
+
+            return true;
+        }
+
+        protected class BaseContentHandlerSettings
+        {
+            public bool UseShortName { get; set; }
+
+            public string Root { get; set; }
+            public string Ignore { get; set; }
+            public string Include { get; set; }
+        }
     }
+
+    
 }
