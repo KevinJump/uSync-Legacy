@@ -6,6 +6,7 @@ pages:
     - 'Introduction': 'index.md'
     - 'Installation': 'install.md'
     - 'Getting Started' : 'getting-started.md'
+        - 'Actions File' : 'action-file.md'
     - 'Config':
         - 'BackOffice Config' : 'backoffice-config.md'
         - 'Handler Config' : 'handler-config.md'

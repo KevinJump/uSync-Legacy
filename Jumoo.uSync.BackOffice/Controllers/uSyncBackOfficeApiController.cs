@@ -28,13 +28,24 @@ namespace Jumoo.uSync.BackOffice.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<uSyncAction> Export()
+        public IEnumerable<uSyncAction> Export(bool deleteAction)
         {
             var folder = uSyncBackOfficeContext.Instance.Configuration.Settings.MappedFolder();
 
             if (System.IO.Directory.Exists(folder))
             {
-                System.IO.Directory.Delete(folder, true);
+                // delete the sub folders (this will leave the uSync.Action file)
+                foreach(var child in System.IO.Directory.GetDirectories(folder))
+                {
+                    System.IO.Directory.Delete(child, true);
+                }
+            }
+
+            if (deleteAction)
+            {
+                var action = System.IO.Path.Combine(folder, "uSyncActions.config");
+                if (System.IO.File.Exists(action))
+                    System.IO.File.Delete(action);
             }
 
 

@@ -11,6 +11,7 @@
         $scope.showSettings = false;
         $scope.showTechnical = false;
         $scope.showActions = false;
+        $scope.deleteActionFile = false;
 
         LoadSettings();
 
@@ -171,7 +172,7 @@
 
             $scope.loadHistory();
 
-            uSyncDashboardService.exporter()
+            uSyncDashboardService.exporter($scope.deleteActionFile)
             .then(function (response) {
                 $scope.changes = response.data;
                 $scope.reporting = false;

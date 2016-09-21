@@ -56,9 +56,14 @@
                                 <button class="btn btn-mini btn-warning" ng-click="import(true)" ng-disabled="reporting">Full Import</button>
                                 <small class="muted">Import everything (even if it's the same)</small>
                             </p>
+                            <hr />
                             <p>
                                 <button class="btn btn-mini btn-inverse" ng-click="export()" ng-disabled="reporting">Full Export</button>
-                                <small class="muted">Export everything to disk (wipes current folder)</small>
+                                <small class="muted">Export everything to disk (wipes current folder)
+                                <br/>
+                                    <label><input type="checkbox" ng-model="deleteActionFile" /> also delete the action file (<a href="http://usync.readthedocs.io/action-file/">should I?</a>))</label>
+                                </small>
+
                             </p>
                             <hr />
                             <p>
