@@ -6,11 +6,12 @@ pages:
     - 'Introduction': 'index.md'
     - 'Installation': 'install.md'
     - 'Getting Started' : 'getting-started.md'
-        - 'Actions File' : 'action-file.md'
     - 'Config':
         - 'BackOffice Config' : 'backoffice-config.md'
         - 'Handler Config' : 'handler-config.md'
         - 'Core Config' : 'core-config.md'
+    - 'Advanced':
+        - 'Actions File' : 'action-file.md'
     - 'uSync.ContentEdition': 'contentedition.md'
     - 'The uSync Project' : 'usync-project.md'
     - 'Versions' : 'versions.md'
