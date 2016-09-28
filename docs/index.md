@@ -1,6 +1,6 @@
 # uSync
 
-uSync is a database / file syncing tool for Umbraco. If makes source control, and 
+uSync is a database / file syncing tool for Umbraco. It makes source control, and 
 deployment easier, because you only have to worry about changes on the disk - and
 let uSync do all the database stuff.
 
