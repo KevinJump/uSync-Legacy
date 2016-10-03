@@ -120,11 +120,11 @@ namespace Jumoo.uSync.Core.Serializers
 
             // _contentTypeService.Save(item);
 
+            // Update Tabs before props -- allows moving props to new tabs in sync
+            DeserializeTabSortOrder((IContentTypeBase)item, node);
+
             // Update Properties
             var msg = DeserializeProperties((IContentTypeBase)item, node);
-
-            // Update Tabs
-            DeserializeTabSortOrder((IContentTypeBase)item, node);
 
             // contenttype specifics..
             var listView = info.Element("IsListView").ValueOrDefault(false);
