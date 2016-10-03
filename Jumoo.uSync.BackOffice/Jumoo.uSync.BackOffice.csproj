@@ -293,6 +293,7 @@
     <Compile Include="Helpers\uSyncIOHelper.cs" />
     <Compile Include="Interfaces\ISyncHandler.cs" />
     <Compile Include="Interfaces\ISyncHandlerBase.cs" />
+    <Compile Include="Interfaces\ISyncHandlerConfig.cs" />
     <Compile Include="Interfaces\ISyncSecondPass.cs" />
     <Compile Include="Licence\GoodwillLicence.cs" />
     <Compile Include="uSyncAction.cs" />
@@ -300,7 +301,6 @@
     <Compile Include="uSyncBackOfficeConfig.cs" />
     <Compile Include="uSyncBackOfficeContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="uSyncConstants.cs" />
     <Compile Include="uSyncEvents.cs" />
     <Compile Include="uSyncFileWatcher.cs" />
   </ItemGroup>
@@ -314,27 +314,20 @@
     <None Include="app.config" />
     <None Include="App_Plugins\uSync\package.manifest" />
     <None Include="packages.config" />
-    <None Include="uSyncBackOffice.Config" />
+    <None Include="Config\uSyncBackOffice.Config" />
+    <None Include="Config\dashboard.config.uninstall.xdt" />
+    <None Include="Config\dashboard.config.install.xdt" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Plugins\uSync\uSyncDashboard.css" />
     <Content Include="App_Plugins\uSync\uSyncDashboardController.js" />
     <Content Include="App_Plugins\uSync\uSyncDashboard.html" />
     <Content Include="App_Plugins\uSync\uSyncDashboardService.js" />
-    <Content Include="package.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>XCOPY "$(TargetPath)" "$(SolutionDir)Umbraco.Site\Bin\" /q /y
-XCOPY "$(ProjectDir)uSyncBackOffice.config" "$(SolutionDir)Umbraco.Site\Config\uSyncBackOffice.config" /q /y /I
-
-ECHO Coping to Package Folder
-XCOPY "$(TargetPath)" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
-XCOPY "$(ProjectDir)uSyncBackOffice.config" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
-XCOPY "$(ProjectDir)package.xml" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
-XCOPY "$(ProjectDir)App_Plugins\uSync\*.*" "$(SolutionDir)umbPackage\uSync.BackOffice\" /q /y
-
-</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">

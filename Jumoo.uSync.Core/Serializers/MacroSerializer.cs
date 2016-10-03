@@ -17,7 +17,16 @@ namespace Jumoo.uSync.Core.Serializers
 {
     public class MacroSerializer : SyncBaseSerializer<IMacro>, ISyncChangeDetail
     {
-        private IPackagingService _packaingService; 
+        private IPackagingService _packaingService;
+
+        public override string SerializerType { get { return uSyncConstants.Serailization.Macro; } }
+
+        public MacroSerializer() : 
+            base(Constants.Packaging.MacroNodeName)
+        {
+            _packaingService = ApplicationContext.Current.Services.PackagingService;
+        }
+
         public MacroSerializer(string itemType) : base(itemType)
         {
             _packaingService = ApplicationContext.Current.Services.PackagingService;
@@ -104,12 +113,40 @@ namespace Jumoo.uSync.Core.Serializers
             return SyncAttempt<IMacro>.Succeed(item.Name, item, ChangeType.Import);
         }
 
-        internal override SyncAttempt<XElement> SerializeCore(IMacro item)
+        internal override SyncAttempt<XElement> SerializeCore(IMacro macro)
         {
-            var node = _packaingService.Export(item);
+
+            // TODO: this doesn't export consistantly. 
+            // var node = _packaingService.Export(item);
+
+            // Basically a copy of Serialize function, 
+            // but wit the properties sorted
+            var xml = new XElement("macro");
+            xml.Add(new XElement("name", macro.Name));
+            xml.Add(new XElement("alias", macro.Alias));
+            xml.Add(new XElement("scriptType", macro.ControlType));
+            xml.Add(new XElement("scriptAssembly", macro.ControlAssembly));
+            xml.Add(new XElement("scriptingFile", macro.ScriptPath));
+            xml.Add(new XElement("xslt", macro.XsltPath));
+            xml.Add(new XElement("useInEditor", macro.UseInEditor.ToString()));
+            xml.Add(new XElement("dontRender", macro.DontRender.ToString()));
+            xml.Add(new XElement("refreshRate", macro.CacheDuration.ToString()));
+            xml.Add(new XElement("cacheByMember", macro.CacheByMember.ToString()));
+            xml.Add(new XElement("cacheByPage", macro.CacheByPage.ToString()));
+
+            var properties = new XElement("properties");
+            foreach (var property in macro.Properties.OrderBy(x => x.Alias))
+            {
+                properties.Add(new XElement("property",
+                    new XAttribute("name", property.Name),
+                    new XAttribute("alias", property.Alias),
+                    new XAttribute("sortOrder", property.SortOrder),
+                    new XAttribute("propertyType", property.EditorAlias)));
+            }
+            xml.Add(properties);
 
             return SyncAttempt<XElement>.SucceedIf(
-                node != null, item.Name, node, typeof(IMacro), ChangeType.Export);
+                xml != null, macro.Name, xml, typeof(IMacro), ChangeType.Export);
         }
 
         public override bool IsUpdate(XElement node)

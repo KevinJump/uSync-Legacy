@@ -13,9 +13,13 @@ namespace Jumoo.uSync.Core.Serializers
 {
     public class MemberTypeSerializer : ContentTypeBaseSerializer<IMemberType>, ISyncChangeDetail
     {
-        public MemberTypeSerializer(string type) : base(type)
-        {
-        }
+        public override string SerializerType { get { return uSyncConstants.Serailization.MemberType; } }
+
+        public MemberTypeSerializer() :
+            base("MemberType") { }
+
+        public MemberTypeSerializer(string type) 
+            : base(type) { }
 
         internal override SyncAttempt<IMemberType> DeserializeCore(XElement node)
         {
@@ -46,6 +50,17 @@ namespace Jumoo.uSync.Core.Serializers
 
             if (item == null)
             {
+                // we need to to an alias lookup of this one, because after an
+                // upgrade it can have a blank guid turned into a real one...
+                // 
+                LogHelper.Debug<MemberTypeSerializer>("Finding Membertype by alias: {0}", ()=> alias);
+                item = _memberTypeService.Get(alias);
+            }
+
+
+            if (item == null)
+            {
+                LogHelper.Debug<MemberTypeSerializer>("Creating new membertype {0}", ()=> alias);
                 item = new MemberType(parentId)
                 {
                     Alias= alias,

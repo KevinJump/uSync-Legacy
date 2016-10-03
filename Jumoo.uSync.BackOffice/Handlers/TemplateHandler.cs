@@ -89,7 +89,7 @@
 
         public override string GetItemPath(ITemplate item)
         {
-            string path = item.Alias.ToSafeFileName();
+            string path = GetItemFileName(item, item.Alias);
             if (item != null)
             {
                 if (!string.IsNullOrEmpty(item.MasterTemplateAlias))

@@ -153,5 +153,15 @@ namespace Jumoo.uSync.BackOffice.Helpers
                 }
             }
         }
+
+
+        public static string GetShortGuidPath(Guid guid)
+        {
+            string encoded = Convert.ToBase64String(guid.ToByteArray());
+            encoded = encoded
+              .Replace("/", "_")
+              .Replace("+", "-");
+            return encoded.Substring(0, 22);
+        }
     }
 }

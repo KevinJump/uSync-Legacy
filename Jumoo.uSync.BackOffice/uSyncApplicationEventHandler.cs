@@ -103,13 +103,20 @@ namespace Jumoo.uSync.BackOffice
             }
             catch(Exception ex)
             {
+
                 if (settings.DontThrowErrors)
                 {
                     LogHelper.Info<uSyncApplicationEventHandler>("No Throw errors is set, so uSync won't YSOD");
                     LogHelper.Error<uSyncApplicationEventHandler>("Error During Setup:", ex);
                 }
                 else
-                    throw ex;
+                {
+                    LogHelper.Warn<uSyncApplicationEventHandler>("Errors during Sync: {0} {1}", () => ex.Message, ()=> ex.Source);
+                    LogHelper.Warn<uSyncApplicationEventHandler>("Errors during Sync:\n {0}", () => ex.StackTrace);
+                    throw new ApplicationException(
+                        "uSync encounted an error during setup (which is probibily from an import)\n" +
+                        "     You can set DontThrowErrors = True in the uSyncBackOffice.Config file and umbraco will not throw the YSOD (usync will just log errors in the log file)", ex);
+                }
             }
         }
 

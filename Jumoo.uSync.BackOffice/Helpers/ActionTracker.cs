@@ -31,10 +31,18 @@ namespace Jumoo.uSync.BackOffice.Helpers
 
             if (File.Exists(_actionFile))
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(List<SyncAction>));
-                using (FileStream fs = new FileStream(_actionFile, FileMode.Open))
+                try
                 {
-                    _actions = (List<SyncAction>)serializer.Deserialize(fs);
+                    XmlSerializer serializer = new XmlSerializer(typeof(List<SyncAction>));
+                    using (FileStream fs = new FileStream(_actionFile, FileMode.Open))
+                    {
+                        _actions = (List<SyncAction>)serializer.Deserialize(fs);
+                    }
+                }
+                catch
+                {
+                    // format fail on load.
+                    _actions = new List<SyncAction>();
                 }
             }
         }
@@ -62,34 +70,49 @@ namespace Jumoo.uSync.BackOffice.Helpers
         /// <param name="type">type of object</param>
         public void AddAction(SyncActionType actionType, Guid key, string keyNameValue, Type type)
         {
-            _actions.Add(new SyncAction()
-            {
-                Action = actionType,
-                Key = key,
-                Name = keyNameValue,
-                TypeName = type.ToString()
-            });
+            var existing = _actions
+                .Where(x => x.TypeName == type.ToString() 
+                    && x.Key == key 
+                    && x.Name == keyNameValue
+                    && x.Action == actionType).Any();
 
-            SaveActions();
+            if (!existing)
+            {
+                _actions.Add(new SyncAction()
+                {
+                    Action = actionType,
+                    Key = key,
+                    Name = keyNameValue,
+                    TypeName = type.ToString()
+                });
+
+                SaveActions();
+            }
         }
 
         public void AddAction(SyncActionType actionType, string keyNameValue, Type type)
         {
-            _actions.Add(new SyncAction()
-            {
-                Action = actionType,
-                Key = Guid.Empty,
-                Name = keyNameValue,
-                TypeName = type.ToString()
-            });
+            var existing = _actions.Where(x => x.Name == keyNameValue && x.TypeName == type.ToString() && x.Action == actionType).Any();
 
-            SaveActions();
+            if (!existing)
+            {
+                _actions.Add(new SyncAction()
+                {
+                    Action = actionType,
+                    Key = Guid.Empty,
+                    Name = keyNameValue,
+                    TypeName = type.ToString()
+                });
+
+                SaveActions();
+            }
         }
 
-        public void RemoveActions(string keyNameValue, Type type)
+
+        public bool RemoveActions(string keyNameValue, string type)
         {
             bool changes = false;
-            var actionsToRemove = _actions.Where(x => x.TypeName == type.ToString() && x.Name == keyNameValue).ToList();
+            var actionsToRemove = _actions.Where(x => x.TypeName == type && x.Name == keyNameValue).ToList();
 
             if (actionsToRemove.Any())
             {
@@ -102,6 +125,14 @@ namespace Jumoo.uSync.BackOffice.Helpers
 
             if (changes)
                 SaveActions();
+
+            return changes;
+
+        }
+        public void RemoveActions(string keyNameValue, Type type)
+        {
+            var typeName = type.ToString();
+            RemoveActions(keyNameValue, typeName);
         }
 
         public IEnumerable<SyncAction> GetActions(Type type)
@@ -117,6 +148,11 @@ namespace Jumoo.uSync.BackOffice.Helpers
         public IEnumerable<SyncAction> GetActions(SyncActionType actionType)
         {
             return _actions.Where(x => x.Action == actionType);
+        }
+
+        public IEnumerable<SyncAction> GetAllActions()
+        {
+            return _actions;
         }
     }
 

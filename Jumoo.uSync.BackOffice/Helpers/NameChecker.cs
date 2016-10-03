@@ -80,7 +80,9 @@ namespace Jumoo.uSync.BackOffice.Helpers
 
             if (fileKey == Guid.Empty)
                 fileKey = node.Attribute("Key").ValueOrDefault(Guid.Empty);
-                
+
+            if (fileKey == Guid.Empty)
+                fileKey = node.Attribute("guid").ValueOrDefault(Guid.Empty);
 
             return fileKey;
         }
@@ -112,6 +114,14 @@ namespace Jumoo.uSync.BackOffice.Helpers
             // delete the file
             if (File.Exists(file))
                 File.Delete(file);
+
+
+            // redirectcheck
+            var redirect = Path.Combine(Path.GetDirectoryName(file), "redirect.config");
+            LogHelper.Debug<NameChecker>("Checking for Redirect: {0}", () => redirect);
+            if (File.Exists(redirect))
+                File.Delete(redirect);
+
 
 
             // delete if empty

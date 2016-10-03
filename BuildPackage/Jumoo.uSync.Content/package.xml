@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<umbPackage>
+  <files />
+  <info>
+    <package>
+      <name>uSync.ContentEdition</name>
+      <version>3.2.0.740</version>
+      <license url="http://opensource.org/licenses/MIT">MIT License</license>
+      <url>http://jumoo.uk/uSync</url>
+      <requirements>
+        <major>3</major>
+        <minor>0</minor>
+        <patch>0</patch>
+      </requirements>
+    </package>
+    <author>
+      <name>Kevin Jump</name>
+      <website>http://jumoo.uk</website>
+    </author>
+    <readme>
+      <![CDATA[ uSync3 : uSync.ContentEdition
+======================
+Content Edition Extended uSync.BackOffice with Handlers for Content and Media.
+
+Now includes mappers for : The Grid, Archetype, Nested Content, Vorot, LeBelnder & DocTypeGrid Editor
+]]>
+    </readme>
+  </info>
+  <DocumentTypes />
+  <Templates />
+  <Stylesheets />
+  <Macros />
+  <DictionaryItems />
+  <Languages />
+  <DataTypes />
+  <Actions>
+    <Action runat="install" undo="false" alias="UCM.TransformConfig" file="~/config/uSyncCore.config" xdtfile="~/app_data/temp/ucm/uSyncCore.config"></Action>
+  </Actions>
+</umbPackage>

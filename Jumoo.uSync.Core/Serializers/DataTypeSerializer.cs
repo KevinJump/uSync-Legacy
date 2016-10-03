@@ -16,11 +16,18 @@ using Jumoo.uSync.Core.Extensions;
 using Umbraco.Core.Logging;
 using System.Web;
 
+
 namespace Jumoo.uSync.Core.Serializers
 {
     public class DataTypeSerializer : DataTypeSyncBaseSerializer, ISyncChangeDetail
     {
-        public DataTypeSerializer(string type) : base (type)
+        
+        public DataTypeSerializer() :
+            base(Constants.Packaging.DataTypeNodeName)
+        { }
+
+        public DataTypeSerializer(string type) :
+            base (type)
         { }
 
         internal override SyncAttempt<IDataTypeDefinition> DeserializeCore(XElement node)
@@ -97,7 +104,11 @@ namespace Jumoo.uSync.Core.Serializers
                 DeserializeUpdatePreValues(item, node);
             }
 
+
             _dataTypeService.Save(item);
+
+            UpdateDataTypeCache(item);
+
             return SyncAttempt<IDataTypeDefinition>.Succeed(item.Name, item, ChangeType.Import);
 
         }
@@ -298,6 +309,7 @@ namespace Jumoo.uSync.Core.Serializers
                 }
 
                 node.Add(SerializePreValues(item, node));
+                UpdateDataTypeCache(item);
 
                 return SyncAttempt<XElement>.Succeed(item.Name, node, typeof(IDataTypeDefinition), ChangeType.Export); 
             }
@@ -390,7 +402,8 @@ namespace Jumoo.uSync.Core.Serializers
             if (!Guid.TryParse(defNode.Value, out defGuid))
                 return true;
 
-            var item = _dataTypeService.GetDataTypeDefinitionById(defGuid);
+            // var item = _dataTypeService.GetDataTypeDefinitionById(defGuid);
+            var item = GetDataTypeFromCache(defGuid);
             if (item == null)
                 return true;
 
@@ -400,10 +413,44 @@ namespace Jumoo.uSync.Core.Serializers
 
             var itemHash = attempt.Item.GetSyncHash();
 
-            LogHelper.Debug<DataTypeSerializer>(">> IsUpdated: {0} : {1}", () => !nodeHash.Equals(itemHash), () => item.Name);
-
             return (!nodeHash.Equals(itemHash));
         }
+
+        /// <summary>
+        ///   Datatype cache. we can use this to do the lookups, 
+        ///   pre-warming the datatypes on import saves, a few seconds on import.
+        /// </summary>
+        private IDataTypeDefinition GetDataTypeFromCache(Guid guid)
+        {
+            if (_dtdCache != null)
+            {
+                var i = _dtdCache.FirstOrDefault(x => x.Key == guid);
+                if (i != null)
+                    return i;
+            }
+
+            return _dataTypeService.GetDataTypeDefinitionById(guid);
+        }
+
+        private void UpdateDataTypeCache(IDataTypeDefinition item)
+        {
+            if (_dtdCache != null)
+            {
+                if (_dtdCache.Any(x => x.Key == item.Key))
+                {
+                    var i = _dtdCache.FindIndex(x => x.Key == item.Key);
+
+                    if (_dtdCache[i].UpdateDate != item.UpdateDate)
+                    {
+                        _dtdCache[i] = item;
+                    }
+                }
+                else
+                {
+                    _dtdCache.Add(item);
+                }
+            }
+        }        
 
         private bool IsContainerUpdated(XElement node)
         {

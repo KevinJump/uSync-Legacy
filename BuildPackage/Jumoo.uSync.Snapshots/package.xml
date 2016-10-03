@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<umbPackage>
+  <files/>
+  <info>
+    <package>
+      <name>uSync.Snapshots</name>
+      <version>1.0.3.740</version>
+      <license url="http://opensource.org/licenses/MIT">MIT License</license>
+      <url>http://jumoo.uk/usync</url>
+      <requirements>
+        <major>3</major>
+        <minor>0</minor>
+        <patch>0</patch>
+      </requirements>
+    </package>
+    <author>
+      <name>Kevin Jump</name>
+      <website>http://jumoo.uk</website>
+    </author>
+    <readme>
+      <![CDATA[ uSync.Snapshots v1 * Requires uSync * 
+===================================== 
+
+uSync snapshots works alongside uSync to let you take in time 
+snapshots of your umbraco site. Only the changes you make between snapshots are tracked, making it easy to see and source control the things you have done to your site. 
+
+]]></readme>
+  </info>
+  <DocumentTypes />
+  <Templates />
+  <Stylesheets />
+  <Macros />
+  <DictionaryItems />
+  <Languages />
+  <DataTypes />
+  <Actions />
+</umbPackage>

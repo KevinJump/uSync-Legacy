@@ -19,6 +19,14 @@ namespace Jumoo.uSync.Core.Serializers
     {
         private IPackagingService _packagingService;
         private ILocalizationService _localizationService;
+        public override string SerializerType { get { return uSyncConstants.Serailization.Language; } }
+
+        public LanguageSerializer() : base("Language")
+        {
+            _packagingService = ApplicationContext.Current.Services.PackagingService;
+            _localizationService = ApplicationContext.Current.Services.LocalizationService;
+        }
+
         public LanguageSerializer(string itemType) : base(itemType)
         {
             _packagingService = ApplicationContext.Current.Services.PackagingService;

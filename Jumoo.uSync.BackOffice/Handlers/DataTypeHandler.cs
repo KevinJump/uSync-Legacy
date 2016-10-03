@@ -211,7 +211,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
         public override uSyncAction ReportItem(string file)
         {
-            LogHelper.Debug<DataTypeHandler>("Report: {0}", () => file);
+            // LogHelper.Debug<DataTypeHandler>("Report: {0}", () => file);
             var node = XElement.Load(file);
 
             var update = uSyncCoreContext.Instance.DataTypeSerializer.IsUpdate(node);

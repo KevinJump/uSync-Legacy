@@ -23,7 +23,7 @@ namespace Jumoo.uSync.Content
         public int Priority { get { return uSyncConstants.Priority.Media; } }
         public string SyncFolder { get { return "Media"; } }
 
-        public MediaHandler()
+        public MediaHandler() : base("media")
         {
             // we need to instancate media content, (unlike the others). 
             // because we need to tell the mover where to put our files.
@@ -71,8 +71,9 @@ namespace Jumoo.uSync.Content
             if (item == null)
                 return actions;
 
-            var itemPath = Path.Combine(path, item.Name.ToSafeFileName());
+            var itemName = base.GetItemFileName(item);
 
+            var itemPath = Path.Combine(path, itemName);
             actions.Add(ExportItem(item, itemPath, root));
 
             foreach (var childItem in _mediaService.GetChildren(item.Id))
@@ -148,7 +149,7 @@ namespace Jumoo.uSync.Content
 
         private string GetMediaPath(IMedia item)
         {
-            var path = item.Name.ToSafeFileName();
+            var path = GetItemFileName(item);
             if (item.ParentId != -1)
             {
                 path = string.Format("{0}\\{1}", GetMediaPath(item.Parent()), path);

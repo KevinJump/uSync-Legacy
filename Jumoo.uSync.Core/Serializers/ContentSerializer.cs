@@ -11,11 +11,20 @@ using Jumoo.uSync.Core.Extensions;
 using Umbraco.Core;
 using Jumoo.uSync.Core.Helpers;
 using Umbraco.Core.Logging;
+using System.Globalization;
 
 namespace Jumoo.uSync.Core.Serializers
 {
     public class ContentSerializer : ContentBaseSerializer<IContent>
     {
+        public override string SerializerType
+        {
+            get
+            {
+                return uSyncConstants.Serailization.Content;
+            }
+        }
+
         public ContentSerializer() : base(string.Empty)
         { }
 
@@ -38,28 +47,24 @@ namespace Jumoo.uSync.Core.Serializers
             var item = _contentService.GetById(guid);
             if (item == null)
             {
-                item = _contentService.CreateContent(name, parentId, type);
-            }
-            else { 
-                // update is different for content, we go on publish times..
-                if (!forceUpdate)
+                try
                 {
-                    DateTime updateTime = node.Attribute("updated").ValueOrDefault(DateTime.Now);
-
-                    if (DateTime.Compare(updateTime, item.UpdateDate.ToLocalTime()) <= 0)
-                    {
-                        // the import is older than the content on this site;
-                        return SyncAttempt<IContent>.Succeed(item.Name, item, ChangeType.NoChange);
-                    }
+                    item = _contentService.CreateContent(name, parentId, type);
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Warn<ContentSerializer>("Unable to create content: {0} - {1}", () => name, () => ex.ToString());
                 }
             }
+            else if (item.Trashed)
+            {
+                item.ChangeTrashedState(false);
+            }
 
+
+            // if we are still null, then we have failed to get the item. 
             if (item == null)
                 return SyncAttempt<IContent>.Fail(node.NameFromNode(), ChangeType.ImportFail, "Cannot find or create content item");
-
-            // if it's in the trash remove it. 
-            if (item.Trashed)
-                item.ChangeTrashedState(false);
 
             //
             // Change doctype if it changes, we could lose values here, but we 
@@ -83,20 +88,10 @@ namespace Jumoo.uSync.Core.Serializers
             if (item.ParentId != parentId)
                 item.ParentId = parentId;
 
-            var properties = node.Elements().Where(x => x.Attribute("isDoc") == null);
-            foreach (var property in properties)
-            {
-                var propertyTypeAlias = property.Name.LocalName;
-                if (item.HasProperty(propertyTypeAlias))
-                {
-                    var propType = item.Properties[propertyTypeAlias].PropertyType;
-                    var newValue = GetImportIds(propType, GetImportXml(property));
-
-                    LogHelper.Debug<Events>("#### Setting property: [{0}] to {1}", () => propertyTypeAlias, () => newValue);
-                    item.SetValue(propertyTypeAlias, newValue );
-                }
-            }
-
+            /* property values are set on the second pass, 
+               so for speed lets no do them here... 
+            */
+            
             PublishOrSave(item, published);
 
             return SyncAttempt<IContent>.Succeed(item.Name, item, ChangeType.Import);
@@ -150,6 +145,21 @@ namespace Jumoo.uSync.Core.Serializers
 
         public override bool IsUpdate(XElement node)
         {
+            if (uSyncCoreContext.Instance.Configuration.Settings.ContentMatch.Equals("mismatch", StringComparison.OrdinalIgnoreCase))
+                return IsDiffrent(node);
+            else
+                return IsNewer(node);
+        }
+
+        /// <summary>
+        ///  the contentedition way, we only update if content in the node is newer
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        private bool IsNewer(XElement node)
+        {
+            LogHelper.Debug<ContentSerializer>("Using IsNewer Checker");
+
             var key = node.Attribute("guid").ValueOrDefault(Guid.Empty);
             if (key == Guid.Empty)
                 return true;
@@ -158,8 +168,10 @@ namespace Jumoo.uSync.Core.Serializers
             if (item == null)
                 return true;
 
-            DateTime updateTime = node.Attribute("updated").ValueOrDefault(DateTime.Now);
-            if ((updateTime - item.UpdateDate).TotalSeconds > 1)
+            DateTime updateTime = node.Attribute("updated").ValueOrDefault(DateTime.Now).ToUniversalTime();
+
+            // LogHelper.Debug<ContentSerializer>("IsUpdate: File {0}, DB {1} {2}", () => updateTime, () => item.UpdateDate.ToUniversalTime(), ()=>item.UpdateDate.Kind.ToString());
+            if ((updateTime - item.UpdateDate.ToUniversalTime()).TotalSeconds > 1)
             {
                 return true;
             }
@@ -168,6 +180,33 @@ namespace Jumoo.uSync.Core.Serializers
                 return false;
             }
 
+        }
+
+        /// <summary>
+        /// are the node and content diffrent, this is the standard uSync way of doing comparisons. 
+        /// </summary>
+        private bool IsDiffrent(XElement node)
+        {
+            LogHelper.Debug<ContentSerializer>("Using IsDiffrent Checker");
+            var key = node.Attribute("guid").ValueOrDefault(Guid.Empty);
+            if (key == Guid.Empty)
+                return true;
+
+            var nodeHash = node.GetSyncHash();
+            if (string.IsNullOrEmpty(nodeHash))
+                return true;
+
+            var item = _contentService.GetById(key);
+            if (item == null)
+                return true;
+
+            var attempt = Serialize(item);
+            if (!attempt.Success)
+                return true;
+
+            var itemHash = attempt.Item.GetSyncHash();
+
+            return (!nodeHash.Equals(itemHash));
         }
 
         public override SyncAttempt<IContent> DesearlizeSecondPass(IContent item, XElement node)

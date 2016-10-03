@@ -31,6 +31,14 @@ namespace Jumoo.uSync.Core.Serializers
     public class TemplateSerializer : SyncBaseSerializer<ITemplate>, ISyncChangeDetail
     {
         IFileService _fileService;
+        public override string SerializerType { get { return uSyncConstants.Serailization.Template; } }
+
+        public TemplateSerializer() :
+            base(Constants.Packaging.TemplateNodeName)
+        {
+            _fileService = ApplicationContext.Current.Services.FileService;
+        }
+
         public TemplateSerializer(string itemType) : base(itemType)
         {
             _fileService = ApplicationContext.Current.Services.FileService;
@@ -138,7 +146,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             var itemHash = attempt.Item.GetSyncHash();
 
-            LogHelper.Debug<TemplateSerializer>(">> IsUpdated: {0} : {1}", () => !nodeHash.Equals(itemHash), () => item.Name);
+            // LogHelper.Debug<TemplateSerializer>(">> IsUpdated: {0} : {1}", () => !nodeHash.Equals(itemHash), () => item.Name);
 
             return (!nodeHash.Equals(itemHash));
         }

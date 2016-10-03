@@ -10,6 +10,8 @@ using Umbraco.Core.Models;
 using Umbraco.Core.Services;
 using Umbraco.Core;
 using Jumoo.uSync.Core.Helpers;
+using System.Diagnostics;
+using Umbraco.Core.Logging;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -19,6 +21,10 @@ namespace Jumoo.uSync.Core.Serializers
         internal IDataTypeService _dataTypeService;
         internal IEntityService _entityService;
 
+        public int Priority { get { return uSyncConstants.Serailization.DefaultPriority; } }
+        public string SerializerType { get { return uSyncConstants.Serailization.DataType; } }
+
+        internal List<IDataTypeDefinition> _dtdCache;
 
         public DataTypeSyncBaseSerializer(string itemType)
         {
@@ -26,6 +32,11 @@ namespace Jumoo.uSync.Core.Serializers
             _dataTypeService = ApplicationContext.Current.Services.DataTypeService;
             _entityService = ApplicationContext.Current.Services.EntityService;
 
+            // this warms up the cache.
+            var sw = Stopwatch.StartNew();
+            _dtdCache = _dataTypeService.GetAllDataTypeDefinitions().ToList();
+            sw.Stop();
+            LogHelper.Debug<Events>("Warming up Datatypes ({0}ms)", () => sw.ElapsedMilliseconds);
         }
 
         public SyncAttempt<XElement> Serialize(IDataTypeDefinition item)

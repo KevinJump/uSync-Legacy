@@ -17,7 +17,16 @@ namespace Jumoo.uSync.Core.Serializers
     public class DictionarySerializer : SyncBaseSerializer<IDictionaryItem>, ISyncChangeDetail
     {
         IPackagingService _packagingService;
-        ILocalizationService _localizationService; 
+        ILocalizationService _localizationService;
+        public override string SerializerType { get { return uSyncConstants.Serailization.Dictionary; } }
+
+
+        public DictionarySerializer() :
+            base (Constants.Packaging.DictionaryItemNodeName)
+        {
+            _packagingService = ApplicationContext.Current.Services.PackagingService;
+            _localizationService = ApplicationContext.Current.Services.LocalizationService;
+        }
 
         public DictionarySerializer(string itemType) : base(itemType)
         {
@@ -41,62 +50,116 @@ namespace Jumoo.uSync.Core.Serializers
 
         private IDictionaryItem UpdateDictionaryValues(XElement node, Guid? parent, List<ILanguage> languages)
         {
-            
             var itemKeyNode = node.Attribute("Key");
-            if (itemKeyNode != null)
+            if (itemKeyNode == null)
+                return null;
+
+            var itemKey = itemKeyNode.Value;
+            
+
+            IDictionaryItem item = default(IDictionaryItem);
+            
+            /*
+             
+            // currently (v7.5.3) you can't set the key value of a dictionary item
+            // so we dont put it in the export file. and don't look up on it
+             
+            Guid guid = Guid.Empty;
+            
+            var itemGuid = node.Attribute("Guid");
+            if (itemGuid != null && Guid.TryParse(itemGuid.Value, out guid))
             {
-                var itemKey = itemKeyNode.Value;
-                LogHelper.Debug<DictionarySerializer>("Deserialize: < {0}", () => itemKey);
+                item = _localizationService.GetDictionaryItemById(guid);
+            }
+            */
 
-                IDictionaryItem item = default(IDictionaryItem);
+            if (item == null && _localizationService.DictionaryItemExists(itemKey))
+            {
+                item = _localizationService.GetDictionaryItemByKey(itemKey);
+            }
 
-                if (_localizationService.DictionaryItemExists(itemKey))
-                {
-                    // existing
-                    item = _localizationService.GetDictionaryItemByKey(itemKey);
-                }
+
+            // both create by guid or key haven't found the value
+            if (item == null)
+            {
+                if (parent.HasValue)
+                    item = new DictionaryItem(parent.Value, itemKey);
                 else
-                {
-                    if (parent.HasValue)
-                        item = new DictionaryItem(parent.Value, itemKey);
-                    else
-                        item = new DictionaryItem(itemKey);
-                }
+                    item = new DictionaryItem(itemKey);
+            }
 
-                foreach (var valueNode in node.Elements("Value"))
+            if (item == null)
+                return null;
+
+            /*
+            if (guid != Guid.Empty)
+                item.Key = guid;
+            */
+
+            foreach (var valueNode in node.Elements("Value"))
+            {
+                var languageId = valueNode.Attribute("LanguageCultureAlias").ValueOrDefault("");
+                if (!string.IsNullOrEmpty(languageId))
                 {
-                    var languageId = valueNode.Attribute("LanguageCultureAlias").Value;
                     var language = languages.FirstOrDefault(x => x.IsoCode == languageId);
                     if (language != null)
                     {
                         _localizationService.AddOrUpdateDictionaryValue(item, language, valueNode.Value);
                     }
                 }
-
-                _localizationService.Save(item);
-
-
-                // children
-                foreach (var child in node.Elements("DictionaryItem"))
-                {
-                    UpdateDictionaryValues(child, item.Key, languages);
-                }
-
-                return item;
             }
 
-            return null;
+            _localizationService.Save(item);
+
+            // children
+            foreach (var child in node.Elements("DictionaryItem"))
+            {
+                UpdateDictionaryValues(child, item.Key, languages);
+            }
+
+            return item;
         }
 
         internal override SyncAttempt<XElement> SerializeCore(IDictionaryItem item)
         {
+            /*
             var node = _packagingService.Export(item, true);
+            */
+            var xml = GetDictionaryElement(item);
+
             return SyncAttempt<XElement>.SucceedIf(
-                node != null, 
-                node != null ? item.ItemKey : node.NameFromNode(),
-                node,
+                xml != null,
+                xml != null ? item.ItemKey : xml.NameFromNode(),
+                xml,
                 typeof(IDictionaryItem),
                 ChangeType.Export);
+        }
+
+        private XElement GetDictionaryElement(IDictionaryItem item)
+        {
+            var node = new XElement(Constants.Packaging.DictionaryItemNodeName,
+                new XAttribute("Key", item.ItemKey));
+                // new XAttribute("Guid", item.Key));
+
+            foreach (var translation in item.Translations.OrderBy(x => x.Language.IsoCode))
+            {
+                node.Add(new XElement("Value",
+                    new XAttribute("LanguageId", translation.LanguageId),
+                    new XAttribute("LanguageCultureAlias", translation.Language.IsoCode),
+                    new XCData(translation.Value)));
+            }
+
+            var children = _localizationService
+                .GetDictionaryItemChildren(item.Key)
+                .ToList();
+
+            foreach (var child in children.OrderBy(x => x.ItemKey))
+            {
+                node.Add(GetDictionaryElement(child));
+            }
+
+            return node; 
+
         }
 
         public override bool IsUpdate(XElement node)

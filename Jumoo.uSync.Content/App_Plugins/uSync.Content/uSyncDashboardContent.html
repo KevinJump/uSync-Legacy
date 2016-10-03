@@ -1,0 +1,62 @@
+﻿<div ng-controller="uSyncDashboardContentController">
+    <div class="row">
+        <div class="span12">
+            <div class="alert alert-success">
+                uSync.ContentEdition is installed. Content and Media Handlers can now import and export content, as part of
+                a standard sync.
+            </div>
+
+            <h2>uSync.ContentEdition</h2>
+            <p>
+                uSync.ContentEdition, adds handlers to the existing uSync Imports.
+            </p>
+            <p>
+                There is nothing to configure with Content Edition, but you will
+                see two new handlers in the config section.
+                <ul>
+                    <li>uSync: ContentHandler</li>
+                    <li>uSync: MediaHandler</li>
+                </ul>
+            </p>
+            <p>
+                you can if you want turn these on and off in the uSyncBackoffice.config file.
+            </p>
+
+        </div>
+        <div class="span12">
+            <h2>Content Mappers</h2>
+            <p>
+                Content mappers handle the mapping of content ids inside of properties,
+                mappers will be called when a property is of a certain type, they translate
+                and internally stored Ids into more global Ids (usally GUIDS) so things like
+                links work across sites.
+            </p>
+            <p>
+                Content Mappers are configured in uSyncCore.config
+            </p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Alias</th>
+                        <th>Mapping</th>
+                        <th>Settings</th>
+                        <th>RegEx</th>
+                        <th>Assembley</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="mapper in mappers">
+                        <td>{{mapper.EditorAlias}}</td>
+                        <td>{{getTypeName(mapper.MappingType)}}</td>
+                        <td>{{mapper.Settings}}</td>
+                        <td>{{mapper.RegEx}}</td>
+                        <td>{{getAssembly(mapper.CustomMappingType)}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    
+    
+</div>

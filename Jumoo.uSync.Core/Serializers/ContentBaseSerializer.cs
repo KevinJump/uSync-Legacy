@@ -16,6 +16,7 @@ using Jumoo.uSync.Core.Extensions;
 using Umbraco.Core.Logging;
 
 using Jumoo.uSync.Core.Mappers;
+using System.Globalization;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -40,7 +41,12 @@ namespace Jumoo.uSync.Core.Serializers
             // for content, we always call deserialize, because the first step will 
             // do the item lookup, and we want to return item so we can import 
             // as part of a tree. 
-            return DeserializeCore(node, parentId, forceUpdate);
+
+            if (forceUpdate || IsUpdate(node))
+                return DeserializeCore(node, parentId, forceUpdate);
+
+            return SyncAttempt<T>.Succeed(node.NameFromNode(), default(T), ChangeType.NoChange);
+
         }
 
         abstract internal SyncAttempt<T> DeserializeCore(XElement node, int parentId, bool forceUpdate);
@@ -66,8 +72,23 @@ namespace Jumoo.uSync.Core.Serializers
                 {
                     var prop = item.Properties[propertyTypeAlias];
                     string newValue = GetImportIds(prop.PropertyType, GetImportXml(property));
-                    LogHelper.Debug<Events>("#### BASE: Setting property: [{0}] to {1}", () => propertyTypeAlias, ()=> newValue);
-                    item.SetValue(propertyTypeAlias, newValue);
+                    // LogHelper.Debug<Events>("#### BASE: Setting property: [{0}] to {1}", () => propertyTypeAlias, ()=> newValue);
+
+                    try {
+                        item.SetValue(propertyTypeAlias, newValue);
+                    }
+                    catch( InvalidOperationException ex) {
+                        // umbraco 7.5+ can throw an exception if you try to set a value with the wrong type
+                        // e.g. put a guid into an int 
+                        // It can happen if a mapping fails (it might on the first pass when we don't yet have the item we 
+                        // want to map to imported) we need to capture that, and carry one
+                        //
+                        // Ported from LocalGovKit PR https://github.com/KevinJump/LocalGovStarterKit/pull/4
+                        // 
+                        LogHelper.Warn<ContentBaseSerializer<T>>(
+                            "Setting a value didn't work. Tried to set value '{0}' to the property '{1}' on '{2}'. Exception: {3}", 
+                            ()=> newValue, ()=> propertyTypeAlias, ()=> item.Name, ()=> ex.Message);
+                    }
                 }
             }
         }
@@ -78,23 +99,10 @@ namespace Jumoo.uSync.Core.Serializers
 
         internal string GetImportIds(PropertyType propType, string content)
         {
-            var mapping = uSyncCoreContext.Instance.Configuration.Settings.ContentMappings
-                .SingleOrDefault(x => x.EditorAlias == propType.PropertyEditorAlias);
+            var mapper = ContentMapperFactory.GetMapper(propType.PropertyEditorAlias);
 
-            if (mapping != null)
-            {
-                LogHelper.Debug<Events>("Mapping Content Import: {0} {1}", () => mapping.EditorAlias, () => mapping.MappingType);
-                IContentMapper mapper = ContentMapperFactory.GetMapper(mapping);
-
-                if (mapper != null)
-                {
-                    return mapper.GetImportValue(propType.DataTypeDefinitionId, content);
-                }
-                else
-                {
-                    LogHelper.Warn<Events>("Attempted to find a mapper for {0} {1}, but couldn't", () => mapping.EditorAlias, () => mapping.MappingType);
-                }
-            }
+            if (mapper != null)
+                return mapper.GetImportValue(propType.DataTypeDefinitionId, content);
 
             return content;
         }
@@ -119,7 +127,8 @@ namespace Jumoo.uSync.Core.Serializers
             node.Add(new XAttribute("id", item.Id));
             node.Add(new XAttribute("nodeName", item.Name));
             node.Add(new XAttribute("isDoc", ""));
-            node.Add(new XAttribute("updated", item.UpdateDate));
+            node.Add(new XAttribute("updated", item.UpdateDate.ToString("yyyy-MM-ddTHH:mm:ss.fffffff'Z'")));
+
 
             foreach (var prop in item.Properties.Where(p => p != null))
             {
@@ -137,7 +146,7 @@ namespace Jumoo.uSync.Core.Serializers
                 string xml = "";
                 xml = GetExportIds(prop.PropertyType, propNode);
 
-                LogHelper.Debug<Events>("Mapped Value: <{0}>{1}</{0}>", ()=> propNode.Name.ToString(), ()=>xml);
+                // LogHelper.Debug<Events>("Mapped Value: <{0}>{1}</{0}>", ()=> propNode.Name.ToString(), ()=>xml);
 
 
                 var updatedNode = XElement.Parse(

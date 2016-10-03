@@ -63,6 +63,20 @@ namespace Jumoo.uSync.Core.Extensions
                 }
             }
 
+            if (copy.Name.LocalName == "Language" && copy.Attribute("Id") != null)
+            { 
+                copy.Attribute("Id").Remove();
+            }
+
+            if (copy.Name.LocalName == "DictionaryItem")
+            {
+                foreach(var val in copy.Elements("Value"))
+                {
+                    if (val.Attribute("LanguageId") != null)
+                        val.Attribute("LanguageId").Remove();
+                }
+            }
+
             return MakeHash(copy);
         }
 

@@ -15,6 +15,14 @@
     using Umbraco.Core.Models;
     abstract public class uSyncBaseHandler<T>
     {
+        bool _useShortName; 
+
+        public uSyncBaseHandler()
+        {
+            // short Id Setting, means we save with id.config not {{name}}.config
+            _useShortName = uSyncBackOfficeContext.Instance.Configuration.Settings.UseShortIdNames;
+        }
+
         // do things that get imported by this handler then require some form of 
         // post import processing, if this is set to true then the items will
         // also be post processed. 
@@ -131,7 +139,7 @@
                     }
                 }
 
-                path = Path.Combine(path, item.Name.ToSafeFileName());
+                path = Path.Combine(path, GetItemFileName(item));
             }
             return path;
 
@@ -181,5 +189,29 @@
 
         abstract public uSyncAction ReportItem(string file);
 
+
+        protected string GetItemFileName(IUmbracoEntity item)
+        {
+            if (item != null)
+            {
+                if (_useShortName)
+                    return uSyncIOHelper.GetShortGuidPath(item.Key);
+
+                return item.Name.ToSafeFileName();
+            }
+
+            // we should never really get here, but if for
+            // some reason we do - just return a guid.
+            return uSyncIOHelper.GetShortGuidPath(Guid.NewGuid());
+
+        }
+
+        protected string GetItemFileName(IEntity item, string name)
+        {
+            if (_useShortName)
+                return uSyncIOHelper.GetShortGuidPath(item.Key);
+
+            return name.ToSafeFileName();
+        }
     }
 }

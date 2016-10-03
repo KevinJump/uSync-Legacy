@@ -13,6 +13,10 @@ namespace Jumoo.uSync.Core.Serializers
     {
         internal readonly string _itemType;
 
+        public virtual int Priority { get { return uSyncConstants.Serailization.DefaultPriority; } }
+        public abstract string SerializerType { get; }
+
+
         public SyncBaseSerializer(string itemType)
         {
             _itemType = itemType;

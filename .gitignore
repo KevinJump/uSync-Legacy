@@ -9,6 +9,7 @@
 *.userosscache
 *.sln.docstates
 
+nuget.exe
 .vs/
 snapshots/
 App_Browsers/
@@ -27,7 +28,7 @@ Umbraco.Site/Media/
 [Rr]eleases/
 x64/
 x86/
-build/
+# build/
 bld/
 [Bb]in/
 [Oo]bj/
@@ -242,7 +243,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-
 
 
 

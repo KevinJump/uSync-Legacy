@@ -17,6 +17,8 @@ namespace Jumoo.uSync.Core.Serializers
         public MediaSerializer() : base(string.Empty)
         { }
 
+        public override string SerializerType { get { return uSyncConstants.Serailization.Media; } }
+
         internal override SyncAttempt<IMedia> DeserializeCore(XElement node, int parentId, bool forceUpdate)
         {
             var nodeGuid = node.Attribute("guid");
@@ -35,52 +37,28 @@ namespace Jumoo.uSync.Core.Serializers
             {
                 item = _mediaService.CreateMedia(name, parentId, mediaTypeAlias);
             }
-            else
+            else if (item.Trashed)
             {
-                if (item.Trashed)
-                {
-                    item.ChangeTrashedState(false);
-                }
-
-                if (!forceUpdate)
-                {
-                    if (DateTime.Compare(update, item.UpdateDate.ToLocalTime()) < 0)
-                        return SyncAttempt<IMedia>.Succeed(item.Name, item, ChangeType.NoChange);
-                }
+                item.ChangeTrashedState(false);
             }
 
-            if (item != null)
-            {
-                if (item.Key != guid)
-                    item.Key = guid;
+            if (item == null)
+                return SyncAttempt<IMedia>.Fail(node.NameFromNode(), ChangeType.ImportFail, "Cannot find or create media item");
 
-                if (item.Name != name)
-                    item.Name = name;
+            if (item.Key != guid)
+                item.Key = guid;
 
-                if (item.ParentId != parentId)
-                    item.ParentId = parentId;
+            if (item.Name != name)
+                item.Name = name;
 
-                /*
-                 * properties are set in second pass, for speed we don't do it here.
-                 */
-                /*
-                var properties = node.Elements().Where(x => x.Attribute("isDoc") == null);
-                foreach (var property in properties)
-                {
-                    var propertyTypeAlias = property.Name.LocalName;
-                    if (item.HasProperty(propertyTypeAlias))
-                    {
-                        var propType = item.Properties[propertyTypeAlias].PropertyType;
-                        var newValue = GetImportIds(propType, GetImportXml(property));
+            if (item.ParentId != parentId)
+                item.ParentId = parentId;
 
-                        LogHelper.Debug<Events>("#### Setting property: [{0}] to {1}", () => propertyTypeAlias, () => newValue);
-                        item.SetValue(propertyTypeAlias, newValue);
-                    }
-                }
-                */
+            /*
+                * properties are set in second pass, for speed we don't do it here.
+            */
 
-                _mediaService.Save(item);
-            }
+            _mediaService.Save(item);
 
             return SyncAttempt<IMedia>.Succeed(item.Name, item,ChangeType.Import);
 
@@ -112,6 +90,20 @@ namespace Jumoo.uSync.Core.Serializers
 
         public override bool IsUpdate(XElement node)
         {
+            if (uSyncCoreContext.Instance.Configuration.Settings.ContentMatch.Equals("mismatch", StringComparison.OrdinalIgnoreCase))
+                return IsDiffrent(node);
+            else
+                return IsNewer(node);
+        }
+
+        /// <summary>
+        ///  the contentedition way, we only update if content in the node is newer
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        private bool IsNewer(XElement node)
+        {
+            LogHelper.Debug<MediaSerializer>("Using IsNewer Checker");
             var key = node.Attribute("guid").ValueOrDefault(Guid.Empty);
             if (key == Guid.Empty)
                 return true;
@@ -120,15 +112,44 @@ namespace Jumoo.uSync.Core.Serializers
             if (item == null)
                 return true;
 
-            DateTime updateTime = node.Attribute("updated").ValueOrDefault(DateTime.Now);
-            if (DateTime.Compare(updateTime, item.UpdateDate.ToLocalTime()) <= 0)
-            {
-                return false;
-            }
-            else
+            DateTime updateTime = node.Attribute("updated").ValueOrDefault(DateTime.Now).ToUniversalTime();
+
+            if ((updateTime - item.UpdateDate.ToUniversalTime()).TotalSeconds > 1)
             {
                 return true;
             }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        /// <summary>
+        /// are the node and content diffrent, this is the standard uSync way of doing comparisons. 
+        /// </summary>
+        private bool IsDiffrent(XElement node)
+        {
+            LogHelper.Debug<MediaSerializer>("Using IsDiffrent Checker");
+            var key = node.Attribute("guid").ValueOrDefault(Guid.Empty);
+            if (key == Guid.Empty)
+                return true;
+
+            var nodeHash = node.GetSyncHash();
+            if (string.IsNullOrEmpty(nodeHash))
+                return true;
+
+            var item = _mediaService.GetById(key);
+            if (item == null)
+                return true;
+
+            var attempt = Serialize(item);
+            if (!attempt.Success)
+                return true;
+
+            var itemHash = attempt.Item.GetSyncHash();
+
+            return (nodeHash.Equals(itemHash));
         }
 
         public override SyncAttempt<IMedia> DesearlizeSecondPass(IMedia item, XElement node)

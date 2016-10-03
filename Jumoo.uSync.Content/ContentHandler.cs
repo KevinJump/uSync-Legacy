@@ -15,13 +15,22 @@ using Umbraco.Core.Services;
 using Umbraco.Core.Logging;
 using System.Linq;
 
+
 namespace Jumoo.uSync.Content
 {
-    public class ContentHandler : BaseContentHandler<IContent>, ISyncHandler
+    public class ContentHandler : BaseContentHandler<IContent>, ISyncHandler, ISyncHandlerConfig
     {
         public string Name { get { return "uSync: ContentHandler"; } }
         public int Priority { get { return uSyncConstants.Priority.Content; } }
         public string SyncFolder { get { return "Content"; } }
+
+
+        private bool _exportRedirects;
+
+        public ContentHandler() :
+            base("content")
+        { }
+
 
         public override SyncAttempt<IContent> Import(string filePath, int parentId, bool force = false)
         {
@@ -63,7 +72,9 @@ namespace Jumoo.uSync.Content
             if (item == null)
                 return actions;
 
-            var itemPath = Path.Combine(path, item.Name.ToSafeFileName());
+            var itemName = base.GetItemFileName(item);
+
+            var itemPath = Path.Combine(path, itemName);
             // var itemPath = string.Format("{0}/{1}", path, item.Name.ToSafeFileName());
 
             actions.Add(ExportItem(item, itemPath, rootFolder));
@@ -80,6 +91,9 @@ namespace Jumoo.uSync.Content
         {
             if (item == null)
                 return uSyncAction.Fail(Path.GetFileName(path), typeof(IContent), "item not set");
+
+            if (!base.IncludeItem(path, item))
+                return uSyncAction.SetAction(true, item.Name, typeof(IContent), ChangeType.NoChange, "Item ignored due to config");
 
             try
             {
@@ -100,6 +114,7 @@ namespace Jumoo.uSync.Content
                 return uSyncAction.Fail(item.Name, typeof(IContent), ChangeType.Export, ex);
             }
         }
+
 
         public void RegisterEvents()
         {
@@ -155,7 +170,7 @@ namespace Jumoo.uSync.Content
 
         private string GetContentPath(IContent item)
         {
-            var path = item.Name.ToSafeFileName();
+            var path = base.GetItemFileName(item);
             if (item.ParentId != -1)
             {
                 path = string.Format("{0}\\{1}", GetContentPath(item.Parent()), path);

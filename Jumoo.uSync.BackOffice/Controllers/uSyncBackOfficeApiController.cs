@@ -11,6 +11,9 @@ using Umbraco.Web.Editors;
 using Umbraco.Web.Mvc;
 using Umbraco.Web.WebApi;
 
+using Jumoo.uSync.BackOffice.Licence;
+using Jumoo.uSync.BackOffice.Helpers;
+
 namespace Jumoo.uSync.BackOffice.Controllers
 {
     [PluginController("uSync")]
@@ -25,17 +28,34 @@ namespace Jumoo.uSync.BackOffice.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<uSyncAction> Export()
+        public IEnumerable<uSyncAction> Export(bool deleteAction)
         {
             var folder = uSyncBackOfficeContext.Instance.Configuration.Settings.MappedFolder();
 
             if (System.IO.Directory.Exists(folder))
             {
-                System.IO.Directory.Delete(folder, true);
+                // delete the sub folders (this will leave the uSync.Action file)
+                foreach(var child in System.IO.Directory.GetDirectories(folder))
+                {
+                    System.IO.Directory.Delete(child, true);
+                }
+            }
+
+            if (deleteAction)
+            {
+                var action = System.IO.Path.Combine(folder, "uSyncActions.config");
+                if (System.IO.File.Exists(action))
+                    System.IO.File.Delete(action);
             }
 
 
             var actions = uSyncBackOfficeContext.Instance.ExportAll();
+
+            // we write a log - when there have been changes, a zero run doesn't get
+            // a file written to disk.
+            if (actions.Any(x => x.Change > ChangeType.NoChange))
+                uSyncActionLogger.SaveActionLog("Export", actions);
+
             return actions;
         }
 
@@ -43,13 +63,22 @@ namespace Jumoo.uSync.BackOffice.Controllers
         public IEnumerable<uSyncAction> Import(bool force)
         {
             var actions = uSyncBackOfficeContext.Instance.ImportAll(force: force);
+
+            // we write a log - when there have been changes, a zero run doesn't get
+            // a file written to disk.
+            if (actions.Any(x => x.Change > ChangeType.NoChange))
+                uSyncActionLogger.SaveActionLog("Import", actions);
+
             return actions;
+
+
         }
 
         [HttpGet]
         public BackOfficeSettings GetSettings()
         {
             string addOnString = "";
+            List<BackOfficeTab> addOnTabs = new List<BackOfficeTab>();
 
             var types = TypeFinder.FindClassesOfType<IuSyncAddOn>();
             foreach (var t in types)
@@ -62,6 +91,17 @@ namespace Jumoo.uSync.BackOffice.Controllers
                 }
             }
 
+            var tabTypes = TypeFinder.FindClassesOfType<IuSyncTab>();
+            foreach(var t in tabTypes)
+            {
+                var inst = Activator.CreateInstance(t) as IuSyncTab;
+                if (inst != null)
+                {
+                    addOnTabs.Add(inst.GetTabInfo());
+                }
+            }
+
+            var l = new GoodwillLicence();
 
             var settings = new BackOfficeSettings()
             {
@@ -69,6 +109,8 @@ namespace Jumoo.uSync.BackOffice.Controllers
                 coreVersion = uSyncCoreContext.Instance.Version,
                 addOns = addOnString,
                 settings = uSyncBackOfficeContext.Instance.Configuration.Settings,
+                licenced = l.IsLicenced(),
+                addOnTabs = addOnTabs
             };
 
             return settings;
@@ -108,6 +150,38 @@ namespace Jumoo.uSync.BackOffice.Controllers
             uSyncBackOfficeContext.Instance.Configuration.SaveSettings(settings);
             return true; 
         }
+
+
+        [HttpGet]
+        public IEnumerable<uSyncHistory> GetHistory()
+        {
+            return uSyncActionLogger.GetActionHistory(false);
+        }
+
+        [HttpGet]
+        public int ClearHistory()
+        {
+            return uSyncActionLogger.ClearHistory();
+        }
+
+        [HttpGet]
+        public IEnumerable<SyncAction> GetActions()
+        {
+            // gets the actions from the uSync Action file....
+            var uSyncFolder = uSyncBackOfficeContext.Instance.Configuration.Settings.MappedFolder();
+            var Tracker = new Helpers.ActionTracker(uSyncFolder);
+            return Tracker.GetAllActions();
+        }
+
+        [HttpGet]
+        public bool RemoveAction(string name, string type)
+        {
+            // gets the actions from the uSync Action file....
+            var uSyncFolder = uSyncBackOfficeContext.Instance.Configuration.Settings.MappedFolder();
+            var Tracker = new Helpers.ActionTracker(uSyncFolder);
+
+            return Tracker.RemoveActions(name, type);
+        }
     }
 
     public class BackOfficeSettings
@@ -116,10 +190,26 @@ namespace Jumoo.uSync.BackOffice.Controllers
         public string coreVersion { get; set; }
         public string addOns { get; set; }
         public uSyncBackOfficeSettings settings { get; set; }
+
+        public bool licenced { get; set; }
+        public IEnumerable<BackOfficeTab> addOnTabs { get; set; }
+
     }
 
+    public class BackOfficeTab
+    {
+        public string name { get; set; }
+        public string template { get; set; }
+    }
+
+ 
     public interface IuSyncAddOn
     {
         string GetVersionInfo();
+    }
+
+    public interface IuSyncTab
+    { 
+        BackOfficeTab GetTabInfo();
     }
 }
