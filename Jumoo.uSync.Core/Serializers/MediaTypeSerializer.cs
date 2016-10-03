@@ -122,7 +122,6 @@ namespace Jumoo.uSync.Core.Serializers
 
             DeserializeTabSortOrder(item, node);
 
-            DeserializeCompositions(item, info);
             // this really needs to happen in a seperate step.
             // DeserializeStructure(item, node);
 
@@ -203,17 +202,18 @@ namespace Jumoo.uSync.Core.Serializers
             return SyncAttempt<IMediaType>.Succeed(node.Name.LocalName, ChangeType.NoChange);
         }
 
-        private void DeserializeCompositions(IMediaType item, XElement info)
+        private void DeserializeCompositions(IMediaType item, XElement node)
         {
+            var info = node.Element("Info");
             var comps = info.Element("Compositions");
             if (comps != null && comps.HasElements)
             {
-                foreach (var composistion in comps.Elements("Composition"))
+                foreach (var composition in comps.Elements("Composition"))
                 {
-                    var compAlias = composistion.Value;
+                    var compAlias = composition.Value;
 
                     LogHelper.Debug<MediaTypeSerializer>("Composition: {0}", () => compAlias);
-                    var compKey = composistion.Attribute("Key").ValueOrDefault(Guid.Empty);
+                    var compKey = composition.Attribute("Key").ValueOrDefault(Guid.Empty);
                     IMediaType type = null;
                     if (compKey != Guid.Empty)
                         type = _contentTypeService.GetMediaType(compKey);
@@ -221,12 +221,15 @@ namespace Jumoo.uSync.Core.Serializers
                         type = _contentTypeService.GetMediaType(compAlias);
                     if (type != null)
                         item.AddContentType(type);
+                    else 
+                        LogHelper.Warn<MediaTypeSerializer>("Unable to find type for composition: "+compAlias);
                 }
             }
         }
 
         public override SyncAttempt<IMediaType> DesearlizeSecondPass(IMediaType item, XElement node)
         {
+            DeserializeCompositions(item, node);
             DeserializeStructure((IContentTypeBase)item, node);
             _contentTypeService.Save(item);
 
