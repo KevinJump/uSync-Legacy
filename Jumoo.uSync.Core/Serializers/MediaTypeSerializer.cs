@@ -118,9 +118,10 @@ namespace Jumoo.uSync.Core.Serializers
 
             item.SetLazyParentId(new Lazy<int>(() => parentId));
 
-            var msg = DeserializeProperties(item, node);
-
+            // Update Tabs before props -- allows moving props to new tabs in sync
             DeserializeTabSortOrder(item, node);
+
+            var msg = DeserializeProperties(item, node);
 
             // this really needs to happen in a seperate step.
             // DeserializeStructure(item, node);
