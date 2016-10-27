@@ -53,10 +53,16 @@ namespace Jumoo.uSync.Core.Serializers
             if (string.IsNullOrEmpty(alias))
                 SyncAttempt<ITemplate>.Fail(node.NameFromNode(), ChangeType.Import, "No Alias node in xml");
 
-            LogHelper.Debug<Events>("# Importing Template : {0}", () => alias);
-
             var name = node.Element("Name").ValueOrDefault(string.Empty);
-            var item = _fileService.GetTemplate(alias);
+
+            var item = default(ITemplate);
+            var key = node.Element("Key").ValueOrDefault(Guid.Empty);
+            if (key != Guid.Empty)
+                item = _fileService.GetTemplate(key);
+
+            if (item == default(ITemplate))
+                item = _fileService.GetTemplate(alias);
+
             if (item == null)
             {
                 var templatePath = IOHelper.MapPath(SystemDirectories.MvcViews + "/" + alias.ToSafeFileName() + ".cshtml");
@@ -106,7 +112,6 @@ namespace Jumoo.uSync.Core.Serializers
                 }
             }
 
-            var key = node.Element("Key").ValueOrDefault(Guid.Empty);
             if (key != Guid.Empty)
                 item.Key = key;
 
