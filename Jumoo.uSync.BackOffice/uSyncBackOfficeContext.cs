@@ -302,9 +302,9 @@
             {
                 if (HandlerEnabled(handler.Name, "clean", groupName))
                 {
-                    if (handler is ISyncHandlerExplictSync)
+                    if (handler is ISyncExplicitHandler)
                     {
-                        var cleanHandler = (ISyncHandlerExplictSync)handler;
+                        var cleanHandler = (ISyncExplicitHandler)handler;
 
                         var syncFolder = System.IO.Path.Combine(mappedFolder, handler.SyncFolder);
                         LogHelper.Debug<uSyncApplicationEventHandler>("# Explicit Sync (deletes) Processing: {0}", () => handler.Name);

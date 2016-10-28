@@ -18,7 +18,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
     using System.Collections.Generic;
     using Umbraco.Core.Models.EntityBase;
     using Umbraco.Core.Events;
-    public class ContentTypeHandler : uSyncBaseHandler<IContentType>, ISyncHandler, ISyncPostImportHandler, ISyncHandlerExplictSync
+    public class ContentTypeHandler : uSyncBaseHandler<IContentType>, ISyncExplicitHandler, ISyncPostImportHandler
     {
         // sets our running order in usync. 
         public int Priority { get { return uSyncConstants.Priority.ContentTypes; } }
@@ -230,47 +230,10 @@ namespace Jumoo.uSync.BackOffice.Handlers
             return actions;
         }
 
-        /// <summary>
-        ///  removes things from umbraco that are not in the uSync folder.
-        ///  
-        ///  this doesn't truely keep the seperation of format and disk :(
-        ///  really core should be used to get keys and names. that way
-        ///  we don't need to know if the format changes. 
-        ///  
-        /// </summary>
-        /// <param name="folder"></param>
-        /// <returns></returns>
-        public IEnumerable<uSyncAction> RemoveOrphanItems(string folder, bool report = true)
+
+        public override IEnumerable<uSyncAction> DeleteOrphans(List<Guid> itemKeys, List<string> itemAlias, bool report)
         {
             var actions = new List<uSyncAction>();
-
-            var itemKeys = new List<Guid>();
-            var itemAlias = new List<string>();
-
-            // load all the keys from disk..
-            var folderInfo = new DirectoryInfo(folder);
-
-            var files = folderInfo.GetFiles("*.config", SearchOption.AllDirectories);
-            foreach(var file in files)
-            {
-                XElement node = XElement.Load(file.FullName);
-
-                if (node == null | node.Element("Info") == null || node.Element("Info").Element("Alias") == null)
-                    throw new ArgumentException("Invalid xml");
-
-                var info = node.Element("Info");
-                if (info != null)
-                {
-                    var key = info.Element("Key").ValueOrDefault(Guid.Empty);
-                    if (key != Guid.Empty && !itemKeys.Contains(key))
-                        itemKeys.Add(key);
-
-                    // we could use var name = node.NameFromNode() - it always returns 'something' 
-                    var alias = info.Element("Alias").ValueOrDefault(string.Empty);
-                    if (alias != string.Empty && !itemAlias.Contains(alias))
-                        itemAlias.Add(alias);
-                }
-            }
 
             // get all the doc types
             var doctypes = _contentTypeService.GetAllContentTypes();

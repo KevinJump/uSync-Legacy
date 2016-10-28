@@ -14,7 +14,7 @@
     using System.IO;
     using Core.Extensions;
 
-    public class TemplateHandler : uSyncBaseHandler<ITemplate>, ISyncHandler
+    public class TemplateHandler : uSyncBaseHandler<ITemplate>, ISyncExplicitHandler
     {
         public string Name { get { return "uSync: TemplateHandler"; } }
         public int Priority { get { return uSyncConstants.Priority.Templates; } }
@@ -157,5 +157,27 @@
             return action;
         }
 
+        public override IEnumerable<uSyncAction> DeleteOrphans(List<Guid> itemKeys, List<string> itemAlias, bool report)
+        {
+            var actions = new List<uSyncAction>();
+
+            // get all the doc types
+            var items = ApplicationContext.Current.Services.FileService.GetTemplates();
+            foreach (var item in items)
+            {
+                if (!itemKeys.Contains(item.Key) && !itemAlias.Contains(item.Name))
+                {
+                    // delete
+                    LogHelper.Info<ContentTypeHandler>("Deleting Content Type: {0}", () => item.Name);
+                    var aliasName = item.Alias;
+                    if (!report)
+                        ApplicationContext.Current.Services.FileService.DeleteTemplate(item.Alias);
+
+                    actions.Add(uSyncAction.SetAction(true, aliasName, typeof(IContentType), ChangeType.Delete, !report ? "Sync Delete" : "Will Delete (not in sync folder)"));
+                }
+            }
+
+            return actions;
+        }
     }
 }

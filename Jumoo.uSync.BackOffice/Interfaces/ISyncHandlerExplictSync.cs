@@ -15,7 +15,7 @@ namespace Jumoo.uSync.BackOffice
     ///  makes branch swapping in source control something that
     ///  is doable. 
     /// </summary>
-    public interface ISyncHandlerExplictSync
+    public interface ISyncExplicitHandler: ISyncHandler
     {
         IEnumerable<uSyncAction> RemoveOrphanItems(string folder, bool report);
     }
