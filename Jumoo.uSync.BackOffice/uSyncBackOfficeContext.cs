@@ -216,6 +216,8 @@
             // 
             var postImports = actions.Where(x => x.Success && x.Change > ChangeType.NoChange && x.RequiresPostProcessing);
 
+            bool explicitSync = uSyncBackOfficeContext.Instance.Configuration.Settings.ExplicitSync;
+
             foreach (var handler in handlers.Select(x => x.Value))
             {
                 if (HandlerEnabled(handler.Name, "import", groupName))
@@ -229,10 +231,16 @@
                         var postActions = postHandler.ProcessPostImport(syncFolder, postImports);
                         if (postActions != null)
                             actions.AddRange(postActions);
+
+                        if (explicitSync && handler is ISyncExplicitHandler)
+                        {
+                            var explicitActions = ((ISyncExplicitHandler)handler).RemoveOrphanItems(folder, false);
+                            if (explicitActions != null)
+                                actions.AddRange(explicitActions);
+                        }
                     }
                 }
             }
-
 
             // do the once file stuff if needed. 
             OnceCheck(folder);
