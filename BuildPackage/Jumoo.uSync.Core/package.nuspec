@@ -19,7 +19,7 @@ v5.3.4 - Config updates for 3rd party media and content pickers.
 v5 - version issues with old nuget packages
 v3 - works with Umbraco 7.3 really well</releaseNotes>
         <dependencies>
-            <dependency id="UmbracoCms" version="7.4.0" />
+            <dependency id="UmbracoCms.Core" version="7.4.0" />
         </dependencies>
     </metadata>
 </package>

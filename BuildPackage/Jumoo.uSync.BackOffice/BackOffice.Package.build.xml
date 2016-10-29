@@ -20,7 +20,7 @@
   <PropertyGroup>
     <ProjectName>uSync BackOffice</ProjectName>
     <ProjectNamespace>Jumoo.uSync.BackOffice</ProjectNamespace>
-    <PackageVersion>3.2.2.740</PackageVersion>
+    <PackageVersion>3.3.0.740</PackageVersion>
     <VersionSuffix></VersionSuffix>
     <MinUmbracoVersion>7.4.3</MinUmbracoVersion>
   </PropertyGroup>
