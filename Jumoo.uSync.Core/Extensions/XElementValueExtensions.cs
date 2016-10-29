@@ -57,6 +57,20 @@ namespace Jumoo.uSync.Core.Extensions
             return name;
         }
 
+        public static Guid KeyOrDefault(this XElement node)
+        {
+            if (node.Element("Info") != null && node.Element("info").Element("Key") != null)
+                return node.Element("Info").Element("Key").ValueOrDefault(Guid.Empty);
+
+            if (node.Attribute("Key") != null)
+                return node.Attribute("Key").ValueOrDefault(Guid.Empty);
+
+            if (node.Element("Key") != null)
+                return node.Element("Key").ValueOrDefault(Guid.Empty);
+
+            return Guid.Empty;
+        }
+
         public static string ValueOrDefault(this XElement node, string defaultValue)
         {
             if (node != null && !string.IsNullOrEmpty(node.Value))

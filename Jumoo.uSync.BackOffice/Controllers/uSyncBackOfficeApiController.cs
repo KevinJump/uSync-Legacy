@@ -70,8 +70,6 @@ namespace Jumoo.uSync.BackOffice.Controllers
                 uSyncActionLogger.SaveActionLog("Import", actions);
 
             return actions;
-
-
         }
 
         [HttpGet]

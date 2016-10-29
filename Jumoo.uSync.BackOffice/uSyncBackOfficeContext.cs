@@ -115,13 +115,19 @@
         }
 
 
-        public IEnumerable<uSyncAction> ImportAll(string folder = null, bool force = false)
+        public IEnumerable<uSyncAction> ImportAll(string folder = null, bool force = false, bool explicitSync = false)
         {
             if (string.IsNullOrEmpty(folder))
                 folder = Configuration.Settings.Folder;
 
             // the default way uSync.BackOffice calls an import (on import all)
-            return Import(Configuration.Settings.HandlerGroup, folder, force);
+            List<uSyncAction> actions = new List<uSyncAction>();
+            actions.AddRange(Import(Configuration.Settings.HandlerGroup, folder, force));
+
+            if (explicitSync)
+                actions.AddRange(CleanOrphans(Configuration.Settings.HandlerGroup, folder, report: false));
+
+            return actions;
         }
 
         public IEnumerable<uSyncAction> ExportAll(string folder = null)
@@ -132,12 +138,18 @@
             return Export(Configuration.Settings.HandlerGroup, folder);
         }
 
-        public IEnumerable<uSyncAction> ImportReport(string folder = null)
+        public IEnumerable<uSyncAction> ImportReport(string folder = null, bool explicitSync = false)
         {
             if (string.IsNullOrEmpty(folder))
                 folder = Configuration.Settings.Folder;
 
-            return Report(Configuration.Settings.HandlerGroup, folder);
+            List<uSyncAction> actions = new List<uSyncAction>();
+            actions.AddRange(Report(Configuration.Settings.HandlerGroup, folder));
+
+            if (explicitSync)
+                actions.AddRange(CleanOrphans(Configuration.Settings.HandlerGroup, folder, report: true));
+
+            return actions; 
         }
 
         /// <summary>
@@ -204,6 +216,8 @@
             // 
             var postImports = actions.Where(x => x.Success && x.Change > ChangeType.NoChange && x.RequiresPostProcessing);
 
+            bool explicitSync = uSyncBackOfficeContext.Instance.Configuration.Settings.ExplicitSync;
+
             foreach (var handler in handlers.Select(x => x.Value))
             {
                 if (HandlerEnabled(handler.Name, "import", groupName))
@@ -217,10 +231,16 @@
                         var postActions = postHandler.ProcessPostImport(syncFolder, postImports);
                         if (postActions != null)
                             actions.AddRange(postActions);
+
+                        if (explicitSync && handler is ISyncExplicitHandler)
+                        {
+                            var explicitActions = ((ISyncExplicitHandler)handler).RemoveOrphanItems(folder, false);
+                            if (explicitActions != null)
+                                actions.AddRange(explicitActions);
+                        }
                     }
                 }
             }
-
 
             // do the once file stuff if needed. 
             OnceCheck(folder);
@@ -264,7 +284,42 @@
                     actions.AddRange(handler.Report(syncFolder));
                     sw.Stop();
                     LogHelper.Debug<uSyncApplicationEventHandler>("Report Complete: {0} ({1}ms)", () => handler.Name, () => sw.ElapsedMilliseconds);
+                }
+            }
 
+            return actions;
+
+        }
+
+        /// <summary>
+        ///  explicit clean, where items that are not on disk are deletes from the umbraco install. 
+        ///  
+        ///  This could if called wrong just wipe your umbraco install - but it's a good idea if you 
+        ///  are swapping branches. 
+        /// </summary>
+        /// <param name="groupName"></param>
+        /// <param name="folder"></param>
+        /// <returns></returns>
+        public IEnumerable<uSyncAction> CleanOrphans(string groupName, string folder, bool report = true)
+        {
+            List<uSyncAction> actions = new List<uSyncAction>();
+
+            var mappedFolder = Umbraco.Core.IO.IOHelper.MapPath(folder);
+
+            foreach (var handler in handlers.Select(x => x.Value))
+            {
+                if (HandlerEnabled(handler.Name, "clean", groupName))
+                {
+                    if (handler is ISyncExplicitHandler)
+                    {
+                        var cleanHandler = (ISyncExplicitHandler)handler;
+
+                        var syncFolder = System.IO.Path.Combine(mappedFolder, handler.SyncFolder);
+                        LogHelper.Debug<uSyncApplicationEventHandler>("# Explicit Sync (deletes) Processing: {0}", () => handler.Name);
+                        var cleanActions = cleanHandler.RemoveOrphanItems(syncFolder, report);
+                        if (cleanActions != null)
+                            actions.AddRange(cleanActions);
+                    }
                 }
             }
 

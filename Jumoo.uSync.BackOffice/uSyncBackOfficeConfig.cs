@@ -209,6 +209,8 @@ namespace Jumoo.uSync.BackOffice
 
         public string HandlerGroup { get; set; }
 
+        public bool ExplicitSync { get; set; }
+
 
 
         [XmlElement("Handlers")]
