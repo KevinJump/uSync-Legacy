@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Jumoo.uSync.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,6 +27,22 @@ namespace Jumoo.uSync.BackOffice
 
         public static event uSyncEventHandler DeletingFile;
         public static event uSyncEventHandler DeletedFile;
+
+        public static event uSyncBulkEventHandler BulkActionComplete;
+        public static event uSyncBulkEventHandler BulkActionStarting;
+
+        internal static void fireBulkActionComplete(uSyncBulkEventArg e)
+        {
+            if (BulkActionComplete != null)
+                BulkActionComplete(e);
+        }
+
+        internal static void fireBulkActionStarting(uSyncBulkEventArg e)
+        {
+            if (BulkActionStarting != null)
+                BulkActionStarting(e);
+        }
+
 
         internal static void fireStarting(uSyncEventArgs e)
         {
@@ -68,11 +85,16 @@ namespace Jumoo.uSync.BackOffice
     }
 
     public delegate void uSyncEventHandler(uSyncEventArgs e);
+    public delegate void uSyncBulkEventHandler(uSyncBulkEventArg e);
 
     public class uSyncEventArgs
     {
         public string fileName { get; set; }
     }
 
+    public class uSyncBulkEventArg
+    {
+        public ChangeType action;
+    }
 
 }
