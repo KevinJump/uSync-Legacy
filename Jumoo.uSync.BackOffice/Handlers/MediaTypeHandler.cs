@@ -17,7 +17,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
     using System.Collections.Generic;
     using Core.Extensions;
     using Umbraco.Core.Models.EntityBase;
-    public class MediaTypeHandler : uSyncBaseHandler<IMediaType>, ISyncPostImportHandler
+    public class MediaTypeHandler : uSyncBaseHandler<IMediaType>, ISyncHandler, ISyncPostImportHandler
     {
         public string Name { get { return "uSync: MediaTypeHandler"; } }
         public int Priority { get { return uSyncConstants.Priority.MediaTypes; } }

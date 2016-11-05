@@ -18,7 +18,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
     using System.Collections.Generic;
     using Umbraco.Core.Models.EntityBase;
     using Umbraco.Core.Events;
-    public class ContentTypeHandler : uSyncBaseHandler<IContentType>, ISyncPostImportHandler
+    public class ContentTypeHandler : uSyncBaseHandler<IContentType>, ISyncHandler, ISyncPostImportHandler
     {
         // sets our running order in usync. 
         public int Priority { get { return uSyncConstants.Priority.ContentTypes; } }

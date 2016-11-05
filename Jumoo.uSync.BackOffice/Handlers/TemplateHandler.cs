@@ -14,7 +14,7 @@
     using System.IO;
     using Core.Extensions;
 
-    public class TemplateHandler : uSyncBaseHandler<ITemplate>
+    public class TemplateHandler : uSyncBaseHandler<ITemplate>, ISyncHandler
     {
         public string Name { get { return "uSync: TemplateHandler"; } }
         public int Priority { get { return uSyncConstants.Priority.Templates; } }

@@ -19,7 +19,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
     using Umbraco.Core.Models.EntityBase;
     using System.Timers;
 
-    public class DataTypeHandler : uSyncBaseHandler<IDataTypeDefinition>, ISyncPostImportHandler
+    public class DataTypeHandler : uSyncBaseHandler<IDataTypeDefinition>, ISyncHandler, ISyncPostImportHandler
     {
         public string Name { get { return "uSync: DataTypeHandler"; } }
         public int Priority { get { return uSyncConstants.Priority.DataTypes; } }

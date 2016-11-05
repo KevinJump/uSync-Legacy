@@ -17,7 +17,7 @@ using Jumoo.uSync.Core.Extensions;
 
 namespace Jumoo.uSync.BackOffice.Handlers
 {
-    public class MemberTypeHandler : uSyncBaseHandler<IMemberType>
+    public class MemberTypeHandler : uSyncBaseHandler<IMemberType>, ISyncHandler
     {
         public string Name { get { return "uSync: MemberTypeHandler"; } }
         public int Priority { get { return uSyncConstants.Priority.MemberTypes; } }
