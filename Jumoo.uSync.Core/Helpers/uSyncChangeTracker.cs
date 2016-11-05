@@ -55,40 +55,40 @@ namespace Jumoo.uSync.Core.Helpers
         ///  gets the changes between to xml files, will recurse down a tree and 
         ///  note any changes in attribute, value or elements. 
         /// </summary>
-        public static List<uSyncChange> GetChanges(XElement source, XElement target, string path)
+        public static List<uSyncChange> GetChanges(XElement newNode, XElement oldNode, string path)
         {
             List<uSyncChange> changes = new List<uSyncChange>();
-            if (source == null || target == null)
+            if (newNode == null || oldNode == null)
                 return changes;
             
-            if (source.Name.LocalName != target.Name.LocalName)
+            if (newNode.Name.LocalName != oldNode.Name.LocalName)
             {
                 changes.Add(new uSyncChange
                 {
                     Path = path,
-                    Name = source.Name.LocalName,
+                    Name = newNode.Name.LocalName,
                     Change = ChangeDetailType.Update,
-                    NewVal = source.Name.LocalName,
-                    OldVal = target.Name.LocalName, 
+                    NewVal = newNode.Name.LocalName,
+                    OldVal = oldNode.Name.LocalName, 
                     ValueType = ChangeValueType.Element                  
                 });
             }
 
 
             // check
-            if (source.HasAttributes)
+            if (newNode.HasAttributes)
             {
-                foreach (var sourceAttrib in source.Attributes())
+                foreach (var newAttrib in newNode.Attributes())
                 {
-                    if (!ignoreAttribs.Contains(sourceAttrib.Name.LocalName))
+                    if (!ignoreAttribs.Contains(newAttrib.Name.LocalName))
                     {
-                        var targetAttrib = target.Attribute(sourceAttrib.Name);
-                        if (targetAttrib == null)
+                        var oldAttrib = oldNode.Attribute(newAttrib.Name);
+                        if (oldAttrib == null)
                         {
                             changes.Add(new uSyncChange
                             {
                                 Path = path,
-                                Name = sourceAttrib.Name.LocalName,
+                                Name = newAttrib.Name.LocalName,
                                 Change = ChangeDetailType.Delete,
                                 ValueType = ChangeValueType.Attribute,
                                 OldVal = "attribute"
@@ -96,15 +96,15 @@ namespace Jumoo.uSync.Core.Helpers
                         }
                         else
                         {
-                            if (sourceAttrib.Value != targetAttrib.Value)
+                            if (newAttrib.Value != oldAttrib.Value)
                             {
                                 changes.Add(new uSyncChange
                                 {
                                     Path = path,
-                                    Name = sourceAttrib.Name.LocalName,
+                                    Name = newAttrib.Name.LocalName,
                                     Change = ChangeDetailType.Update,
-                                    NewVal = sourceAttrib.Value,
-                                    OldVal = targetAttrib.Value,
+                                    NewVal = newAttrib.Value,
+                                    OldVal = oldAttrib.Value,
                                     ValueType = ChangeValueType.Attribute
                                 });
                             }
@@ -114,18 +114,18 @@ namespace Jumoo.uSync.Core.Helpers
             }
 
             // new attributes
-            if (target.HasAttributes)
+            if (oldNode.HasAttributes)
             {
-                foreach (var targetAttrib in target.Attributes())
+                foreach (var oldAttrib in oldNode.Attributes())
                 {
-                    if (!ignoreAttribs.Contains(targetAttrib.Name.LocalName))
+                    if (!ignoreAttribs.Contains(oldAttrib.Name.LocalName))
                     {
-                        if (source.Attribute(targetAttrib.Name) == null)
+                        if (newNode.Attribute(oldAttrib.Name) == null)
                         {
                             changes.Add(new uSyncChange
                             {
                                 Path = path,
-                                Name = targetAttrib.Name.LocalName,
+                                Name = oldAttrib.Name.LocalName,
                                 Change = ChangeDetailType.Create,
                                 OldVal = "attribute"
                             });
@@ -135,15 +135,15 @@ namespace Jumoo.uSync.Core.Helpers
             }
 
             // 3: recurse
-            if (source.HasElements)
+            if (newNode.HasElements)
             {
-                foreach (var sourceChild in source.Elements())
+                foreach (var newChild in newNode.Elements())
                 {
-                    var key = GetElementKey(sourceChild);
-                    var name = GetElementName(key.Key, sourceChild);
-                    var targetChild = GetElement(key, name, sourceChild, target);
+                    var key = GetElementKey(newChild);
+                    var name = GetElementName(key.Key, newChild);
+                    var oldChild = GetElement(key, name, newChild, oldNode);
 
-                    if (targetChild == null)
+                    if (oldChild == null)
                     {
                         // missing
                         changes.Add(new uSyncChange
@@ -158,62 +158,62 @@ namespace Jumoo.uSync.Core.Helpers
                     {
                         // get the path... 
                         var childPath = "";
-                        if (!nodePaths.ContainsKey(sourceChild.Name.LocalName))
+                        if (!nodePaths.ContainsKey(newChild.Name.LocalName))
                         {
                             childPath = name;
-                            if (nodeNames.ContainsKey(sourceChild.Name.LocalName))
+                            if (nodeNames.ContainsKey(newChild.Name.LocalName))
                             {
                                 // get the property name from the nodes in this 
-                                var changePair = nodeNames[sourceChild.Name.LocalName];
+                                var changePair = nodeNames[newChild.Name.LocalName];
                                 switch(changePair.Type)
                                 {
                                     case ChangeValueType.Element:
-                                        var nameNode = sourceChild.Element(changePair.Name);
+                                        var nameNode = newChild.Element(changePair.Name);
                                         if (nameNode != null)
                                             childPath = nameNode.Value;
                                         break;
                                     case ChangeValueType.Attribute:
-                                        childPath = sourceChild.Attribute(changePair.Name).ValueOrDefault(childPath);
+                                        childPath = newChild.Attribute(changePair.Name).ValueOrDefault(childPath);
                                         break;
                                 }
                             }
                         }
                         else
                         {
-                            childPath = nodePaths[sourceChild.Name.LocalName];
+                            childPath = nodePaths[newChild.Name.LocalName];
                         }
 
-                        changes.AddRange(GetChanges(sourceChild, targetChild, string.Format("{0}.{1}", path, childPath)));
+                        changes.AddRange(GetChanges(newChild, oldChild, string.Format("{0}.{1}", path, childPath)));
                     }
                 }
             }
             else
             {
                 // compare element value
-                if (source.Value != target.Value)
+                if (newNode.Value != oldNode.Value)
                 {
                     changes.Add(new uSyncChange
                     {
                         Path = path.Substring(0, path.LastIndexOf('.')),
-                        Name = source.Name.LocalName,
+                        Name = newNode.Name.LocalName,
                         Change = ChangeDetailType.Update,
-                        NewVal = source.Value,
-                        OldVal = target.Value,
+                        NewVal = newNode.Value,
+                        OldVal = oldNode.Value,
                         ValueType = ChangeValueType.Element                        
                     });
                 }
             }
 
             // new elements
-            if (target.HasElements)
+            if (oldNode.HasElements)
             {
-                foreach (var targetElement in target.Elements())
+                foreach (var oldElement in oldNode.Elements())
                 {
-                    var key = GetElementKey(targetElement);
-                    var name = GetElementName(key.Key, targetElement);
-                    var sourceElement = GetElement(key, name, targetElement, source);
+                    var key = GetElementKey(oldElement);
+                    var name = GetElementName(key.Key, oldElement);
+                    var newElement = GetElement(key, name, oldElement, newNode);
 
-                    if (sourceElement == null )
+                    if (newElement == null )
                     { 
                         changes.Add(new uSyncChange
                         {
