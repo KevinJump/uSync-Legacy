@@ -103,8 +103,8 @@ namespace Jumoo.uSync.Core.Helpers
                                     Path = path,
                                     Name = sourceAttrib.Name.LocalName,
                                     Change = ChangeDetailType.Update,
-                                    OldVal = sourceAttrib.Value,
-                                    NewVal = targetAttrib.Value,
+                                    NewVal = sourceAttrib.Value,
+                                    OldVal = targetAttrib.Value,
                                     ValueType = ChangeValueType.Attribute
                                 });
                             }
