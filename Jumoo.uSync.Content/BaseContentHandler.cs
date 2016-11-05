@@ -24,11 +24,17 @@ namespace Jumoo.uSync.Content
         internal const string mediaFolderName = "_uSyncMedia";
         internal string _exportFileName = "content";
 
+        private bool _ignorePathSettingOn;
+        private bool _rootPathSettingOn;
+
         public BaseContentHandler(string fileName)
         {
             _contentService = ApplicationContext.Current.Services.ContentService;
             _mediaService = ApplicationContext.Current.Services.MediaService;
             _exportFileName = fileName;
+
+            _ignorePathSettingOn = false;
+            _rootPathSettingOn = false; 
 
             // short Id Setting, means we save with id.config not {{name}}.config
             handlerSettings = new BaseContentHandlerSettings();
@@ -172,10 +178,12 @@ namespace Jumoo.uSync.Content
                             break;
                         case "root":
                             handlerSettings.Root = setting.Value;
+                            _rootPathSettingOn = !String.IsNullOrEmpty(handlerSettings.Root);
                             LogHelper.Info<ContentHandler>("Root Setting: {0}", () => handlerSettings.Root);
                             break;
                         case "ignore":
                             handlerSettings.Ignore = setting.Value;
+                            _ignorePathSettingOn = !String.IsNullOrEmpty(handlerSettings.Ignore);
                             LogHelper.Info<ContentHandler>("Ignore Setting: {0}", () => handlerSettings.Ignore);
                             break;
                         case "include":
@@ -207,24 +215,31 @@ namespace Jumoo.uSync.Content
 
         protected bool IncludeItem(string path, IContentBase item)
         {
+            if (!_ignorePathSettingOn && !_rootPathSettingOn)
+                return true;
+            
             var itemPath = Path.Combine(path, item.Name.ToSafeFileName());
-            LogHelper.Info<ContentHandler>("Include Item Test: {0}", () => itemPath);
 
-
-            // if the path starts with the ignore thing, then we don't include it.
-            if (!string.IsNullOrEmpty(handlerSettings.Ignore)
-                && itemPath.StartsWith(handlerSettings.Ignore, StringComparison.InvariantCultureIgnoreCase))
+            if (_ignorePathSettingOn)
             {
-                LogHelper.Info<ContentHandler>("Ignoring: {0} {1}", () => itemPath, ()=> handlerSettings.Ignore);
-                return false;
+                // if the path starts with the ignore thing, then we don't include it.
+                if (!string.IsNullOrEmpty(handlerSettings.Ignore) 
+                    && itemPath.StartsWith(handlerSettings.Ignore, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    LogHelper.Info<ContentHandler>("Ignoring: {0} {1}", () => itemPath, () => handlerSettings.Ignore);
+                    return false;
+                }
             }
 
-            // if root is set but the path DOESN'T start with it we don't include it.
-            if (!string.IsNullOrEmpty(handlerSettings.Root)
-                && !itemPath.StartsWith(handlerSettings.Root, StringComparison.InvariantCultureIgnoreCase))
+            if (_rootPathSettingOn)
             {
-                LogHelper.Info<ContentHandler>("Not under root: {0} {1}", () => itemPath, ()=> handlerSettings.Root);
-                return false;
+                // if root is set but the path DOESN'T start with it we don't include it.
+                if (!string.IsNullOrEmpty(handlerSettings.Root)
+                    && !itemPath.StartsWith(handlerSettings.Root, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    LogHelper.Info<ContentHandler>("Not under root: {0} {1}", () => itemPath, () => handlerSettings.Root);
+                    return false;
+                }
             }
 
             return true;
