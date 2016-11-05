@@ -18,7 +18,7 @@ using System.Linq;
 
 namespace Jumoo.uSync.Content
 {
-    public class ContentHandler : BaseContentHandler<IContent>, ISyncHandler, ISyncHandlerConfig
+    public class ContentHandler : BaseContentHandler<IContent>, ISyncHandler, ISyncHandlerConfig, ISyncExplicitHandler
     {
         public string Name { get { return "uSync: ContentHandler"; } }
         public int Priority { get { return uSyncConstants.Priority.Content; } }
@@ -185,5 +185,46 @@ namespace Jumoo.uSync.Content
             var update = uSyncCoreContext.Instance.ContentSerializer.IsUpdate(node);
             return uSyncActionHelper<IContent>.ReportAction(update, node.NameFromNode());
         }
+
+        public override IEnumerable<uSyncAction> DeleteOrphans(List<Guid> itemKeys, List<string> itemAlias, bool report)
+        {
+            var actions = new List<uSyncAction>();
+
+            var rootContent = _contentService.GetRootContent();
+
+            foreach (var item in rootContent)
+            {
+                actions.AddRange(DeleteTree(item, itemKeys, report));
+            }
+
+            return actions;
+        }
+
+        private IEnumerable<uSyncAction> DeleteTree(IContent node, List<Guid> keys, bool report)
+        {
+            var actions = new List<uSyncAction>();
+
+            if (!keys.Contains(node.Key))
+            {
+                var name = node.Name;
+                if (!report)
+                    _contentService.Delete(node);
+
+                actions.Add(
+                    uSyncAction.SetAction(true, name, typeof(IContent), ChangeType.Delete,
+                        !report ? "Sync Delete" : "Would Delete (not in sync folder)")
+                    );
+
+                return actions;
+            }
+
+            foreach(var child in node.Children())
+            {
+                actions.AddRange(DeleteTree(child, keys, report));
+            }
+
+            return actions;
+        }
+
     }
 }

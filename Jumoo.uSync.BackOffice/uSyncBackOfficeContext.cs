@@ -122,10 +122,8 @@
 
             // the default way uSync.BackOffice calls an import (on import all)
             List<uSyncAction> actions = new List<uSyncAction>();
-            actions.AddRange(Import(Configuration.Settings.HandlerGroup, folder, force));
+            actions.AddRange(Import(Configuration.Settings.HandlerGroup, folder, force, explicitSync));
 
-            if (explicitSync)
-                actions.AddRange(CleanOrphans(Configuration.Settings.HandlerGroup, folder, report: false));
 
             return actions;
         }
@@ -144,10 +142,7 @@
                 folder = Configuration.Settings.Folder;
 
             List<uSyncAction> actions = new List<uSyncAction>();
-            actions.AddRange(Report(Configuration.Settings.HandlerGroup, folder));
-
-            if (explicitSync)
-                actions.AddRange(CleanOrphans(Configuration.Settings.HandlerGroup, folder, report: true));
+            actions.AddRange(Report(Configuration.Settings.HandlerGroup, folder, explicitSync));
 
             return actions; 
         }
@@ -176,7 +171,7 @@
         /// <param name="enableMissingHandlers"></param>
         /// <returns></returns>
 
-        public IEnumerable<uSyncAction> Import(string groupName, string folder, bool force)
+        public IEnumerable<uSyncAction> Import(string groupName, string folder, bool force, bool explicitSync = false)
         {
 
             // pause all saving etc. while we do an import
@@ -216,8 +211,6 @@
             // 
             var postImports = actions.Where(x => x.Success && x.Change > ChangeType.NoChange && x.RequiresPostProcessing);
 
-            bool explicitSync = uSyncBackOfficeContext.Instance.Configuration.Settings.ExplicitSync;
-
             foreach (var handler in handlers.Select(x => x.Value))
             {
                 if (HandlerEnabled(handler.Name, "import", groupName))
@@ -231,16 +224,12 @@
                         var postActions = postHandler.ProcessPostImport(syncFolder, postImports);
                         if (postActions != null)
                             actions.AddRange(postActions);
-
-                        if (explicitSync && handler is ISyncExplicitHandler)
-                        {
-                            var explicitActions = ((ISyncExplicitHandler)handler).RemoveOrphanItems(folder, false);
-                            if (explicitActions != null)
-                                actions.AddRange(explicitActions);
-                        }
                     }
                 }
             }
+
+            if (explicitSync)
+                actions.AddRange(CleanOrphans(groupName, folder, report: false));
 
             // do the once file stuff if needed. 
             OnceCheck(folder);
@@ -269,7 +258,7 @@
         }
 
 
-        public IEnumerable<uSyncAction> Report(string groupName, string folder)
+        public IEnumerable<uSyncAction> Report(string groupName, string folder, bool explicitSync = false)
         {
             LogHelper.Info<uSyncApplicationEventHandler>("Running Import Report");
 
@@ -286,6 +275,10 @@
                     LogHelper.Debug<uSyncApplicationEventHandler>("Report Complete: {0} ({1}ms)", () => handler.Name, () => sw.ElapsedMilliseconds);
                 }
             }
+
+            if (explicitSync)
+                actions.AddRange(CleanOrphans(groupName, folder, report: true));
+
 
             return actions;
 
