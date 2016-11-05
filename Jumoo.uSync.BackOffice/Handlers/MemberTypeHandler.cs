@@ -17,7 +17,7 @@ using Jumoo.uSync.Core.Extensions;
 
 namespace Jumoo.uSync.BackOffice.Handlers
 {
-    public class MemberTypeHandler : uSyncBaseHandler<IMemberType>, ISyncExplicitHandler
+    public class MemberTypeHandler : uSyncBaseHandler<IMemberType>
     {
         public string Name { get { return "uSync: MemberTypeHandler"; } }
         public int Priority { get { return uSyncConstants.Priority.MemberTypes; } }
@@ -138,30 +138,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 action.Details = ((ISyncChangeDetail)uSyncCoreContext.Instance.MemberTypeSerializer).GetChanges(node);
 
             return action;
-        }
-
-
-        public override IEnumerable<uSyncAction> DeleteOrphans(List<Guid> itemKeys, List<string> itemAlias, bool report)
-        {
-            var actions = new List<uSyncAction>();
-
-            // get all the doc types
-            var memberTypes = _memberTypeService.GetAll();
-            foreach (var item in memberTypes)
-            {
-                if (!itemKeys.Contains(item.Key) && !itemAlias.Contains(item.Alias))
-                {
-                    // delete
-                    LogHelper.Info<ContentTypeHandler>("Deleting Content Type: {0}", () => item.Name);
-                    var aliasName = item.Alias;
-                    if (!report)
-                        _memberTypeService.Delete(item);
-
-                    actions.Add(uSyncAction.SetAction(true, aliasName, typeof(IContentType), ChangeType.Delete, !report ? "Sync Delete" : "Will Delete (not in sync folder)"));
-                }
-            }
-
-            return actions;
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
     using Umbraco.Core.Models.EntityBase;
     using System.Timers;
 
-    public class DataTypeHandler : uSyncBaseHandler<IDataTypeDefinition>, ISyncExplicitHandler, ISyncPostImportHandler
+    public class DataTypeHandler : uSyncBaseHandler<IDataTypeDefinition>, ISyncPostImportHandler
     {
         public string Name { get { return "uSync: DataTypeHandler"; } }
         public int Priority { get { return uSyncConstants.Priority.DataTypes; } }
@@ -261,29 +261,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 {
                     actions.Add(uSyncAction.SetAction(true, fldr.Name, typeof(EntityContainer), ChangeType.Delete, "Empty Container"));
                     _dataTypeService.DeleteContainer(fldr.Id);
-                }
-            }
-
-            return actions;
-        }
-
-        public override IEnumerable<uSyncAction> DeleteOrphans(List<Guid> itemKeys, List<string> itemAlias, bool report)
-        {
-            var actions = new List<uSyncAction>();
-
-            // get all the doc types
-            var dataTypes = _dataTypeService.GetAllDataTypeDefinitions();
-            foreach (var item in dataTypes)
-            {
-                if (!itemKeys.Contains(item.Key) && !itemAlias.Contains(item.Name))
-                {
-                    // delete
-                    LogHelper.Info<ContentTypeHandler>("Deleting Content Type: {0}", () => item.Name);
-                    var aliasName = item.Name;
-                    if (!report)
-                        _dataTypeService.Delete(item);
-
-                    actions.Add(uSyncAction.SetAction(true, aliasName, typeof(IContentType), ChangeType.Delete, !report ? "Sync Delete" : "Will Delete (not in sync folder)"));
                 }
             }
 

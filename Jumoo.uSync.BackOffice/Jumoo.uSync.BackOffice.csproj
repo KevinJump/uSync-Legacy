@@ -294,7 +294,6 @@
     <Compile Include="Interfaces\ISyncHandler.cs" />
     <Compile Include="Interfaces\ISyncHandlerBase.cs" />
     <Compile Include="Interfaces\ISyncHandlerConfig.cs" />
-    <Compile Include="Interfaces\ISyncHandlerExplictSync.cs" />
     <Compile Include="Interfaces\ISyncSecondPass.cs" />
     <Compile Include="Licence\GoodwillLicence.cs" />
     <Compile Include="uSyncAction.cs" />

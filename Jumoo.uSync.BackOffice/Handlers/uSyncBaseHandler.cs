@@ -192,38 +192,6 @@
 
         abstract public uSyncAction ReportItem(string file);
 
-        public IEnumerable<uSyncAction> RemoveOrphanItems(string folder, bool report)
-        {
-
-            var itemKeys = new List<Guid>();
-            var itemAlias = new List<string>();
-
-            // load all the keys from disk..
-            var folderInfo = new DirectoryInfo(folder);
-
-            var files = folderInfo.GetFiles("*.config", SearchOption.AllDirectories);
-            foreach (var file in files)
-            {
-                XElement node = XElement.Load(file.FullName);
-
-                var key = node.KeyOrDefault();
-                if (key != Guid.Empty && !itemKeys.Contains(key))
-                    itemKeys.Add(key);
-
-                var alias = node.NameFromNode();
-                if (alias != string.Empty && !itemAlias.Contains(alias))
-                    itemAlias.Add(alias);
-            }
-
-            return DeleteOrphans(itemKeys, itemAlias, report);
-        }
-
-        virtual public IEnumerable<uSyncAction> DeleteOrphans(List<Guid> itemKeys, List<string> itemAlias, bool report)
-        {
-            return new List<uSyncAction>();
-        }
-
-
         protected string GetItemFileName(IUmbracoEntity item)
         {
             if (item != null)

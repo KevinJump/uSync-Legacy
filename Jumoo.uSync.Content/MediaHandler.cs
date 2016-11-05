@@ -17,7 +17,7 @@ using System.Linq;
 
 namespace Jumoo.uSync.Content
 {
-    public class MediaHandler : BaseContentHandler<IMedia>, ISyncHandler, ISyncExplicitHandler
+    public class MediaHandler : BaseContentHandler<IMedia>, ISyncHandler
     {
         public string Name { get { return "uSync: MediaHandler"; } }
         public int Priority { get { return uSyncConstants.Priority.Media; } }
@@ -163,47 +163,6 @@ namespace Jumoo.uSync.Content
             var node = XElement.Load(file);
             var update = uSyncCoreContext.Instance.MediaSerializer.IsUpdate(node);
             return uSyncActionHelper<IMedia>.ReportAction(update, node.NameFromNode());
-        }
-
-
-        public override IEnumerable<uSyncAction> DeleteOrphans(List<Guid> itemKeys, List<string> itemAlias, bool report)
-        {
-            var actions = new List<uSyncAction>();
-
-            var rootMedia = _mediaService.GetRootMedia();
-
-            foreach (var item in rootMedia)
-            {
-                actions.AddRange(DeleteTree(item, itemKeys, report));
-            }
-
-            return actions;
-        }
-
-        private IEnumerable<uSyncAction> DeleteTree(IMedia node, List<Guid> keys, bool report)
-        {
-            var actions = new List<uSyncAction>();
-
-            if (!keys.Contains(node.Key))
-            {
-                var name = node.Name;
-                if (!report)
-                    _mediaService.Delete(node);
-
-                actions.Add(
-                    uSyncAction.SetAction(true, name, typeof(IMedia), ChangeType.Delete,
-                        !report ? "Sync Delete" : "Would Delete (not in sync folder)")
-                    );
-
-                return actions;
-            }
-
-            foreach (var child in node.Children())
-            {
-                actions.AddRange(DeleteTree(child, keys, report));
-            }
-
-            return actions;
         }
 
     }
