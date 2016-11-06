@@ -102,6 +102,9 @@ namespace Jumoo.uSync.Core.Serializers
             if (node.Element("Name").Value != item.Name)
                 item.Name = node.Element("Name").Value;
 
+            if (node.Element("Alias") != null && node.Element("Alias").Value != item.Alias)
+                item.Alias = node.Element("Alias").Value;
+
             if (node.Element("Master") != null) {
                 var masterName = node.Element("Master").Value;
                 if (!string.IsNullOrEmpty(masterName))
@@ -175,7 +178,7 @@ namespace Jumoo.uSync.Core.Serializers
             var item = _fileService.GetTemplate(templateGuid);
             if (item == null)
             {
-                return uSyncChangeTracker.NewItem(key.Value);
+                return uSyncChangeTracker.NewItem( node.NameFromNode());
             }
 
             var attempt = Serialize(item);
