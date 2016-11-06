@@ -89,7 +89,7 @@ namespace Jumoo.uSync.Core.Serializers
                 else 
                 {
                     LogHelper.Warn<TemplateSerializer>("Can't get a template path?");
-                    return SyncAttempt<ITemplate>.Fail(name, ChangeType.Import, "Failed to generate template path");
+                    return SyncAttempt<ITemplate>.Fail(name, ChangeType.Import, "Can't get template path (are template files missing?)");
                 }
             }
 

@@ -184,12 +184,12 @@ namespace Jumoo.uSync.BackOffice
     {
         public uSyncBackOfficeSettings()
         {
-            HandlerGroup = "Default";
+            HandlerGroup = "default";
 
             // get it from web.config if it's there (but you will have to remove the one in 
             // the usync settings to get that one to work) 
-            if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["uSync:HandlerGroup"]))
-                HandlerGroup = ConfigurationManager.AppSettings["uSync:HandlerGroup"];
+            if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["uSync.HandlerGroup"]))
+                HandlerGroup = ConfigurationManager.AppSettings["uSync.HandlerGroup"];
         }
 
         public string MappedFolder()

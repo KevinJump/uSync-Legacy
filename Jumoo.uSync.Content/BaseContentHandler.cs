@@ -161,7 +161,7 @@ namespace Jumoo.uSync.Content
 
         public void LoadHandlerConfig(IEnumerable<uSyncHandlerSetting> settings)
         {
-            LogHelper.Info<ContentHandler>("Loading Handler Settings {0}", () => settings.Count());
+            LogHelper.Debug<ContentHandler>("Loading Handler Settings {0}", () => settings.Count());
 
             _settings = settings.ToList();
 
@@ -179,16 +179,12 @@ namespace Jumoo.uSync.Content
                         case "root":
                             handlerSettings.Root = setting.Value;
                             _rootPathSettingOn = !String.IsNullOrEmpty(handlerSettings.Root);
-                            LogHelper.Info<ContentHandler>("Root Setting: {0}", () => handlerSettings.Root);
+                            LogHelper.Debug<ContentHandler>("Root Setting: {0}", () => handlerSettings.Root);
                             break;
                         case "ignore":
                             handlerSettings.Ignore = setting.Value;
                             _ignorePathSettingOn = !String.IsNullOrEmpty(handlerSettings.Ignore);
-                            LogHelper.Info<ContentHandler>("Ignore Setting: {0}", () => handlerSettings.Ignore);
-                            break;
-                        case "include":
-                            handlerSettings.Include = setting.Value;
-                            LogHelper.Info<ContentHandler>("Include Setting: {0}", () => handlerSettings.Include);
+                            LogHelper.Debug<ContentHandler>("Ignore Setting: {0}", () => handlerSettings.Ignore);
                             break;
                     }
                 }
@@ -226,7 +222,7 @@ namespace Jumoo.uSync.Content
                 if (!string.IsNullOrEmpty(handlerSettings.Ignore) 
                     && itemPath.StartsWith(handlerSettings.Ignore, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    LogHelper.Info<ContentHandler>("Ignoring: {0} {1}", () => itemPath, () => handlerSettings.Ignore);
+                    LogHelper.Debug<ContentHandler>("Ignoring: {0} {1}", () => itemPath, () => handlerSettings.Ignore);
                     return false;
                 }
             }
@@ -237,7 +233,7 @@ namespace Jumoo.uSync.Content
                 if (!string.IsNullOrEmpty(handlerSettings.Root)
                     && !itemPath.StartsWith(handlerSettings.Root, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    LogHelper.Info<ContentHandler>("Not under root: {0} {1}", () => itemPath, () => handlerSettings.Root);
+                    LogHelper.Debug<ContentHandler>("Not under root: {0} {1}", () => itemPath, () => handlerSettings.Root);
                     return false;
                 }
             }
@@ -251,7 +247,6 @@ namespace Jumoo.uSync.Content
 
             public string Root { get; set; }
             public string Ignore { get; set; }
-            public string Include { get; set; }
         }
     }
 
