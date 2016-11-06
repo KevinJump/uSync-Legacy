@@ -177,6 +177,10 @@
             // pause all saving etc. while we do an import
             uSyncEvents.Paused = true;
 
+            // fire a start even 
+            uSyncEvents.fireBulkActionStarting(
+                new uSyncBulkEventArg() { action = ChangeType.Import });
+
             LogHelper.Info<uSyncApplicationEventHandler>("Running uSync Import: Group = {0} Folder = {1} Force = {2}",
                 () => groupName, () => folder, () => force);
 
@@ -231,6 +235,9 @@
             // do the once file stuff if needed. 
             OnceCheck(folder);
 
+            uSyncEvents.fireBulkActionComplete(
+                new uSyncBulkEventArg() { action = ChangeType.Import });
+
             uSyncEvents.Paused = false; 
             return actions;
         }
@@ -239,6 +246,9 @@
         public IEnumerable<uSyncAction> Export(string groupName, string folder)
         {
             LogHelper.Info<uSyncApplicationEventHandler>("Running full Umbraco Export");
+
+            uSyncEvents.fireBulkActionStarting(
+                new uSyncBulkEventArg() { action = ChangeType.Export });
 
             List<uSyncAction> actions = new List<uSyncAction>();
 
@@ -250,6 +260,9 @@
                 }
             }
 
+            uSyncEvents.fireBulkActionComplete(
+                new uSyncBulkEventArg() { action = ChangeType.Export });
+
             return actions;
 
         }
@@ -258,6 +271,8 @@
         public IEnumerable<uSyncAction> Report(string groupName, string folder)
         {
             LogHelper.Info<uSyncApplicationEventHandler>("Running Import Report");
+            uSyncEvents.fireBulkActionComplete(
+                new uSyncBulkEventArg() { action = ChangeType.NoChange });
 
             List<uSyncAction> actions = new List<uSyncAction>();
 
@@ -272,6 +287,9 @@
                     LogHelper.Debug<uSyncApplicationEventHandler>("Report Complete: {0} ({1}ms)", () => handler.Name, () => sw.ElapsedMilliseconds);
                 }
             }
+
+            uSyncEvents.fireBulkActionComplete(
+                new uSyncBulkEventArg() { action = ChangeType.NoChange });
 
             return actions;
 
