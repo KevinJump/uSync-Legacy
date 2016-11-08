@@ -261,7 +261,6 @@
         $scope.showNoChange = false;
 
         $scope.showChange = function (changeValue) {
-            console.log('show:', changeValue)
             if ($scope.showNoChange || changeValue > 0) {
                 return true;
             }
