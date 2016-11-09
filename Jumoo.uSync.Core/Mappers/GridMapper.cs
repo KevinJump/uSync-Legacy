@@ -88,8 +88,8 @@ namespace Jumoo.uSync.Core.Mappers
                                         if (config != null)
                                         {
                                             var view = config.View;
-                                            if (view.IndexOf('/') > 0)
-                                                view = view.Substring(view.LastIndexOf('/'));
+                                            if (view.LastIndexOf('/') > 0)
+                                                view = view.Substring(view.LastIndexOf('/')+1);
 
                                             mapping = usyncMappings.SingleOrDefault(x => x.View == view);
                                         }
@@ -115,13 +115,13 @@ namespace Jumoo.uSync.Core.Mappers
                                                     control[propertyName] = mappedValue;
                                                 else
                                                 {
-                                                    var mappedJson = JsonConvert.DeserializeObject<JObject>(mappedValue);
+                                                    var mappedJson = JToken.Parse(mappedValue);
                                                     if (mappedJson != null)
                                                     {
                                                         control[propertyName] = mappedJson;
                                                     }
                                                 }
-                                                
+
                                             }
                                         }
                                     }

@@ -16,7 +16,7 @@ namespace Jumoo.uSync.ContentMappers
     public class LeBlenderContentMapper : IContentMapper
     {
         IDataTypeService _dataTypeService;
-        
+
         public LeBlenderContentMapper()
         {
             _dataTypeService = ApplicationContext.Current.Services.DataTypeService;
@@ -37,35 +37,37 @@ namespace Jumoo.uSync.ContentMappers
             if (!IsJson(value))
                 return value;
 
-            var jsonValue = JsonConvert.DeserializeObject<Dictionary<string, JObject>>(value);
-            if (jsonValue == null)
-                return value;
 
-
-            foreach(var control in jsonValue)
+            var valueArray = JsonConvert.DeserializeObject<IEnumerable<Dictionary<string, uSyncLeBlenderGridModel>>>(value);
+            foreach (var leblenderItems in valueArray)
             {
-                Guid dtdGuid = Guid.Empty;
-                if (Guid.TryParse(control.Value.Value<string>("dataTypeGuid"), out dtdGuid))
+                foreach (var kvp in leblenderItems)
                 {
-                    var dataType = _dataTypeService.GetDataTypeDefinitionById(dtdGuid);
-                    if (dataType != null)
-                    {
-                        var mapper = ContentMapperFactory.GetMapper(dataType.PropertyEditorAlias);
-                        if (mapper != null)
-                        {
-                            var mappedValue = "";
-                            if (import)
-                                mappedValue = mapper.GetImportValue(dataType.Id, control.Value.Value<string>("value"));
-                            else
-                                mappedValue = mapper.GetExportValue(dataType.Id, control.Value.Value<string>("value"));
+                    var item = kvp.Value;
 
-                            control.Value["value"] = mappedValue;
+                    Guid dtdGuid = Guid.Empty;
+                    if (Guid.TryParse(item.DataTypeGuid, out dtdGuid))
+                    {
+                        var dataType = _dataTypeService.GetDataTypeDefinitionById(dtdGuid);
+                        if (dataType != null)
+                        {
+                            var mapper = ContentMapperFactory.GetMapper(dataType.PropertyEditorAlias);
+                            if (mapper != null)
+                            {
+                                var mappedValue = "";
+                                if (import)
+                                    mappedValue = mapper.GetImportValue(dataType.Id, (string)item.Value);
+                                else
+                                    mappedValue = mapper.GetExportValue(dataType.Id, (string)item.Value);
+
+                                item.Value = mappedValue;
+                            }
                         }
                     }
                 }
             }
 
-            return JsonConvert.SerializeObject(jsonValue, Formatting.Indented);
+            return JsonConvert.SerializeObject(valueArray, Formatting.Indented);
         }
 
         private bool IsJson(string val)
@@ -75,5 +77,19 @@ namespace Jumoo.uSync.ContentMappers
                 || (val.StartsWith("[") && val.EndsWith("]"));
         }
 
+        internal class uSyncLeBlenderGridModel
+        {
+            [JsonProperty("dataTypeGuid")]
+            public String DataTypeGuid { get; set; }
+
+            [JsonProperty("editorName")]
+            public String Name { get; set; }
+
+            [JsonProperty("editorAlias")]
+            public String Alias { get; set; }
+
+            [JsonProperty("value")]
+            public object Value { get; set; }
+        }
     }
 }
