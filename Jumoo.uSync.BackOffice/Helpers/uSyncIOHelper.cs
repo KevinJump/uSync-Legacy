@@ -124,14 +124,25 @@ namespace Jumoo.uSync.BackOffice.Helpers
         {
             uSyncEvents.fireDeleting(new uSyncEventArgs { fileName = file });
 
-            var dir = Path.GetDirectoryName(file);
-            if (Directory.Exists(dir))
+            if (!uSyncBackOfficeContext.Instance.Configuration.Settings.PreserveAllFiles)
             {
-                if (File.Exists(file))
-                    File.Delete(file);
 
-                if (!Directory.EnumerateFileSystemEntries(dir).Any())
-                    Directory.Delete(dir);
+                var dir = Path.GetDirectoryName(file);
+                if (Directory.Exists(dir))
+                {
+                    if (File.Exists(file))
+                        File.Delete(file);
+
+                    if (!Directory.EnumerateFileSystemEntries(dir).Any())
+                        Directory.Delete(dir);
+                }
+            }
+            else
+            {
+                // we don't actually delete files - we just make them usync archive files. 
+                // that way they still exist in deployment 
+                if (File.Exists(file))
+                    MakeFileArchived(file, Path.GetFileNameWithoutExtension(file));
             }
 
             uSyncEvents.fireDeleted(new uSyncEventArgs { fileName = file });
@@ -162,6 +173,12 @@ namespace Jumoo.uSync.BackOffice.Helpers
               .Replace("/", "_")
               .Replace("+", "-");
             return encoded.Substring(0, 22);
+        }
+
+        public static void MakeFileArchived(string path, string name)
+        {
+            XElement node = new XElement("uSyncArchive", new XAttribute("name", name));
+            node.Save(path);
         }
     }
 }

@@ -119,6 +119,7 @@ namespace Jumoo.uSync.Core
 
     public enum ChangeType
     {
+        Removed = -1,
         NoChange = 0,
         Import,
         Export,

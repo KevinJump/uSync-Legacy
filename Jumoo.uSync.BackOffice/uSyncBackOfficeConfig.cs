@@ -217,5 +217,7 @@ namespace Jumoo.uSync.BackOffice
 
         [XmlElement("Handlers")]
         public List<HandlerGroup> Handlers {get;set;}
+
+        public bool PreserveAllFiles { get; set; }
     }
 }
