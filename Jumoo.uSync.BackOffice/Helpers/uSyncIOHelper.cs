@@ -139,6 +139,7 @@ namespace Jumoo.uSync.BackOffice.Helpers
             }
             else
             {
+                LogHelper.Info<uSyncIOHelper>("Not a delete - a preserve, {0}", ()=> file);
                 // we don't actually delete files - we just make them usync archive files. 
                 // that way they still exist in deployment 
                 if (File.Exists(file))

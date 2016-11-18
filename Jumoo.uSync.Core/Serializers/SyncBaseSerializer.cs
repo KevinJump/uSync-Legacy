@@ -24,7 +24,7 @@ namespace Jumoo.uSync.Core.Serializers
 
         public SyncAttempt<T> DeSerialize(XElement node, bool forceUpdate = false)
         {
-            if (node.Name.LocalName != "uSyncArchive")
+            if (node.Name.LocalName == "uSyncArchive")
                 return SyncAttempt<T>.Succeed(node.Attribute("name").ValueOrDefault("old_file"), ChangeType.Removed);
 
             if (node.Name.LocalName != _itemType && node.Name.LocalName != "EntityFolder")

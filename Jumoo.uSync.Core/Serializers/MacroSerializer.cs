@@ -18,6 +18,8 @@ namespace Jumoo.uSync.Core.Serializers
     public class MacroSerializer : SyncBaseSerializer<IMacro>, ISyncChangeDetail
     {
         private IPackagingService _packaingService;
+        private IEntityService _entityService;
+        private IMacroService _macroService;
 
         public override string SerializerType { get { return uSyncConstants.Serailization.Macro; } }
 
@@ -25,18 +27,42 @@ namespace Jumoo.uSync.Core.Serializers
             base(Constants.Packaging.MacroNodeName)
         {
             _packaingService = ApplicationContext.Current.Services.PackagingService;
+            _entityService = ApplicationContext.Current.Services.EntityService;
+            _macroService = ApplicationContext.Current.Services.MacroService;
         }
 
         public MacroSerializer(string itemType) : base(itemType)
         {
             _packaingService = ApplicationContext.Current.Services.PackagingService;
+            _entityService = ApplicationContext.Current.Services.EntityService;
+            _macroService = ApplicationContext.Current.Services.MacroService;
         }
 
         internal override SyncAttempt<IMacro> DeserializeCore(XElement node)
         {
             LogHelper.Debug<MacroSerializer>("<< DeserailizeCore Macro");
-            var item = _packaingService.ImportMacros(node).FirstOrDefault();
 
+            IMacro item = null;
+
+            // find by key. doesn't actully work at the moment
+            //   -  beause entity does seem to return macros .
+            if (node.Element("Key") != null)
+            {
+                var key = node.Element("Key").ValueOrDefault(Guid.Empty);
+                if (key != Guid.Empty)
+                {
+                    var entity = _entityService.GetByKey(key);
+                    if (entity != null)
+                    {
+                        item = _macroService.GetById(entity.Id);
+                    }
+                }
+            }
+
+            if (item == null)
+            { 
+                item = _packaingService.ImportMacros(node).FirstOrDefault();
+            }
             // other bits.
             if (item == null)
                 return SyncAttempt<IMacro>.Fail(node.NameFromNode(), ChangeType.Import, "Package Service import failed");
@@ -54,6 +80,9 @@ namespace Jumoo.uSync.Core.Serializers
 
             if (node.Element("xslt") != null)
                 item.XsltPath = node.Element("xslt").Value;
+
+            if (node.Element("Key") != null)
+                item.Key = node.Element("Key").ValueOrDefault(Guid.Empty);
 
             if (node.Element("scriptingFile") != null)
                 item.ScriptPath = node.Element("scriptingFile").Value;
@@ -133,6 +162,7 @@ namespace Jumoo.uSync.Core.Serializers
             xml.Add(new XElement("refreshRate", macro.CacheDuration.ToString()));
             xml.Add(new XElement("cacheByMember", macro.CacheByMember.ToString()));
             xml.Add(new XElement("cacheByPage", macro.CacheByPage.ToString()));
+            xml.Add(new XElement("Key", macro.Key.ToString()));
 
             var properties = new XElement("properties");
             foreach (var property in macro.Properties.OrderBy(x => x.Alias))

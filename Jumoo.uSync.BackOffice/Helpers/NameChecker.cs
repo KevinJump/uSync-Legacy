@@ -46,8 +46,14 @@ namespace Jumoo.uSync.BackOffice.Helpers
                     var fileKey = GetKey(file);
                     if (fileKey != Guid.Empty && fileKey == Key)
                     {
-                        // this file matches our new one, we need to do all the things.
-                        ManageOrphan(file, newFile);
+                        if (!uSyncBackOfficeContext.Instance.Configuration.Settings.PreserveAllFiles)
+                        {// this file matches our new one, we need to do all the things.
+                            ManageOrphan(file, newFile);
+                        }
+                        else
+                        {
+                            ArchiveOrphanedFiles(file, newFile);
+                        }
                     }
                 }
             }
@@ -131,6 +137,52 @@ namespace Jumoo.uSync.BackOffice.Helpers
             if (folder.GetFileSystemInfos().Length == 0)
             {
                 folder.Delete();
+            }
+        }
+
+        private static void ArchiveOrphanedFiles(string file, string newFile)
+        {
+            LogHelper.Info<NameChecker>("Managing Orphaned File: {0}", () => file);
+
+            var orphanDir = Path.GetDirectoryName(file);
+            var targetDir = Path.GetDirectoryName(newFile);
+
+            LogHelper.Info<NameChecker>("Wiping {0}", () => file);
+            // delete the file
+            if (File.Exists(file)) 
+                uSyncIOHelper.MakeFileArchived(file, Path.GetFileNameWithoutExtension(file));
+
+            ArchiveAndCopyOrphanedFolder(orphanDir, targetDir);
+
+            // redirectcheck
+            var redirect = Path.Combine(Path.GetDirectoryName(file), "redirect.config");
+            LogHelper.Debug<NameChecker>("Checking for Redirect: {0}", () => redirect);
+            if (File.Exists(redirect))
+                uSyncIOHelper.MakeFileArchived(redirect, "redirect");
+        }
+
+        private static void ArchiveAndCopyOrphanedFolder(string orphanDir, string targetDir)
+        {
+            LogHelper.Info<NameChecker>("Marking Folder Archived {0} {1}", () => orphanDir, () => targetDir);
+
+            // move any child folders
+            if (Directory.Exists(orphanDir))
+            {
+                if (!Directory.Exists(targetDir))
+                    Directory.CreateDirectory(targetDir);
+
+                foreach (var subDir in Directory.GetDirectories(orphanDir))
+                {
+                    var targetSubDir = Path.Combine(targetDir, Path.GetFileName(subDir));
+                    ArchiveAndCopyOrphanedFolder(subDir, targetSubDir);
+
+                    foreach (var file in Directory.GetFiles(subDir, "*.config"))
+                    {
+                        var targetFile = Path.Combine(targetSubDir, Path.GetFileName(file));
+                        File.Copy(file, targetFile, true);
+                        uSyncIOHelper.MakeFileArchived(file, Path.GetFileNameWithoutExtension(file));
+                    }
+                }
             }
         }
     }
