@@ -87,16 +87,16 @@ namespace Jumoo.uSync.Core.Mappers
                                         var config = gridConfig.EditorsConfig.Editors.FirstOrDefault(x => x.Alias == alias);
                                         if (config != null)
                                         {
-                                            var view = config.View;
-                                            if (view.LastIndexOf('/') > 0)
-                                                view = view.Substring(view.LastIndexOf('/')+1);
+                                            LogHelper.Debug<GridMapper>("Looking for view: {0}", () => config.View);
 
-                                            mapping = usyncMappings.SingleOrDefault(x => x.View == view);
+                                            if (!string.IsNullOrEmpty(config.View))
+                                                mapping = usyncMappings.SingleOrDefault(x => !string.IsNullOrEmpty(x.View) && config.View.IndexOf(x.View, StringComparison.InvariantCultureIgnoreCase)>0);
                                         }
                                     }
 
                                     if (mapping != null)
                                     {
+                                        LogHelper.Debug<GridMapper>("Mapping: {0}", () => mapping.EditorAlias);
                                         var propertyName = mapping.Settings;
 
                                         if (propertyName != null)

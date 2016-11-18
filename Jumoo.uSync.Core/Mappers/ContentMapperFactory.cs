@@ -18,7 +18,7 @@ namespace Jumoo.uSync.Core.Mappers
 
         public static IContentMapper GetMapper(uSyncContentMapping mapping)
         {
-            // Umbraco.Core.Logging.LogHelper.Debug<ContentMapperFactory>("Mapping: {0}", () => mapping.EditorAlias);
+            Umbraco.Core.Logging.LogHelper.Debug<ContentMapperFactory>("Mapping: {0}", () => mapping.EditorAlias);
             switch (mapping.MappingType)
             {
                 case ContentMappingType.Content:

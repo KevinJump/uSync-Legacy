@@ -20,7 +20,7 @@
   <PropertyGroup>
     <ProjectName>uSync ContentMappers</ProjectName>
     <ProjectNamespace>Jumoo.uSync.ContentMappers</ProjectNamespace>
-    <PackageVersion>3.2.1.740</PackageVersion>
+    <PackageVersion>3.2.2.740</PackageVersion>
     <VersionSuffix></VersionSuffix>
     <MinUmbracoVersion>7.4.0</MinUmbracoVersion>
   </PropertyGroup>

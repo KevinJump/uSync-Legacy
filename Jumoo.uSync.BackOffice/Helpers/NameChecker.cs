@@ -27,12 +27,14 @@ namespace Jumoo.uSync.BackOffice.Helpers
         public static void ManageOrphanFiles(string typeFolder, Guid Key, string newFile)
         {
             string path = Path.Combine(uSyncBackOfficeContext.Instance.Configuration.Settings.MappedFolder(), typeFolder);
+
+            LogHelper.Debug<NameChecker>("Managing Orphaned Files for save: {0}", () => path);
             CheckFolder(path, Key, newFile);
         }
 
         private static void CheckFolder(string folder, Guid Key, string newFile)
         {
-            LogHelper.Debug<NameChecker>("Checking Folder: {0}", () => folder);
+            // LogHelper.Debug<NameChecker>("Checking Folder: {0}", () => folder);
 
             if (!Directory.Exists(folder))
                 return;
