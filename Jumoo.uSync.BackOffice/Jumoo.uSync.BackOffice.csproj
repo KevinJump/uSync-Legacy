@@ -281,6 +281,12 @@
     <Compile Include="Controllers\uSyncBackOfficeController.cs" />
     <Compile Include="Handlers\ContentTypeHandler.cs" />
     <Compile Include="Handlers\DataTypeHandler.cs" />
+    <Compile Include="Handlers\Deploy\BaseDepoyHandler.cs" />
+    <Compile Include="Handlers\Deploy\ContentTypeDeployHandler.cs" />
+    <Compile Include="Handlers\Deploy\DataTypeDeployHandler.cs" />
+    <Compile Include="Handlers\Deploy\DictionaryDepoyHandler.cs" />
+    <Compile Include="Handlers\Deploy\LanguageDeployHandler.cs" />
+    <Compile Include="Handlers\Deploy\uSyncDeployNode.cs" />
     <Compile Include="Handlers\DictionaryHandler.cs" />
     <Compile Include="Handlers\LanguageHandler.cs" />
     <Compile Include="Handlers\MacroHandler.cs" />
