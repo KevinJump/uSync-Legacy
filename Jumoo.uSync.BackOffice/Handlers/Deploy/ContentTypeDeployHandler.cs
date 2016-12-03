@@ -21,7 +21,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
             _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
             _baseSerializer = uSyncCoreContext.Instance.ContentTypeSerializer;
 
-            SyncFolder = Constants.Packaging.DocumentsNodeName;
+            SyncFolder = Constants.Packaging.DocumentTypeNodeName;
 
             this.TwoPassImport = true;
             this.RequiresPostProcessing = true; 
@@ -39,7 +39,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         {
             get
             {
-                return uSyncConstants.Priority.ContentTypes;
+                return uSyncConstants.Priority.ContentTypes + 500;
             }
         }
 

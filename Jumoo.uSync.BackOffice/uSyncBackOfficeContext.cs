@@ -10,6 +10,7 @@
     using Umbraco.Core.Logging;
     using System.Collections.Specialized;
     using System.Diagnostics;
+    using System.Threading;
 
     public class uSyncBackOfficeContext
     {
@@ -90,7 +91,7 @@
                 var typeInstance = Activator.CreateInstance(t) as ISyncHandler;
                 if (typeInstance != null)
                 {
-                    LogHelper.Debug<uSyncBackOfficeContext>("Adding Instance: {0}", () => typeInstance.Name);
+                    LogHelper.Debug<uSyncBackOfficeContext>("Adding Instance: {0} [{1}]", () => typeInstance.Name, ()=> typeInstance.Priority);
                     handlers.Add(typeInstance.Priority, typeInstance);
 
                     if (typeInstance is ISyncHandlerConfig)
@@ -104,10 +105,10 @@
 
         public void SetupEvents()
         {
-            LogHelper.Info<uSyncApplicationEventHandler>("Setting up Events");
+            LogHelper.Info<uSyncApplicationEventHandler>("Setting up Events {0}", ()=> Configuration.Settings.HandlerGroup);
             foreach(var handler in handlers.Select(x => x.Value))
             {
-                if (HandlerEnabled(handler.Name, "events"))
+                if (HandlerEnabled(handler.Name, "events", Configuration.Settings.HandlerGroup))
                 {
                     handler.RegisterEvents();
                 }
@@ -198,7 +199,7 @@
             // run through the valid handlers for this import and do the import
             foreach (var handler in handlers.Select(x => x.Value))
             {
-                if (HandlerEnabled(handler.Name, "import", groupName))
+                if (handler != null && HandlerEnabled(handler.Name, "import", groupName))
                 {
                     var sw = Stopwatch.StartNew();
 
@@ -355,7 +356,7 @@
                     }
                 }
 
-                LogHelper.Debug<uSyncApplicationEventHandler>("Handler {0} is missing in group \"{1}\" and default setting is {2}", () => handlerName, ()=> group, () => hGroup.EnableMissing);
+                LogHelper.Debug<uSyncApplicationEventHandler>("Handler {0} is missing in group \"{1}\" Enabled = {2}", () => handlerName, ()=> group, () => hGroup.EnableMissing);
                 // return the group default (i.e if true, we include handlers not in this group) 
                 return hGroup.EnableMissing;
             }

@@ -17,6 +17,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         public LanguageDeployHandler()
         {
             _localizationService = ApplicationContext.Current.Services.LocalizationService;
+            _baseSerializer = uSyncCoreContext.Instance.LanguageSerializer;
             SyncFolder = Constants.Packaging.LanguagesNodeName;
         }
 
@@ -32,7 +33,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         {
             get
             {
-                return uSyncConstants.Priority.Languages;
+                return uSyncConstants.Priority.Languages + 500;
             }
         }
 

@@ -11,7 +11,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
     {
         public Guid Key { get; set; }
         public Guid? Master { get; set; }
-
+        public string Filename { get; set; }
         public XElement Node { get; set; }
     }
 

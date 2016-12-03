@@ -17,6 +17,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         public MacroDeployHandler()
         {
             _macroService = ApplicationContext.Current.Services.MacroService;
+            _baseSerializer = uSyncCoreContext.Instance.MacroSerializer;
             SyncFolder = Constants.Packaging.MacroNodeName;
         }
 
@@ -32,7 +33,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         {
             get
             {
-                return uSyncConstants.Priority.Macros;
+                return uSyncConstants.Priority.Macros + 500;
             }
         }
 

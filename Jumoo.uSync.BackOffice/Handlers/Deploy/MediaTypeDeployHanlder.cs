@@ -17,6 +17,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         public MediaTypeDeployHanlder()
         {
             _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
+            _baseSerializer = uSyncCoreContext.Instance.MediaTypeSerializer;
             SyncFolder = "MediaType";
         }
 
@@ -24,7 +25,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         {
             get
             {
-                return "Deploy:MediaHandler";
+                return "Deploy:MediaTypeHandler";
             }
         }
 
@@ -32,7 +33,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         {
             get
             {
-                return uSyncConstants.Priority.MediaTypes; 
+                return uSyncConstants.Priority.MediaTypes + 500;
             }
         }
 

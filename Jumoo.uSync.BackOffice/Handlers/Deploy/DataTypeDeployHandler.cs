@@ -16,9 +16,8 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
 
         public DataTypeDeployHandler()
         {
-            _baseSerializer = uSyncCoreContext.Instance.DataTypeSerializer;
             _dataTypeService = ApplicationContext.Current.Services.DataTypeService;
-
+            _baseSerializer = uSyncCoreContext.Instance.DataTypeSerializer;
             SyncFolder = Constants.Packaging.DataTypeNodeName;
 
             this.RequiresPostProcessing = true; 
@@ -36,7 +35,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         {
             get
             {
-                return uSyncConstants.Priority.DataTypeMappings;
+                return uSyncConstants.Priority.DataTypes + 500 ;
             }
         }
 

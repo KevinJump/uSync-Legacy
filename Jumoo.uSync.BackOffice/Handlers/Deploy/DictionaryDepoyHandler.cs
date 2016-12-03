@@ -17,6 +17,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         public DictionaryDepoyHandler()
         {
             _localizationService = ApplicationContext.Current.Services.LocalizationService;
+            _baseSerializer = uSyncCoreContext.Instance.DictionarySerializer;
             SyncFolder = Constants.Packaging.DictionaryItemNodeName;
         }
 
@@ -32,7 +33,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         {
             get
             {
-                return uSyncConstants.Priority.DictionaryItems;
+                return uSyncConstants.Priority.DictionaryItems + 500;
             }
         }
 

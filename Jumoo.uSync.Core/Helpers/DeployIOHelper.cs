@@ -13,6 +13,10 @@ namespace Jumoo.uSync.Core.Helpers
         public static void SaveNode(XElement node, string folder, string filename)
         {
             var mappedFolder = Umbraco.Core.IO.IOHelper.MapPath(folder);
+
+            if (!Directory.Exists(mappedFolder))
+                Directory.CreateDirectory(mappedFolder);
+
             var fullpath = Path.Combine(mappedFolder, filename);
             node.Save(fullpath);
         }

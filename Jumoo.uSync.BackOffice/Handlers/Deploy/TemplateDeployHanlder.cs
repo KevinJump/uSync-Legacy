@@ -17,7 +17,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         public TemplateDeployHanlder()
         {
             _fileService = ApplicationContext.Current.Services.FileService;
-
+            _baseSerializer = uSyncCoreContext.Instance.TemplateSerializer;
             SyncFolder = Constants.Packaging.TemplateNodeName;
         }
 
@@ -34,7 +34,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         {
             get
             {
-                return uSyncConstants.Priority.Templates;
+                return uSyncConstants.Priority.Templates + 500;
             }
         }
 

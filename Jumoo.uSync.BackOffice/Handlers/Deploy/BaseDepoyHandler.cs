@@ -7,9 +7,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Umbraco.Core.Events;
+using Umbraco.Core.Logging;
 using Umbraco.Core.Models.EntityBase;
 
 namespace Jumoo.uSync.BackOffice.Handlers.Deploy
@@ -65,7 +67,8 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
                         {
                             Key = GetKey(node),
                             Master = GetMaster(node),
-                            Node = node 
+                            Node = node,
+                            Filename = item
                         });
                     }
                 }
@@ -75,6 +78,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
 
         internal IEnumerable<uSyncDeployTreeNode> MakeTree(IEnumerable<uSyncDeployNode> items, Guid masterKey)
         {
+            LogHelper.Debug<Events>("Make Tree: {0} {1}", () => items.Count(), () => masterKey);
             List<uSyncDeployTreeNode> branch = new List<uSyncDeployTreeNode>();
 
             var nodes = items.Where(x => x.Master == masterKey);
@@ -85,7 +89,10 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
                     Node = node
                 };
 
-                leaf.Children.AddRange(MakeTree(items, node.Key));
+                if (node.Key != Guid.Empty)
+                    leaf.Children.AddRange(MakeTree(items, node.Key));
+
+                branch.Add(leaf);
             }
 
             return branch;
@@ -101,7 +108,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
                 updates.Add(tree.Node.Node, result.Item);
             }
             actions.Add(
-                uSyncActionHelper<TItem>.SetAction(result, tree.Node.Node.NameFromNode(), RequiresPostProcessing));
+                uSyncActionHelper<TItem>.SetAction(result, tree.Node.Filename, RequiresPostProcessing));
 
             foreach(var branch in tree.Children)
             {
@@ -186,10 +193,13 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         {
             List<uSyncAction> actions = new List<uSyncAction>();
 
+            string itemFolder = string.Format("{0}/{1}", folder, SyncFolder);
+
             var items = GetAllExportItems();
             foreach(var item in items)
             {
-                actions.Add(ExportToDisk(item, folder));
+                if (item != null)
+                    actions.Add(ExportToDisk(item, itemFolder));
             }
 
             return actions; 
@@ -204,8 +214,9 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
 
             var attempt = _baseSerializer.Serialize(item);
             if (attempt.Success)
+            {
                 DeployIOHelper.SaveNode(attempt.Item, folder, filename);
-
+            }
             return uSyncActionHelper<XElement>.SetAction(attempt, filename);
         }
         #endregion
@@ -219,7 +230,9 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
 
             foreach (var item in e.SavedEntities)
             {
-                var action = ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+                var action = ExportToDisk(item,
+                    string.Format("{0}/{1}", uSyncBackOfficeContext.Instance.Configuration.Settings.Folder, SyncFolder));
+
             }
         }
 
@@ -230,7 +243,8 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
 
             foreach(var item in e.DeletedEntities)
             {
-                DeployIOHelper.DeleteNode(item.Key, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+                DeployIOHelper.DeleteNode(item.Key, 
+                    string.Format("{0}/{1}", uSyncBackOfficeContext.Instance.Configuration.Settings.Folder, SyncFolder));
             }
         }
 
