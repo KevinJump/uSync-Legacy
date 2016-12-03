@@ -113,7 +113,36 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
 
         virtual public SyncAttempt<TItem> Import(uSyncDeployNode node, bool force)
         {
-            return _baseSerializer.DeSerialize(node.Node, force);
+            return Import(node.Node, force);
+        }
+
+        private SyncAttempt<TItem> Import(XElement node, bool force)
+        {
+            return _baseSerializer.DeSerialize(node, force);
+        }
+
+        public IEnumerable<uSyncAction> ProcessPostImport(string filepath, IEnumerable<uSyncAction> actions)
+        {
+            List<uSyncAction> postActions = new List<uSyncAction>();
+
+            if (actions.Any())
+            {
+                var items = actions.Where(x => x.ItemType == typeof(TItem));
+                foreach(var item in items)
+                {
+                    XElement node = XElement.Load(item.FileName);
+                    if (node != null)
+                    {
+                        var attempt = Import(node, false);
+                        if (attempt.Success&& TwoPassImport) 
+                        {
+                            ImportSecondPass(attempt.Item, node);
+                        }
+                    }
+                }
+            }
+
+            return postActions;            
         }
 
         virtual public void ImportSecondPass(TItem item, XElement node)

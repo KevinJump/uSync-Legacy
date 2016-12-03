@@ -10,7 +10,7 @@ using Umbraco.Core.Services;
 
 namespace Jumoo.uSync.BackOffice.Handlers.Deploy
 {
-    public class DataTypeDeployHandler : BaseDepoyHandler<IDataTypeService, IDataTypeDefinition>, ISyncHandler
+    public class DataTypeDeployHandler : BaseDepoyHandler<IDataTypeService, IDataTypeDefinition>, ISyncHandler, ISyncPostImportHandler
     {
         IDataTypeService _dataTypeService;
 
@@ -21,7 +21,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
 
             SyncFolder = Constants.Packaging.DataTypeNodeName;
 
-            this.TwoPassImport = true; 
+            this.RequiresPostProcessing = true; 
         }
 
         public string Name

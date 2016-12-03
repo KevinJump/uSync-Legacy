@@ -12,7 +12,7 @@ using Umbraco.Core.Services;
 
 namespace Jumoo.uSync.BackOffice.Handlers.Deploy
 {
-    public class ContentTypeDeployHandler : BaseDepoyHandler<IContentTypeService, IContentType>, ISyncHandler
+    public class ContentTypeDeployHandler : BaseDepoyHandler<IContentTypeService, IContentType>, ISyncHandler, ISyncPostImportHandler
     {
         public IContentTypeService _contentTypeService; 
                  
