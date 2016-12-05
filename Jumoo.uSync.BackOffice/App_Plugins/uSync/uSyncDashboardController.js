@@ -276,4 +276,20 @@
             $scope.errorMsg = "";
             $scope.isInError = false;
         }
+
+        $scope.visibleHandler = -1;
+
+        $scope.toggleGroup = function (index) {
+            if ($scope.visibleHandler == index) {
+                $scope.visibleHandler = -1;
+            }
+            else {
+                $scope.visibleHandler = index;
+            }
+        }
+
+        $scope.showToggle = function (index) {
+            return $scope.visibleHandler == index;
+        }
+
     });
