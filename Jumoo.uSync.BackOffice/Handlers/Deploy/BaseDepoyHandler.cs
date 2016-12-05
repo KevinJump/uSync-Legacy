@@ -6,9 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using Umbraco.Core.Events;
 using Umbraco.Core.Logging;
@@ -50,7 +47,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         /// </summary>
         /// <param name="folder"></param>
         /// <returns></returns>
-        internal IEnumerable<uSyncDeployNode> GetImportItems(string folder)
+        internal IEnumerable<uSyncDeployNode> GetImportItems(string folder, string extension = "config")
         {
             List<uSyncDeployNode> items = new List<uSyncDeployNode>();
 
@@ -58,7 +55,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
 
             if (Directory.Exists(mappedFolder))
             {
-                foreach(var item in Directory.GetFiles(mappedFolder, "*.config"))
+                foreach(var item in Directory.GetFiles(mappedFolder, "*." + extension))
                 {
                     XElement node = XElement.Load(item);
                     if (node != null && node.Name.LocalName != "uSyncArchive")
@@ -207,10 +204,15 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
 
         public virtual uSyncAction ExportToDisk(TItem item, string folder)
         {
+            return ExportToDisk(item, folder, "config");
+        }
+
+        public uSyncAction ExportToDisk(TItem item, string folder, string extension)
+        { 
             if (item == null)
                 return uSyncAction.Fail(Path.GetFileName(folder), typeof(TItem), "Item not set");
 
-            var filename = item.Key.ToString() + ".config";
+            var filename = item.Key.ToString() + "." + extension;
 
             var attempt = _baseSerializer.Serialize(item);
             if (attempt.Success)
