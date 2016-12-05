@@ -84,19 +84,32 @@
         {
             handlers = new SortedList<int, ISyncHandler>();
 
+            var includeIfMissing = true;
+            var handlerGroup = Configuration.Settings.HandlerGroup; 
+
+            var hGroup = Configuration.Settings.Handlers
+                .FirstOrDefault(x => x.Group.Equals(handlerGroup, StringComparison.OrdinalIgnoreCase));
+
+            if (hGroup != null)
+                includeIfMissing = hGroup.EnableMissing;
+
+
             var types = TypeFinder.FindClassesOfType<ISyncHandler>();
             LogHelper.Info<uSyncBackOfficeContext>("Loading up Sync Handlers : {0}", () => types.Count());
             foreach (var t in types)
-            {
+            { 
                 var typeInstance = Activator.CreateInstance(t) as ISyncHandler;
                 if (typeInstance != null)
                 {
-                    LogHelper.Debug<uSyncBackOfficeContext>("Adding Instance: {0} [{1}]", () => typeInstance.Name, ()=> typeInstance.Priority);
-                    handlers.Add(typeInstance.Priority, typeInstance);
-
-                    if (typeInstance is ISyncHandlerConfig)
+                    if (includeIfMissing || HandlerInGroup(typeInstance.Name, handlerGroup))
                     {
-                        ((ISyncHandlerConfig)typeInstance).LoadHandlerConfig(HandlerSettings(typeInstance.Name));
+                        LogHelper.Debug<uSyncBackOfficeContext>("Adding Instance: {0} [{1}]", () => typeInstance.Name, () => typeInstance.Priority);
+                        handlers.Add(typeInstance.Priority, typeInstance);
+
+                        if (typeInstance is ISyncHandlerConfig)
+                        {
+                            ((ISyncHandlerConfig)typeInstance).LoadHandlerConfig(HandlerSettings(typeInstance.Name));
+                        }
                     }
                 }
             }
