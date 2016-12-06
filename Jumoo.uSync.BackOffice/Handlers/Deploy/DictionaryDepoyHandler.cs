@@ -10,7 +10,7 @@ using Umbraco.Core.Services;
 
 namespace Jumoo.uSync.BackOffice.Handlers.Deploy
 {
-    public class DictionaryDepoyHandler : BaseDepoyHandler<ILocalizationService, IDictionaryItem>, ISyncHandler
+    public class DictionaryDepoyHandler : BaseDepoyHandler<ILocalizationService, IDictionaryItem>, ISyncHandler, IPickySyncHandler
     {
         private ILocalizationService _localizationService;
 
@@ -40,6 +40,17 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         public override IEnumerable<IDictionaryItem> GetAllExportItems()
         {
             return _localizationService.GetRootDictionaryItems();
+        }
+
+        public override ChangeType DeleteItem(uSyncDeployNode node, bool force)
+        {
+            var item = _localizationService.GetDictionaryItemById(node.Key);
+            if (item != null)
+            {
+                _localizationService.Delete(item);
+                return ChangeType.Delete;
+            }
+            return ChangeType.NoChange;
         }
 
         public void RegisterEvents()

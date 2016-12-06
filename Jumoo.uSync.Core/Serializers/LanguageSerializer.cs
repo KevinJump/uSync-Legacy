@@ -66,6 +66,13 @@ namespace Jumoo.uSync.Core.Serializers
         internal override SyncAttempt<XElement> SerializeCore(ILanguage item)
         {
             var node = _packagingService.Export(item);
+
+            // not yet - this changes every save, and triggers changes when there are none 
+            /*
+            if (node != null)
+                node.Add(new XAttribute("Key", item.Key));
+            */
+
             return SyncAttempt<XElement>.SucceedIf(
                 node != null,
                 item.CultureName,

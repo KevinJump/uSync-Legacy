@@ -10,7 +10,7 @@ using Umbraco.Core.Services;
 
 namespace Jumoo.uSync.BackOffice.Handlers.Deploy
 {
-    public class MacroDeployHandler : BaseDepoyHandler<IMacroService, IMacro>, ISyncHandler
+    public class MacroDeployHandler : BaseDepoyHandler<IMacroService, IMacro>, ISyncHandler, IPickySyncHandler
     {
         IMacroService _macroService; 
 
@@ -40,6 +40,24 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         public override IEnumerable<IMacro> GetAllExportItems()
         {
             return _macroService.GetAll();
+        }
+
+        public override string GetFileName(IMacro item)
+        {
+            return item.Alias;
+        }
+
+        public override ChangeType DeleteItem(uSyncDeployNode node, bool force)
+        {
+            /*
+            var item = _macroService.GetById(node.Key);
+            if (item != null)
+            {
+                _macroService.Delete(item);
+                return ChangeType.Delete;
+            }
+            */
+            return ChangeType.NoChange;
         }
 
         public void RegisterEvents()

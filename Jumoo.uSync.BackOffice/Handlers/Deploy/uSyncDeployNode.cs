@@ -13,6 +13,8 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         public Guid? Master { get; set; }
         public string Filename { get; set; }
         public XElement Node { get; set; }
+
+        public bool IsDelete { get; set; }
     }
 
     public class uSyncDeployTreeNode

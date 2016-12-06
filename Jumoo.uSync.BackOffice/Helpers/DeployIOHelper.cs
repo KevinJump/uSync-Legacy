@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Jumoo.uSync.Core.Helpers
+namespace Jumoo.uSync.BackOffice.Helpers
 {
-    public static class DeployIOHelper
+    public class DeployIOHelper
     {
         public static void SaveNode(XElement node, string folder, string filename)
         {
@@ -26,8 +26,8 @@ namespace Jumoo.uSync.Core.Helpers
             var mappedFolder = Umbraco.Core.IO.IOHelper.MapPath(folder);
             var fullpath = Path.Combine(mappedFolder, string.Format("{0}.config", key.ToString()));
 
-            XElement a = new XElement("uSyncArchive", new XAttribute("key", key.ToString()));
+            XElement a = new XElement("uSyncArchive", new XAttribute("Key", key.ToString()));
             a.Save(fullpath);
-        }
+        }   
     }
 }

@@ -1,6 +1,6 @@
-﻿using Jumoo.uSync.Core;
+﻿using Jumoo.uSync.BackOffice.Helpers;
+using Jumoo.uSync.Core;
 using Jumoo.uSync.Core.Extensions;
-using Jumoo.uSync.Core.Helpers;
 using Jumoo.uSync.Core.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -58,14 +58,15 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
                 foreach(var item in Directory.GetFiles(mappedFolder, "*." + extension))
                 {
                     XElement node = XElement.Load(item);
-                    if (node != null && node.Name.LocalName != "uSyncArchive")
+                    if (node != null)
                     {
                         items.Add(new uSyncDeployNode()
                         {
                             Key = GetKey(node),
                             Master = GetMaster(node),
                             Node = node,
-                            Filename = item
+                            Filename = item,
+                            IsDelete = node.Name.LocalName == "uSyncArchive"
                         });
                     }
                 }
@@ -99,7 +100,18 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         {
             List<uSyncAction> actions = new List<uSyncAction>();
 
-            var result = Import(tree.Node, force);
+            SyncAttempt<TItem> result = SyncAttempt<TItem>.Succeed(tree.Node.Key.ToString(), ChangeType.NoChange);
+
+            if (tree.Node.IsDelete)
+            {               
+                result = SyncAttempt<TItem>.Succeed(tree.Node.Key.ToString(), DeleteItem(tree.Node, force));
+                if (result.Change == ChangeType.Delete)
+                    LogHelper.Info<Events>("Deleted Item: {0} {1}", () => typeof(TItem).ToString(), () => tree.Node.Key);
+            }
+            else
+            {
+                result = Import(tree.Node, force);
+            }
             if (result.Success && result.Item != null && TwoPassImport)
             {
                 updates.Add(tree.Node.Node, result.Item);
@@ -107,12 +119,13 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
             actions.Add(
                 uSyncActionHelper<TItem>.SetAction(result, tree.Node.Filename, RequiresPostProcessing));
 
-            foreach(var branch in tree.Children)
+
+            foreach (var branch in tree.Children)
             {
                 actions.AddRange(ImportTree(branch, force, updates));
             }
 
-            return actions; 
+            return actions;
         }
 
         virtual public SyncAttempt<TItem> Import(uSyncDeployNode node, bool force)
@@ -120,9 +133,16 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
             return Import(node.Node, force);
         }
 
+        abstract public ChangeType DeleteItem(uSyncDeployNode node, bool force);
+
         private SyncAttempt<TItem> Import(XElement node, bool force)
         {
-            return _baseSerializer.DeSerialize(node, force);
+            var result = _baseSerializer.DeSerialize(node, force);
+
+            if (result.Change > ChangeType.NoChange)
+                LogHelper.Info<Events>("Import: {0} {1} {2}", () => result.Name, () => result.Success, () => result.Change);
+
+            return result;
         }
 
         public IEnumerable<uSyncAction> ProcessPostImport(string filepath, IEnumerable<uSyncAction> actions)
@@ -138,7 +158,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
                     if (node != null)
                     {
                         var attempt = Import(node, false);
-                        if (attempt.Success&& TwoPassImport) 
+                        if (attempt.Success && attempt.Change > ChangeType.NoChange && TwoPassImport) 
                         {
                             ImportSecondPass(attempt.Item, node);
                         }
@@ -153,6 +173,8 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         {
             if (_baseSerializer is ISyncSerializerTwoPass<TItem>)
             {
+                LogHelper.Debug<uSyncDeployNode>("Second Pass import: {0}", () => item.Id);
+                LogHelper.Debug<uSyncDeployNode>("Second Pass Node: {0}", () => node.Name.LocalName);
                 ((ISyncSerializerTwoPass<TItem>)_baseSerializer).DesearlizeSecondPass(item, node);
             }
         }
@@ -174,12 +196,19 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
 
         public uSyncAction Report(uSyncDeployNode item)
         {
-            var update = _baseSerializer.IsUpdate(item.Node);
-            var action = uSyncActionHelper<TItem>.ReportAction(update, item.Node.NameFromNode());
-            if (action.Change > ChangeType.NoChange)
-                action.Details = ((ISyncChangeDetail)_baseSerializer).GetChanges(item.Node);
+            if (item.IsDelete)
+            {
+                return uSyncActionHelper<TItem>.ReportAction(false, item.Key.ToString(), "Delete - will remove if present");
+            }
+            else
+            {
+                var update = _baseSerializer.IsUpdate(item.Node);
+                var action = uSyncActionHelper<TItem>.ReportAction(update, item.Node.NameFromNode());
+                if (action.Change > ChangeType.NoChange)
+                    action.Details = ((ISyncChangeDetail)_baseSerializer).GetChanges(item.Node);
 
-            return action;
+                return action;
+            }
         }
         #endregion
 
@@ -212,7 +241,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
             if (item == null)
                 return uSyncAction.Fail(Path.GetFileName(folder), typeof(TItem), "Item not set");
 
-            var filename = item.Key.ToString() + "." + extension;
+            var filename = GetFileName(item) + "." + extension;
 
             var attempt = _baseSerializer.Serialize(item);
             if (attempt.Success)
@@ -221,6 +250,13 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
             }
             return uSyncActionHelper<XElement>.SetAction(attempt, filename);
         }
+
+
+        public virtual string GetFileName(TItem item)
+        {
+            return item.Key.ToString();
+        }
+
         #endregion
 
         #region Event Handling
@@ -245,7 +281,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
 
             foreach(var item in e.DeletedEntities)
             {
-                DeployIOHelper.DeleteNode(item.Key, 
+                DeployIOHelper.DeleteNode(item.Key,
                     string.Format("{0}/{1}", uSyncBackOfficeContext.Instance.Configuration.Settings.Folder, SyncFolder));
             }
         }

@@ -17,8 +17,6 @@
         private static uSyncBackOfficeContext _instance;
         private SortedList<int, ISyncHandler> handlers;
 
-        // private SortedList<int, ISyncPostImportHandler> postImportHandlers;
-
         public Helpers.ActionTracker Tracker; 
 
         public List<ISyncHandler> Handlers
@@ -54,26 +52,6 @@
 
             LoadAssemblyHandlers();
 
-            //
-            // Handlers can Impliment a post import handler, this is good for do things after everything has ran
-            // at least once (example DataTypes need to run before and after DocTypes)
-            //
-            /*
-            var postImportTypes = TypeFinder.FindClassesOfType<ISyncPostImportHandler>();
-            LogHelper.Info<uSyncBackOfficeContext>("Loading up Post Import Handlers : {0}", () => postImportTypes.Count());
-
-            foreach (var t in postImportTypes)
-            {
-                var typeInstance = Activator.CreateInstance(t) as ISyncPostImportHandler;
-                if (typeInstance != null)
-                {
-                    LogHelper.Debug<uSyncBackOfficeContext>("Adding Instance: {0}", () => typeInstance.Name);
-                    postImportHandlers.Add(typeInstance.Priority, typeInstance);
-                }
-            }
-            */
-
-
             _config = new uSyncBackOfficeConfig();
 
             Tracker = new Helpers.ActionTracker(_config.Settings.MappedFolder());
@@ -93,7 +71,6 @@
             if (hGroup != null)
                 includeIfMissing = hGroup.EnableMissing;
 
-
             var types = TypeFinder.FindClassesOfType<ISyncHandler>();
             LogHelper.Info<uSyncBackOfficeContext>("Loading up Sync Handlers : {0}", () => types.Count());
             foreach (var t in types)
@@ -101,10 +78,16 @@
                 var typeInstance = Activator.CreateInstance(t) as ISyncHandler;
                 if (typeInstance != null)
                 {
-                    if (includeIfMissing || HandlerInGroup(typeInstance.Name, handlerGroup))
+                    bool inGroup = HandlerInGroup(typeInstance.Name, handlerGroup);
+                    // iPickySyncHandlers only get added if they are in the group. 
+                    if (includeIfMissing || inGroup)
                     {
-                        LogHelper.Debug<uSyncBackOfficeContext>("Adding Instance: {0} [{1}]", () => typeInstance.Name, () => typeInstance.Priority);
-                        handlers.Add(typeInstance.Priority, typeInstance);
+
+                        if (inGroup || !(typeInstance is IPickySyncHandler))
+                        {
+                            LogHelper.Debug<uSyncBackOfficeContext>("Adding Instance: {0} [{1}]", () => typeInstance.Name, () => typeInstance.Priority);
+                            handlers.Add(typeInstance.Priority, typeInstance);
+                        }
 
                         if (typeInstance is ISyncHandlerConfig)
                         {

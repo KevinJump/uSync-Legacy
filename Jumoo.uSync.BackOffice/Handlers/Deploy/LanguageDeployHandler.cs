@@ -10,7 +10,7 @@ using Umbraco.Core;
 
 namespace Jumoo.uSync.BackOffice.Handlers.Deploy
 {
-    public class LanguageDeployHandler : BaseDepoyHandler<ILocalizationService, ILanguage>, ISyncHandler
+    public class LanguageDeployHandler : BaseDepoyHandler<ILocalizationService, ILanguage>, ISyncHandler, IPickySyncHandler
     {
         ILocalizationService _localizationService;
 
@@ -40,6 +40,24 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         public override IEnumerable<ILanguage> GetAllExportItems()
         {
             return _localizationService.GetAllLanguages();
+        }
+
+        public override string GetFileName(ILanguage item)
+        {
+            return item.IsoCode;
+        }
+
+        public override ChangeType DeleteItem(uSyncDeployNode node, bool force)
+        {
+            // not ideal, but - there are often not many languages? 
+            var langs = _localizationService.GetAllLanguages();
+            var item = langs.FirstOrDefault(x => x.Key == node.Key);
+            if (item != null)
+            {
+                _localizationService.Delete(item);
+                return ChangeType.Delete;
+            }
+            return ChangeType.NoChange;
         }
 
         public void RegisterEvents()

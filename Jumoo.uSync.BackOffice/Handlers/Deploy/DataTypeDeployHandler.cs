@@ -10,7 +10,7 @@ using Umbraco.Core.Services;
 
 namespace Jumoo.uSync.BackOffice.Handlers.Deploy
 {
-    public class DataTypeDeployHandler : BaseDepoyHandler<IDataTypeService, IDataTypeDefinition>, ISyncHandler, ISyncPostImportHandler
+    public class DataTypeDeployHandler : BaseDepoyHandler<IDataTypeService, IDataTypeDefinition>, ISyncHandler, ISyncPostImportHandler, IPickySyncHandler
     {
         IDataTypeService _dataTypeService;
 
@@ -42,6 +42,17 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         public override IEnumerable<IDataTypeDefinition> GetAllExportItems()
         {
             return _dataTypeService.GetAllDataTypeDefinitions();
+        }
+
+        public override ChangeType DeleteItem(uSyncDeployNode node, bool force)
+        {
+            var item = _dataTypeService.GetDataTypeDefinitionById(node.Key);
+            if (item != null)
+            {
+                _dataTypeService.Delete(item);
+                return ChangeType.Delete;
+            }
+            return ChangeType.NoChange;
         }
 
         public void RegisterEvents()
