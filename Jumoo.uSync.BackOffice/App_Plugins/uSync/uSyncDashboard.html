@@ -55,17 +55,15 @@
                             <p>
                                 <button class="btn btn-mini btn-warning" ng-click="import(true)" ng-disabled="reporting">Full Import</button>
                                 <small class="muted">Import everything (even if it's the same)</small>
-                            </p>
-                            <hr />
+                            </p>                            
                             <p>
                                 <button class="btn btn-mini btn-inverse" ng-click="export()" ng-disabled="reporting">Full Export</button>
                                 <small class="muted">Export everything to disk (wipes current folder)
                                 <br/>
-                                    <label><input type="checkbox" ng-model="deleteActionFile" /> also delete the action file (<a href="http://usync.readthedocs.io/action-file/" target="_blank">should I?</a>))</label>
+                                    <label style="padding-left: 5em;"><input type="checkbox" ng-model="deleteActionFile" /> also delete the action file (<a href="http://usync.readthedocs.io/action-file/" target="_blank">should I?</a>))</label>
                                 </small>
 
                             </p>
-                            <hr />
                             <p>
                                 <button class="btn btn-mini btn-default" ng-click="loadActions()">view uSync Actions</button>
                                 <small class="muted">uSync Actions track things like deletes</small>
@@ -274,37 +272,44 @@
                                 <input type="radio" ng-model="uSyncMode" value="other" enabled="false" />
                                 Other <small>Some other weird setup - see your usyncBackOffice.config</small>
                             </label>
+                            <hr />
+                            <div class="text-center">
+                                <button class="btn btn-default" ng-click="updateSettings()">Save Settings</button>
+                            </div>
                         </div>
                     </div>
                     <div class="span6">
-                        <h4>Handlers</h4>
+                        <h4>Handlers [Group: {{settings.settings.HandlerGroup}}]</h4>
                         <p>
                             Installed handlers, that actually do all the work of getting things to and from disk. You
                             can turn handlers on and off in the uSyncBackoffice.config file.
                         </p>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Enabled</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="handler in settings.settings.Handlers[0].Handlers" ng-class="{'muted' : !handler.Enabled}">
-                                    <td>{{handler.Name}}</td>
-                                    <td>{{handler.Enabled}}</td>
-                                    <td>{{handler.Actions}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="span6">
-                        <div class="text-center">
-                            <button class="btn btn-default" ng-click="updateSettings()">Save Settings</button>
+                        <div id="handlerAccordion">
+                            <div ng-repeat="handlerGroup in settings.settings.Handlers">
+                                <div>
+                                    <a class="accordion-toggle" ng-click="toggleGroup({{$index}})">Handler Group: [{{handlerGroup.Group}}]</a>
+                                </div>
+                                <div ng-show="showToggle($index)" id="handlerGroup-{{$index}}">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Enabled</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="handler in handlerGroup.Handlers" ng-class="{'muted' : !handler.Enabled}">
+                                                <td>{{handler.Name}}</td>
+                                                <td>{{handler.Enabled}}</td>
+                                                <td>{{handler.Actions}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
                 </div>
             </div>
 

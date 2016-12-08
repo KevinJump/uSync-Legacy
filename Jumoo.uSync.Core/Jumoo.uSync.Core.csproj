@@ -280,6 +280,7 @@
     <Compile Include="Extensions\XElementTrackerExtension.cs" />
     <Compile Include="Extensions\XElementuSyncTypeExtension.cs" />
     <Compile Include="Extensions\XElementValueExtensions.cs" />
+    <Compile Include="Helpers\DeployIOHelper.cs" />
     <Compile Include="Helpers\uSyncChangeTracker.cs" />
     <Compile Include="Helpers\uSyncContainerHelper.cs" />
     <Compile Include="Helpers\uSyncMediaFileMover.cs" />

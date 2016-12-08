@@ -108,7 +108,8 @@ namespace Jumoo.uSync.BackOffice.Controllers
                 addOns = addOnString,
                 settings = uSyncBackOfficeContext.Instance.Configuration.Settings,
                 licenced = l.IsLicenced(),
-                addOnTabs = addOnTabs
+                addOnTabs = addOnTabs,
+                Handlers = uSyncBackOfficeContext.Instance.Handlers.Select(x => x.Name)
             };
 
             return settings;
@@ -188,6 +189,8 @@ namespace Jumoo.uSync.BackOffice.Controllers
         public string coreVersion { get; set; }
         public string addOns { get; set; }
         public uSyncBackOfficeSettings settings { get; set; }
+
+        public IEnumerable<string> Handlers { get; set; }
 
         public bool licenced { get; set; }
         public IEnumerable<BackOfficeTab> addOnTabs { get; set; }
