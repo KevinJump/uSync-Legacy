@@ -286,6 +286,18 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
             }
         }
 
+        internal void Service_Moved(TService sender, MoveEventArgs<TItem> e )
+        {
+            if (uSyncEvents.Paused)
+                return;
+
+            foreach (var item in e.MoveInfoCollection)
+            {
+                var action = ExportToDisk(item.Entity,
+                    string.Format("{0}/{1}", uSyncBackOfficeContext.Instance.Configuration.Settings.Folder, SyncFolder));
+            }
+        }
+
         #endregion
 
         virtual internal Guid GetKey(XElement node)

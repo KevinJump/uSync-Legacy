@@ -59,6 +59,12 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         {
             DataTypeService.Deleted += base.Service_Deleted;
             DataTypeService.Saved += base.Service_Saved;
+            DataTypeService.Moved += base.Service_Moved;
+        }
+
+        private void DataTypeService_Moved(IDataTypeService sender, Umbraco.Core.Events.MoveEventArgs<IDataTypeDefinition> e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

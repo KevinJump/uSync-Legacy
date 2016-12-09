@@ -21,12 +21,15 @@ namespace Jumoo.uSync.BackOffice.Helpers
             node.Save(fullpath);
         }
 
-        public static void DeleteNode(Guid key, string folder)
+        public static void DeleteNode(Guid key, string folder, string name = "deleted")
         {
             var mappedFolder = Umbraco.Core.IO.IOHelper.MapPath(folder);
             var fullpath = Path.Combine(mappedFolder, string.Format("{0}.config", key.ToString()));
 
-            XElement a = new XElement("uSyncArchive", new XAttribute("Key", key.ToString()));
+            XElement a = new XElement("uSyncArchive",
+                new XAttribute("Key", key.ToString()),
+                new XAttribute("Name", name));
+
             a.Save(fullpath);
         }   
     }
