@@ -288,6 +288,7 @@
     <Compile Include="Handlers\Deploy\LanguageDeployHandler.cs" />
     <Compile Include="Handlers\Deploy\MacroDeployHandler.cs" />
     <Compile Include="Handlers\Deploy\MediaTypeDeployHanlder.cs" />
+    <Compile Include="Handlers\Deploy\MemberTypeDeployHandler.cs" />
     <Compile Include="Handlers\Deploy\TemplateDeployHanlder.cs" />
     <Compile Include="Handlers\Deploy\uSyncDeployNode.cs" />
     <Compile Include="Handlers\DictionaryHandler.cs" />

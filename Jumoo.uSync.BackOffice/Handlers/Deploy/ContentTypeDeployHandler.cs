@@ -63,6 +63,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         {
             ContentTypeService.SavedContentType += base.Service_Saved;
             ContentTypeService.DeletedContentType += base.Service_Deleted;
+            ContentTypeService.MovedContentType += base.Service_Moved;
         }
     }
 }
