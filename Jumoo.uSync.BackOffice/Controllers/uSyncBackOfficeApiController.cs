@@ -28,7 +28,7 @@ namespace Jumoo.uSync.BackOffice.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<uSyncAction> Export(bool deleteAction)
+        public IEnumerable<uSyncAction> Export(bool deleteAction = false)
         {
             var folder = uSyncBackOfficeContext.Instance.Configuration.Settings.MappedFolder();
 
