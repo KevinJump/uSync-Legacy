@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Umbraco.Core;
+using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
 
@@ -57,6 +58,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
         public void RegisterEvents()
         {
             LocalizationService.DeletedDictionaryItem += LocalizationService_DeletedDictionaryItem;
+            LocalizationService.DeletingDictionaryItem += LocalizationService_DeletingDictionaryItem;
             LocalizationService.SavedDictionaryItem += LocalizationService_SavedDictionaryItem;
         }
 
@@ -65,7 +67,7 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
             if (uSyncEvents.Paused)
                 return;
 
-            foreach(var item in e.SavedEntities)
+            foreach (var item in e.SavedEntities)
             {
                 var topItem = GetTop(item.Key);
 
@@ -75,15 +77,15 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
             }
         }
 
-        private void LocalizationService_DeletedDictionaryItem(ILocalizationService sender, Umbraco.Core.Events.DeleteEventArgs<IDictionaryItem> e)
+        List<Guid> deletedKeys = new List<Guid>();
+
+        private void LocalizationService_DeletingDictionaryItem(ILocalizationService sender, Umbraco.Core.Events.DeleteEventArgs<IDictionaryItem> e)
         {
             if (uSyncEvents.Paused)
                 return;
 
             if (e.DeletedEntities.Any())
             {
-                List<Guid> deletedKeys = new List<Guid>();
-
                 foreach (var item in e.DeletedEntities)
                 {
                     var topItem = GetTop(item.Key);
@@ -95,23 +97,45 @@ namespace Jumoo.uSync.BackOffice.Handlers.Deploy
                     }
                     else
                     {
-                        if (deletedKeys.Contains(topItem.Key))
+                        if (!deletedKeys.Contains(topItem.Key))
                         {
                             deletedKeys.Add(topItem.Key);
-                            ExportToDisk(topItem,
-                                string.Format("{0}/{1}", uSyncBackOfficeContext.Instance.Configuration.Settings.Folder, SyncFolder));
                         }
                     }
                 }
             }
         }
 
+
+        private void LocalizationService_DeletedDictionaryItem(ILocalizationService sender, Umbraco.Core.Events.DeleteEventArgs<IDictionaryItem> e)
+        {
+            foreach(var save in deletedKeys)
+            {
+                var item = _localizationService.GetDictionaryItemById(save);
+
+                if (item != null)
+                {
+                    ExportToDisk(item,
+                       string.Format("{0}/{1}", uSyncBackOfficeContext.Instance.Configuration.Settings.Folder, SyncFolder));
+                }
+
+            }
+
+            deletedKeys.Clear();
+        }
+
         private IDictionaryItem GetTop(Guid? id)
         {
+            LogHelper.Debug<DictionaryDepoyHandler>("Get Top: {0}", () => id.Value);
+
             var item = _localizationService.GetDictionaryItemById(id.Value);
             if (item == null)
+            {
+                LogHelper.Warn<DictionaryDepoyHandler>("Failed to Get Item: {0}", () => id.Value);
                 return null;
+            }
 
+            LogHelper.Debug<DictionaryDepoyHandler>("Get Top: {0}", () => item.ItemKey);
             if (item.ParentId.HasValue && item.ParentId.Value != Guid.Empty)
                 return GetTop(item.ParentId);
 
