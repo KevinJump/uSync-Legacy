@@ -284,29 +284,15 @@
                             Installed handlers, that actually do all the work of getting things to and from disk. You
                             can turn handlers on and off in the uSyncBackoffice.config file.
                         </p>
+                        <strong>Loaded Handlers.</strong>
+                        <p>
+                            There may be more handlers in the config, but these are the ones uSync has loaded. 
+                        </p>
                         <div id="handlerAccordion">
-                            <div ng-repeat="handlerGroup in settings.settings.Handlers">
-                                <div>
-                                    <a class="accordion-toggle" ng-click="toggleGroup({{$index}})">Handler Group: [{{handlerGroup.Group}}]</a>
-                                </div>
-                                <div ng-show="showToggle($index)" id="handlerGroup-{{$index}}">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>Enabled</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr ng-repeat="handler in handlerGroup.Handlers" ng-class="{'muted' : !handler.Enabled}">
-                                                <td>{{handler.Name}}</td>
-                                                <td>{{handler.Enabled}}</td>
-                                                <td>{{handler.Actions}}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                            <div ng-repeat="handler in settings.Handlers">
+                                <ul>
+                                    <li>{{handler}}</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
