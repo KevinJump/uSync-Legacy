@@ -149,6 +149,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
         {
             ContentTypeService.SavedContentType += ContentTypeService_SavedContentType;
             ContentTypeService.DeletedContentType += ContentTypeService_DeletedContentType;
+            ContentTypeService.MovedContentType += ContentTypeService_MovedContentType;
         }
 
         private void ContentTypeService_DeletedContentType(IContentTypeService sender, Umbraco.Core.Events.DeleteEventArgs<IContentType> e)
@@ -172,22 +173,29 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
             foreach (var item in e.SavedEntities)
             {
-                LogHelper.Info<ContentTypeHandler>("Save: Saving uSync files for Item: {0}", () => item.Name);
-                var action = ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+                SaveContentItem(item);
+            }
+        }
 
-                if (action.Success)
-                {
-                    NameChecker.ManageOrphanFiles(Constants.Packaging.DocumentTypeNodeName, item.Key, action.FileName);
-                    e.Messages.Add(
-                        new EventMessage("uSync", "uSync save a copy to disk", EventMessageType.Info));
-                }
-                else
-                {
-                    e.Messages.Add(
-                        new EventMessage("uSync", "uSync Failed to save to disk", EventMessageType.Warning));
-                }
+        private void ContentTypeService_MovedContentType(IContentTypeService sender, MoveEventArgs<IContentType> e)
+        {
+            if (uSyncEvents.Paused)
+                return;
 
+            foreach (var item in e.MoveInfoCollection)
+            {
+                SaveContentItem(item.Entity);
+            }
+        }
+    
 
+        private void SaveContentItem(IContentType item)
+        {
+            LogHelper.Info<ContentTypeHandler>("Save: Saving uSync files for Item: {0}", () => item.Name);
+            var action = ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+            if (action.Success)
+            {
+                NameChecker.ManageOrphanFiles(Constants.Packaging.DocumentTypeNodeName, item.Key, action.FileName);
             }
         }
 
