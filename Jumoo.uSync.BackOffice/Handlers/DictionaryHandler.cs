@@ -152,8 +152,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 if (action.Success)
                 {
                     // name checker only really works, when the export has the guid in it.
-                    // NameChecker.ManageOrphanFiles(Constants.Packaging.DictionaryItemNodeName, item.Key, action.FileName);
-                    uSyncBackOfficeContext.Instance.Tracker.RemoveActions(topItem.ItemKey, typeof(IDictionaryItem));
+                    NameChecker.ManageOrphanFiles(Constants.Packaging.DictionaryItemNodeName, item.Key, action.FileName);
+                    // uSyncBackOfficeContext.Instance.Tracker.RemoveActions(topItem.ItemKey, typeof(IDictionaryItem));
                 }
             }
         }

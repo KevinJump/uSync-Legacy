@@ -12,18 +12,17 @@ namespace Jumoo.uSync.Core.Extensions
 {
     public static class XElementTrackerExtension
     {
-        public static string GetSyncHash(this XElement node)
+        internal static XElement GetLocalizeduSyncElement(this XElement node)
         {
             if (node == null)
-                return string.Empty;
-
+                return null;
             XElement copy = new XElement(node);
 
             // strip ids and stuff.
             var preVals = copy.Element("PreValues");
             if (preVals != null && preVals.HasElements)
             {
-                foreach(var preVal in preVals.Elements("PreValue"))
+                foreach (var preVal in preVals.Elements("PreValue"))
                 {
                     preVal.SetAttributeValue("Id", "");
                 }
@@ -45,7 +44,7 @@ namespace Jumoo.uSync.Core.Extensions
             {
                 foreach (var defId in copy.Element("GenericProperties").Descendants("Definition"))
                 {
-                    defId.Value = ""; 
+                    defId.Value = "";
                 }
             }
 
@@ -56,7 +55,7 @@ namespace Jumoo.uSync.Core.Extensions
             var tabs = copy.Element("Tab");
             if (tabs != null && tabs.HasElements)
             {
-                foreach(var tab in tabs.Elements("Tab"))
+                foreach (var tab in tabs.Elements("Tab"))
                 {
                     if (tab.Element("Id") != null)
                         tab.Element("Id").Remove();
@@ -64,20 +63,34 @@ namespace Jumoo.uSync.Core.Extensions
             }
 
             if (copy.Name.LocalName == "Language" && copy.Attribute("Id") != null)
-            { 
+            {
                 copy.Attribute("Id").Remove();
             }
 
             if (copy.Name.LocalName == "DictionaryItem")
             {
-                foreach(var val in copy.Elements("Value"))
+                if (copy.Attribute("guid") != null)
+                    copy.Attribute("guid").Remove();
+
+                foreach (var val in copy.Elements("Value"))
                 {
                     if (val.Attribute("LanguageId") != null)
                         val.Attribute("LanguageId").Remove();
                 }
             }
 
-            return MakeHash(copy);
+            if (copy.Name.LocalName == "Macro" && copy.Attribute("Key") != null)
+                copy.Attribute("Key").Remove();
+
+            return copy; 
+        }
+
+        public static string GetSyncHash(this XElement node)
+        {
+            if (node == null)
+                return string.Empty;
+
+            return MakeHash(node.GetLocalizeduSyncElement());
         }
 
         private static string MakeHash(XElement node)

@@ -162,6 +162,13 @@ namespace Jumoo.uSync.Core.Serializers
             xml.Add(new XElement("refreshRate", macro.CacheDuration.ToString()));
             xml.Add(new XElement("cacheByMember", macro.CacheByMember.ToString()));
             xml.Add(new XElement("cacheByPage", macro.CacheByPage.ToString()));
+
+            Guid guidKey;
+            if (Guid.TryParse(string.Format("00000000-0000-0000-0000-{0:D12}", macro.Id), out guidKey))
+            {
+                xml.Add(new XAttribute("Key", guidKey));
+            }
+
             // xml.Add(new XElement("Key", macro.Key.ToString()));
 
             var properties = new XElement("properties");

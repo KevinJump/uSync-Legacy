@@ -118,9 +118,13 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 if (action.Success)
                 {
                     // Name checker currently only works on guidkeys. 
-                    // but it's not needed, when we use Ids to track anyway :) 
-                    // NameChecker.ManageOrphanFiles(SyncFolder, item.Key, action.FileName);
-                    uSyncBackOfficeContext.Instance.Tracker.RemoveActions(item.Alias, typeof(IMacro));
+                    // The key changes on macros, so we fake it with the id. 
+                    // this isn't imported or exported, but we use it check for orphans, when renames happen
+                    // it will work as long as the before and after both came from the same instance. 
+                    // 
+                    // when keys are less volitile in macros we will revert. 
+                    NameChecker.ManageOrphanFiles(SyncFolder, item.Id, action.FileName);
+                    // uSyncBackOfficeContext.Instance.Tracker.RemoveActions(item.Alias, typeof(IMacro));
                 }
             }
         }

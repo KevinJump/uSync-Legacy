@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Umbraco.Site", "Umbraco.Site\Umbraco.Site.csproj", "{CDC6D1E7-3387-4F93-A7D2-B666ED655CDE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.BackOffice", "Jumoo.uSync.BackOffice\Jumoo.uSync.BackOffice.csproj", "{D6314004-6249-4535-A305-B65946205418}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.Core", "Jumoo.uSync.Core\Jumoo.uSync.Core.csproj", "{B356FE24-54B5-462F-B6FE-EE99A38695D7}"
@@ -76,10 +74,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CDC6D1E7-3387-4F93-A7D2-B666ED655CDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CDC6D1E7-3387-4F93-A7D2-B666ED655CDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CDC6D1E7-3387-4F93-A7D2-B666ED655CDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CDC6D1E7-3387-4F93-A7D2-B666ED655CDE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D6314004-6249-4535-A305-B65946205418}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D6314004-6249-4535-A305-B65946205418}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6314004-6249-4535-A305-B65946205418}.Release|Any CPU.ActiveCfg = Release|Any CPU

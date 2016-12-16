@@ -135,11 +135,13 @@ namespace Jumoo.uSync.Core.Serializers
                 ChangeType.Export);
         }
 
-        private XElement GetDictionaryElement(IDictionaryItem item)
+        private XElement GetDictionaryElement(IDictionaryItem item, bool top = true)
         {
             var node = new XElement(Constants.Packaging.DictionaryItemNodeName,
                 new XAttribute("Key", item.ItemKey));
-                // new XAttribute("Guid", item.Key));
+
+            if (top)
+                node.Add(new XAttribute("guid", item.Key));
 
             foreach (var translation in item.Translations.OrderBy(x => x.Language.IsoCode))
             {
@@ -155,7 +157,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             foreach (var child in children.OrderBy(x => x.ItemKey))
             {
-                node.Add(GetDictionaryElement(child));
+                node.Add(GetDictionaryElement(child, false));
             }
 
             return node; 
