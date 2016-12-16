@@ -139,8 +139,10 @@ namespace Jumoo.uSync.BackOffice.Handlers
         public void RegisterEvents()
         {
             ContentTypeService.SavedMediaType += ContentTypeService_SavedMediaType;
+            ContentTypeService.MovedMediaType += ContentTypeService_MovedMediaType;
             ContentTypeService.DeletedMediaType += ContentTypeService_DeletedMediaType;
         }
+
 
         private void ContentTypeService_DeletedMediaType(IContentTypeService sender, Umbraco.Core.Events.DeleteEventArgs<IMediaType> e)
         {
@@ -163,13 +165,30 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
             foreach (var item in e.SavedEntities)
             {
-                LogHelper.Info<MediaTypeHandler>("Save: Saving uSync file for item: {0}", () => item.Name);
-                var action = ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
-                if (action.Success)
-                {
-                    NameChecker.ManageOrphanFiles(SyncFolder, item.Key, action.FileName);
-                }
+                SaveMediaType(item);
             }
+        }
+
+        private void ContentTypeService_MovedMediaType(IContentTypeService sender, Umbraco.Core.Events.MoveEventArgs<IMediaType> e)
+        {
+            if (uSyncEvents.Paused)
+                return;
+
+            foreach(var item in e.MoveInfoCollection)
+            {
+                SaveMediaType(item.Entity);
+            }
+        }
+
+        private void SaveMediaType(IMediaType item)
+        {
+            LogHelper.Info<MediaTypeHandler>("Save: Saving uSync file for item: {0}", () => item.Name);
+            var action = ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+            if (action.Success)
+            {
+                NameChecker.ManageOrphanFiles(SyncFolder, item.Key, action.FileName);
+            }
+
         }
 
         public override uSyncAction ReportItem(string file)
