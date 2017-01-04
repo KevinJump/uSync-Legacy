@@ -230,6 +230,7 @@ namespace Jumoo.uSync.Core.Serializers
             var comps = info.Element("Compositions");
             if (comps != null && comps.HasElements)
             {
+                List<IContentTypeComposition> compositions = new List<IContentTypeComposition>();
                 foreach (var composition in comps.Elements("Composition"))
                 {
                     var compAlias = composition.Value;
@@ -242,10 +243,13 @@ namespace Jumoo.uSync.Core.Serializers
                     if (type == null)
                         type = _contentTypeService.GetContentType(compAlias);
                     if (type != null)
-                        item.AddContentType(type);
+                        // item.AddContentType(type);
+                        compositions.Add(type);
                     else
                         LogHelper.Warn<ContentTypeSerializer>("Unable to find type for composition: " + compAlias);
                 }
+
+                item.ContentTypeComposition = compositions;
             }
         }
 
