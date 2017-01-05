@@ -7,7 +7,7 @@ but **uSync.ContentEdition** expands that to also include Content and Media
 PM>Install-Package uSync.ContentEdition
 ``` 
 
-At its hart uSync.ContentEdition is really just two new uSync Handlers, that get added to the 
+At its heart uSync.ContentEdition is really just two new uSync Handlers, that get added to the 
 core uSync.BackOffice tool. Once installed these two Handlers all called just like all the 
 other handlers but they manage content and media items. 
 
