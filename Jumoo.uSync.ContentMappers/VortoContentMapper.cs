@@ -53,14 +53,10 @@ namespace Jumoo.uSync.ContentMappers
                     LogHelper.Debug<VortoContentMapper>("Vorto: {0}", () => value);
                     // map some vorto values here.... 
                     var vorto = JsonConvert.DeserializeObject<uSyncVortoValue>(value);
+                    var newValue = new uSyncVortoValue { DtdGuid = vorto.DtdGuid, Values = new Dictionary<string, object>() };
 
-
-                    if (vorto.Values.Any())
+                    if (vorto.Values != null && vorto.Values.Any())
                     {
-                        var newValue = new uSyncVortoValue();
-                        newValue.DtdGuid = vorto.DtdGuid;
-                        newValue.Values = new Dictionary<string, object>();
-
                         foreach (var v in vorto.Values)
                         {
                             var mapped = "";
