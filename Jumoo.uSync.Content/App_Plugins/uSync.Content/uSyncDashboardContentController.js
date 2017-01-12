@@ -8,7 +8,7 @@
                 .then(function (response) {
                     $scope.mappers = response.data;
                 });
-            };
+            }
 
             $scope.mappingTypes = [
                 "Content", "DataType", 'DataTypeKey', 'Custom'

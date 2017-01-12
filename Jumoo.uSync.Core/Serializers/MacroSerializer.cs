@@ -116,13 +116,16 @@ namespace Jumoo.uSync.Core.Serializers
                 }
             }
 
-            foreach(var property in item.Properties)
+            if (properties != null)
             {
-                var nodeProp = properties.Elements("property").FirstOrDefault(x => x.Attribute("alias").Value == property.Alias);
+                foreach (var property in item.Properties)
+                {
+                    var nodeProp = properties.Elements("property").FirstOrDefault(x => x.Attribute("alias").Value == property.Alias);
 
-                if (nodeProp == null)
-                { 
-                    propertiesToRemove.Add(property.Alias);
+                    if (nodeProp == null)
+                    {
+                        propertiesToRemove.Add(property.Alias);
+                    }
                 }
             }
 

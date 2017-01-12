@@ -43,7 +43,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             // we can't use the package manager for this :(
             // we have to do it by hand.
-            if (node == null | node.Element("Info") == null || node.Element("Info").Element("Alias") == null)
+            if (node == null || node.Element("Info") == null || node.Element("Info").Element("Alias") == null)
                 throw new ArgumentException("Invalid xml");
 
             var info = node.Element("Info");
@@ -283,7 +283,7 @@ namespace Jumoo.uSync.Core.Serializers
             {
                 var alias = template.Value;
                 var iTemplate = _fileService.GetTemplate(alias);
-                if (template != null)
+                if (iTemplate != null)
                 {
                     templates.Add(iTemplate);
                 }
@@ -402,7 +402,7 @@ namespace Jumoo.uSync.Core.Serializers
                 return true;
 
             var keyGuid = keyNode.ValueOrDefault(Guid.Empty);
-            if (keyGuid == null)
+            if (keyGuid == Guid.Empty)
                 return true;
 
             var item = _contentTypeService.GetContentType(keyGuid);

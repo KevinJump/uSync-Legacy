@@ -89,9 +89,10 @@
 
         public override string GetItemPath(ITemplate item)
         {
-            string path = GetItemFileName(item, item.Alias);
+            string path = "";
             if (item != null)
             {
+                path = GetItemFileName(item, item.Alias);
                 if (!string.IsNullOrEmpty(item.MasterTemplateAlias))
                 {
                     var parent = ApplicationContext.Current.Services.FileService.GetTemplate(item.MasterTemplateAlias);

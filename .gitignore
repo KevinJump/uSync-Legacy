@@ -244,5 +244,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-
+# code analysis
+.sonarqube
 

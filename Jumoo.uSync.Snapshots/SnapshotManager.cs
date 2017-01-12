@@ -165,7 +165,7 @@ namespace Jumoo.uSync.Snapshots
         {
             var snapshot = FindSnapshot(snapshotName);
 
-            if (snapshot != null & Directory.Exists(snapshot.Folder))
+            if (snapshot != null && Directory.Exists(snapshot.Folder))
             {
                 var actions = _backOffice.ImportReport(snapshot.Folder);
                 return actions;
@@ -274,11 +274,8 @@ namespace Jumoo.uSync.Snapshots
         private void MarkApplySnapshot(string folder, bool force = false)
         {
             var snap = new SnapshotInfo(folder);
-            if (snap != null)
-            {
-                SnapshotLogger logger = new SnapshotLogger();
-                logger.ApplySnapshot(snap, force);
-            }
+            SnapshotLogger logger = new SnapshotLogger();
+            logger.ApplySnapshot(snap, force);
         }
 
     }

@@ -51,10 +51,6 @@ namespace Jumoo.uSync.Core.Serializers
             if (item == null)
                 item = new Language(culture.Value);            
 
-            // all that failed
-            if (item == null)
-                return SyncAttempt<ILanguage>.Fail(node.NameFromNode(), ChangeType.Import, "Unable to import language");
-
             // it worked update stuff..
             item.IsoCode = culture.Value;
             item.CultureName = fName.Value; 

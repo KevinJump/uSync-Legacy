@@ -23,7 +23,7 @@ namespace Jumoo.uSync.Core.Serializers
 
         internal override SyncAttempt<IMemberType> DeserializeCore(XElement node)
         {
-            if (node == null | node.Element("Info") == null || node.Element("Info").Element("Alias") == null)
+            if (node == null || node.Element("Info") == null || node.Element("Info").Element("Alias") == null)
                 throw new ArgumentException("Invalid xml");
 
             var info = node.Element("Info");

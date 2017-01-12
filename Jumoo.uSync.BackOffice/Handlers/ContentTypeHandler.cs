@@ -25,8 +25,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
         public string Name { get { return "uSync: ContentTypeHandler"; } }
         public string SyncFolder { get { return Constants.Packaging.DocumentTypeNodeName; } }
 
-        private IContentTypeService _contentTypeService ;
-        private IEntityService _entityService;
+        private readonly IContentTypeService _contentTypeService ;
+        private readonly IEntityService _entityService;
 
         public ContentTypeHandler()
         {
@@ -55,7 +55,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             var node = XElement.Load(file);
 
             // special - content types need a two pass, because the structure isn't there first time
-            var serializer = uSyncCoreContext.Instance.ContentTypeSerializer.DesearlizeSecondPass(item, node);
+            uSyncCoreContext.Instance.ContentTypeSerializer.DesearlizeSecondPass(item, node);
         }
 
         public override uSyncAction DeleteItem(Guid key, string keyString)
@@ -64,11 +64,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
             if (key != Guid.Empty)
                 item = _contentTypeService.GetContentType(key);
-
-            /* Delete only by key
-            if (item == null || !string.IsNullOrEmpty(keyString))
-                item = _contentTypeService.GetContentType(keyString);
-            */
 
             if (item != null)
             {

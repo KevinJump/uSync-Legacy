@@ -31,7 +31,6 @@ namespace Jumoo.uSync.Snapshots
                             folder.LastIndexOf('\\') + 1,
                             folder.LastIndexOf('_') - folder.LastIndexOf('\\') - 1);
 
-            Name = Name; // + " [" + dateBit + "]";
 
             DateTime when;
             if (DateTime.TryParseExact(dateBit, "yyyyMMdd_HHmmss", CultureInfo.InvariantCulture,

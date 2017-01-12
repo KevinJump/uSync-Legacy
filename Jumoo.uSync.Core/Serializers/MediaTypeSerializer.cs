@@ -34,7 +34,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             // we can't use the package manager for this :(
             // we have to do it by hand.
-            if (node == null | node.Element("Info") == null || node.Element("Info").Element("Alias") == null)
+            if (node == null || node.Element("Info") == null || node.Element("Info").Element("Alias") == null)
                 throw new ArgumentException("Invalid xml");
 
             var info = node.Element("Info");

@@ -88,9 +88,6 @@ namespace Jumoo.uSync.Core.Serializers
                     item = new DictionaryItem(itemKey);
             }
 
-            if (item == null)
-                return null;
-
             /*
             if (guid != Guid.Empty)
                 item.Key = guid;

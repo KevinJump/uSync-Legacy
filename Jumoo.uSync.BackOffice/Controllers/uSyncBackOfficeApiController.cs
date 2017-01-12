@@ -120,7 +120,7 @@ namespace Jumoo.uSync.BackOffice.Controllers
         {
             var settings = uSyncBackOfficeContext.Instance.Configuration.Settings;
 
-            switch (mode.ToLower())
+            switch (mode.ToLowerInvariant())
             {
                 case "auto":
                     settings.ExportAtStartup = false;

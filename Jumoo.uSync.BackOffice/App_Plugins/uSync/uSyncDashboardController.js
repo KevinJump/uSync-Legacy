@@ -25,7 +25,7 @@
 
                 $scope.loadHistory();
             });
-        };
+        }
 
         $scope.loadHistory = function () {
             uSyncDashboardService.getHistory()
@@ -40,10 +40,7 @@
             uSyncDashboardService.getuSyncActions()
             .then(function (response) {
                 $scope.uSyncActions = response.data;
-                if ($scope.uSyncActions == 0) {
-                    console.log('no actions to load.')
-                }
-                else {
+                if ($scope.uSyncActions != 0) {
                     $scope.showActions = true;
                 }
             });

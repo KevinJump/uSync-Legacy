@@ -172,7 +172,10 @@ namespace Jumoo.uSync.Chauffeur
                 .FirstOrDefault();
 
             if (handler == null)
+            {
                 await Out.WriteLineAsync(string.Format("Cannot Find Handler: {0}", handlerName));
+                return;
+            }
 
             await Out.WriteLineAsync(string.Format("Loaded Handler {0}", handlerName));
 

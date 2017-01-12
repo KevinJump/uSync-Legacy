@@ -25,8 +25,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
         public int Priority { get { return uSyncConstants.Priority.DataTypes; } }
         public string SyncFolder { get { return Constants.Packaging.DataTypeNodeName; } }
 
-        IDataTypeService _dataTypeService;
-        IEntityService _entityService;
+        readonly IDataTypeService _dataTypeService;
+        readonly IEntityService _entityService;
 
         public DataTypeHandler()
         {
@@ -53,11 +53,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
             IDataTypeDefinition item = null;
             if (key != Guid.Empty)
                 item = _dataTypeService.GetDataTypeDefinitionById(key);
-
-            /* delete only by key 
-            if (item == null && !string.IsNullOrEmpty(keyString))
-                item = _dataTypeService.GetDataTypeDefinitionByName(keyString);
-            */
 
             if (item != null)
             {
@@ -228,7 +223,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
         public override uSyncAction ReportItem(string file)
         {
-            // LogHelper.Debug<DataTypeHandler>("Report: {0}", () => file);
             var node = XElement.Load(file);
 
             var update = uSyncCoreContext.Instance.DataTypeSerializer.IsUpdate(node);
@@ -241,28 +235,25 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
         public IEnumerable<uSyncAction> ProcessPostImport(string folder, IEnumerable<uSyncAction> actions)
         {
-            if (actions.Any())
+            if (actions == null || !actions.Any())
+                return null;
+            
+            // we get passed actions that need a second pass.
+            var datatypes = actions.Where(x => x.ItemType == typeof(IDataTypeDefinition));
+            if (datatypes == null || !datatypes.Any())
+                return null;
+
+            foreach (var action in datatypes)
             {
-                // we get passed actions that need a second pass.
-                var datatypes = actions.Where(x => x.ItemType == typeof(IDataTypeDefinition));
-
-                if (datatypes.Any())
+                LogHelper.Debug<DataTypeHandler>("Post Processing: {0} {1}", () => action.Name, () => action.FileName);
+                var attempt = Import(action.FileName);
+                if (attempt.Success)
                 {
-
-                    foreach (var action in datatypes)
-                    {
-                        LogHelper.Debug<DataTypeHandler>("Post Processing: {0} {1}", () => action.Name, () => action.FileName);
-                        var attempt = Import(action.FileName);
-                        if (attempt.Success)
-                        {
-                            ImportSecondPass(action.FileName, attempt.Item);
-                        }
-                    }
-
-                    return CleanEmptyContainers(folder, -1);
+                    ImportSecondPass(action.FileName, attempt.Item);
                 }
             }
-            return null;
+
+            return CleanEmptyContainers(folder, -1);
         }
 
         private IEnumerable<uSyncAction> CleanEmptyContainers(string folder, int parentId)
