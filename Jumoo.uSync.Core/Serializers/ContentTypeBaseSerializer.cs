@@ -552,8 +552,8 @@ namespace Jumoo.uSync.Core.Serializers
 
                 if (_itemType == "MemberType")
                 {
-                    var canEdit = ((IMemberType)item).MemberCanEditProperty(property.Name);
-                    var canView = ((IMemberType)item).MemberCanViewProperty(property.Name);
+                    var canEdit = ((IMemberType)item).MemberCanEditProperty(property.Alias);
+                    var canView = ((IMemberType)item).MemberCanViewProperty(property.Alias);
 
                     propNode.Add(new XElement("CanEdit", canEdit));
                     propNode.Add(new XElement("CanView", canView));
