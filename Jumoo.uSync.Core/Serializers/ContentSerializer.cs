@@ -47,13 +47,19 @@ namespace Jumoo.uSync.Core.Serializers
             var item = _contentService.GetById(guid);
             if (item == null)
             {
-                try
-                {
-                    item = _contentService.CreateContent(name, parentId, type);
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Warn<ContentSerializer>("Unable to create content: {0} - {1}", () => name, () => ex.ToString());
+                LogHelper.Debug<ContentSerializer>("Looking for node by name and type [{0}] {1} {2}", ()=> parentId, ()=> name, ()=> type);
+                // legacy match by name and content type. 
+                item = GetContentByNameAndAlias(_contentService.GetChildren(parentId), name, type);
+
+                if (item == null) {
+                    try
+                    {
+                        item = _contentService.CreateContent(name, parentId, type);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogHelper.Warn<ContentSerializer>("Unable to create content: {0} - {1}", () => name, () => ex.ToString());
+                    }
                 }
             }
             else if (item.Trashed)
@@ -97,10 +103,12 @@ namespace Jumoo.uSync.Core.Serializers
             return SyncAttempt<IContent>.Succeed(item.Name, item, ChangeType.Import);
         }
 
+
         /// <summary>
         ///  called from teh base when things change, we need to save or publish our content
         /// </summary>
         /// <param name="item"></param>
+        /// 
         public override void PublishOrSave(IContent item, bool published, bool raiseEvents = false )
         {
             if (published)
@@ -209,6 +217,24 @@ namespace Jumoo.uSync.Core.Serializers
             return (!nodeHash.Equals(itemHash));
         }
 
+        public override IContent GetItemOrDefault(XElement node, int parentId)
+        {
+            var key = node.Attribute("guid").ValueOrDefault(Guid.Empty);
+            if (key == Guid.Empty)
+                return null;
+
+            var item = _contentService.GetById(key);
+            if (item != null)
+                return item;
+
+            // legacy lookup 
+            var name = node.Attribute("nodeName").Value;
+            var type = node.Attribute("nodeTypeAlias").Value;
+            var nodes = _contentService.GetChildren(parentId);
+
+            return GetContentByNameAndAlias(nodes, name, type);
+        }
+
         public override SyncAttempt<IContent> DesearlizeSecondPass(IContent item, XElement node)
         {
             base.DeserializeMappedIds(item, node);
@@ -224,6 +250,14 @@ namespace Jumoo.uSync.Core.Serializers
 
             return SyncAttempt<IContent>.Succeed(item.Name, ChangeType.Import);
         }
-   
+
+        private IContent GetContentByNameAndAlias(IEnumerable<IContent> nodes, string name, string contentTypeAlias)
+        {
+            if (nodes == null)
+                return null;
+
+            // this isn't the quickest thing - but hopefully once the first sync is done, we don't get here that often.
+            return nodes.FirstOrDefault(x => x.Name == name && x.ContentType.Alias == contentTypeAlias);
+        }
     }
 }

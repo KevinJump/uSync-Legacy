@@ -9,6 +9,7 @@ using Jumoo.uSync.Core.Helpers;
 
 using Jumoo.uSync.Core.Interfaces;
 using Umbraco.Core.Logging;
+using System.Collections.Generic;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -35,7 +36,11 @@ namespace Jumoo.uSync.Core.Serializers
             var item = _mediaService.GetById(guid);
             if (item == null)
             {
-                item = _mediaService.CreateMedia(name, parentId, mediaTypeAlias);
+                // legacy.. 
+                item = GetContentByNameAndAlias(_mediaService.GetChildren(parentId), name, mediaTypeAlias);
+
+                if (item == null)
+                    item = _mediaService.CreateMedia(name, parentId, mediaTypeAlias);
             }
             else if (item.Trashed)
             {
@@ -164,5 +169,36 @@ namespace Jumoo.uSync.Core.Serializers
         {
             _mediaService.Save(item, raiseEvents: raiseEvents);
         }
+
+        public override IMedia GetItemOrDefault(XElement node, int parentId)
+        {
+            var key = node.Attribute("guid").ValueOrDefault(Guid.Empty);
+            if (key == Guid.Empty)
+                return null;
+
+            var item = _mediaService.GetById(key);
+            if (item != null)
+                return item;
+
+            return null;
+
+            // legacy lookup 
+            var name = node.Attribute("nodeName").Value;
+            var type = node.Attribute("nodeTypeAlias").Value;
+            var nodes = _mediaService.GetChildren(parentId);
+
+            return GetContentByNameAndAlias(nodes, name, type);
+        }
+
+        private IMedia GetContentByNameAndAlias(IEnumerable<IMedia> nodes, string name, string contentTypeAlias)
+        {
+            if (nodes == null)
+                return null;
+
+            // this isn't the quickest thing - but hopefully once the first sync is done, we don't get here that often.
+            return nodes.FirstOrDefault(x => x.Name == name && x.ContentType.Alias == contentTypeAlias);
+        }
+
+
     }
 }

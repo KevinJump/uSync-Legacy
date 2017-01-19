@@ -48,7 +48,7 @@ namespace Jumoo.uSync.Core.Serializers
             if (forceUpdate || IsUpdate(node))
                 return DeserializeCore(node, parentId, forceUpdate);
 
-            return SyncAttempt<T>.Succeed(node.NameFromNode(), default(T), ChangeType.NoChange);
+            return SyncAttempt<T>.Succeed(node.NameFromNode(), GetItemOrDefault(node, parentId), ChangeType.NoChange);
 
         }
 
@@ -98,7 +98,7 @@ namespace Jumoo.uSync.Core.Serializers
 
         virtual public void PublishOrSave(T item, bool published, bool raiseEvents) { }
 
-
+        abstract public T GetItemOrDefault(XElement node, int parentId); 
 
         internal string GetImportIds(PropertyType propType, string content)
         {
