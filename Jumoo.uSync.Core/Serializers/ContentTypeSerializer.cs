@@ -228,9 +228,9 @@ namespace Jumoo.uSync.Core.Serializers
         {
             var info = node.Element("Info");
             var comps = info.Element("Compositions");
+            List<IContentTypeComposition> compositions = new List<IContentTypeComposition>();
             if (comps != null && comps.HasElements)
             {
-                List<IContentTypeComposition> compositions = new List<IContentTypeComposition>();
                 foreach (var composition in comps.Elements("Composition"))
                 {
                     var compAlias = composition.Value;
@@ -248,9 +248,10 @@ namespace Jumoo.uSync.Core.Serializers
                     else
                         LogHelper.Warn<ContentTypeSerializer>("Unable to find type for composition: " + compAlias);
                 }
-
-                item.ContentTypeComposition = compositions;
             }
+            item.ContentTypeComposition = compositions;
+
+            LogHelper.Debug<ContentTypeSerializer>("Setting {0} compositions for element", () => item.ContentTypeComposition.Count());
         }
 
         private XElement SerializeTemplates(IContentType item)
