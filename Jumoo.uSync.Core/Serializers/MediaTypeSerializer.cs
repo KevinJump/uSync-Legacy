@@ -207,6 +207,7 @@ namespace Jumoo.uSync.Core.Serializers
         {
             var info = node.Element("Info");
             var comps = info.Element("Compositions");
+            List<IContentTypeComposition> compositions = new List<IContentTypeComposition>();
             if (comps != null && comps.HasElements)
             {
                 foreach (var composition in comps.Elements("Composition"))
@@ -221,11 +222,13 @@ namespace Jumoo.uSync.Core.Serializers
                     if (type == null)
                         type = _contentTypeService.GetMediaType(compAlias);
                     if (type != null)
-                        item.AddContentType(type);
-                    else 
-                        LogHelper.Warn<MediaTypeSerializer>("Unable to find type for composition: "+compAlias);
+                        compositions.Add(type);
+                    else
+                        LogHelper.Warn<MediaTypeSerializer>("Unable to find type for composition: " + compAlias);
                 }
             }
+            LogHelper.Debug<MediaTypeSerializer>("Setting {0} compositions for element", () => item.ContentTypeComposition.Count());
+            item.ContentTypeComposition = compositions;
         }
 
         public override SyncAttempt<IMediaType> DesearlizeSecondPass(IMediaType item, XElement node)

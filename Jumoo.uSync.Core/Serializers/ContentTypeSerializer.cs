@@ -249,9 +249,9 @@ namespace Jumoo.uSync.Core.Serializers
                         LogHelper.Warn<ContentTypeSerializer>("Unable to find type for composition: " + compAlias);
                 }
             }
+            LogHelper.Debug<ContentTypeSerializer>("Setting {0} compositions for element", () => item.ContentTypeComposition.Count());
             item.ContentTypeComposition = compositions;
 
-            LogHelper.Debug<ContentTypeSerializer>("Setting {0} compositions for element", () => item.ContentTypeComposition.Count());
         }
 
         private XElement SerializeTemplates(IContentType item)
