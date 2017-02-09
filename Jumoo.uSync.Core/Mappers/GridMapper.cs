@@ -96,7 +96,7 @@ namespace Jumoo.uSync.Core.Mappers
 
                                     if (mapping != null)
                                     {
-                                        LogHelper.Debug<GridMapper>("Mapping: {0}", () => mapping.EditorAlias);
+                                        LogHelper.Debug<GridMapper>("Mapping: {0} {1}", () => mapping.EditorAlias, ()=> mapping.Settings);
                                         var propertyName = mapping.Settings;
 
                                         if (propertyName != null)
@@ -104,21 +104,64 @@ namespace Jumoo.uSync.Core.Mappers
                                             var mapper = ContentMapperFactory.GetMapper(mapping);
                                             if (mapper != null)
                                             {
-                                                var propValue = control.Value<object>(propertyName);
+                                                LogHelper.Debug<GridMapper>("1a. Control Value : {0}", () => control.ToString());
+
+                                                var val = control.Value<object>("value");
+
+                                                LogHelper.Debug<GridMapper>("Value Type: {0}", () => val.GetType());
+                                                object propValue = control.Value<object>(propertyName);
+                                                bool isObjectMapping = false; 
+
+                                                if (val is JObject)
+                                                {
+                                                    LogHelper.Debug<GridMapper>("1b. Is Object");
+                                                    propValue = ((JObject)val).Value<object>(propertyName);
+                                                    isObjectMapping = true;
+                                                }
+
+                                                LogHelper.Debug<GridMapper>("1. Getting PropValue: {0}", () => propValue.ToString());
+
                                                 var mappedValue = "";
                                                 if (import)
+                                                {
+                                                    LogHelper.Debug<GridMapper>("2. Import");
                                                     mappedValue = mapper.GetImportValue(0, propValue.ToString());
+                                                }
                                                 else
+                                                {
+                                                    LogHelper.Debug<GridMapper>("2. Export");
                                                     mappedValue = mapper.GetExportValue(0, propValue.ToString());
+                                                }
 
+                                                LogHelper.Debug<GridMapper>("Mapping back: (Object{0})", ()=> isObjectMapping);
                                                 if (!IsJson(mappedValue))
-                                                    control[propertyName] = mappedValue;
+                                                {
+                                                    if (isObjectMapping)
+                                                    {
+                                                        LogHelper.Debug<GridMapper>("Mapping Value Back to: {0} {1}"
+                                                            , () => control["value"][propertyName], ()=> mappedValue);
+                                                        control["value"][propertyName] = mappedValue;
+                                                    }
+                                                    else
+                                                    {
+                                                        control[propertyName] = mappedValue;
+                                                    }
+                                                }
                                                 else
                                                 {
                                                     var mappedJson = JToken.Parse(mappedValue);
                                                     if (mappedJson != null)
                                                     {
-                                                        control[propertyName] = mappedJson;
+                                                        if (isObjectMapping)
+                                                        {
+                                                            LogHelper.Debug<GridMapper>("Mapping Value Back to: {0} {1}"
+                                                                , () => control["value"][propertyName], () => mappedJson);
+                                                            control["value"][propertyName] = mappedJson;
+                                                        }
+                                                        else
+                                                        {
+                                                            control[propertyName] = mappedJson;
+                                                        }
                                                     }
                                                 }
 
@@ -127,6 +170,7 @@ namespace Jumoo.uSync.Core.Mappers
                                     }
                                 }
                             }
+                            LogHelper.Debug<GridMapper>("Control Value : {0}", () => control.ToString());
                         }
                     }
                 }
@@ -152,5 +196,15 @@ namespace Jumoo.uSync.Core.Mappers
             }
             return new JArray();
         }
+
+        private void JType(JObject obj, string propertyName)
+        {
+            JToken token;
+            if (obj.TryGetValue(propertyName, out token))
+            {
+                LogHelper.Debug<GridMapper>("Token type:", ()=> token.Type.ToString());
+            }
+        }
+
     }
 }

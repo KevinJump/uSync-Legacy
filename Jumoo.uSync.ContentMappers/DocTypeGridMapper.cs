@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 
 using Jumoo.uSync.Core;
 using Jumoo.uSync.Core.Mappers;
+using Umbraco.Core.Logging;
 
 namespace Jumoo.uSync.ContentMappers
 {
@@ -58,7 +59,7 @@ namespace Jumoo.uSync.ContentMappers
         /// </summary>
         private string ProcessDocTypeGridValues(string content, bool import)
         {
-
+            LogHelper.Debug<DocTypeGridMapper>("Processing DocType Grid: {0}", () => content);
             var jsonValue = JsonConvert.DeserializeObject<JObject>(content);
             if (jsonValue == null)
                 return content;

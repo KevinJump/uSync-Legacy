@@ -24,7 +24,9 @@ namespace Jumoo.uSync.Core.Mappers
         public string GetExportValue(int dataTypeDefinitionId, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
-                return value; 
+                return value;
+
+            LogHelper.Debug<ContentIdMapper>(">> Export Value: {0}", () => value);
 
             Dictionary<string, string> replacements = new Dictionary<string, string>();
 
@@ -46,6 +48,7 @@ namespace Jumoo.uSync.Core.Mappers
                 value = value.Replace(pair.Key, pair.Value);
             }
 
+            LogHelper.Debug<ContentIdMapper>("<< Export Value: {0}", () => value);
             return value;
 
         }
