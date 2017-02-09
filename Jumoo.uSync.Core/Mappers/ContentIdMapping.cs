@@ -21,7 +21,7 @@ namespace Jumoo.uSync.Core.Mappers
                 _exportRegex = @"\d{4,9}";
         }
 
-        public string GetExportValue(int dataTypeDefinitionId, string value)
+        public virtual string GetExportValue(int dataTypeDefinitionId, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
                 return value;
@@ -53,7 +53,7 @@ namespace Jumoo.uSync.Core.Mappers
 
         }
 
-        public string GetImportValue(int dataTypeDefinitionId, string content)
+        public virtual string GetImportValue(int dataTypeDefinitionId, string content)
         {
             Dictionary<string, string> replacements = new Dictionary<string, string>();
 

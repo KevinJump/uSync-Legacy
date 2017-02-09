@@ -10,6 +10,7 @@ using System.Web;
 using Umbraco.Core;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Configuration.Grid;
+using Umbraco.Core.IO;
 using Umbraco.Core.Logging;
 
 namespace Jumoo.uSync.Core.Mappers
@@ -91,8 +92,33 @@ namespace Jumoo.uSync.Core.Mappers
                 return control.ToString();
 
             var value = control.Value<object>("value");
+            LogHelper.Debug<EnahncedGridMapper>("#####\nBefore: Control Value: {0} {1}\n#####", () => value.GetType(), () => value);
 
+            var mappedValue = value.ToString();
+            if (import)
+            {
+                mappedValue = mapper.GetImportValue(0, value.ToString());
+            }
+            else
+            {
+                mappedValue = mapper.GetExportValue(0, value.ToString());
+            }
 
+            if (!IsJson(mappedValue))
+            {
+                control["value"] = mappedValue;
+            }
+            else
+            {
+                var mappedJson = JToken.Parse(mappedValue);
+                if (mappedJson != null)
+                {
+                    control["value"] = mappedJson;
+                }
+
+            }
+
+            LogHelper.Debug<EnahncedGridMapper>("#####\nAfter: Control Value: {0} {1}\n#####", () => value.GetType(), () => control.Value<object>("value").ToString());
             return control.ToString();
         }
 

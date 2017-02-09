@@ -301,6 +301,7 @@
     <Compile Include="Mappers\GridMapper.cs" />
     <Compile Include="Mappers\IContentMapper.cs" />
     <Compile Include="Mappers\ImageCropperMapper.cs" />
+    <Compile Include="Mappers\MediaIdMapper.cs" />
     <Compile Include="Serializers\ContentBaseSerializer.cs" />
     <Compile Include="Serializers\ContentSerializer.cs" />
     <Compile Include="Serializers\ContentTypeBaseSerializer.cs" />
