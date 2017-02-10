@@ -1,5 +1,6 @@
 ﻿using Jumoo.uSync.Core;
 using Jumoo.uSync.Core.Mappers;
+using Lecoati.LeBlender.Extension.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -9,13 +10,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Umbraco.Core;
+using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 
 namespace Jumoo.uSync.ContentMappers
 {
     public class LeBlenderContentMapper : IContentMapper
     {
-        IDataTypeService _dataTypeService;
+        readonly IDataTypeService _dataTypeService;
 
         public LeBlenderContentMapper()
         {
@@ -37,7 +39,53 @@ namespace Jumoo.uSync.ContentMappers
             if (!IsJson(value))
                 return value;
 
+            if (!IsJsonArray(value))
+                value = $"[{value}]";
 
+            var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(value);
+            if (items != null)
+            {
+                foreach(var item in items)
+                {
+                    foreach(var val in item.Values())
+                    {
+                        LogHelper.Debug<LeBlenderContentMapper>("Value: {0}", () => val.ToString());
+                        var dtdValue = val.Value<string>("dataTypeGuid");
+                        var propValue = val.Value<string>("value");
+                        Guid dtdGuid;
+                        if (Guid.TryParse(dtdValue, out dtdGuid))
+                        {
+                            var prop = _dataTypeService.GetDataTypeDefinitionById(dtdGuid);
+                            if (prop != null)
+                            {
+                                var mapper = ContentMapperFactory.GetMapper(prop.PropertyEditorAlias);
+                                if (mapper != null)
+                                {
+                                    string mappedValue = "";
+                                    if (import)
+                                        mappedValue = mapper.GetImportValue(prop.Id, propValue);
+                                    else
+                                        mappedValue = mapper.GetExportValue(prop.Id, propValue);
+
+                                    val["value"] = mappedValue;
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+                }
+
+                return JsonConvert.SerializeObject(items, Formatting.Indented);
+
+
+            }
+
+            return value;
+
+            /*
             var valueArray = JsonConvert.DeserializeObject<IEnumerable<Dictionary<string, uSyncLeBlenderGridModel>>>(value);
             foreach (var leblenderItems in valueArray)
             {
@@ -68,6 +116,9 @@ namespace Jumoo.uSync.ContentMappers
             }
 
             return JsonConvert.SerializeObject(valueArray, Formatting.Indented);
+            */
+            return value;
+
         }
 
         private bool IsJson(string val)
@@ -75,6 +126,11 @@ namespace Jumoo.uSync.ContentMappers
             val = val.Trim();
             return (val.StartsWith("{") && val.EndsWith("}"))
                 || (val.StartsWith("[") && val.EndsWith("]"));
+        }
+        private bool IsJsonArray(string val)
+        {
+            val = val.Trim();
+            return (val.StartsWith("[") && val.EndsWith("]"));
         }
 
         internal class uSyncLeBlenderGridModel
