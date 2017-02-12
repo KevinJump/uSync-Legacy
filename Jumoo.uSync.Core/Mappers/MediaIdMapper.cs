@@ -56,7 +56,7 @@ namespace Jumoo.uSync.Core.Mappers
             if (IsJson(content))
             {
                 var cropperVal = JToken.Parse(content);
-                return cropperVal.Value<int>("id").ToString();
+                return cropperVal.Value<string>("id").ToString();
             }
             else
             {
