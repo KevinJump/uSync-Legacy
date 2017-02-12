@@ -67,12 +67,16 @@ namespace Jumoo.uSync.Core.Mappers
                         foreach (var control in controls.Cast<JObject>())
                         {
                             var mappedVal = ProcessControl(control, import);
-                            if (IsJson(mappedVal))
+                            if (!string.IsNullOrEmpty(mappedVal))
                             {
-                                control["value"] = JToken.Parse(mappedVal);
-                            }
-                            else {
-                                control["value"] = mappedVal;
+                                if (IsJson(mappedVal))
+                                {
+                                    control["value"] = JToken.Parse(mappedVal);
+                                }
+                                else
+                                {
+                                    control["value"] = mappedVal;
+                                }
                             }
                         }
                     }
@@ -89,7 +93,7 @@ namespace Jumoo.uSync.Core.Mappers
             var mapper = GetEditorMapping(control.Value<JObject>("editor"));
 
             if (mapper == null)
-                return control.ToString();
+                return string.Empty;
 
             var value = control.Value<object>("value");
             LogHelper.Debug<GridMapper>("#####\nBefore: Control Value: {0} {1}\n#####", () => value.GetType(), () => value);
@@ -119,7 +123,7 @@ namespace Jumoo.uSync.Core.Mappers
             }
 
             LogHelper.Debug<GridMapper>("#####\nAfter: Control Value: {0} {1}\n#####", () => value.GetType(), () => control.Value<object>("value").ToString());
-            return control.ToString();
+            return mappedValue;
         }
 
         private IContentMapper GetEditorMapping(JObject editor)
