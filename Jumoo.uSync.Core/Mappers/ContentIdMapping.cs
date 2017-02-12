@@ -21,10 +21,12 @@ namespace Jumoo.uSync.Core.Mappers
                 _exportRegex = @"\d{4,9}";
         }
 
-        public string GetExportValue(int dataTypeDefinitionId, string value)
+        public virtual string GetExportValue(int dataTypeDefinitionId, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
-                return value; 
+                return value;
+
+            LogHelper.Debug<ContentIdMapper>(">> Export Value: {0}", () => value);
 
             Dictionary<string, string> replacements = new Dictionary<string, string>();
 
@@ -46,11 +48,12 @@ namespace Jumoo.uSync.Core.Mappers
                 value = value.Replace(pair.Key, pair.Value);
             }
 
+            LogHelper.Debug<ContentIdMapper>("<< Export Value: {0}", () => value);
             return value;
 
         }
 
-        public string GetImportValue(int dataTypeDefinitionId, string content)
+        public virtual string GetImportValue(int dataTypeDefinitionId, string content)
         {
             Dictionary<string, string> replacements = new Dictionary<string, string>();
 

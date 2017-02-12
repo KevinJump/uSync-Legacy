@@ -182,8 +182,10 @@ namespace Jumoo.uSync.Core
     public enum ContentMappingType
     {
         Content,
+        Media,
         DataType,
         DataTypeKeys,
         Custom
+
     }
 }

@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 
 using Jumoo.uSync.Core;
 using Jumoo.uSync.Core.Mappers;
+using Umbraco.Core.Logging;
 
 namespace Jumoo.uSync.ContentMappers
 {
@@ -58,7 +59,7 @@ namespace Jumoo.uSync.ContentMappers
         /// </summary>
         private string ProcessDocTypeGridValues(string content, bool import)
         {
-
+            LogHelper.Debug<DocTypeGridMapper>("Processing DocType Grid: {0}", () => content);
             var jsonValue = JsonConvert.DeserializeObject<JObject>(content);
             if (jsonValue == null)
                 return content;
@@ -84,6 +85,8 @@ namespace Jumoo.uSync.ContentMappers
                         var mapper = ContentMapperFactory.GetMapper(dataType.PropertyEditorAlias);
                         if (mapper != null)
                         {
+                            LogHelper.Debug<DocTypeGridMapper>("Mapping Alias: {0} {1}", () => propertyType.Alias, ()=> mapper.GetType().ToString());
+                            LogHelper.Debug<DocTypeGridMapper>("Mapping Value: {0}", () => docValue[propertyType.Alias].ToString());
                             string mappedValue = "";
                             if (import)
                                 mappedValue = mapper.GetImportValue(dataType.Id, docValue[propertyType.Alias].ToString());
@@ -94,7 +97,7 @@ namespace Jumoo.uSync.ContentMappers
                                 docValue[propertyType.Alias] = mappedValue;
                             else
                             {
-                                var mappedJson = JsonConvert.DeserializeObject<JObject>(mappedValue);
+                                var mappedJson = JToken.Parse(mappedValue);
                                 if (mappedJson != null)
                                 {
                                     docValue[propertyType.Alias] = mappedJson;

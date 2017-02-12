@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Umbraco.Core.Logging;
 
 namespace Jumoo.uSync.Core.Mappers
 {
@@ -13,12 +14,14 @@ namespace Jumoo.uSync.Core.Mappers
                 return null;
             }
 
+            LogHelper.Debug<ContentMapperFactory>("Custom Mapper: {0}", () => mapperType.ToString());
+
             return Activator.CreateInstance(mapperType) as IContentMapper;
         }
 
         public static IContentMapper GetMapper(uSyncContentMapping mapping)
         {
-            Umbraco.Core.Logging.LogHelper.Debug<ContentMapperFactory>("Mapping: {0}", () => mapping.EditorAlias);
+            LogHelper.Debug<ContentMapperFactory>("Mapping: {0} {1}", () => mapping.EditorAlias, ()=> mapping.MappingType);
             switch (mapping.MappingType)
             {
                 case ContentMappingType.Content:
@@ -27,6 +30,8 @@ namespace Jumoo.uSync.Core.Mappers
                     return new ContentDataTypeMapper();
                 case ContentMappingType.DataTypeKeys:
                     return new ContentDataTypeKeyMapper();
+                case ContentMappingType.Media:
+                    return new MediaIdMapper("");
                 case ContentMappingType.Custom:
                     return ContentMapperFactory.GetCustomMapper(mapping.CustomMappingType);
                 default:
