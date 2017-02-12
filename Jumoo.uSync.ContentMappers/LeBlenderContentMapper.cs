@@ -1,6 +1,5 @@
 ﻿using Jumoo.uSync.Core;
 using Jumoo.uSync.Core.Mappers;
-using Lecoati.LeBlender.Extension.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
