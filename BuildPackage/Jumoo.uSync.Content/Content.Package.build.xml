@@ -20,7 +20,7 @@
   <PropertyGroup>
     <ProjectName>uSync Content</ProjectName>
     <ProjectNamespace>Jumoo.uSync.Content</ProjectNamespace>
-    <PackageVersion>3.3.1.740</PackageVersion>
+    <PackageVersion>3.3.2.740</PackageVersion>
     <VersionSuffix></VersionSuffix>
     <MinUmbracoVersion>7.4.0</MinUmbracoVersion>
   </PropertyGroup>
