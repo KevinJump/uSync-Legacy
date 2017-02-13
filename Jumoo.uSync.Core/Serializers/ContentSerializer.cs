@@ -98,7 +98,9 @@ namespace Jumoo.uSync.Core.Serializers
                so for speed lets no do them here... 
             */
             
-            PublishOrSave(item, published);
+            // items will go through a second pass, so we 'just' save them on the first pass
+            // and publish them (if needed) on the second pass - lot less cache rebuilding this way.
+            PublishOrSave(item, false);
 
             return SyncAttempt<IContent>.Succeed(item.Name, item, ChangeType.Import);
         }
