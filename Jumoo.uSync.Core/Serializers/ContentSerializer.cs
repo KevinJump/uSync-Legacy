@@ -97,10 +97,11 @@ namespace Jumoo.uSync.Core.Serializers
             /* property values are set on the second pass, 
                so for speed lets no do them here... 
             */
-            
+
             // items will go through a second pass, so we 'just' save them on the first pass
             // and publish them (if needed) on the second pass - lot less cache rebuilding this way.
-            PublishOrSave(item, false);
+            // PublishOrSave(item, false);
+            _contentService.Save(item, 0, false);
 
             return SyncAttempt<IContent>.Succeed(item.Name, item, ChangeType.Import);
         }
