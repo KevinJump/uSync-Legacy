@@ -247,3 +247,4 @@ $RECYCLE.BIN/
 # code analysis
 .sonarqube
 
+testdata/
