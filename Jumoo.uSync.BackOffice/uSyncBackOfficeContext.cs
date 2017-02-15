@@ -213,7 +213,7 @@
             {
                 if (handler != null)
                 {
-                    if (!checkConfig || HandlerEnabled(handler.Name, "import", groupName))) {
+                    if (!checkConfig || HandlerEnabled(handler.Name, "import", groupName)) {
                         var sw = Stopwatch.StartNew();
 
                         var syncFolder = System.IO.Path.Combine(folder, handler.SyncFolder);
