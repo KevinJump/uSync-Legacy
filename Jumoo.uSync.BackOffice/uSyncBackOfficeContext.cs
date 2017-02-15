@@ -191,19 +191,37 @@
                 return actions;
             }
 
+            // refactored out, so you can call handler groups via the api. 
+            actions.AddRange(Import(handlers.Select(x => x.Value), folder, true, force, groupName));
+
+            // do the once file stuff if needed. 
+            OnceCheck(folder);
+
+            uSyncEvents.fireBulkActionComplete(
+                new uSyncBulkEventArg() { action = ChangeType.Import });
+
+            uSyncEvents.Paused = false; 
+            return actions;
+        }
+
+        public IEnumerable<uSyncAction> Import(IEnumerable<ISyncHandler> syncHandlers, string folder, bool checkConfig, bool force, string groupName = "")
+        {
+            List<uSyncAction> actions = new List<uSyncAction>();
 
             // run through the valid handlers for this import and do the import
-            foreach (var handler in handlers.Select(x => x.Value))
+            foreach (var handler in syncHandlers)
             {
-                if (handler != null && HandlerEnabled(handler.Name, "import", groupName))
+                if (handler != null)
                 {
-                    var sw = Stopwatch.StartNew();
+                    if (!checkConfig || HandlerEnabled(handler.Name, "import", groupName))) {
+                        var sw = Stopwatch.StartNew();
 
-                    var syncFolder = System.IO.Path.Combine(folder, handler.SyncFolder);
-                    LogHelper.Debug<uSyncApplicationEventHandler>("# Import Calling Handler: {0}", () => handler.Name);
-                    actions.AddRange(handler.ImportAll(syncFolder, force));
-                    sw.Stop();
-                    LogHelper.Debug<uSyncApplicationEventHandler>("# Handler {0} Complete ({1}ms)", () => handler.Name, ()=> sw.ElapsedMilliseconds);
+                        var syncFolder = System.IO.Path.Combine(folder, handler.SyncFolder);
+                        LogHelper.Debug<uSyncApplicationEventHandler>("# Import Calling Handler: {0}", () => handler.Name);
+                        actions.AddRange(handler.ImportAll(syncFolder, force));
+                        sw.Stop();
+                        LogHelper.Debug<uSyncApplicationEventHandler>("# Handler {0} Complete ({1}ms)", () => handler.Name, () => sw.ElapsedMilliseconds);
+                    }
                 }
             }
 
@@ -214,7 +232,7 @@
 
             foreach (var handler in handlers.Select(x => x.Value))
             {
-                if (HandlerEnabled(handler.Name, "import", groupName))
+                if (!checkConfig || HandlerEnabled(handler.Name, "import", groupName))
                 {
                     if (handler is ISyncPostImportHandler)
                     {
@@ -229,13 +247,6 @@
                 }
             }
 
-            // do the once file stuff if needed. 
-            OnceCheck(folder);
-
-            uSyncEvents.fireBulkActionComplete(
-                new uSyncBulkEventArg() { action = ChangeType.Import });
-
-            uSyncEvents.Paused = false; 
             return actions;
         }
 
