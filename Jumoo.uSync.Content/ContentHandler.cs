@@ -133,9 +133,10 @@ namespace Jumoo.uSync.Content
 
         private void ContentService_Saved(IContentService sender, Umbraco.Core.Events.SaveEventArgs<IContent> e)
         {
-            LogHelper.Info<ContentHandler>("Content Save Fired:");
             if (uSyncEvents.Paused)
                 return;
+
+            LogHelper.Info<ContentHandler>("Content Save Fired:");
 
             SaveItems(sender, e.SavedEntities);
         }
