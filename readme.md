@@ -2,6 +2,8 @@ uSync
 =
 ![Build Status](https://jumoo.visualstudio.com/_apis/public/build/definitions/e5bc8d11-6d47-4620-9e6e-dd8199b2843e/6/badge)
 
+**Documentation : http://usync.readthedocs.io/**
+
 uSync is a Syncronization tool for the Umbraco CMS. It serailizes the database config and data
 within an umbraco site, and reads and writes it to disk as a collection of xml files. 
 
