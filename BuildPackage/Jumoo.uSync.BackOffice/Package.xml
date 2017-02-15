@@ -6,6 +6,7 @@
       <version>3.1.6.740</version>
       <license url="https://opensource.org/licenses/MPL-2.0">Mozilla Public License 2.0</license>
       <url>http://jumoo.uk/uSync</url>
+      <iconUrl>http://jumoo.co.uk/img/usyncicon.png</iconUrl>
       <requirements>
         <major>7</major>
         <minor>4</minor>
@@ -18,13 +19,15 @@
     </author>
     <readme>
       <![CDATA[
-      uSync (for Umbraco 7.4+) 
-      ========================
+      <p>
       Push and pull all the database config and elements of your umbraco solution to and from the disk. 
-      
+      </p>
+      <p>
       Helps with Source Control, Continious Deployment and Multi Team Development.
-
-      This version syncs: DocTypes, MediaTypes, DataTypes, Macros, Languages, Dictionary Items, Templates and MemberTypes.]]>
+      </p>
+      <p>
+      This version syncs: DocTypes, MediaTypes, DataTypes, Macros, Languages, Dictionary Items, Templates and MemberTypes.
+      </p>]]>
     </readme>
   </info>
 
