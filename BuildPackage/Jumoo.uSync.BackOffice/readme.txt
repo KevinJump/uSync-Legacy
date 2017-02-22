@@ -3,28 +3,37 @@
      | | | \___ \| | | | '_ \ / __|
      | |_| |___) | |_| | | | | (__ 
       \__,_|____/ \__, |_| |_|\___|
- -----------------|___/ ----- 3.3 -----
-
+   ---------------|___/ ----- 3.3 ----
+ 
  uSync for Umbraco 7.4+ 
  
- Welcome ~/uSync/Data
+ Upgrading from v2.x
  --------------------
- We've moved where the uSync files are stored, They are now saved to /uSync/Data by default, if you are upgrading
- you can move you're old uSync files into this folder, although we recommend you let uSync do a new export and use
- that. the files are compatible, but the new versions are slightly more comprehensive. 
+ The default data folder has moved from /usync to /usync/data. You
+ can move your files to the new folder or let uSync generate a clean
+ export (recommended). After an upgrade you delete all the other
+ folders in the /usync folder. 
+
+ Recommended: Perform a new export on upgrades
+ ----------------------------------------------
+ The files that uSync exports are genrally compatible between versions, 
+ but updates usally bring enhanced functionality and perfomance improvements
+ that reliy on addtions to the export files. 
+
+ It is recommended that after an update to usync you perform a clean export.
+ You can either delete hte usnyc/data folder, or perform an export via the
+ dashboad.
+
+ Deployment targets
+ -------------------
+ This uSync package includes deployment targets so the usync folder is 
+ included during anywebsite publish. You do not need to include the 
+ usync folder in your solution to have the files make up part of a 
+ deployment. 
  
- What's new in v3
- ----------------
- In short Everything, but you probibly won't notice. 
- 
- We've updated uSync to use all the lovely updates in Umbraco 7.3 and we've seperated out the serialization logic
- from the disk bits, this means their is a whole set of things you can call from code if you want, but if you just
- want to use uSync as normal that's fine.
- 
- The dashboard (in the developer), has been given an update too, you can now run update reports to see what is
- going to actually change before you apply any updates. 
-  
- 
- 
- 
+ ---------------
+ Documentation : http://usync.readthedocs.io/
+ Source code   : https://github.com/KevinJump/uSync
+
+
  
