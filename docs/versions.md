@@ -1,8 +1,7 @@
 # uSync Versions
 
-uSync uses quite a lot of the underling Api of Umbraco it is subseptible to changes
-that otherwise make little diffrence to the user, but it does mean there are diffrent Versions
-of uSync depending on what version of Umbraco you are using:  
+As uSync uses quite a lot of the underlying API of Umbraco, it is susceptible to changes
+that otherwise make little difference to the user. Changes in the Umbraco API mean that there are different Versions of uSync depending on what version of Umbraco you are using:  
 
 | Umbraco Version    | uSync Version         
 |--------------------|----------------------
@@ -18,11 +17,11 @@ of uSync depending on what version of Umbraco you are using:
 You should install the latest version for your version of Umbraco.
 
 # Upgrades 
-When you Upgrade Umbraco it is also recommended that you upgrade uSync. 
+When you Upgrade Umbraco, it is also recommended that you upgrade uSync. 
 
-once you have upgraded Umbraco and uSync you should remove your uSync 
+Once you have upgraded Umbraco and uSync you should remove your uSync 
 folder and let uSync create a new sync. 
 
-While there is compatability between versions, the matching and change 
+While there is compatibility between versions, the matching and change 
 detection is much more reliable and quicker when the uSync files are 
 from the latest versions of uSync. 

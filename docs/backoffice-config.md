@@ -7,30 +7,30 @@ The ```uSyncBackOffice.Config``` file controls the basic behaviour of uSync
 
 ### Folder ```<Folder>~/uSync/data</Folder>```
 
-Defines where uSync should store it's files
+Defines where uSync should store its files
 
 ### Import ```<Import>true</Import>```  
 
-Turns import at startup on or off. if this is false uSync will not import when
+Turns import at startup on or off. If this is ```false``` uSync will not import when
 the site starts
 
 ### ExportAtStartup ```<ExportAtStartup>false</ExportAtStartup>```
 
-Tells usync to run an export when the site starts, usally false 
+Tells uSync to run an export when the site starts, usually ```false```. 
 
 ### ExportOnSave ```<ExportOnSave>true</ExportOnSave>```
 
-Export when you save (or delete) and item within Umbraco. 
+Export when you save (or delete) an item within Umbraco. 
 
-With this set to true - everything on teh disk will automatically stay in sync with 
+With this set to ```true``` - everything on the disk will automatically stay in sync with 
 the database.
 
 ### Watch For Changes ```<WatchForFileChanges>false</WatchForFileChanges>```
 
-Have uSync watch the disk for any changes in files in the usync folder.
+Have uSync watch the disk for any changes in files in the uSync folder.
 
 If you copy or save new .config files into the uSync folder - then uSync will 
-run a import against the folder, to get any new changes.    
+run an import against the folder, to get any new changes.    
 
 ### Archiving
 ```xml 
@@ -38,20 +38,20 @@ run a import against the folder, to get any new changes.
   <ArchiveFolder>~/uSync/Archive/</ArchiveFolder>
   <MaxArchiveVersionCount>0</MaxArchiveVersionCount>
 ```
-usally when you make a change usync saves that change over the top of any existing
-ones. this is fine if you are using source control to manage your site, but if you
-want you can get uSync to make a back up of the existing files before it saves.
+Usually when you make a change, uSync saves that change over the top of any existing
+ones. This is fine as long as you are using source control to manage your site, but if you
+want you can get uSync to create a backup of the existing files before it saves.
 
 ### Don't Throw Errors ```<DontThrowErrors>false</DontThrowErrors>```
-Some times things go wrong, and when they do uSync usally notices them, but 
-occasionally something can go really wrong and uSync throws an error, and you
+Sometimes things go wrong and when they do uSync usually notices them, but 
+occasionally something can go really wrong and uSync throws an error and you
 get a YSOD. 
 
 This can be really bad on a live site, because on startup uSync will throw a YSOD
-and you will not get a site.
+and your site will not load.
 
-To avoid this you can have uSync catch that last exception, and not throw the YSOD.
-this means you get your site. but it also means you won't see if uSync has gone wrong
+To avoid this, you can have uSync catch that last exception, and not throw the YSOD.
+This means you get your site, but it also means you won't see if uSync has gone wrong
 unless you go looking in the logs.  
 
 ## Example Config 
@@ -78,13 +78,13 @@ unless you go looking in the logs.
   <WatchForFileChanges>false</WatchForFileChanges> 
   
   <!-- create an archive, when an item is a save, 
-      if you're using source control, you probibly don't want this -->
+      if you're using source control, you probably don't want this -->
   <ArchiveVersions>false</ArchiveVersions>
   <ArchiveFolder>~/uSync/Archive/</ArchiveFolder>
   <MaxArchiveVersionCount>0</MaxArchiveVersionCount>
 
   <!-- Backups, create backups before doing the import, this will
-        help, when rollback is implimented -->
+        help, when rollback is implemented -->
   <BackupFolder>~/uSync/Backup/</BackupFolder>
   
   <!-- for a live site - you want don't throw errors = true, 
@@ -92,7 +92,7 @@ unless you go looking in the logs.
   <DontThrowErrors>false</DontThrowErrors>
   
   <!-- turn individual elements on or off 
-    if a handler is registerd but not listed then it is by 
+    if a handler is registered but not listed then it is by 
     default on - you have to add it to the list, to turn it off.
   -->
   <Handlers Group="default" EnableMissing="true">
