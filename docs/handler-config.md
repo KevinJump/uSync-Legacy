@@ -1,9 +1,9 @@
 ## Handlers
 
-Handlers are the thing that do all the hardwork in uSync. A Handler manages the import,
+Handlers are the things that do all the hard work in uSync. A Handler manages the import,
 export and saving of items to and from Umbraco. 
 
-by default there are handlers for all the things in umbraco:
+By default, there are handlers for all the things in Umbraco:
 
 ```xml
 <Handlers Group="default" EnableMissing="true">
@@ -23,21 +23,21 @@ by default there are handlers for all the things in umbraco:
 exists on disk but isn't in the config it will be enabled by default
 
 ### Enabling Handlers
-turning a handler on or off is as simple as setting ```Enabled="false"``` in the config
+Turning a handler on or off is as simple as setting ```Enabled="true"``` or ```Enabled="false"``` in the config.
 
 ### Enabling for actions
 In uSync 3.2.2. you can now enable or disable handlers for each of the actions they
-perfom.
+perform.
 
-by default handlers manage **import**, **export** and save **events** for each type of items.
+By default, handlers manage **import**, **export** and **save** events for each type of items.
 
-you can now turn each of these on/off individually using the Actions="" attrribute
+You can now turn each of these on/off individually using the ```Actions=""``` attribute.
 
-```Actions="All"``` is the default , meaning a handler does all three things.
+```Actions="All"``` is the default, meaning a handler does all three things.
 
-possible settings are any combination of ```All,Import,Export,Events``` 
+Possible settings are: any combination of ```All,Import,Export,Events``` 
 
-for example if you want to have the DictionaryHandler only manage exports
+for example, if you want to have the DictionaryHandler only manage exports
 
 ```xml
 <HandlerConfig Name="uSync: DictionaryHandler" Enabled="true" Actions="Export"/>

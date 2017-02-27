@@ -4,8 +4,8 @@ At the basic level, uSync 'just works' out of the box.
 
 
 ## First Run
-The first time you run your umbraco site after installing uSync. uSync will
-perform a export of your settings from the site. 
+The first time you run your Umbraco site after installing uSync. uSync will
+perform an export of your settings from the site. 
 
 **uSync will export:** 
 
@@ -18,27 +18,27 @@ perform a export of your settings from the site.
 - Dictionary Items
 - Member Types *(disabled by default)*
 
-the export will be put in the ```uSync/data``` folder within your umbraco site.
+the export will be placed in the ```uSync/data``` folder within your Umbraco site.
 
 ## Export On Save / Delete
-Once usync is running it will listen for events related to saving or deleting 
-of items within umbraco. 
+Once uSync is running it will listen for events related to saving or deleting 
+of items within Umbraco. 
 
 Every time you save and item uSync will write out an export file for the item
 in the uSync/data folder. 
 
-When you delete an item - a entry is made into the ```uSyncActions.config``` file
-that tracks deletes. this file is used during an import, to process the delete
-on other umbraco instances.
+When you delete an item - an entry is made into the ```uSyncActions.config``` file
+that tracks deletes. This file is used during an import, to process the delete
+on other Umbraco instances.
 
 ## Import On Startup
-by default uSync will run an import everytime your umbraco site starts (or the
+By default, uSync will run an import every time your Umbraco site starts (or the
 application pool refreshes). 
 
-During an import uSync looks at the files in teh uSync/data folder and compares
-them with the items within the umbraco site. 
+During an import uSync looks at the files in the uSync/data folder and compares
+them with the items within the Umbraco site. 
 
-If there are any diffrences then uSync applies the values from disk to Umbraco, 
+If there are any differences then uSync applies the values from disk to Umbraco, 
 so this way things are kept in sync. 
 
 ## uSync Dashboard

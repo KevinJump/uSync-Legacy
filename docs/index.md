@@ -1,12 +1,12 @@
 # uSync
 
-uSync is a database / file syncing tool for Umbraco. It makes source control, and 
+uSync is a database / file syncing tool for Umbraco. It makes source control and 
 deployment easier, because you only have to worry about changes on the disk - and
 let uSync do all the database stuff.
 
 ## Getting uSync
 
-The best way to get usync is via Nuget
+The best way to get uSync is via Nuget
 
 ```bash
 PM>Install-Package uSync
