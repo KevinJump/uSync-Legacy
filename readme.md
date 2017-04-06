@@ -28,21 +28,21 @@ The basics workings of uSync
 The main elements of uSync are the Serializers and Handlers:
 
 ### Serailizers
-Serializers Mange the transtion between umbraco and the XML that uSync uses,
+Serializers manage the transition between umbraco and the XML that uSync uses,
 they control how the configuration is written in and out, manage things like 
 internal IDs so your settings can move between umbraco installations. 
 
-Serializerrs do the heavy lifiting of usync, and live in the uSync.Core package, 
-you can use this package to programatically import and export data to umbraco. 
+Serializerrs do the heavy lifting of usync, and live in the uSync.Core package, 
+you can use this package to programmatically import and export data to umbraco. 
 
 ### Handlers
-Handlers mange the storing of the XML and passing to the serializers. By default
+Handlers manage the storing of the XML and passing to the serializers. By default
 this means reading and writing the xml to disk from the uSync folder. Handlers 
 are the entry point for imports and exports, and they capture the save and delete
 events inside of umbraco so that things are saved to disk when you make changes via
 the back office. 
 
-You can add your own handlers by implimenting the `ISyncHandler` interface.
+You can add your own handlers by implementing the `ISyncHandler` interface.
 
 ### Mappers 
 Mappers help with the content and media serialization process, they 
@@ -61,7 +61,7 @@ Mappers allow uSync to do this. as of v3.1 uSync.ContentEdition includes mappers
 * LeBlender
 * DocTypeGrid
 
-you can roll your own mappers, by implimenting the `IContentMapper` interface and putting 
+you can roll your own mappers, by implementing the `IContentMapper` interface and putting 
 settings in `uSyncCore.Config`
 
 Packages
@@ -86,7 +86,7 @@ Content Edition is a set of additional handlers, to control Content and Media.
 
 uSync.Snapshots
 -
-Snapshots is a diffrent approach to saving the umbraco settings. the standard uSync saves all changes
+Snapshots is a different approach to saving the umbraco settings.The standard uSync saves all changes
 as they are made into the standard uSync folder. 
 
 Snapshots allows you to capture a series of changes into a single snapshot, which can then be moved around
