@@ -23,6 +23,7 @@ namespace Jumoo.uSync.Core.Serializers
 {
     public class ContentTypeSerializer : ContentTypeBaseSerializer<IContentType>, ISyncChangeDetail
     {
+        private const string DefinitionNonWipeNodeName = "Definition";
         public override string SerializerType
         {
             get { return uSyncConstants.Serailization.ContentType; }
@@ -394,7 +395,7 @@ namespace Jumoo.uSync.Core.Serializers
             if (node.Name.LocalName == "EntityFolder")
                 return IsContainerUpdated(node);
 
-            var nodeHash = node.GetSyncHash();
+            var nodeHash = node.GetSyncHash(DefinitionNonWipeNodeName);
             if (string.IsNullOrEmpty(nodeHash))
                 return true;
 
@@ -424,14 +425,14 @@ namespace Jumoo.uSync.Core.Serializers
             if (!attempt.Success)
                 return true;
 
-            var itemHash = attempt.Item.GetSyncHash();
+            var itemHash = attempt.Item.GetSyncHash(DefinitionNonWipeNodeName);
 
             return (!nodeHash.Equals(itemHash));
         }
 
         private bool IsContainerUpdated(XElement node)
         {
-            var nodeHash = node.GetSyncHash();
+            var nodeHash = node.GetSyncHash(DefinitionNonWipeNodeName);
             if (string.IsNullOrEmpty(nodeHash))
                 return true;
 
@@ -447,7 +448,7 @@ namespace Jumoo.uSync.Core.Serializers
             if (!attempt.Success)
                 return true;
 
-            var itemHash = attempt.Item.GetSyncHash();
+            var itemHash = attempt.Item.GetSyncHash(DefinitionNonWipeNodeName);
 
             return (!nodeHash.Equals(itemHash));            
         }
@@ -459,7 +460,7 @@ namespace Jumoo.uSync.Core.Serializers
             if (node.Name.LocalName == "EntityFolder")
                 return GetContainerChanges(node);
 
-            var nodeHash = node.GetSyncHash();
+            var nodeHash = node.GetSyncHash(DefinitionNonWipeNodeName);
             if (string.IsNullOrEmpty(nodeHash))
                 return null;
 
@@ -490,7 +491,7 @@ namespace Jumoo.uSync.Core.Serializers
 
         private IEnumerable<uSyncChange> GetContainerChanges(XElement node)
         {
-            var nodeHash = node.GetSyncHash();
+            var nodeHash = node.GetSyncHash(DefinitionNonWipeNodeName);
             if (string.IsNullOrEmpty(nodeHash))
                 return null;
 
