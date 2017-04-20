@@ -64,9 +64,9 @@ namespace Jumoo.uSync.Core
             public const string Parial = "Partial";
 
             public const string Member = "Member";
-            public const string MemberGroup = "Member";
-            public const string User = "Member";
-            public const string UserType = "Member";
+            public const string MemberGroup = "MemberGroup";
+            public const string User = "User";
+            public const string UserType = "UserType";
 
             /// <summary>
             ///  the default priority for all serializers in the core
