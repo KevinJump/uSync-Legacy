@@ -14,5 +14,6 @@
     <uSyncContentMapping Alias="grid.docType" Mapping="Custom" Settings="value" CustomMappingType="Jumoo.uSync.ContentMappers.DocTypeGridMapper, Jumoo.uSync.ContentMappers" xdt:Transform="Insert" xdt:Locator="Match(Alias)" />
     <uSyncContentMapping Alias="grid.leBlender" View="LeBlendereditor.html" Settings="value" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.LeBlenderContentMapper, Jumoo.uSync.ContentMappers" xdt:Transform="Insert" xdt:Locator="Match(Alias)"/>
     
+    <uSyncContentMapping Alias="RJP.MultiUrlPicker" Mapping="Custom"  CustomMappingType="Jumoo.uSync.ContentMappers.RJPMapper, Jumoo.uSync.ContentMappers" xdt:Transform="Replace" xdt:Locator="Match(Alias)"/>
   </ContentMappings>
 </uSyncCoreSettings>
