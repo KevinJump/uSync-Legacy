@@ -43,6 +43,7 @@ namespace Jumoo.uSync.Core.Serializers
             var sortOrder = int.Parse(node.Attribute("sortOrder").Value);
             var published = bool.Parse(node.Attribute("published").Value);
             var parentGuid = node.Attribute("parentGUID").ValueOrDefault(Guid.Empty);
+
             if (parentGuid != Guid.Empty)
             {
                 var parent = _contentService.GetById(parentGuid);
@@ -103,6 +104,18 @@ namespace Jumoo.uSync.Core.Serializers
             if (item.ParentId != parentId)
                 item.ParentId = parentId;
 
+
+            if (node.Attribute("publishAt") != null)
+            {
+                item.ReleaseDate = node.Attribute("publishAt").ValueOrDefault(DateTime.MinValue).ToUniversalTime();
+            }
+
+            if (node.Attribute("unpublishAt") != null)
+            {
+                item.ExpireDate = node.Attribute("unpublishAt").ValueOrDefault(DateTime.MaxValue).ToUniversalTime();
+            }
+
+
             /* property values are set on the second pass, 
                so for speed lets no do them here... 
             */
@@ -158,6 +171,16 @@ namespace Jumoo.uSync.Core.Serializers
 
             node.Add(new XAttribute("sortOrder", item.SortOrder));
             node.Add(new XAttribute("published", item.Published));
+
+            if (item.ExpireDate != null)
+            {
+                node.Add(new XAttribute("unpublishAt", item.ExpireDate.Value.ToString("yyyy-MM-ddTHH:mm:ss.fffffff'Z'")));
+            }
+
+            if (item.ReleaseDate != null)
+            {
+                node.Add(new XAttribute("publishAt", item.ReleaseDate.Value.ToString("yyyy-MM-ddTHH:mm:ss.fffffff'Z'")));
+            }
 
             LogHelper.Debug<ContentSerializer>("Returning Node");
             return SyncAttempt<XElement>.Succeed(item.Name, node, typeof(IContent), ChangeType.Export);
