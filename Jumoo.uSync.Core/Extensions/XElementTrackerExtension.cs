@@ -12,7 +12,7 @@ namespace Jumoo.uSync.Core.Extensions
 {
     public static class XElementTrackerExtension
     {
-        internal static XElement GetLocalizeduSyncElement(this XElement node)
+        internal static XElement GetLocalizeduSyncElement(this XElement node, params string[] nonWipeNodeList)
         {
             if (node == null)
                 return null;
@@ -40,11 +40,14 @@ namespace Jumoo.uSync.Core.Extensions
 
             // in content types we remove Definition for comparision, because for 
             // custom types it can change. 
-            if (copy.Element("GenericProperties") != null)
+            if (!nonWipeNodeList.Contains("Definition"))
             {
-                foreach (var defId in copy.Element("GenericProperties").Descendants("Definition"))
+                if (copy.Element("GenericProperties") != null)
                 {
-                    defId.Value = "";
+                    foreach (var defId in copy.Element("GenericProperties").Descendants("Definition"))
+                    {
+                        defId.Value = "";
+                    }
                 }
             }
 
@@ -85,12 +88,12 @@ namespace Jumoo.uSync.Core.Extensions
             return copy; 
         }
 
-        public static string GetSyncHash(this XElement node)
+        public static string GetSyncHash(this XElement node, params string[] nonWipeNodeList)
         {
             if (node == null)
                 return string.Empty;
 
-            return MakeHash(node.GetLocalizeduSyncElement());
+            return MakeHash(node.GetLocalizeduSyncElement(nonWipeNodeList));
         }
 
         private static string MakeHash(XElement node)
