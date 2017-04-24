@@ -42,6 +42,15 @@ namespace Jumoo.uSync.Core.Serializers
 
             var sortOrder = int.Parse(node.Attribute("sortOrder").Value);
             var published = bool.Parse(node.Attribute("published").Value);
+            var parentGuid = node.Attribute("parentGUID").ValueOrDefault(Guid.Empty);
+            if (parentGuid != Guid.Empty)
+            {
+                var parent = _contentService.GetById(parentGuid);
+                if (parent != null)
+                {
+                    parentId = parent.Id;
+                }
+            }
 
             // because later set the guid, we are going for a match at this point
             var item = _contentService.GetById(guid);
@@ -143,7 +152,7 @@ namespace Jumoo.uSync.Core.Serializers
             var node = attempt.Item;
 
             // content specifics..
-            node.Add(new XAttribute("parentGUID", item.Level > 1 ? item.Parent().Key : new Guid("00000000-0000-0000-0000-000000000000")));
+            node.Add(new XAttribute("parentGUID", item.Level > 1 ? item.Parent().Key : Guid.Empty));
             node.Add(new XAttribute("nodeTypeAlias", item.ContentType.Alias));
             node.Add(new XAttribute("templateAlias", item.Template == null ? "" : item.Template.Alias));
 
