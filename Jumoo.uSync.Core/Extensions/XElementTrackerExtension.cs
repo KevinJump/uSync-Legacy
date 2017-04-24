@@ -40,13 +40,17 @@ namespace Jumoo.uSync.Core.Extensions
 
             // in content types we remove Definition for comparision, because for 
             // custom types it can change. 
-            if (copy.Element("GenericProperties") != null)
-            {
-                foreach (var defId in copy.Element("GenericProperties").Descendants("Definition"))
-                {
-                    defId.Value = "";
-                }
-            }
+
+            // 7.3.3. update - don't do this now, as it means you can miss some changes.
+            // and everything is guids so less faulse positives. in later umbraco v's
+            // 
+            //if (copy.Element("GenericProperties") != null)
+            //{
+            //    foreach (var defId in copy.Element("GenericProperties").Descendants("Definition"))
+            //    {
+            //        defId.Value = "";
+            //    }
+            //}
 
             var nodes = copy.Element("Nodes");
             if (nodes != null)
