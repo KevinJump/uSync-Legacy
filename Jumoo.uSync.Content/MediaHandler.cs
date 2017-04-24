@@ -96,7 +96,8 @@ namespace Jumoo.uSync.Content
                 var filename = string.Empty;
                 if (attempt.Success)
                 {
-                    filename = uSyncIOHelper.SavePath(root, SyncFolder, path, "media");
+                    var savePath = this.GetSavePath(item, path);
+                    filename = uSyncIOHelper.SavePath(root, SyncFolder, savePath, "media");
                     uSyncIOHelper.SaveNode(attempt.Item, filename);
 
                     // media serializer doesn't get the files for you , you need to 

@@ -26,6 +26,7 @@ namespace Jumoo.uSync.Content
 
         private bool _ignorePathSettingOn;
         private bool _rootPathSettingOn;
+        private bool _levelPathsOn; 
 
         public BaseContentHandler(string fileName)
         {
@@ -34,7 +35,8 @@ namespace Jumoo.uSync.Content
             _exportFileName = fileName;
 
             _ignorePathSettingOn = false;
-            _rootPathSettingOn = false; 
+            _rootPathSettingOn = false;
+            _levelPathsOn = false; 
 
             // short Id Setting, means we save with id.config not {{name}}.config
             handlerSettings = new BaseContentHandlerSettings();
@@ -186,6 +188,10 @@ namespace Jumoo.uSync.Content
                             _ignorePathSettingOn = !String.IsNullOrEmpty(handlerSettings.Ignore);
                             LogHelper.Debug<ContentHandler>("Ignore Setting: {0}", () => handlerSettings.Ignore);
                             break;
+                        case "levelpath":
+                            bool.TryParse(setting.Value, out _levelPathsOn);
+                            LogHelper.Debug<ContentHandler>("Level Paths : {0}", ()=> _levelPathsOn);
+                            break;
                     }
                 }
             }
@@ -193,6 +199,27 @@ namespace Jumoo.uSync.Content
 
 
         #endregion
+
+
+        /// <summary>
+        ///  will either return the path (as expected) or a path that
+        ///  uses the letters of the key, and the level to make a short
+        ///  path..
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        protected string GetSavePath(IContentBase item, string path)
+        {
+            if (!_levelPathsOn)
+            {
+                return path;
+            }
+            else
+            {
+                return item.Level.ToString("000") + "\\" + GetItemFileName(item);
+            }
+        }
 
         protected string GetItemFileName(IContentBase item)
         {

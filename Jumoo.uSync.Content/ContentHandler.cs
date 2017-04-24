@@ -102,7 +102,8 @@ namespace Jumoo.uSync.Content
                 string filename = string.Empty;
                 if (attempt.Success)
                 {
-                    filename = uSyncIOHelper.SavePath(rootFolder, SyncFolder, path, "content");
+                    var savePath = this.GetSavePath(item, path);
+                    filename = uSyncIOHelper.SavePath(rootFolder, SyncFolder, savePath, "content");
                     uSyncIOHelper.SaveNode(attempt.Item, filename);
                 }
 
