@@ -16,12 +16,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.HealthChecker", "Jumoo.uSync.HealthChecker\Jumoo.uSync.HealthChecker.csproj", "{551DD278-64C1-498D-AA7A-0A6F8DC461D1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildPackage", "BuildPackage", "{2908711F-BB6B-4A41-A36B-2A71B3F65479}"
-	ProjectSection(SolutionItems) = preProject
-		BuildPackage\Full.Package.build.xml = BuildPackage\Full.Package.build.xml
-		BuildPackage\uSync.Package.build.xml = BuildPackage\uSync.Package.build.xml
-		BuildPackage\uSync.package.nuspec = BuildPackage\uSync.package.nuspec
-		BuildPackage\uSync.Package.xml = BuildPackage\uSync.Package.xml
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Jumoo.uSync.Core", "Jumoo.uSync.Core", "{01CD3FD6-BD7E-4200-BE8B-5FE2F12DA199}"
 	ProjectSection(SolutionItems) = preProject

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>uSync</id>
-    <version>3.1.6.740</version>
+    <version>3.3.3.740</version>
     <title>uSync BackOffice for Umbraco</title>
     <authors>Kevin Jump</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -16,7 +16,7 @@ v.3.2.0 - Handler Groups
     <licenseUrl>https://opensource.org/licenses/MPL-2.0</licenseUrl>
     <tags>umbraco umbraco7 developer backoffice</tags>
     <dependencies>
-      <dependency id="uSync.Core" version="5.6.2.740" />
+      <dependency id="uSync.Core" version="5.6.3.740" />
     </dependencies>
   </metadata>
 </package>

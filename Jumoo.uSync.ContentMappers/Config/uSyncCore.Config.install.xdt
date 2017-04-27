@@ -7,13 +7,13 @@
     <uSyncContentMapping Alias="Our.Umbraco.Vorto" xdt:Transform="Remove" xdt:Locator="Match(Alias)" />
     <uSyncContentMapping Alias="grid.docType" xdt:Transform="Remove" xdt:Locator="Match(Alias)" />
     <uSyncContentMapping Alias="grid.leBlender" xdt:Transform="Remove" xdt:Locator="Match(Alias)" />
+    <uSyncContentMapping Alias="RJP.MultiUrlPicker" xdt:Transform="Remove" xdt:Locator="Match(Alias)"/>
 
     <uSyncContentMapping Alias="Imulus.Archetype" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.ArchetypeContentMapper,Jumoo.uSync.ContentMappers" xdt:Transform="Insert" xdt:Locator="Match(Alias)"/>
     <uSyncContentMapping Alias="Our.Umbraco.NestedContent" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.NestedContentMapper,Jumoo.uSync.ContentMappers" xdt:Transform="Insert" xdt:Locator="Match(Alias)"/>
     <uSyncContentMapping Alias="Our.Umbraco.Vorto" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.VortoContentMapper, Jumoo.uSync.ContentMappers" xdt:Transform="Insert" xdt:Locator="Match(Alias)"/>
     <uSyncContentMapping Alias="grid.docType" Mapping="Custom" Settings="value" CustomMappingType="Jumoo.uSync.ContentMappers.DocTypeGridMapper, Jumoo.uSync.ContentMappers" xdt:Transform="Insert" xdt:Locator="Match(Alias)" />
-    <uSyncContentMapping Alias="grid.leBlender" View="LeBlendereditor.html" Settings="value" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.LeBlenderContentMapper, Jumoo.uSync.ContentMappers" xdt:Transform="Insert" xdt:Locator="Match(Alias)"/>
-    
-    <uSyncContentMapping Alias="RJP.MultiUrlPicker" Mapping="Custom"  CustomMappingType="Jumoo.uSync.ContentMappers.RJPMapper, Jumoo.uSync.ContentMappers" xdt:Transform="Replace" xdt:Locator="Match(Alias)"/>
+    <uSyncContentMapping Alias="grid.leBlender" View="LeBlendereditor.html" Settings="value" Mapping="Custom" CustomMappingType="Jumoo.uSync.ContentMappers.LeBlenderContentMapper, Jumoo.uSync.ContentMappers" xdt:Transform="Insert" xdt:Locator="Match(Alias)"/>  
+    <uSyncContentMapping Alias="RJP.MultiUrlPicker" Mapping="Custom"  CustomMappingType="Jumoo.uSync.ContentMappers.RJPMapper, Jumoo.uSync.ContentMappers" xdt:Transform="Insert" xdt:Locator="Match(Alias)"/>
   </ContentMappings>
 </uSyncCoreSettings>

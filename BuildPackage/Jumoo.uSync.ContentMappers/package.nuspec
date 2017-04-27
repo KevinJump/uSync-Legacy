@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>uSync.ContentMappers</id>
-    <version>3.2.0</version>
+    <version>3.3.3</version>
     <authors>Kevin Jump</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>uSync.ContentEdition</id>
-        <version>3.2.3.740</version>
+        <version>3.3.3.740</version>
         <title>uSync Content Edition for Umbraco</title>
         <authors>Kevin Jump</authors>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -13,7 +13,7 @@ v3.0.2 - Trash content update.
 #v3 - works as part of uSync.BackOffice</releaseNotes>
         <dependencies>
             <dependency id="uSync.ContentMappers" version="3.3.3" />
-            <dependency id="uSync" version="3.3.2.740" />
+            <dependency id="uSync" version="3.3.3.740" />
         </dependencies>
     </metadata>
 </package>
