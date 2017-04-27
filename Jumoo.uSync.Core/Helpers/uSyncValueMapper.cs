@@ -73,10 +73,10 @@ namespace Jumoo.uSync.Core.Helpers
                         case "tab":
                             mappedValue = TabToGeneric(id);
                             break;
-                        case "mediaType":
+                        case "mediatype":
                             mappedValue = MediaTypeToGeneric(id);
                             break;
-                        case "docType":
+                        case "doctype":
                             mappedValue = ContentTypeToGeneric(id);
                             break;
                     }
