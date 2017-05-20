@@ -236,9 +236,15 @@ namespace Jumoo.uSync.Core.Helpers
 
         #region ToId (coming in)
 
-        public string MapToId(XElement valueNode)
+        public string MapToId(XElement valueNode, PreValue preVal)
         {
-            var value = valueNode.Attribute("Value").Value;
+            // existing values are appended with zzusync
+            // and as they are replace that is removed
+            // it stops us double mapping
+
+            // at the end we remove the zzusync
+            Regex regx = new Regex(@"\d+");
+            var value = regx.Replace(valueNode.Attribute("Value").Value, "$0:zzusync");
 
             var mapGuid = valueNode.Attribute("MapGuid");
             if (mapGuid == null)
@@ -248,73 +254,61 @@ namespace Jumoo.uSync.Core.Helpers
                 .Where(x => x.Attribute("MapGuid").Value == mapGuid.Value)
                 .ToList();
 
-            foreach(var mapNode in mappedNodes)
+            foreach (var mapNode in mappedNodes)
             {
                 var type = mapNode.Attribute("Type").Value;
                 var val = mapNode.Attribute("Value").Value;
-                var id = mapNode.Attribute("Id").Value;
+                var id = mapNode.Attribute("Id").Value + ":zzusync";
 
-                var valueSubString = GetValueMatchSubstring(value);
 
-                var localId = GetMappedId(id, val, type);
-
-                // all the zz swapping here, to stop false positives...
-                Regex exsitingRegEx = new Regex(string.Format("{0}(?!:zzusync)", localId));
-                if (exsitingRegEx.IsMatch(valueSubString))
+                var localId = GetMappedId(val, type); // now returns empty string if it's can't map the id.
+                if (localId.IsNullOrWhiteSpace()) // if it is empty then we get the value from the existing pre-value (so no mapping)
                 {
-                    // what's happened here is the target value string already contains our 
-                    // target id - so we add some strings to our target, to stop us
-                    // from confusing the id we're putting in with anything else.
-                    Regex rgx = new Regex(@"\d{1}(?!:zzusync)");
-                    localId = "\"" + rgx.Replace(localId, "$0:zzusync") + "\"";
-                    // at the end of our mapping process we clean out the extra bits.
+                    LogHelper.Debug<uSyncValueMapper>("Mapping LocalId back to value in umbraco");
+                    localId = GetValueMatchSubstring(preVal.Value);
                 }
 
-                // replace the mapped id with the new local one, 
-                // ** but only if it doesn't have :zzusync appended to it **                
-                Regex mapRegEx = new Regex(string.Format("{0}(?!:zzusync)", id));
-                var targetSubString = mapRegEx.Replace(valueSubString, localId);
-
-                value = value.Replace(valueSubString, targetSubString);
+                // replace any instances of id with the value in localId
+                value = value.Replace(id, localId);
             }
 
-            return CleanValue(value);
+            return value.Replace(":zzusync", "");
         }
 
-        public string GetMappedId(string id, string value, string type)
+        public string GetMappedId(string value, string type)
         {
             switch(type)
             {
                 case "content":
-                    return ContentToId(id, value);
+                    return ContentToId(value);
                 case "media":
-                    return MediaToId(id, value);
+                    return MediaToId(value);
                 case "tab":
-                    return TabToId(id, value);
+                    return TabToId(value);
                 case "mediatype":
-                    return MediaTypeToId(id, value);
+                    return MediaTypeToId(value);
                 case "doctype":
-                    return ContentTypeToId(id, value);
+                    return ContentTypeToId(value);
             }
 
-            return id;
+            return string.Empty;
         }
 
-        private string MediaToId(string id, string value)
+        private string MediaToId(string value)
         {
             var walker = new uSyncTreeWalker(UmbracoObjectTypes.Media);
             var mappedId = walker.GetIdFromPath(value);
-            return (mappedId != -1) ? mappedId.ToString() : id;
+            return (mappedId != -1) ? mappedId.ToString() : string.Empty;
         }
 
-        private string ContentToId(string id, string value)
+        private string ContentToId(string value)
         {
             var walker = new uSyncTreeWalker(UmbracoObjectTypes.Document);
             var mappedId = walker.GetIdFromPath(value);
-            return (mappedId != -1) ? mappedId.ToString() : id;
+            return (mappedId != -1) ? mappedId.ToString() : string.Empty;
         }
 
-        private string MediaTypeToId(string id, string value)
+        private string MediaTypeToId(string value)
         {
 
             var itemKey = Guid.Empty;
@@ -324,10 +318,10 @@ namespace Jumoo.uSync.Core.Helpers
                 if (item != null)
                     return item.Id.ToString();
             }
-            return id;
+            return string.Empty;
         }
 
-        private string ContentTypeToId(string id, string value)
+        private string ContentTypeToId(string value)
         {
             var itemKey = Guid.Empty;
             if (Guid.TryParse(value, out itemKey))
@@ -336,10 +330,10 @@ namespace Jumoo.uSync.Core.Helpers
                 if (item != null)
                     return item.Id.ToString();
             }
-            return id;
+            return string.Empty;
         }
 
-        private string TabToId(string id, string value)
+        private string TabToId(string value)
         {
             if (value.Contains("|") && value.Split('|').Count() == 2)
             {
@@ -357,32 +351,8 @@ namespace Jumoo.uSync.Core.Helpers
                     }
                 }
             }
-            return id;
+            return string.Empty;
         }
-
-
-        /// <summary>
-        ///  at the end of the match process, we clean all the :zzusync's from our ids
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        private string CleanValue(string value)
-        {
-            var looper = 0;
-            while (value.Contains(":zzusync") && looper < 5)
-            {
-                looper++;
-                Regex rgx = new Regex("\"?(\\d{1,4})(:zzusync\"?)");
-                var cleaned = rgx.Replace(value, "$1");
-                value = cleaned;
-            }
-
-            if (value.Contains(":zzusync"))
-                value = value.Replace(":zzusync", "");
-
-            return value;
-        }
-
         #endregion
     }
 }
