@@ -244,7 +244,7 @@ namespace Jumoo.uSync.Core.Helpers
 
             // at the end we remove the zzusync
             Regex regx = new Regex(@"\d+");
-            var value = regx.Replace(valueNode.Attribute("Value").Value, "$0:zzusync");
+            var value = regx.Replace(valueNode.Value, "$0:zzusync");
 
             var mapGuid = valueNode.Attribute("MapGuid");
             if (mapGuid == null)

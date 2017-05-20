@@ -178,7 +178,6 @@ namespace Jumoo.uSync.Core.Serializers
 
         private XElement DeserializeGetMappedValues(XElement node, IDictionary<string, PreValue> preValues )
         {
-
             XElement nodeCopy = new XElement(node);
             var id = nodeCopy.Attribute("Id").ValueOrDefault(string.Empty);
 
@@ -187,6 +186,12 @@ namespace Jumoo.uSync.Core.Serializers
             var mapper = LoadMapper(nodeCopy, id);
 
             var preValuesElements = nodeCopy.Element("PreValues");
+
+            // value use to be an attrib - now it's a value
+            foreach (var legacyElement in preValuesElements.Descendants().Where(x => x.Attribute("Value") != null))
+            {
+                legacyElement.Value = legacyElement.Attribute("Value").Value;
+            }
 
             if (mapper != null && preValuesElements != null && preValuesElements.HasElements)
             {
@@ -203,7 +208,8 @@ namespace Jumoo.uSync.Core.Serializers
                         if (!string.IsNullOrEmpty(value))
                         {
                             LogHelper.Debug<DataTypeSerializer>("Setting Mapped Value: {0}", () => value);
-                            preValueNode.Attribute("Value").Value = value;
+                            preValueNode.Value = value;
+                            // preValueNode.Attribute("Value").Value = value;
                         }
 
                         preValueNode.Attribute("MapGuid").Remove();
@@ -239,9 +245,9 @@ namespace Jumoo.uSync.Core.Serializers
                     if (preValNode != null)
                     {
                         // set the value of preValue value to the value of the value attribute :)
-                        if (preValue.Value.Value != preValNode.Attribute("Value").Value)
+                        if (preValue.Value.Value != preValNode.Value)
                         {
-                            preValue.Value.Value = preValNode.Attribute("Value").Value;
+                            preValue.Value.Value = preValNode.Value;
                         }
                     }
                     else
@@ -268,7 +274,7 @@ namespace Jumoo.uSync.Core.Serializers
                 foreach (var nodeValue in preValueRootNode.Elements("PreValue"))
                 {
                     var alias = nodeValue.Attribute("Alias").ValueOrDefault(string.Empty);
-                    var value = nodeValue.Attribute("Value").ValueOrDefault(string.Empty);
+                    var value = nodeValue.ValueOrDefault(string.Empty);
 
                     if (!string.IsNullOrEmpty(alias))
                     {
@@ -333,8 +339,8 @@ namespace Jumoo.uSync.Core.Serializers
                 var preValueValue = preValue.Value;
 
                 XElement preValueNode = new XElement("PreValue",
-                    new XAttribute("Id", preValue.Id.ToString()),
-                    new XAttribute("Value", String.IsNullOrEmpty(preValueValue) ? "" : preValueValue));
+                    new XAttribute("Id", preValue.Id.ToString()));
+                preValueNode.Add(new XCData(String.IsNullOrEmpty(preValueValue) ? "" : preValueValue));
 
                 if (!itemPreValuePair.Key.StartsWith("zzzuSync"))
                     preValueNode.Add(new XAttribute("Alias", itemPreValuePair.Key));
