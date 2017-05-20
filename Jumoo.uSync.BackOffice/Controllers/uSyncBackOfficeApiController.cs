@@ -34,10 +34,15 @@ namespace Jumoo.uSync.BackOffice.Controllers
 
             if (System.IO.Directory.Exists(folder))
             {
-                // delete the sub folders (this will leave the uSync.Action file)
-                foreach(var child in System.IO.Directory.GetDirectories(folder))
+                // delete the sub foldes (this will leave the uSync.Action file)
+                // we try three times, usally its because someone has something open
+                // so we can't delete a folder. 
+                var attempt = 0;
+                var success = false;
+                while (attempt < 3 && success == false)
                 {
-                    System.IO.Directory.Delete(child, true);
+                    success = CleanFolder(folder);
+                    attempt++;
                 }
             }
 
@@ -57,6 +62,23 @@ namespace Jumoo.uSync.BackOffice.Controllers
                 uSyncActionLogger.SaveActionLog("Export", actions);
 
             return actions;
+        }
+
+        private bool CleanFolder(string folder)
+        {
+            try
+            {
+                foreach (var child in System.IO.Directory.GetDirectories(folder))
+                {
+                    System.IO.Directory.Delete(child, true);
+                }
+                return true;
+            }
+            catch (System.IO.IOException ex)
+            {
+                Logger.Warn<Events>("Cannot Clean Folder - will try three times: {0}", () => ex.Message);
+                return false;
+            }
         }
 
         [HttpGet]
