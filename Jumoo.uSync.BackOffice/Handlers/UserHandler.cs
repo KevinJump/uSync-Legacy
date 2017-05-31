@@ -19,6 +19,9 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
         private readonly IUserService _userService;
 
+        public delegate void UserSavedEventHandler(IUserService sender, SaveEventArgs<IUser> e);
+        public static event UserSavedEventHandler BeforeSave;
+
         public UserHandler() : base(new UserSerializer())
         {
             _userService = ApplicationContext.Current.Services.UserService;
@@ -61,6 +64,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
         private void UserSaved(IUserService sender, SaveEventArgs<IUser> e)
         {
+            BeforeSave?.Invoke(sender, e);
+
             if (uSyncEvents.Paused)
                 return;
 
