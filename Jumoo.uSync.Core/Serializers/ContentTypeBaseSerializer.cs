@@ -284,7 +284,8 @@ namespace Jumoo.uSync.Core.Serializers
                                     {
                                         // this tab currently doesn't contain this property, to we have to
                                         // move it (later)
-                                        propertiesToMove.Add(property.Alias, tabName);
+                                        if (!propertiesToMove.ContainsKey(property.Alias))
+                                            propertiesToMove.Add(property.Alias, tabName);
                                     }
                                 }
                             }
@@ -298,7 +299,8 @@ namespace Jumoo.uSync.Core.Serializers
                                     {
                                         // this item is now not in a tab (when it was)
                                         // so we have to remove it from tabs (later)
-                                        tabsToBlank.Add(existingTab, property.Alias);
+                                        if (!tabsToBlank.ContainsKey(existingTab))
+                                            tabsToBlank.Add(existingTab, property.Alias);
                                     }
                                 }
                             }
