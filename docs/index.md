@@ -6,7 +6,7 @@ let uSync do all the database stuff.
 
 ## Getting uSync
 
-The best way to get uSync is via Nuget
+The best way to get uSync is via NuGet
 
 ```bash
 PM>Install-Package uSync
