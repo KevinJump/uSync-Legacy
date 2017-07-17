@@ -68,9 +68,9 @@ uSync Content Edition - also includes mappings for many third-party packages inc
 
 * Archetype
 * Vorto
-* DocTypeGrid
-* NestedContent
-* LeBelnder
+* DocTypeGridEditor
+* Nested Content
+* LeBlender
 
 These mappings work on standard content, in nested content and in the grid.
 
