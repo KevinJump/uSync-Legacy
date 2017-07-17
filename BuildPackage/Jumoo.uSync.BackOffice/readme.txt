@@ -16,24 +16,21 @@
 
  Recommended: Perform a new export on upgrades
  ----------------------------------------------
- The files that uSync exports are genrally compatible between versions, 
- but updates usally bring enhanced functionality and perfomance improvements
- that reliy on addtions to the export files. 
+ The files that uSync exports are generally compatible between versions, 
+ but updates usually bring enhanced functionality and performance improvements
+ that rely on additions to the export files. 
 
  It is recommended that after an update to usync you perform a clean export.
- You can either delete hte usnyc/data folder, or perform an export via the
- dashboad.
+ You can either delete the usync/data folder, or perform an export via the
+ dashboard.
 
  Deployment targets
  -------------------
  This uSync package includes deployment targets so the usync folder is 
- included during anywebsite publish. You do not need to include the 
+ included during any website publish. You do not need to include the 
  usync folder in your solution to have the files make up part of a 
  deployment. 
  
  ---------------
  Documentation : http://usync.readthedocs.io/
  Source code   : https://github.com/KevinJump/uSync
-
-
- 
