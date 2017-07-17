@@ -113,7 +113,7 @@ unless you go looking in the logs.
     Good if you have multiple targets, and you don't want to do everything 
     all the time. 
     
-    These groups arn't avalible via the dashboard (yet) but can be called 
+    These groups aren't available via the dashboard (yet) but can be called 
     via the API
   -->
   <!-- 
