@@ -1,11 +1,10 @@
 Build all the uSync Packages
 ----------------------------
 
-Each Package has it's own folder with build file, umbraco package.xml and nuspec file.
+Each package has its own folder with build file, Umbraco package.xml and nuspec file.
 
-The build files are all very similar; most of the packages, have a dll, some app_plugin files and config
+The build files are all very similar; most of the packages, have a DLL, some App_Plugin files and config.
 
-The Umbraco package for BackOffice also contains the Core Dlls, and the Umbraco Package for Content includes the Mappers DLL.
+The Umbraco package for BackOffice also contains the Core DLLs, and the Umbraco Package for Content includes the Mappers DLL.
 
-When versions are updated, make sure you also increase the depencendies in the nuspec files.
-
+When versions are updated, make sure you also increase the dependencies in the nuspec files.
