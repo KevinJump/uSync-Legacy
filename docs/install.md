@@ -1,11 +1,11 @@
 
 # Installation
 
-uSync can be installed via Nuget or Our Umbraco
+uSync can be installed via NuGet or Our Umbraco
 
-## Nuget Package
+## NuGet Package
 
-To [install from Nuget](https://www.nuget.org/packages/uSync/) you can run the following command from within
+To [install from NuGet](https://www.nuget.org/packages/uSync/) you can run the following command from within
 Visual Studio Package Manager
 
 ```bash

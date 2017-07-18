@@ -8,7 +8,7 @@ that otherwise make little difference to the user. Changes in the Umbraco API me
 | Umbraco 7.4+       | uSync 3.x.x.740      
 | Umbraco 7.3.x      | uSync 3.0.x
 | Umbraco 7.0- 7.2.x | uSync 2.5.x
-| Umbrac0 6.2.5+     | uSync 2.2.6
+| Umbraco 6.2.5+     | uSync 2.2.6
 | Umbraco 6.2 - 6.24 | uSync 2.2.5
 | Umbraco 6.1.x      | uSync 1.6
 | Umbraco 6.0x       | *No working version*
