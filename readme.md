@@ -32,7 +32,7 @@ Serializers manage the transition between Umbraco and the XML that uSync uses,
 they control how the configuration is written in and out, manage things like 
 internal IDs so your settings can move between Umbraco installations. 
 
-Serializers do the heavy lifting of usync, and live in the uSync.Core package, 
+Serializers do the heavy lifting of uSync, and live in the uSync.Core package, 
 you can use this package to programmatically import and export data to Umbraco. 
 
 ### Handlers
