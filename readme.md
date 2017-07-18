@@ -47,14 +47,14 @@ You can add your own handlers by implementing the `ISyncHandler` interface.
 
 ### Mappers 
 Mappers help with the content and media serialization process, they 
-allow uSync to know how to find and map internal ids from within properties on your 
+allow uSync to know how to find and map internal IDs from within properties on your 
 content.
 
 Within Umbraco when you use links, and things like content pickers store the internal
-id to link the property to the correct content. Between Umbraco installations these
-ids can change so uSync needs to find them and map them to something more global (often GUIDs).
+ID to link the property to the correct content. Between Umbraco installations these
+IDs can change so uSync needs to find them and map them to something more global (often GUIDs).
 
-Mappers allow uSync to do this. as of v3.1 uSync.ContentEdition includes mappers for: 
+Mappers allow uSync to do this. as of v3.1 **uSync.ContentEdition** includes mappers for: 
 
 * Built in editors *(RTE, Multi-Node Tree Picker, Content Picker, etc)*
 * The Grid
