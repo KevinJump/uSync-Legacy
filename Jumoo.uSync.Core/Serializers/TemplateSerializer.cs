@@ -1,24 +1,17 @@
-﻿using System;
+﻿using Jumoo.uSync.Core.Extensions;
+using Jumoo.uSync.Core.Helpers;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-
+using System.Xml.Linq;
 using Umbraco.Core;
+using Umbraco.Core.IO;
+using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
-using Umbraco.Core.IO;
 
-using Jumoo.uSync.Core.Interfaces;
-using System.Xml.Linq;
-using Umbraco.Core.Logging;
-
-using Jumoo.uSync.Core.Extensions;
-using Jumoo.uSync.Core.Helpers;
-
-namespace Jumoo.uSync.Core.Serializers
-{
+namespace Jumoo.uSync.Core.Serializers {
     /// <summary>
     ///  new behavior, we roll our own template file, and we never create the content of 
     ///  the template from the usync file. instead we assume you have copied it to the 
@@ -28,24 +21,20 @@ namespace Jumoo.uSync.Core.Serializers
     /// 
     ///  but now, you can't just rely on usync to copy templates. 
     /// </summary>
-    public class TemplateSerializer : SyncBaseSerializer<ITemplate>, ISyncChangeDetail
-    {
+    public class TemplateSerializer : SyncBaseSerializer<ITemplate>, ISyncChangeDetail {
         IFileService _fileService;
         public override string SerializerType { get { return uSyncConstants.Serailization.Template; } }
 
         public TemplateSerializer() :
-            base(Constants.Packaging.TemplateNodeName)
-        {
+            base(Constants.Packaging.TemplateNodeName) {
             _fileService = ApplicationContext.Current.Services.FileService;
         }
 
-        public TemplateSerializer(string itemType) : base(itemType)
-        {
+        public TemplateSerializer(string itemType) : base(itemType) {
             _fileService = ApplicationContext.Current.Services.FileService;
         }
 
-        internal override SyncAttempt<ITemplate> DeserializeCore(XElement node)
-        {
+        internal override SyncAttempt<ITemplate> DeserializeCore(XElement node) {
             if (node == null || node.Element("Alias") == null || node.Element("Name") == null)
                 throw new ArgumentException("Bad xml import");
 
@@ -63,38 +52,31 @@ namespace Jumoo.uSync.Core.Serializers
             if (item == default(ITemplate))
                 item = _fileService.GetTemplate(alias);
 
-            if (item == null)
-            {
+            if (item == null) {
                 var templatePath = IOHelper.MapPath(SystemDirectories.MvcViews + "/" + alias.ToSafeFileName() + ".cshtml");
-                if (!System.IO.File.Exists(templatePath))
-                {
+                if (!System.IO.File.Exists(templatePath)) {
                     templatePath = IOHelper.MapPath(SystemDirectories.Masterpages + "/" + alias.ToSafeFileName() + ".master");
-                    if (!System.IO.File.Exists(templatePath))
-                    {
+                    if (!System.IO.File.Exists(templatePath)) {
                         // cannot find the master for this..
                         templatePath = string.Empty;
                         LogHelper.Warn<TemplateSerializer>("Cannot find underling template file, so we cannot create the template");
                     }
                 }
 
-                if (!string.IsNullOrEmpty(templatePath))
-                {
+                if (!string.IsNullOrEmpty(templatePath)) {
                     var content = System.IO.File.ReadAllText(templatePath);
 
                     item = new Template(name, alias);
                     item.Path = templatePath;
                     item.Content = content;
 
-                }
-                else 
-                {
+                } else {
                     LogHelper.Warn<TemplateSerializer>("Can't get a template path?");
                     return SyncAttempt<ITemplate>.Fail(name, ChangeType.Import, "Can't get template path (are template files missing?)");
                 }
             }
 
-            if (item == null)
-            {
+            if (item == null) {
                 LogHelper.Warn<TemplateSerializer>("Cannot create the template, something missing?");
                 return SyncAttempt<ITemplate>.Fail(name, ChangeType.Import, "Item create fail");
             }
@@ -107,8 +89,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             if (node.Element("Master") != null) {
                 var masterName = node.Element("Master").Value;
-                if (!string.IsNullOrEmpty(masterName))
-                {
+                if (!string.IsNullOrEmpty(masterName)) {
                     var master = _fileService.GetTemplate(masterName);
                     if (master != null)
                         item.SetMasterTemplate(master);
@@ -123,8 +104,26 @@ namespace Jumoo.uSync.Core.Serializers
             return SyncAttempt<ITemplate>.Succeed(item.Name, item, ChangeType.Import);
         }
 
-        internal override SyncAttempt<XElement> SerializeCore(ITemplate item)
-        {
+        private String FindTemplate(String alias) {
+            var templatePath = FindTemplate(alias);
+
+            if (!System.IO.File.Exists(templatePath)) {
+                var viewsPath = IOHelper.MapPath(SystemDirectories.MvcViews);
+                var directories = Directory.GetDirectories(viewsPath);
+
+                foreach (var directory in directories.Where(x => !x.ToLower().Contains("partials"))) {
+                    var folder = Path.GetFileName(directory);
+                    String relativeFileUrl = string.Format(SystemDirectories.MvcViews + "/{0}/{1}.cshtml", folder, alias.ToSafeFileName());
+                    if (System.IO.File.Exists(IOHelper.MapPath(relativeFileUrl))) {
+                        templatePath = IOHelper.MapPath(relativeFileUrl);
+                    }
+                }
+            }
+
+            return templatePath;
+        }
+
+        internal override SyncAttempt<XElement> SerializeCore(ITemplate item) {
             var node = new XElement(Constants.Packaging.TemplateNodeName,
                 new XElement("Name", item.Name),
                 new XElement("Key", item.Key),
@@ -134,8 +133,7 @@ namespace Jumoo.uSync.Core.Serializers
             return SyncAttempt<XElement>.Succeed(item.Name, node, typeof(ITemplate), ChangeType.Export);
         }
 
-        public override bool IsUpdate(XElement node)
-        {
+        public override bool IsUpdate(XElement node) {
             var nodeHash = node.GetSyncHash();
             if (string.IsNullOrEmpty(nodeHash))
                 return true;
@@ -161,8 +159,7 @@ namespace Jumoo.uSync.Core.Serializers
 
 
         #region ISyncChangeDetail : Support for detailed change reports
-        public IEnumerable<uSyncChange> GetChanges(XElement node)
-        {
+        public IEnumerable<uSyncChange> GetChanges(XElement node) {
             var nodeHash = node.GetSyncHash();
             if (string.IsNullOrEmpty(nodeHash))
                 return null;
@@ -176,18 +173,14 @@ namespace Jumoo.uSync.Core.Serializers
                 return null;
 
             var item = _fileService.GetTemplate(templateGuid);
-            if (item == null)
-            {
-                return uSyncChangeTracker.NewItem( node.NameFromNode());
+            if (item == null) {
+                return uSyncChangeTracker.NewItem(node.NameFromNode());
             }
 
             var attempt = Serialize(item);
-            if (attempt.Success)
-            {
+            if (attempt.Success) {
                 return uSyncChangeTracker.GetChanges(node, attempt.Item, "");
-            }
-            else
-            {
+            } else {
                 return uSyncChangeTracker.ChangeError(key.Value);
             }
         }
