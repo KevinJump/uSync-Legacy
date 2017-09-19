@@ -27,6 +27,7 @@ namespace Jumoo.uSync.Core
 
             public const int Media = USYNC_RESERVED_LOWER + 200;
             public const int Content = USYNC_RESERVED_LOWER + 210;
+            public const int ContentTemplate = USYNC_RESERVED_LOWER + 215;
 
             public const int DataTypeMappings = USYNC_RESERVED_LOWER + 220;
         }
