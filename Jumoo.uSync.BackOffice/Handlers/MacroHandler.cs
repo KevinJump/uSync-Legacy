@@ -53,7 +53,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             List<uSyncAction> actions = new List<uSyncAction>();
 
             var _macroService = ApplicationContext.Current.Services.MacroService;
-            foreach (var item in _macroService.GetAll())
+            foreach (var item in _macroService.GetAll(new int[0]))
             {
                 if (item != null)
                     actions.Add(ExportToDisk(item, folder));
