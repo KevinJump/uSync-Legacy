@@ -131,6 +131,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             DataTypeService.Saved += DataTypeService_Saved;
             DataTypeService.Deleted += DataTypeService_Deleted;
             DataTypeService.Moved += DataTypeService_Moved;
+            DataTypeService.SavedContainer += DataTypeService_SavedContainer;
 
             // delay trigger - used (upto and including umb 7.4.2
             // saved event on a datatype is called before prevalues
@@ -161,6 +162,19 @@ namespace Jumoo.uSync.BackOffice.Handlers
                         SaveToDisk(item);
                     }
                 }
+            }
+        }
+
+
+
+        private void DataTypeService_SavedContainer(IDataTypeService sender, Umbraco.Core.Events.SaveEventArgs<EntityContainer> e)
+        {
+            if (uSyncEvents.Paused)
+                return;
+
+            foreach (var item in e.SavedEntities)
+            {
+                Export(item.Id, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
             }
         }
 

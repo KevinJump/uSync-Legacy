@@ -145,6 +145,20 @@ namespace Jumoo.uSync.BackOffice.Handlers
             ContentTypeService.SavedContentType += ContentTypeService_SavedContentType;
             ContentTypeService.DeletedContentType += ContentTypeService_DeletedContentType;
             ContentTypeService.MovedContentType += ContentTypeService_MovedContentType;
+
+            ContentTypeService.SavedContentTypeContainer += ContentTypeService_SavedContentTypeContainer;
+        }
+
+
+        private void ContentTypeService_SavedContentTypeContainer(IContentTypeService sender, SaveEventArgs<EntityContainer> e)
+        {
+            if (uSyncEvents.Paused)
+                return;
+
+            foreach (var item in e.SavedEntities)
+            {
+                Export(item.Id, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+            }
         }
 
         private void ContentTypeService_DeletedContentType(IContentTypeService sender, Umbraco.Core.Events.DeleteEventArgs<IContentType> e)
