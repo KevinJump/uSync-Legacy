@@ -79,23 +79,30 @@ namespace Jumoo.uSync.BackOffice.Helpers
             if (!File.Exists(file))
                 return Guid.Empty;
 
-            XElement node = XElement.Load(file);
-            if (node == null)
+            try
+            {
+                XElement node = XElement.Load(file);
+                if (node == null)
+                    return Guid.Empty;
+
+
+                var fileKey = node.Element("Key").ValueOrDefault(Guid.Empty);
+
+                if (fileKey == Guid.Empty && node.Element("Info") != null)
+                    fileKey = node.Element("Info").Element("Key").ValueOrDefault(Guid.Empty);
+
+                if (fileKey == Guid.Empty)
+                    fileKey = node.Attribute("Key").ValueOrDefault(Guid.Empty);
+
+                if (fileKey == Guid.Empty)
+                    fileKey = node.Attribute("guid").ValueOrDefault(Guid.Empty);
+
+                return fileKey;
+            }
+            catch
+            {
                 return Guid.Empty;
-
-
-            var fileKey = node.Element("Key").ValueOrDefault(Guid.Empty);
-
-            if (fileKey == Guid.Empty && node.Element("Info") != null)
-                fileKey = node.Element("Info").Element("Key").ValueOrDefault(Guid.Empty);
-
-            if (fileKey == Guid.Empty)
-                fileKey = node.Attribute("Key").ValueOrDefault(Guid.Empty);
-
-            if (fileKey == Guid.Empty)
-                fileKey = node.Attribute("guid").ValueOrDefault(Guid.Empty);
-
-            return fileKey;
+            }
         }
 
 
