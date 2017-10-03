@@ -9,8 +9,8 @@
       <url>http://jumoo.uk/uSync</url>
       <iconUrl>http://jumoo.co.uk/img/usynccontenticon.png</iconUrl>
       <requirements>
-        <major>3</major>
-        <minor>0</minor>
+        <major>7</major>
+        <minor>6</minor>
         <patch>0</patch>
       </requirements>
     </package>

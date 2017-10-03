@@ -17,6 +17,8 @@ namespace Jumoo.uSync.Core.Serializers
 {
     public class ContentSerializer : ContentBaseSerializer<IContent>
     {
+        private bool _blueprintEnabled; 
+
         public override string SerializerType
         {
             get
@@ -26,7 +28,9 @@ namespace Jumoo.uSync.Core.Serializers
         }
 
         public ContentSerializer() : base(string.Empty)
-        { }
+        {
+            _blueprintEnabled = Umbraco.Core.Configuration.UmbracoVersion.Current >= new Version(7, 7, 0);
+        }
 
         internal override SyncAttempt<IContent> DeserializeCore(XElement node, int parentId, bool forceUpdate = false)
         {
@@ -57,10 +61,10 @@ namespace Jumoo.uSync.Core.Serializers
 
             // because later set the guid, we are going for a match at this point
             var item = _contentService.GetById(guid);
-            if (blueprint)
+            if (blueprint && _blueprintEnabled)
             {
                 LogHelper.Debug<ContentSerializer>("Finding Blueprint: {0}", () => guid);
-                item = _contentService.GetBlueprintById(guid);
+                item = GetBlueprint(guid);
             }
 
             if (item == null)
@@ -131,9 +135,9 @@ namespace Jumoo.uSync.Core.Serializers
             // items will go through a second pass, so we 'just' save them on the first pass
             // and publish them (if needed) on the second pass - lot less cache rebuilding this way.
             // PublishOrSave(item, false);
-            if (blueprint)
+            if (blueprint && _blueprintEnabled)
             {
-                _contentService.SaveBlueprint(item);
+                SaveBlueprint(item);
             }
             else
             {
@@ -187,7 +191,7 @@ namespace Jumoo.uSync.Core.Serializers
             node.Add(new XAttribute("sortOrder", item.SortOrder));
             node.Add(new XAttribute("published", item.Published));
 
-            if (Umbraco.Core.Configuration.UmbracoVersion.Current >= new Version(7, 7, 0)) {
+            if (_blueprintEnabled) { 
                 LogHelper.Debug<ContentSerializer>("Is Blueprint?");
                 node.Add(new XAttribute("isBlueprint", IsBlueprint(item)));
             }
@@ -205,11 +209,6 @@ namespace Jumoo.uSync.Core.Serializers
 
             LogHelper.Debug<ContentSerializer>("Returning Node");
             return SyncAttempt<XElement>.Succeed(item.Name, node, typeof(IContent), ChangeType.Export);
-        }
-
-        private bool IsBlueprint(IContent item)
-        {
-            return item.IsBlueprint;
         }
 
         public override bool IsUpdate(XElement node)
@@ -313,11 +312,34 @@ namespace Jumoo.uSync.Core.Serializers
             }
             else
             {
-                _contentService.SaveBlueprint(item);
+                SaveBlueprint(item);
             }
 
 
             return SyncAttempt<IContent>.Succeed(item.Name, ChangeType.Import);
+        }
+
+        private bool IsBlueprint(IContent item)
+        {
+            if (_blueprintEnabled)
+                return item.IsBlueprint;
+
+            return false;
+        }
+
+        private void SaveBlueprint(IContent item)
+        {
+            if (_blueprintEnabled)
+                _contentService.SaveBlueprint(item);
+        }
+
+        private IContent GetBlueprint(Guid guid)
+        {
+            if (_blueprintEnabled)
+            {
+                return _contentService.GetBlueprintById(guid);
+            }
+            return null;
         }
 
         private IContent GetContentByNameAndAlias(IEnumerable<IContent> nodes, string name, string contentTypeAlias)

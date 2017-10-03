@@ -12,11 +12,12 @@
 v.3.0.0 - Rebuilt to use CoreApis and be super guid friendly.
 v.3.1.0 - Umbraco 7.4 Container Updates
 v.3.2.0 - Handler Groups
+v.3.4.0 - Umbraco v7.6+ features (including content templates)
     </releaseNotes>
     <licenseUrl>https://opensource.org/licenses/MPL-2.0</licenseUrl>
     <tags>umbraco umbraco7 developer backoffice</tags>
     <dependencies>
-      <dependency id="uSync.Core" version="5.7.0.740" />
+      <dependency id="uSync.Core" version="5.7.0.760" />
     </dependencies>
   </metadata>
 </package>
