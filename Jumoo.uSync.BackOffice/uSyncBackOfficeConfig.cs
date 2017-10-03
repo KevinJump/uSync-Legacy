@@ -213,6 +213,8 @@ namespace Jumoo.uSync.BackOffice
 
         public bool UseShortIdNames { get; set; }
 
+        public bool PreserveAllFiles { get; set; }
+
         public string HandlerGroup { get; set; }
 
         [XmlElement("Handlers")]

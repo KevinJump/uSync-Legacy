@@ -9,6 +9,7 @@ namespace Jumoo.uSync.BackOffice.Helpers
 
     using Umbraco.Core;
     using Umbraco.Core.Logging;
+    using Core.Extensions;
 
     public class uSyncIOHelper
     {
@@ -122,20 +123,67 @@ namespace Jumoo.uSync.BackOffice.Helpers
 
         internal static void DeleteFile(string file)
         {
+            LogHelper.Debug<uSyncIOHelper>("Delete File: {0}", () => file);
+
             uSyncEvents.fireDeleting(new uSyncEventArgs { fileName = file });
+            var blankOnDelete = uSyncBackOfficeContext.Instance.Configuration.Settings.PreserveAllFiles;
 
-
-                var dir = Path.GetDirectoryName(file);
-                if (Directory.Exists(dir))
+            if (File.Exists(file))
+            {
+                if (!blankOnDelete)
                 {
-                    if (File.Exists(file))
-                        File.Delete(file);
-
-                    if (!Directory.EnumerateFileSystemEntries(dir).Any())
-                        Directory.Delete(dir);
+                    LogHelper.Debug<uSyncIOHelper>("Delete: {0}", () => file);
+                    File.Delete(file);
                 }
+                else
+                {
+                    LogHelper.Debug<uSyncIOHelper>("Blank: {0}", () => file);
+                    CreateBlank(file);
+                }
+            }
+            else
+            {
+                LogHelper.Debug<uSyncIOHelper>("Cannot find {0} to delete", ()=> file);
+            }
+
+            var dir = Path.GetDirectoryName(file);
+            if (Directory.Exists(dir))
+            {
+                if (!Directory.EnumerateFileSystemEntries(dir).Any())
+                    Directory.Delete(dir);
+            }
 
             uSyncEvents.fireDeleted(new uSyncEventArgs { fileName = file });
+        }
+
+        internal static void CreateBlank(string file)
+        {
+            var key = Guid.NewGuid();
+            var name = "default";
+
+            if (File.Exists(file))
+            {
+                try
+                {
+                    var existing = XElement.Load(file);
+                    if (existing != null && !existing.Name.LocalName.InvariantEquals("uSyncArchive"))
+                    {
+                        key = existing.KeyOrDefault();
+                        name = existing.NameFromNode();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Debug<uSyncIOHelper>("Unable to load existing xml: {0}", ()=> ex);
+                }
+            }
+            
+            XElement a = new XElement("uSyncArchive",
+                new XAttribute("Key", key.ToString()),
+                new XAttribute("Name", name));
+
+            a.Save(file);
+
         }
 
         private static void ClenseArchiveFolder(string folder)
