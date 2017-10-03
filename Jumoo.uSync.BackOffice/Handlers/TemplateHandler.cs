@@ -119,7 +119,7 @@
             foreach (var item in e.DeletedEntities)
             {
                 LogHelper.Info<TemplateHandler>("Delete: Deleting uSync File for item: {0}", () => item.Name);
-                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetItemPath(item));
+                uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetItemPath(item), item.Name.ToSafeAlias());
 
                 uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, item.Alias, typeof(ITemplate));
                 
