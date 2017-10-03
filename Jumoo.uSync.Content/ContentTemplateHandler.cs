@@ -38,9 +38,8 @@ namespace Jumoo.uSync.Content
 
             _highEnoughUmbraco = false;
 
-            if (Umbraco.Core.Configuration.UmbracoVersion.Current.Major >= 7 &&
-                Umbraco.Core.Configuration.UmbracoVersion.Current.Minor >= 7)
-            {
+            if (Umbraco.Core.Configuration.UmbracoVersion.Current >= new Version(7,7,0))
+            { 
                 _highEnoughUmbraco = true;
             }
 
@@ -52,6 +51,11 @@ namespace Jumoo.uSync.Content
             if (!_highEnoughUmbraco)
                 return Enumerable.Empty<uSyncAction>();
 
+            return ExportAllSevenSeven(folder);
+        }
+
+        private IEnumerable<uSyncAction> ExportAllSevenSeven(string folder)
+        { 
             var entities = _entityService.GetChildren(Constants.System.Root, UmbracoObjectTypes.DocumentBlueprint).ToArray();
             var contentTypeAliases = entities.Select(x => ((UmbracoEntity)x).ContentTypeAlias);
             var contentTypeIds = _contentTypeService.GetAllContentTypeIds(contentTypeAliases.ToArray()).ToArray();
