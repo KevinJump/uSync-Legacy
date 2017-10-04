@@ -21,7 +21,7 @@
           v5 - version issues with old nuget packages
           v3 - works with Umbraco 7.3 really well</releaseNotes>
         <dependencies>
-            <dependency id="UmbracoCms.Core" version="7.6.0" />
+          <!-- <dependency id="UmbracoCms.Core" version="7.6.0" /> -->
         </dependencies>
     </metadata>
 </package>
