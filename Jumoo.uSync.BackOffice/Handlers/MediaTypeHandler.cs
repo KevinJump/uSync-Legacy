@@ -141,8 +141,21 @@ namespace Jumoo.uSync.BackOffice.Handlers
             ContentTypeService.SavedMediaType += ContentTypeService_SavedMediaType;
             ContentTypeService.MovedMediaType += ContentTypeService_MovedMediaType;
             ContentTypeService.DeletedMediaType += ContentTypeService_DeletedMediaType;
+
+            ContentTypeService.SavedMediaTypeContainer += ContentTypeService_SavedMediaTypeContainer;
+
         }
 
+        private void ContentTypeService_SavedMediaTypeContainer(IContentTypeService sender, Umbraco.Core.Events.SaveEventArgs<EntityContainer> e)
+        {
+            if (uSyncEvents.Paused)
+                return;
+
+            foreach (var item in e.SavedEntities)
+            {
+                Export(item.Id, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+            }
+        }
 
         private void ContentTypeService_DeletedMediaType(IContentTypeService sender, Umbraco.Core.Events.DeleteEventArgs<IMediaType> e)
         {

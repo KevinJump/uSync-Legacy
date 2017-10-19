@@ -129,10 +129,12 @@ namespace Jumoo.uSync.BackOffice.Helpers
                 }
             }
 
+            uSyncIOHelper.ArchiveFile(file);
+/*
             // delete the file
             if (File.Exists(file))
                 File.Delete(file);
-
+*/
 
             // redirectcheck
             var redirect = Path.Combine(Path.GetDirectoryName(file), "redirect.config");

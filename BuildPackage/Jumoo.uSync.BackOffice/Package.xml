@@ -9,7 +9,7 @@
       <iconUrl>http://jumoo.co.uk/img/usyncicon.png</iconUrl>
       <requirements>
         <major>7</major>
-        <minor>4</minor>
+        <minor>6</minor>
         <patch>0</patch>
       </requirements>
     </package>
