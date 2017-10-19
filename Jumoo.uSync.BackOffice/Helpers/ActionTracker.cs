@@ -34,14 +34,15 @@ namespace Jumoo.uSync.BackOffice.Helpers
                 try
                 {
                     XmlSerializer serializer = new XmlSerializer(typeof(List<SyncAction>));
-                    using (FileStream fs = new FileStream(_actionFile, FileMode.Open))
+                    using (FileStream fs = new FileStream(_actionFile, FileMode.Open, FileAccess.Read))
                     {
                         _actions = (List<SyncAction>)serializer.Deserialize(fs);
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
                     // format fail on load.
+                    LogHelper.Debug<ActionTracker>("Failed to open action file: {0}", () => ex.Message);
                     _actions = new List<SyncAction>();
                 }
             }
