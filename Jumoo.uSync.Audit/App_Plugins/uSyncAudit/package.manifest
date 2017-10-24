@@ -1,0 +1,9 @@
+﻿{
+	"javascript" : [
+		"~/App_Plugins/uSyncAudit/uSyncAuditController.js",
+		"~/App_Plugins/uSyncAudit/uSyncAuditService.js"
+	],
+	"css" : [
+		"~/App_Plugins/uSyncAudit/uSyncAudit.css"
+	]
+}

@@ -27,14 +27,17 @@ namespace Jumoo.uSync.Core.Helpers
         {
             { "GenericProperty", new ChangeKeyPair("Key", ChangeValueType.Element) },
             { "PreValue", new ChangeKeyPair("Alias", ChangeValueType.Attribute) },
-            { "Value", new ChangeKeyPair("LanguageCultureAlias", ChangeValueType.Attribute) }
+            { "Value", new ChangeKeyPair("LanguageCultureAlias", ChangeValueType.Attribute) },
+            { "Composition", new ChangeKeyPair("Key", ChangeValueType.Attribute) },
+            { "MediaType", new ChangeKeyPair("Key", ChangeValueType.Attribute) }
+
         };
 
         private static Dictionary<string, ChangeKeyPair> nodeNames = new Dictionary<string, ChangeKeyPair>()
         {
             { "GenericProperty", new ChangeKeyPair("Name", ChangeValueType.Element) },
             { "PreValue", new ChangeKeyPair("Alias", ChangeValueType.Attribute) },
-            { "Value", new ChangeKeyPair("LanguageCultureAlias", ChangeValueType.Attribute) }
+            { "Value", new ChangeKeyPair("LanguageCultureAlias", ChangeValueType.Attribute) },
         };
 
         // nodes where we match them on the internal values of the elements. 
@@ -69,7 +72,7 @@ namespace Jumoo.uSync.Core.Helpers
                 changes.Add(new uSyncChange
                 {
                     Path = path,
-                    Name = targetNode.Name.LocalName,
+                    Name = GetElementName(targetNode.Name.LocalName, targetNode),
                     Change = ChangeDetailType.Update,
                     NewVal = targetNode.Name.LocalName,
                     OldVal = sourceNode.Name.LocalName, 
@@ -198,7 +201,7 @@ namespace Jumoo.uSync.Core.Helpers
                     changes.Add(new uSyncChange
                     {
                         Path = path.Substring(0, path.LastIndexOf('.')),
-                        Name = targetNode.Name.LocalName,
+                        Name = GetElementName(targetNode.Name.LocalName, targetNode),
                         Change = ChangeDetailType.Update,
                         NewVal = targetNode.Value,
                         OldVal = sourceNode.Value,
@@ -271,9 +274,6 @@ namespace Jumoo.uSync.Core.Helpers
 
         private static string GetElementName(string key, XElement node)
         {
-            if (key == node.Name.LocalName)
-                return key;
-
             if (nodeNames.ContainsKey(node.Name.LocalName))
             {
                 var keypair = nodeNames[node.Name.LocalName];
@@ -291,6 +291,9 @@ namespace Jumoo.uSync.Core.Helpers
 
             if (nodesByVal.Contains(node.Name.LocalName))
                 return node.Value;
+
+            if (key == node.Name.LocalName)
+                return key;
 
             return key;
         }

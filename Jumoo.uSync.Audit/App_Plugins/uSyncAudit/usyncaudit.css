@@ -1,0 +1,12 @@
+﻿
+tbody.usyncaudit-active {
+    background-color: aliceblue;
+}
+
+td.usyncaudit-detail {
+    background-color: aliceblue;
+    padding: 1em 0.4em;
+}
+
+.usyncaudit-detail h4 {
+}

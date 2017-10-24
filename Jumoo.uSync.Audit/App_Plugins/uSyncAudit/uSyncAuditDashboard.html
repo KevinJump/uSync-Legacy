@@ -1,0 +1,89 @@
+﻿<div ng-controller="uSyncAuditController as vm">
+
+    <div ng-hide="vm.loaded">
+        <umb-load-indicator></umb-load-indicator>
+    </div>
+
+    <div ng-show="vm.loaded">
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>User</th>
+                    <th>Time</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody ng-repeat="change in vm.changes.Items"
+                   ng-class="{'usyncaudit-active' : change.showDetail}">
+                <tr>
+                    <td>
+                        {{change.ItemType}}
+                    </td>
+                    <td>
+                        {{change.ItemChanges[0].Name}}
+                    </td>
+                    <td>
+                        {{change.UserName}}
+                    </td>
+                    <td>
+                        {{change.ChangeTime | date:'medium'}}
+                    </td>
+                    <td>
+                        <button ng-click="vm.showDetail(change)"
+                                class="btn btn-default btn-small">
+                            Details
+                        </button>
+                    </td>
+                </tr>
+
+                <tr ng-show="change.showDetail">
+                    <td colspan="5" class="usyncaudit-detail">
+                        <div ng-repeat="item in change.ItemChanges">
+                            <h4>Name: {{item.Name}}</h4>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 10%">Change</th>
+                                        <th style="width: 30%">Name</th>
+                                        <th style="width: 30%">OldValue</th>
+                                        <th style="width: 30%">New Value</th>
+                                    </tr>
+                                  </thead>
+                                <tbody>
+                                    <tr ng-repeat="change in item.Changes">
+                                        <td>
+                                            {{vm.showChange(change.Change)}}
+                                        </td>
+                                        <td>
+                                            {{change.Name}}<br/>
+                                            <small>{{change.Path}}</small>
+                                        </td>
+                                        <td>
+                                            {{change.OldVal}}
+                                        </td>
+                                        <td>
+                                            {{change.NewVal}}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <umb-pagination page-number="vm.changes.CurrentPage"
+                        total-pages="vm.changes.TotalPages"
+                        on-next="vm.nextPage"
+                        on-prev="vm.prevPage"
+                        on-go-to-page="vm.goToPage">
+        </umb-pagination>
+
+    </div>
+
+</div>
