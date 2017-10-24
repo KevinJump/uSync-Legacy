@@ -51,7 +51,7 @@ namespace Jumoo.uSync.Audit
             _typeName = typeof(TItem).FullName;
             _typeName = _typeName.Substring(_typeName.LastIndexOf('.') + 1);
 
-            _rootFolder = Umbraco.Core.IO.IOHelper.MapPath("~/uSync/Audit/");
+            _rootFolder = Umbraco.Core.IO.IOHelper.MapPath("~/App_Data/uSync/Audit/");
             _folder = Path.Combine(_rootFolder, _typeName);
 
             _user = UmbracoContext.Current.Security.CurrentUser;
