@@ -283,6 +283,7 @@
     <Compile Include="EventHandlers\HandlerLoader.cs" />
     <Compile Include="EventHandlers\ISyncAuditHandler.cs" />
     <Compile Include="EventHandlers\SlackChangeNotifier.cs" />
+    <Compile Include="Persistance\AuditCacheManager.cs" />
     <Compile Include="Persistance\Mappers\ModelMappings.cs" />
     <Compile Include="Persistance\Mappers\uSyncChangeListResolver.cs" />
     <Compile Include="Persistance\Migrations\TargetOneZeroZero\CreateAuditTables.cs" />

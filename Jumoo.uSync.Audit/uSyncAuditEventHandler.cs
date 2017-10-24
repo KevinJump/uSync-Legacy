@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Jumoo.uSync.Audit;
 using Jumoo.uSync.Audit.EventHandlers;
+using Jumoo.uSync.Audit.Persistance;
 using Jumoo.uSync.Audit.Persistance.Mappers;
 using Jumoo.uSync.Core;
 using Semver;
@@ -47,6 +49,9 @@ namespace Jumoo.uSync.Audit
             // load up the handlers (any thing that inhetits ISyncAuditHandler)
             HandlerLoader loader = new HandlerLoader();
             _handlers = loader.LoadHandlers(applicationContext);
+
+            AuditCacheManager cacheManager = new AuditCacheManager(applicationContext);
+            cacheManager.Initialize();
 
         }
 
