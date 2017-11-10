@@ -126,7 +126,8 @@ namespace Jumoo.uSync.BackOffice.Helpers
                 {
                     var targetSubDir = Path.Combine(targetDir, Path.GetFileName(subDir));
 
-                    Directory.CreateDirectory(targetSubDir);
+                    // Directory.CreateDirectory(targetSubDir);
+                    LogHelper.Debug<NameChecker>("Moving the Child Folders: \n\t {0}\n\t{1}", ()=> subDir, ()=> targetSubDir);
                     Directory.Move(subDir, targetSubDir);
                 }
             }
@@ -147,6 +148,8 @@ namespace Jumoo.uSync.BackOffice.Helpers
             // delete if empty (and still there)
             if (Directory.Exists(orphanDir))
             {
+                LogHelper.Debug<NameChecker>("Removing the Orphan Folder: {0}", ()=> orphanDir);
+
                 var folder = new DirectoryInfo(orphanDir);
                 if (folder.GetFileSystemInfos().Length == 0)
                 {
