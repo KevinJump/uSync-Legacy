@@ -5,7 +5,7 @@
       \__,_|____/ \__, |_| |_|\___|
    ---------------|___/ ----- 4.x ----
  
- uSync for Umbraco 7.6+ 
+ uSync for Umbraco 7.4+ 
  
  Upgrading from v2.x
  --------------------
