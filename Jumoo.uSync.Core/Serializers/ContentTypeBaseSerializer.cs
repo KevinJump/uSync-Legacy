@@ -168,13 +168,18 @@ namespace Jumoo.uSync.Core.Serializers
                     var propKey = propertyNode.Element("Key").ValueOrDefault(Guid.Empty);
                     if (propKey != Guid.Empty)
                     {
+                        LogHelper.Debug<ContentTypeSerializer>("Looking up Property Key: {0}", () => propKey);
                         property = item.PropertyTypes.SingleOrDefault(x => x.Key == propKey);
+
+
+
                     }
 
                     var alias = propertyNode.Element("Alias").ValueOrDefault(string.Empty);
 
                     if (property == null)
                     {
+                        LogHelper.Debug<ContentTypeSerializer>("Looking up Property Alias: {0}", () => alias);
                         // look up via alias?
                         property = item.PropertyTypes.SingleOrDefault(x => x.Alias == alias);
                     }
@@ -416,13 +421,24 @@ namespace Jumoo.uSync.Core.Serializers
                 }
             }
 
+        }
+
+        internal void CleanUpTabs(IContentTypeBase item, XElement node)
+        {
+            LogHelper.Debug<Events>("Cleaning up Tabs");
+            var tabNode = node.Element("Tabs");
+
+            if (tabNode == null || !tabNode.HasElements)
+                return;
+
             // remove tabs 
             List<string> tabsToRemove = new List<string>();
-            foreach(var tab in item.PropertyGroups)
+            foreach (var tab in item.PropertyGroups)
             {
                 if (tabNode.Elements("Tab").FirstOrDefault(x => x.Element("Caption").Value == tab.Name) == null)
                 {
                     // no tab of this name in the import... remove it.
+                    LogHelper.Debug<ContentTypeSerializer>("Removing Tab {0}", () => tab.Name);
                     tabsToRemove.Add(tab.Name);
                 }
             }
@@ -430,8 +446,10 @@ namespace Jumoo.uSync.Core.Serializers
             foreach (var name in tabsToRemove)
             {
                 item.PropertyGroups.Remove(name);
-            }            
+            }
+
         }
+
         #endregion
 
         #region ContentTypeBase Serialize Helpers

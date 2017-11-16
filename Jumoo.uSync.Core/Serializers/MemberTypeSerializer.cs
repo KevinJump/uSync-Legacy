@@ -73,9 +73,11 @@ namespace Jumoo.uSync.Core.Serializers
 
             DeserializeBase(item, info);
 
+            DeserializeTabSortOrder(item, node);
+
             var msg = DeserializeProperties(item, node);
 
-            DeserializeTabSortOrder(item, node);
+            CleanUpTabs(item, node);
 
             _memberTypeService.Save(item);
 

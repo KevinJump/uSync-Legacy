@@ -139,6 +139,8 @@ namespace Jumoo.uSync.Core.Serializers
                     item.SetDefaultTemplate(template);
             }
 
+            CleanUpTabs((IContentTypeBase)item, node);
+
             DeserializeTemplates(item, info);
 
             _contentTypeService.Save(item);

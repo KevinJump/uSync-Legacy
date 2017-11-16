@@ -123,6 +123,8 @@ namespace Jumoo.uSync.Core.Serializers
 
             var msg = DeserializeProperties(item, node);
 
+            CleanUpTabs(item, node);
+
             // this really needs to happen in a seperate step.
             // DeserializeStructure(item, node);
 
