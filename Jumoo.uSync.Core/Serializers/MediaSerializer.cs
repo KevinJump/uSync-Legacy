@@ -154,7 +154,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             var itemHash = attempt.Item.GetSyncHash();
 
-            return (nodeHash.Equals(itemHash));
+            return (!nodeHash.Equals(itemHash));
         }
 
         public override SyncAttempt<IMedia> DesearlizeSecondPass(IMedia item, XElement node)

@@ -86,6 +86,12 @@ namespace Jumoo.uSync.Core.Extensions
             if (copy.Name.LocalName == "Macro" && copy.Attribute("Key") != null)
                 copy.Attribute("Key").Remove();
 
+
+            if (copy.Attribute("updated") != null)
+            {
+                copy.Attribute("updated").Remove();
+            }
+
             return copy; 
         }
 
