@@ -16,6 +16,7 @@ using Umbraco.Core.Logging;
 
 using Jumoo.uSync.Core.Extensions;
 using Jumoo.uSync.Core.Helpers;
+using System.IO;
 
 namespace Jumoo.uSync.Core.Serializers
 {
@@ -65,7 +66,8 @@ namespace Jumoo.uSync.Core.Serializers
 
             if (item == null)
             {
-                var templatePath = IOHelper.MapPath(SystemDirectories.MvcViews + "/" + alias.ToSafeFileName() + ".cshtml");
+                //var templatePath = IOHelper.MapPath(SystemDirectories.MvcViews + "/" + alias.ToSafeFileName() + ".cshtml");
+                var templatePath = FindTemplate(alias);
                 if (!System.IO.File.Exists(templatePath))
                 {
                     templatePath = IOHelper.MapPath(SystemDirectories.Masterpages + "/" + alias.ToSafeFileName() + ".master");
@@ -121,6 +123,24 @@ namespace Jumoo.uSync.Core.Serializers
             _fileService.SaveTemplate(item);
 
             return SyncAttempt<ITemplate>.Succeed(item.Name, item, ChangeType.Import);
+        }
+		
+		private String FindTemplate(String alias) {
+            var templatePath = IOHelper.MapPath(SystemDirectories.MvcViews + "/" + alias.ToSafeFileName() + ".cshtml");
+            if (!System.IO.File.Exists(templatePath)) {
+                var viewsPath = IOHelper.MapPath(SystemDirectories.MvcViews);
+                var directories = Directory.GetDirectories(viewsPath);
+
+                foreach (var directory in directories.Where(x => !x.ToLower().Contains("partials"))) {
+                    var folder = Path.GetFileName(directory);
+                    String relativeFileUrl = string.Format(SystemDirectories.MvcViews + "/{0}/{1}.cshtml", folder, alias.ToSafeFileName());
+                    if (System.IO.File.Exists(IOHelper.MapPath(relativeFileUrl))) {
+                        templatePath = IOHelper.MapPath(relativeFileUrl);
+                    }
+                }
+            }
+
+            return templatePath;
         }
 
         internal override SyncAttempt<XElement> SerializeCore(ITemplate item)
