@@ -134,6 +134,13 @@
 
             foreach (var item in e.SavedEntities)
             {
+
+                String foundTemplate = FindTemplate(template.Alias);
+                String GeneratedTemplate = IOHelper.MapPath(string.Format(SystemDirectories.MvcViews + "/{0}.cshtml", template.Alias.ToSafeFileName()));
+                if (!String.IsNullOrEmpty(foundTemplate) && File.ReadAllText(foundTemplate).Equals(template.Content) && File.Exists(GeneratedTemplate) && File.ReadAllText(foundTemplate).Equals(File.ReadAllText(GeneratedTemplate))) {
+                    File.Delete(GeneratedTemplate);
+                }
+
                 LogHelper.Info<TemplateHandler>("Save: Saving uSync file for item: {0}", () => item.Name);
                 var action = ExportToDisk(item, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
 
@@ -147,6 +154,25 @@
                 }
 
             }
+        }
+
+        private String FindTemplate(String alias) {
+            var templatePath = "";
+
+            if (!File.Exists(templatePath)) {
+                var viewsPath = IOHelper.MapPath(SystemDirectories.MvcViews);
+                var directories = Directory.GetDirectories(viewsPath);
+
+                foreach (var directory in directories.Where(x => !x.ToLower().Contains("partials"))) {
+                    var folder = Path.GetFileName(directory);
+                    String relativeFileUrl = string.Format(SystemDirectories.MvcViews + "/{0}/{1}.cshtml", folder, alias.ToSafeFileName());
+                    if (File.Exists(IOHelper.MapPath(relativeFileUrl))) {
+                        templatePath = IOHelper.MapPath(relativeFileUrl);
+                    }
+                }
+            }
+
+            return templatePath;
         }
 
         public override uSyncAction ReportItem(string file)
