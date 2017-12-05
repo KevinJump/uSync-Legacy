@@ -11,6 +11,7 @@ namespace Jumoo.uSync.Core
     using System.Linq;
     using System;
     using System.Diagnostics;
+    using Mappers;
 
     public class uSyncCoreContext
     {
@@ -24,6 +25,8 @@ namespace Jumoo.uSync.Core
         }
 
         public Dictionary<string, ISyncSerializerBase> Serailizers;
+
+        public Dictionary<string, IContentMapper> Mappers;
 
         public ISyncContainerSerializerTwoPass<IContentType> ContentTypeSerializer { get; private set; }
         public ISyncContainerSerializerTwoPass<IMediaType> MediaTypeSerializer { get; private set; }
@@ -70,7 +73,7 @@ namespace Jumoo.uSync.Core
             MediaSerializer = new MediaSerializer();
             */
 
-            LogHelper.Debug<uSyncCoreContext>("Initializing uSync.Core");
+            LogHelper.Debug<uSyncCoreContext>("Initializing uSync.Core: [{0}]", ()=> this.Version);
 
             LoadSerializers();
 
@@ -110,6 +113,8 @@ namespace Jumoo.uSync.Core
 
             MediaFileMover = new uSyncMediaFileMover();
 
+            LoadMappers();
+
             sw.Stop();
             LogHelper.Info<uSyncCoreContext>("Loading Context ({0}ms)", () => sw.ElapsedMilliseconds);
         }
@@ -141,6 +146,46 @@ namespace Jumoo.uSync.Core
                         LogHelper.Debug<uSyncCoreContext>("Loading new Serializer for {0} {1}", () => instance.SerializerType, ()=> type.Name);
                         Serailizers.Remove(instance.SerializerType);
                         Serailizers.Add(instance.SerializerType, instance);
+                    }
+                }
+            }
+        }
+
+        public void LoadMappers()
+        {
+            Mappers = new Dictionary<string, IContentMapper>();
+
+            /*
+            foreach (var mapper in Configuration.Settings.ContentMappings)
+            {
+                if (!Mappers.ContainsKey(mapper.EditorAlias.ToLower()))
+                {
+                    var mapperType = Type.GetType(mapper.CustomMappingType);
+                    if (mapperType != null)
+                    {
+                        var instance = Activator.CreateInstance(mapperType) as IContentMapper;
+                        Mappers.Add(mapper.EditorAlias.ToLower(), instance);
+                    }
+                }
+            }
+            */
+
+            var types = TypeFinder.FindClassesOfType<IContentMapper2>();
+            if (types != null && types.Any())
+            {
+                foreach (var type in types)
+                {
+                    var instance = Activator.CreateInstance(type) as IContentMapper2;
+                    foreach (var alias in instance.PropertyEditorAliases)
+                    {
+                        if (!Mappers.ContainsKey(alias.ToLower()))
+                        {
+                            Mappers.Add(alias.ToLower(), instance);
+                        }
+                        else
+                        {
+                            LogHelper.Warn<uSyncCoreContext>("Multiple Mappers Found for : {0}", () => alias);
+                        }
                     }
                 }
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Umbraco.Core;
 using Umbraco.Core.Logging;
 
 namespace Jumoo.uSync.Core.Mappers
@@ -42,12 +43,39 @@ namespace Jumoo.uSync.Core.Mappers
         public static IContentMapper GetMapper(string alias)
         {
             var mapping = uSyncCoreContext.Instance.Configuration.Settings.ContentMappings
-                .SingleOrDefault(x => x.EditorAlias == alias);
+                .SingleOrDefault(x => x.EditorAlias.InvariantEquals(alias));
 
             if (mapping == null)
+            {
+                // look for a dynamic mappings
+                if (uSyncCoreContext.Instance.Mappers
+                    .Any(x => x.Key.InvariantEquals(alias)))
+                {
+                    var mapper = uSyncCoreContext.Instance.Mappers
+                        .FirstOrDefault(x => x.Key.InvariantEquals(alias));
+
+                    LogHelper.Debug<ContentMapperFactory>("Returning Mapper (dynamic): {0}", () => mapper.Key);
+
+                    return mapper.Value as IContentMapper;
+                }
+
                 return null;
+            }
             else
+            {
                 return GetMapper(mapping);
+            }
+        }
+
+        public static IContentMapper GetByViewName(string view)
+        {
+            var mapping = uSyncCoreContext.Instance.Configuration.Settings.ContentMappings
+                    .SingleOrDefault(x => !string.IsNullOrEmpty(x.View) && view.IndexOf(x.View, StringComparison.InvariantCultureIgnoreCase) > -1);
+
+            if (mapping != null)
+                return GetMapper(mapping);
+
+            return null;
         }
     }
 }

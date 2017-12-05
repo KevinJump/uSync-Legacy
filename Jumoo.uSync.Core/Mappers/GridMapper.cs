@@ -18,7 +18,7 @@ namespace Jumoo.uSync.Core.Mappers
     public class GridMapper : IContentMapper
     {
         IGridConfig gridConfig;
-        List<uSyncContentMapping> usyncMappings;
+        // List<uSyncContentMapping> usyncMappings;
 
         public GridMapper()
         {
@@ -29,7 +29,7 @@ namespace Jumoo.uSync.Core.Mappers
                 new DirectoryInfo(HttpContext.Current.Server.MapPath(SystemDirectories.Config)),
                 HttpContext.Current.IsDebuggingEnabled);
 
-            usyncMappings = uSyncCoreContext.Instance.Configuration.Settings.ContentMappings;
+            // usyncMappings = uSyncCoreContext.Instance.Configuration.Settings.ContentMappings;
 
         }
 
@@ -134,30 +134,21 @@ namespace Jumoo.uSync.Core.Mappers
             var alias = editor.Value<string>("alias");
             var uSyncAlias = string.Format("grid.{0}", alias);
 
-            var mapping = usyncMappings.SingleOrDefault(x => x.EditorAlias == uSyncAlias);
-            if (mapping == null)
+            // var mapping = usyncMappings.SingleOrDefault(x => x.EditorAlias == uSyncAlias);
+            var mapper = ContentMapperFactory.GetMapper(uSyncAlias);
+            if (mapper == null)
             {
-                // lookup in the grid config
+                // get by view name. 
                 var config = gridConfig.EditorsConfig.Editors
                     .SingleOrDefault(x => x.Alias == alias);
 
-                // lookup by view 
                 if (config != null)
                 {
-                    mapping = usyncMappings
-                        .SingleOrDefault(
-                            x => !string.IsNullOrEmpty(x.View)
-                            && config.View.IndexOf(x.View, StringComparison.InvariantCultureIgnoreCase)>0);
+                    mapper = ContentMapperFactory.GetByViewName(config.View);
                 }
             }
 
-            if (mapping != null)
-            {
-                var mapper = ContentMapperFactory.GetMapper(mapping);
-                return mapper;
-            }
-
-            return null;
+            return mapper;
         }
 
         private JArray GetArray(JObject obj, string propertyName)

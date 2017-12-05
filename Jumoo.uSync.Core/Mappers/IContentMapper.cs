@@ -12,4 +12,9 @@ namespace Jumoo.uSync.Core.Mappers
         string GetExportValue(int dataTypeDefinitionId, string value);
         string GetImportValue(int dataTypeDefinitionId, string content);
     }
+
+    public interface IContentMapper2 : IContentMapper
+    {
+        string[] PropertyEditorAliases { get; }
+    }
 }

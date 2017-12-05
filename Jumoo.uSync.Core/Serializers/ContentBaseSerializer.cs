@@ -171,19 +171,12 @@ namespace Jumoo.uSync.Core.Serializers
                 var mapping = uSyncCoreContext.Instance.Configuration.Settings.ContentMappings
                     .SingleOrDefault(x => x.EditorAlias == propType.PropertyEditorAlias);
 
+                var mapper = ContentMapperFactory.GetMapper(propType.PropertyEditorAlias);
 
-                if (mapping != null)
+                if (mapper != null)
                 {
-                    LogHelper.Debug<Events>("Mapping Content Export: {0} {1}", () => mapping.EditorAlias, () => mapping.MappingType);
-
-                    IContentMapper mapper = ContentMapperFactory.GetMapper(mapping);
-
-                    if (mapper != null)
-                    {
-                        // we need to check if we got a cdata section, in and wrap it again on the way out.
-
-                        return ReplaceInnerXml(value, mapper.GetExportValue(propType.DataTypeDefinitionId, val));
-                    }
+                    // we need to check if we got a cdata section, in and wrap it again on the way out.
+                    return ReplaceInnerXml(value, mapper.GetExportValue(propType.DataTypeDefinitionId, val));
                 }
             }
             return GetInnerXml(value);

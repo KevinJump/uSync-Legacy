@@ -8,10 +8,11 @@ using Newtonsoft.Json.Linq;
 
 using Jumoo.uSync.Core;
 using Jumoo.uSync.Core.Mappers;
+using System;
 
 namespace Jumoo.uSync.ContentMappers
 {
-    public class NestedContentMapper : IContentMapper
+    public class NestedContentMapper : IContentMapper2
     {
         private IContentTypeService _contentTypeService;
         private IDataTypeService _dataTypeService;
@@ -22,6 +23,7 @@ namespace Jumoo.uSync.ContentMappers
             _dataTypeService = ApplicationContext.Current.Services.DataTypeService;
         }
 
+        public string[] PropertyEditorAliases => new[] { "Our.Umbraco.NestedContent", "Umbraco.NestedContent" };
         public string GetExportValue(int dataTypeDefinitionId, string value)
         {
             var array = JsonConvert.DeserializeObject<JArray>(value);
@@ -76,7 +78,7 @@ namespace Jumoo.uSync.ContentMappers
                         var dataType = _dataTypeService.GetDataTypeDefinitionById(propertyType.DataTypeDefinitionId);
                         if (dataType != null)
                         {
-                            IContentMapper mapper = ContentMapperFactory.GetMapper(dataType.PropertyEditorAlias);
+                            var mapper = ContentMapperFactory.GetMapper(dataType.PropertyEditorAlias);
                             if (mapper != null)
                             {
                                 nestedObject[propertyType.Alias] =
