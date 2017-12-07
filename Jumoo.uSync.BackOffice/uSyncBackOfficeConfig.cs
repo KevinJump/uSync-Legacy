@@ -83,6 +83,40 @@ namespace Jumoo.uSync.BackOffice
                 // save the defaults to disk...
                 SaveSettings(_settings);
             }
+
+            /// get setting from web.config
+            _settings.Import = WebConfigSetting("uSync.Import", _settings.Import);
+            _settings.ExportAtStartup = WebConfigSetting("uSync.ExportAtStartup", _settings.ExportAtStartup);
+            _settings.ExportOnSave = WebConfigSetting("uSync.ExportOnSave", _settings.ExportOnSave);
+
+            _settings.HandlerGroup = WebConfigSetting("uSync.HandlerGroup", _settings.HandlerGroup);
+        }
+
+        private bool WebConfigSetting(string keyName, bool configSetting)
+        {
+            var configValue = ConfigurationManager.AppSettings[keyName];
+            if (!string.IsNullOrWhiteSpace(configValue))
+            {
+                bool configBoolValue = configSetting;
+                if (bool.TryParse(configValue, out configBoolValue))
+                {
+                    LogHelper.Info<uSyncBackOfficeConfig>("Overiding setting from WebConfig: [{0}] {1}", () => keyName, () => configBoolValue);
+                    return configBoolValue;
+                }
+            }
+
+            return configSetting;
+        }
+
+        private string WebConfigSetting(string keyName, string defaultValue)
+        {
+            var configValue = ConfigurationManager.AppSettings[keyName];
+            if (!string.IsNullOrWhiteSpace(configValue))
+            {
+                LogHelper.Info<uSyncBackOfficeConfig>("Overiding setting from WebConfig: [{0}] {1}", () => keyName, () => configValue);
+                return configValue;
+            }
+            return defaultValue;
         }
 
         public void SaveSettings(uSyncBackOfficeSettings settings)
