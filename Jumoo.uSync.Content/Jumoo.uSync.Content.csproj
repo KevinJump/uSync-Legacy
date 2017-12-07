@@ -294,6 +294,7 @@
     <Compile Include="ContentEdition.cs" />
     <Compile Include="ContentHandler.cs" />
     <Compile Include="ContentTemplateHandler.cs" />
+    <Compile Include="DomainHandler.cs" />
     <Compile Include="MediaHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

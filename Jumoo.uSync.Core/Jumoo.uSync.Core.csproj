@@ -325,6 +325,7 @@
     <Compile Include="Serializers\DataTypeSerializer.cs" />
     <Compile Include="Serializers\DataTypeSyncBaseSerializer.cs" />
     <Compile Include="Serializers\DictionarySerializer.cs" />
+    <Compile Include="Serializers\DomainSerializer.cs" />
     <Compile Include="Serializers\LanguageSerializer.cs" />
     <Compile Include="Serializers\MacroSerializer.cs" />
     <Compile Include="Serializers\MediaSerializer.cs" />

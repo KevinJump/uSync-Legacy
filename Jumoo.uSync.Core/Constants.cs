@@ -29,6 +29,8 @@ namespace Jumoo.uSync.Core
             public const int Content = USYNC_RESERVED_LOWER + 210;
             public const int ContentTemplate = USYNC_RESERVED_LOWER + 215;
 
+            public const int DomainSettings = USYNC_RESERVED_LOWER + 219;
+
             public const int DataTypeMappings = USYNC_RESERVED_LOWER + 220;
         }
 
@@ -50,6 +52,8 @@ namespace Jumoo.uSync.Core
             public const string Macro = "Macro";
             public const string Template = "Template";
             public const string MemberType = "MemberType";
+
+            public const string Domain = "Domain";
 
             public const string Media = "Media";
             public const string Content = "Content";

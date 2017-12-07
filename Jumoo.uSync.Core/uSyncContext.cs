@@ -44,6 +44,8 @@ namespace Jumoo.uSync.Core
         public ISyncSerializerWithParent<IContent> ContentSerializer { get; private set; }
         public ISyncSerializerWithParent<IMedia> MediaSerializer { get; private set; }
 
+        public ISyncSerializer<IDomain> DomainSerializer { get; private set; }
+
         public ISyncFileHander2<IMedia> MediaFileMover { get; private set; }
 
         public uSyncCoreConfig Configuration { get; set; }
@@ -109,6 +111,9 @@ namespace Jumoo.uSync.Core
 
                 if (Serailizers[uSyncConstants.Serailization.Media] is MediaSerializer)
                     MediaSerializer = (MediaSerializer)Serailizers[uSyncConstants.Serailization.Media];
+
+                if (Serailizers[uSyncConstants.Serailization.Domain] is DomainSerializer)
+                    DomainSerializer = (DomainSerializer)Serailizers[uSyncConstants.Serailization.Domain];
             }
 
             MediaFileMover = new uSyncMediaFileMover();
