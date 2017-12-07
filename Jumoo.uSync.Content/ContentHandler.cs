@@ -40,7 +40,20 @@ namespace Jumoo.uSync.Content
 
             var node = XElement.Load(filePath);
             return uSyncCoreContext.Instance.ContentSerializer.Deserialize(node, parentId, force);
-            
+           
+        }
+
+        public override uSyncAction DeleteItem(Guid key, string keyString)
+        {
+            if (key == Guid.Empty)
+                return uSyncAction.Fail(keyString, typeof(IContent), ChangeType.Delete, "Invalid Guid Key");
+
+            var item = _contentService.GetById(key);
+            if (item == null)
+                return uSyncAction.Fail(keyString, typeof(IContent), ChangeType.Delete, "Item not found");
+
+            _contentService.Delete(item);
+            return uSyncAction.SetAction(true, keyString, typeof(IContent), ChangeType.Delete, "Deleted");
         }
 
         public override void ImportSecondPass(string file, IContent item)
@@ -166,6 +179,12 @@ namespace Jumoo.uSync.Content
             LogHelper.Info<ContentHandler>("Content Trashed:");
             foreach (var moveInfo in e.MoveInfoCollection)
             {
+                if (handlerSettings.DeleteActions)
+                {
+                    uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, moveInfo.Entity.Key, moveInfo.Entity.Name, typeof(IContent));
+                }
+
+
                 uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetContentPath(moveInfo.Entity), "content");
             }
         }
@@ -187,6 +206,5 @@ namespace Jumoo.uSync.Content
             var update = uSyncCoreContext.Instance.ContentSerializer.IsUpdate(node);
             return uSyncActionHelper<IContent>.ReportAction(update, node.NameFromNode());
         }
-
     }
 }

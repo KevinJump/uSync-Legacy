@@ -17,6 +17,7 @@ using Jumoo.uSync.Core.Extensions;
 namespace Jumoo.uSync.Content
 {
     abstract public class BaseContentHandler<T>
+        where T : IContentBase
     {
         internal IContentService _contentService;
         internal IMediaService _mediaService; 
@@ -26,7 +27,7 @@ namespace Jumoo.uSync.Content
 
         private bool _ignorePathSettingOn;
         private bool _rootPathSettingOn;
-        private bool _levelPathsOn; 
+        private bool _levelPathsOn;
 
         public BaseContentHandler(string fileName)
         {
@@ -61,6 +62,8 @@ namespace Jumoo.uSync.Content
             List<uSyncAction> actions = new List<uSyncAction>();
 
             string mappedFolder = Umbraco.Core.IO.IOHelper.MapPath(folder);
+
+            actions.AddRange(ProcessActions());
 
             actions.AddRange(ImportFolder(mappedFolder, -1, force, updates));
 
@@ -114,6 +117,34 @@ namespace Jumoo.uSync.Content
             }
             return actions;
         }
+
+        private IEnumerable<uSyncAction> ProcessActions()
+        {
+            List<uSyncAction> syncActions = new List<uSyncAction>();
+
+            var actions = uSyncBackOfficeContext.Instance.Tracker.GetActions(typeof(T));
+
+            if (actions != null && actions.Any())
+            {
+                foreach(var action in actions)
+                {
+                    switch(action.Action)
+                    {
+                        case SyncActionType.Delete:
+                            syncActions.Add(DeleteItem(action.Key, action.Name));
+                            break;
+                    }
+                }
+            }
+
+            return syncActions;
+        }
+
+        virtual public uSyncAction DeleteItem(Guid key, string keyString)
+        {
+            return new uSyncAction();
+        }
+
         #endregion
 
         #region  Base Export
@@ -191,6 +222,11 @@ namespace Jumoo.uSync.Content
                         case "levelpath":
                             bool.TryParse(setting.Value, out _levelPathsOn);
                             LogHelper.Debug<ContentHandler>("Level Paths : {0}", ()=> _levelPathsOn);
+                            break;
+                        case "deleteactions":
+                            bool delete = false;
+                            if (bool.TryParse(setting.Value, out delete))
+                                handlerSettings.DeleteActions = delete;
                             break;
                     }
                 }
@@ -274,6 +310,8 @@ namespace Jumoo.uSync.Content
 
             public string Root { get; set; }
             public string Ignore { get; set; }
+
+            public bool DeleteActions { get; set; }
         }
     }
 

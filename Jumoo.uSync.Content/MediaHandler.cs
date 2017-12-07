@@ -42,6 +42,19 @@ namespace Jumoo.uSync.Content
             return attempt;
         }
 
+        public override uSyncAction DeleteItem(Guid key, string keyString)
+        {
+            if (key == Guid.Empty)
+                return uSyncAction.Fail(keyString, typeof(IMedia), ChangeType.Delete, "Invalid Guid Key");
+
+            var item = _mediaService.GetById(key);
+            if (item == null)
+                return uSyncAction.Fail(keyString, typeof(IMedia), ChangeType.Delete, "Item not found");
+
+            _mediaService.Delete(item);
+            return uSyncAction.SetAction(true, keyString, typeof(IContent), ChangeType.Delete, "Deleted");
+        }
+
         public override void ImportSecondPass(string file, IMedia item)
         {
             XElement node = XElement.Load(file);
@@ -128,6 +141,11 @@ namespace Jumoo.uSync.Content
 
             foreach(var moveInfo in e.MoveInfoCollection)
             {
+                if (handlerSettings.DeleteActions)
+                {
+                    uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Delete, moveInfo.Entity.Key, moveInfo.Entity.Name, typeof(IMedia));
+                }
+
                 uSyncIOHelper.ArchiveRelativeFile(SyncFolder, GetMediaPath(moveInfo.Entity), "media");
             }
         }
