@@ -1,0 +1,11 @@
+﻿{
+    "javascript" : [
+        '~/App_Plugins/NestedContent/Js/nestedcontent.filters.js',
+        '~/App_Plugins/NestedContent/Js/nestedcontent.resources.js',
+        '~/App_Plugins/NestedContent/Js/nestedcontent.directives.js',
+        '~/App_Plugins/NestedContent/Js/nestedcontent.controllers.js'
+    ],
+    "css" : [
+        "~/App_Plugins/NestedContent/Css/nestedcontent.css"
+    ]
+}

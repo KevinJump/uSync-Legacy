@@ -1,0 +1,32 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.Blog>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{
+    Layout = "Master.cshtml";
+}
+@Html.Partial("~/Views/Partials/SectionHeader.cshtml")
+
+<section class="section">
+
+    <div class="container">
+
+        @Umbraco.RenderMacro("latestBlogposts",
+                     new
+                     {
+                         numberOfPosts = Model.Content.HowManyPostsShouldBeShown,
+                         startNodeId = Model.Content.Id
+                     })
+        <!-- todo: implement paging -->
+        <!--
+        <nav class="nav-bar nav-bar--center">
+            <a class="nav-link nav-link--black" href="">Prev</a>
+            <a class="nav-link nav-link--black nav-link--active" href="">P1</a>
+            <a class="nav-link nav-link--black" href="">P2</a>
+            <a class="nav-link nav-link--black" href="">P3</a>
+            <a class="nav-link nav-link--black" href="">P4</a>
+            <a class="nav-link nav-link--black" href="">P5</a>
+            <a class="nav-link nav-link--black" href="">Next</a>
+        </nav>
+        -->
+    </div>
+
+</section>

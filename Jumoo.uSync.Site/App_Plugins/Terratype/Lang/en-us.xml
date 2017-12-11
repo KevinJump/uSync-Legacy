@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<language alias="en" intName="English (US)" localName="English (US)" lcid="" culture="en-US">
+  <creator>
+    <name>Jonathan Richards</name>
+  </creator>
+
+  <area alias="terratypeBd09">
+    <key alias="name">BD-09</key>
+    <key alias="description">Variant of GCJ-02, as required by Chinese State Law. Display format is Latitude,Longitude</key>
+    <key alias="referenceUrl">https://en.wikipedia.org/wiki/Restrictions_on_geographic_data_in_China#BD-09</key>
+  </area>
+
+  <area alias="terratypeGcj02">
+    <key alias="name">GCJ-02</key>
+    <key alias="description">Under Chinese state law regarding restrictions on geographic data, you must use GCJ-02 encoded coordinates in China or for displaying Chinese coordinates correctly. Display format is Latitude,Longitude</key>
+    <key alias="referenceUrl">https://en.wikipedia.org/wiki/Restrictions_on_geographic_data_in_China#GCJ-02</key>
+  </area>
+
+  <area alias="terratypeWgs84">
+    <key alias="name">WGS-84</key>
+    <key alias="description">Standard World Geodetic System as used by GPS system, and adopted worldwide except for China (see GCJ-02). Display format is Latitude,Longitude</key>
+    <key alias="referenceUrl">https://en.wikipedia.org/wiki/World_Geodetic_System#Longitudes_on_WGS_84</key>
+  </area>
+
+  <area alias="terratypeLabelStandard">
+    <key alias="name">Standard</key>
+    <key alias="description">Standard plain label</key>
+    <key alias="foregroundLabel">Foreground Color:</key>
+    <key alias="foregroundDescription">Foreground color for the label</key>
+    <key alias="backgroundLabel">Background Color:</key>
+    <key alias="backgroundDescription">Background color for the label</key>
+    <key alias="contentLabel">Content:</key>
+    <key alias="contentDescription">Content of the label, that is displayed when a user clicks the icon on the map</key>
+  </area>
+
+  <area alias="terratypeLabelOverlay">
+    <key alias="title">Label</key>
+    <key alias="subtitle">Set the popup text that is displayed when the user clicks the map icon</key>
+  </area>
+  
+  <area alias="terratypeEditor">
+    <key alias="debugMode">DEBUG MODE</key>
+    <key alias="reviewDate">Review Date</key>
+    <key alias="terratypeEditor_error">Error loading Terratype control, the json below is corrupt</key>
+    <key alias="error">There was an error loading this map</key>
+  </area>
+
+  <area alias="terratypeConfig">
+    <key alias="mapProviderLabel">Map Provider:</key>
+    <key alias="mapProviderDescription">Select which system you wish to use to display maps</key>
+    <key alias="mapProviderError"><![CDATA[No Terratype map providers have been installed. Please read the <a href="https://github.com/Joniff/Terratype#installing-providers">documentation</a> for details on how to install providers]]></key>
+
+    <key alias="definitionHeading">Configure</key>
+    <key alias="definitionCoordinateSystemLabel">Coordinate System:</key>
+    <key alias="definitionCoordinateSystemDescription">Which Geodetic Coordinate System do you wish to use to present and store locations</key>
+
+    <key alias="searchHeading">Search</key>
+
+    <key alias="appearanceHeading">Appearance</key>
+    <key alias="appearanceHeightLabel">Height:</key>
+    <key alias="appearanceHeightDescription">The height of the map as displayed to the content editor in pixels</key>
+    <key alias="appearanceHeightPlaceholder">Height of map in pixels</key>
+
+    <key alias="iconHeading">Icon</key>
+    <key alias="iconPredefineLabel">Predefine:</key>
+    <key alias="iconPredefineDescription">Select the Map marker image to display the selected location on the map, you can choose from a predefine list or your own custom attributes</key>
+    <key alias="iconUrlLabel">Image Url:</key>
+    <key alias="iconUrlDescription">Image location. If you include a protocol (http:// or https://), make sure it matches your website</key>
+    <key alias="iconUrlPlaceholder">Url</key>
+    <key alias="iconUrlError">Error:</key>
+    <key alias="iconWidthLabel">Width:</key>
+    <key alias="iconWidthDescription">Width of the image in pixels</key>
+    <key alias="iconWidthPlaceholder">Numeric value</key>
+    <key alias="iconHeightLabel">Height:</key>
+    <key alias="iconHeightDescription">Height of the image in pixels</key>
+    <key alias="iconHeightPlaceholder">Numeric value</key>
+    <key alias="iconHorizontalAnchorLabel">Horizontal Anchor:</key>
+    <key alias="iconHorizontalAnchorDescription">Focal point of the icon. Ether enter a custom value in pixels from the left hand edge or choose from a predefine list</key>
+    <key alias="iconHorizontalAnchorManualPlaceholder">Use custom value</key>
+    <key alias="iconHorizontalAnchorAutomaticPlaceholder">Use predefine value</key>
+    <key alias="iconHorizontalAnchorLeft">Left</key>
+    <key alias="iconHorizontalAnchorCenter">Center</key>
+    <key alias="iconHorizontalAnchorRight">Right</key>
+    <key alias="iconHorizontalAnchorError">Your focal point is now located outside the boundary of the image</key>
+    <key alias="iconVerticalAnchorLabel">Vertical Anchor:</key>
+    <key alias="iconVerticalAnchorDescription">Focal point of the icon. Ether enter a custom value in pixels from the top edge or choose from a predefine list</key>
+    <key alias="iconVerticalAnchorManualPlaceholder">Use custom value</key>
+    <key alias="iconVerticalAnchorAutomaticPlaceholder">Use predefine value</key>
+    <key alias="iconVerticalAnchorTop">Top</key>
+    <key alias="iconVerticalAnchorCenter">Center</key>
+    <key alias="iconVerticalAnchorBottom">Bottom</key>
+    <key alias="iconVerticalAnchorError">Your focal point is now located outside the boundary of the image</key>
+
+    <key alias="labelHeading">Label</key>
+    <key alias="labelEnableLabel">Enable:</key>
+    <key alias="labelEnableDescription">Allow the editor to add a custom label to the map icon</key>
+    <key alias="labelEditPositionLabel">Edit Position:</key>
+    <key alias="labelEditPositionDescription">Where to position the edit box so that editor can enter their own label</key>
+    <key alias="labelEditPositionBelow">Below the map</key>
+    <key alias="labelEditPositionOverlay">As an overlay when you click the map icon</key>
+    <key alias="labelLabel">Style:</key>
+    <key alias="labelDescription">Choose a style for your popup label</key>
+    
+    <key alias="gridHeading">Grid</key>
+    <key alias="gridLabel">Enable:</key>
+    <key alias="gridDescription">Allow this map to be added to a grid</key>
+    <key alias="gridNameLabel">Name:</key>
+    <key alias="gridNameDescription">The name the Grid editor will know this map as</key>
+    <key alias="gridNamePlaceholder">Name...</key>
+    
+    <key alias="debugHeading">Debugger</key>
+    <key alias="debugJsonLabel">Show Json:</key>
+    <key alias="debugJsonDescription">Do you want to show the map or a json editor. This is for developer debugging purposes only and shows the underlying values being stored for this data type. Editing of the values directly influences the control</key>
+    <key alias="debugJsonDisable">Show map only</key>
+    <key alias="debugJsonEnable">Show json only</key>
+    <key alias="debugJsonBoth">Show both map and json</key>
+    <key alias="debugJsonLiveDescription">Warning: This is a live representation of the configuration of this data type, changes made by you will directly influence the control immediately, errors made by you will corrupt the data type</key>
+  </area>
+
+  <area alias="terratypeGrid">
+    <key alias="insert">Click to insert map</key>
+  </area>
+
+  <area alias="terratypeGridOverlay">
+    <key alias="title">Map</key>
+    <key alias="subtitle">Embedded interactive map</key>
+    <key alias="dataTypeLabel">Map:</key>
+    <key alias="dataTypeDescription">Select which map you would like to use</key>
+    <key alias="mapDataTypeError">No maps have been created</key>
+    <key alias="locationLabel">Location:</key>
+    <key alias="locationDescription">Where would you like this map to point to</key>
+  </area>
+
+</language>

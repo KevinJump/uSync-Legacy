@@ -64,6 +64,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.ExplicitSync", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.Audit", "Jumoo.uSync.Audit\Jumoo.uSync.Audit.csproj", "{BDCCD510-99A7-4DEF-A635-2DB8EE0C0EE8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.Complete", "Jumoo.uSync.Complete\Jumoo.uSync.Complete.csproj", "{E0B763F3-EE86-4E42-BD6E-A2B1D1EA925F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.Site", "Jumoo.uSync.Site\Jumoo.uSync.Site.csproj", "{B658A2EA-D3AF-48AC-994E-10162C788BD7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2BCA7840-10E7-42C7-B829-B847CF063AF4}"
+	ProjectSection(SolutionItems) = preProject
+		gulpfile.js = gulpfile.js
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -106,6 +115,14 @@ Global
 		{BDCCD510-99A7-4DEF-A635-2DB8EE0C0EE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDCCD510-99A7-4DEF-A635-2DB8EE0C0EE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDCCD510-99A7-4DEF-A635-2DB8EE0C0EE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0B763F3-EE86-4E42-BD6E-A2B1D1EA925F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0B763F3-EE86-4E42-BD6E-A2B1D1EA925F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0B763F3-EE86-4E42-BD6E-A2B1D1EA925F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0B763F3-EE86-4E42-BD6E-A2B1D1EA925F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B658A2EA-D3AF-48AC-994E-10162C788BD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B658A2EA-D3AF-48AC-994E-10162C788BD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B658A2EA-D3AF-48AC-994E-10162C788BD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B658A2EA-D3AF-48AC-994E-10162C788BD7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

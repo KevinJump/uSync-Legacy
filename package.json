@@ -1,0 +1,25 @@
+{
+  "name": "usync",
+  "version": "1.0.0",
+  "description": "![Build Status](https://jumoo.visualstudio.com/_apis/public/build/definitions/e5bc8d11-6d47-4620-9e6e-dd8199b2843e/6/badge)",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KevinJump/uSync.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KevinJump/uSync/issues"
+  },
+  "homepage": "https://github.com/KevinJump/uSync#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1"
+  }
+}
