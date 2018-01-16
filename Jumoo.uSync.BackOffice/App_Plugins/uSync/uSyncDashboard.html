@@ -19,17 +19,17 @@
                 <!-- usync tab -->
                 <div class="row">
                     <div class="span12">
-                            <small>(uSync.BackOffice {{settings.backOfficeVersion}})</small>
-                            <small>
-                                (uSync.Core {{settings.coreVersion}})
-                                <span class="text-success">
-                                    {{settings.addOns}}
-                                </span>
-                            </small>
+                        <small>(uSync.BackOffice {{settings.backOfficeVersion}})</small>
+                        <small>
+                            (uSync.Core {{settings.coreVersion}})
+                            <span class="text-success">
+                                {{settings.addOns}}
+                            </span>
+                        </small>
                         </h3>
                     </div>
                 </div>
-                
+
                 <div class="row">
                     <div class="span12">
                         <h4 class="page-header">Import / Export</h4>
@@ -55,11 +55,12 @@
                             <p>
                                 <button class="btn btn-mini btn-warning" ng-click="import(true)" ng-disabled="reporting">Full Import</button>
                                 <small class="muted">Import everything (even if it's the same)</small>
-                            </p>                            
+                            </p>
                             <p>
                                 <button class="btn btn-mini btn-inverse" ng-click="export()" ng-disabled="reporting">Full Export</button>
-                                <small class="muted">Export everything to disk (wipes current folder)
-                                <br/>
+                                <small class="muted">
+                                    Export everything to disk (wipes current folder)
+                                    <br />
                                     <label style="padding-left: 5em;"><input type="checkbox" ng-model="deleteActionFile" /> also delete the action file (<a href="http://usync.readthedocs.io/action-file/" target="_blank">should I?</a>))</label>
                                 </small>
 
@@ -156,7 +157,7 @@
                     </p>
                     <p>
                         Sometimes you can end up with orphaned, actions in the action file; they usually do no harm, but if you want
-                        you can remove them here. 
+                        you can remove them here.
                     </p>
 
                     <table class="table">
@@ -179,7 +180,7 @@
                         </tbody>
                     </table>
                 </div>
-           </div>
+            </div>
 
             <div class="tab-pane" id="usync_history">
                 <!-- histroy -->
@@ -284,14 +285,28 @@
                             Installed handlers, that actually do all the work of getting things to and from disk. You
                             can turn handlers on and off in the uSyncBackoffice.config file.
                         </p>
-                        <strong>Loaded Handlers.</strong>
+                        <strong>Handler Groups</strong>
                         <p>
-                            There may be more handlers in the config, but these are the ones uSync has loaded. 
+                            Handlers are loaded by group - the <strong>{{settings.settings.HandlerGroup}}</strong> group is used on all default
+                            actions
                         </p>
                         <div id="handlerAccordion">
-                            <div ng-repeat="handler in settings.Handlers">
-                                <ul>
-                                    <li>{{handler}}</li>
+                            <div ng-repeat="handlerGroup in settings.settings.Handlers">
+                                <h4>
+                                    <a href data-toggle="collapse" data-target="#group_{{handlerGroup.Group}}">
+                                        Group Name : <em>{{handlerGroup.Group}}</em>
+                                    </a>
+                                    <small ng-if="handlerGroup.EnableMissing">will also load handlers not explicity listed in config file</small>
+                                </h4>
+                                <ul class="collapse" ng-class="{'in': handlerGroup.Group == settings.settings.HandlerGroup}"
+                                    id="group_{{handlerGroup.Group}}">
+                                    <li ng-repeat="handler in handlerGroup.Handlers"
+                                        ng-class="{'text-error': !handler.Enabled, 'text-success': handler.Enabled}">
+                                        <i class="icon icon-check" ng-if="handler.Enabled"></i>
+                                        <i class="icon icon-wrong" ng-if="!handler.Enabled"></i>
+
+                                        {{handler.Name}} (Enabled: {{handler.Enabled}})
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -308,8 +323,8 @@
                 <div ng-hide="settings.licenced">
                     <p>
                         <!-- yes you can just remove this box, and lose the warning (don't forget the icon on the tab above)
-                    but you will feel dirty, like you've stolen someones' chips.
-            -->
+                                but you will feel dirty, like you've stolen someones' chips.
+                        -->
                         <div class="alert alert-warning">
                             Your version of uSync is unlicenced.
                             It doesn't stop anything from working, but you can make yourself feel better with a
@@ -376,20 +391,20 @@
                             <a href="https://github.com/KevinJump/uSync/" target="_blank" class="btn btn-default">uSync on GitHub</a>
                         </div>
                         <p>
-                            Go look at the uSync GitHub repository, fork it, do some code stuff and 
+                            Go look at the uSync GitHub repository, fork it, do some code stuff and
                             submit a pull request. We'll merge it in and put it in the next release.
                         </p>
                         <h4>Submit bugs</h4>
                         <p>
                             If most of that sounded like a foreign language, or if you can't be bothered
-                            with it, you can still submit bugs to our issue tracker. 
+                            with it, you can still submit bugs to our issue tracker.
                         </p>
                         <div class="usync-button">
                             <a href="https://github.com/KevinJump/uSync/issues" target="_blank" class="btn btn-warning btn-lg">Submit an issue</a>
                         </div>
                         <p>
                             We will work with you to get to the bottom of whats going on, and more than
-                            likely we'll fix the issue for you. 
+                            likely we'll fix the issue for you.
                         </p>
                     </div>
                 </div>
