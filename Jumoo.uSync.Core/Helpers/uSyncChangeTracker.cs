@@ -204,7 +204,7 @@ namespace Jumoo.uSync.Core.Helpers
 
                     changes.Add(new uSyncChange
                     {
-                        Path = path.Substring(0, path.LastIndexOf('.')),
+                        Path = path.Substring(0, index),
                         Name = GetElementName(targetNode.Name.LocalName, targetNode),
                         Change = ChangeDetailType.Update,
                         NewVal = targetNode.Value,
