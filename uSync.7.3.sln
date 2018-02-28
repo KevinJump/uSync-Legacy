@@ -73,6 +73,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		gulpfile.js = gulpfile.js
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.Integrity.Test", "Jumoo.uSync.Integrity.Tests\Jumoo.uSync.Integrity.Test.csproj", "{454E0EBF-9AD8-45F2-BBD7-B47BED8000E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -123,6 +125,10 @@ Global
 		{B658A2EA-D3AF-48AC-994E-10162C788BD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B658A2EA-D3AF-48AC-994E-10162C788BD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B658A2EA-D3AF-48AC-994E-10162C788BD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{454E0EBF-9AD8-45F2-BBD7-B47BED8000E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{454E0EBF-9AD8-45F2-BBD7-B47BED8000E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{454E0EBF-9AD8-45F2-BBD7-B47BED8000E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{454E0EBF-9AD8-45F2-BBD7-B47BED8000E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
