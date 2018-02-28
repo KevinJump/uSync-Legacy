@@ -163,6 +163,9 @@ namespace Jumoo.uSync.Core.Serializers
 
         public override bool IsUpdate(XElement node)
         {
+            if (node.IsArchiveFile())
+                return false;
+
             var nodeHash = node.GetSyncHash();
             if (string.IsNullOrEmpty(nodeHash))
                 return true;

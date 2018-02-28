@@ -212,6 +212,9 @@ angular.module('umbraco').controller('uSyncDashboardController',
         ];
 
         $scope.getChangeName = function (changeValue) {
+            if (changeValue < 0) {
+                return "archived item";
+            }
             return $scope.changeVals[changeValue];
         }
 
