@@ -138,33 +138,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             // are saved - so we just wait a little while before 
             // we save our datatype... 
             //  not ideal but them's the breaks.
-            //
-            //
-            //
-            _saveTimer = new Timer(4064); // 1/2 a perfect wait.
-            _saveTimer.Elapsed += _saveTimer_Elapsed;
-
-            _saveQueue = new Queue<int>();
-            _saveLock = new object();
         }
-
-        private void _saveTimer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            lock( _saveLock)
-            {
-                while (_saveQueue.Count > 0 )
-                {
-                    int id = _saveQueue.Dequeue();
-
-                    var item = _dataTypeService.GetDataTypeDefinitionById(id);
-                    if (item != null)
-                    {
-                        SaveToDisk(item);
-                    }
-                }
-            }
-        }
-
 
 
         private void DataTypeService_SavedContainer(IDataTypeService sender, Umbraco.Core.Events.SaveEventArgs<EntityContainer> e)
@@ -198,14 +172,9 @@ namespace Jumoo.uSync.BackOffice.Handlers
             if (uSyncEvents.Paused)
                 return;
 
-            lock (_saveLock)
+            foreach (var item in e.SavedEntities)
             {
-                _saveTimer.Stop();
-                _saveTimer.Start();
-                foreach (var item in e.SavedEntities)
-                {
-                    _saveQueue.Enqueue(item.Id);
-                }
+                SaveToDisk(item);
             }
         }
 
@@ -213,16 +182,10 @@ namespace Jumoo.uSync.BackOffice.Handlers
         {
             if (uSyncEvents.Paused)
                 return;
-
-            lock(_saveLock)
-            {
-                _saveTimer.Stop();
-                _saveTimer.Start();
-                foreach(var item in e.MoveInfoCollection)
+                foreach (var item in e.MoveInfoCollection)
                 {
-                    _saveQueue.Enqueue(item.Entity.Id);
+                    SaveToDisk(item.Entity);
                 }
-            }
         }
 
         private void SaveToDisk(IDataTypeDefinition item)
