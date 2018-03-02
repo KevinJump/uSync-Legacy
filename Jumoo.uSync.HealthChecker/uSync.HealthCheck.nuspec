@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
+  <metadata>
+    <id>uSync.HealthCheck</id>
+    <version>1.0.0-beta</version>
+    <title>uSync HealthCheck</title>
+    <authors>Kevin Jump</authors>
+    <owners>Jumoo</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Adds some uSync health checks to the health check dashboard.</description>
+    <summary>Health Checks for uSync</summary>
+    <releaseNotes>1.0.0 Beta</releaseNotes>
+    <copyright>Jumoo 2017</copyright>
+    <tags>umbraco, umbraco-cms</tags>
+    <dependencies>
+      <dependency id="uSync" version="3.3.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\release\Jumoo.uSync.HealthChecker.dll" target="lib\net45" />
+  </files>
+</package>

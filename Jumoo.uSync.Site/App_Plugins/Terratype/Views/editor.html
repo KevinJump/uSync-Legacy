@@ -1,0 +1,45 @@
+﻿<!-- Terratype -->
+<div class="ng-cloak terratype" ng-controller="terratype" ng-init="terratype.initEditor()" ng-show="!vm().loading">
+    <div>
+        <div ng-if="vm().isPreview">
+            <div ng-style="{'background-image':'url(' + vm().provider.events.files.mapExample + ')','padding-top': '10px 0 10px 25px', 'margin':'-40px -10px 0 -10px', 'height':'100px'}">
+                <div style="text-align:center">
+                    <div ng-if="config().debug != 1">
+                        <img ng-src="{{terratype.absoluteUrl(config().icon.url)}}" ng-style="{'width': config().icon.size.width + 'px', 'height': config().icon.size.height + 'px', 'margin-top':'25px'}" />
+                    </div>
+                    <div ng-if="config().debug == 1">
+                        <h2 style="padding-top:25px;">
+                            <localize key="terratypeEditor_debugMode">DEBUG MODE</localize>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-if="!vm().isPreview">
+            <div ng-if="config().debug != 1">
+                <style ng-bind-html="'@media (max-width:767px) { #terratype_' + identifier + '_editor_appearance_start {clear:both;}}'">
+                </style>
+                <div id="terratype_{{identifier}}_editor_appearance_start" style="height:1px;">&nbsp;</div>
+                <ng-include src="vm().provider.events.files.views.editor.appearance">
+                </ng-include>
+            </div>
+            <div ng-if="config().label.enable == true && config().label.editPosition == 0" style="margin-top:5px;">
+                <umb-overlay ng-if="terratype.labelOverlay.show"
+                             model="terratype.labelOverlay"
+                             view="terratype.labelOverlay.view"
+                             position="right">
+                </umb-overlay>
+            </div>
+            <div ng-if="config().label.enable == true && config().label.editPosition == 1" style="margin-top:5px;">
+                <ng-include src="vm().label.view">
+                </ng-include>
+            </div>
+            <div ng-if="config().debug != 0">
+                <div ng-show="vm().error" style="color:red;">
+                    <localize key="terratypeEditor_error">Error loading Terratype control, the json below is corrupt</localize>
+                </div>
+                <textarea style="height:300px;width:100%;margin:20px 10px 0 0;background-color:khaki;color:black;" spellcheck=false ng-model="model.value" terratype-json></textarea>
+            </div>
+        </div>
+    </div>
+</div>

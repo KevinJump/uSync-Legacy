@@ -1,0 +1,46 @@
+﻿<div class="ng-cloak terratype" ng-controller="terratype.grid.overlay" ng-init="init()">
+    <div class="umb-el-wrap control-group">
+        <div ng-show="gridOverlay.dataTypes.length != 0">
+            <label for="terratype_{{identifier}}_grid_datatypes" class="control-label">
+                <localize key="terratypeGridOverlay_dataTypeLabel">Map:</localize>
+                <small>
+                    <localize key="terratypeGridOverlay_dataTypeDescription">Select which map you would like to use</localize>
+                </small>
+            </label>
+            <div class="controls">
+                <select id="terratype_{{identifier}}_grid_datatypes" ng-model="store().datatypeId" class="umb-editor" ng-change="gridOverlay.setDatatype(store().datatypeId)" ng-options="p.id as p.name for p in gridOverlay.dataTypes"></select>
+            </div>
+        </div>
+        <div ng-show="gridOverlay.dataTypes.length == 0" style="color:red;">
+            <localize key="terratypeGridOverlay_mapDataTypeError">No maps have been created</localize>
+        </div>
+    </div>
+
+    <div class="umb-el-wrap control-group" ng-show="store().datatypeId">
+        <label class="control-label">
+            <localize key="terratypeGridOverlay_locationLabel">Location:</localize>
+            <small>
+                <localize key="terratypeGridOverlay_locationDescription">Where would you like this map to point to</localize>
+            </small>
+        </label>
+        <div class="controls">
+            <div>
+                <ng-include src="vm().provider.events.files.views.editor.appearance">
+                </ng-include>
+            </div>
+        </div>
+    </div>
+
+    <div ng-if="config().label.enable == true && config().label.editPosition == 0" style="margin-top:5px;">
+        <umb-overlay ng-if="parentScope().terratype.labelOverlay.show"
+                     model="parentScope().terratype.labelOverlay"
+                     view="vm().label.view"
+                     position="right">
+        </umb-overlay>
+    </div>
+    <div ng-if="config().label.enable == true && config().label.editPosition == 1" style="margin-top:5px;">
+        <ng-include src="vm().label.view">
+        </ng-include>
+    </div>
+
+</div>

@@ -393,6 +393,9 @@ namespace Jumoo.uSync.Core.Serializers
 
         public override bool IsUpdate(XElement node)
         {
+            if (node.IsArchiveFile())
+                return false;
+
             if (node.Name.LocalName == "EntityFolder")
                 return IsContainerUpdated(node);
 

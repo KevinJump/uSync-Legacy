@@ -1,0 +1,83 @@
+﻿<div class="ng-cloak terratype" ng-controller="terratype.label.standard" ng-init="init()">
+
+    <div id="terratype_{{identifier}}_label_standard_content" class="umb-editor" style="min-height:100px;">
+        <div>
+            <style>
+                .terratype .umb-overlay .mce-tinymce {
+                    background: #f8f8f8!important;
+                    border: solid 1px #d9d9d9 !important;
+                }
+                .terratype .umb-overlay .mce-toolbar {
+                    top:auto !important;
+                    display:block !important;
+                }
+            </style>
+            <div grid-rte
+                configuration="rte.config"
+                value="store().label.content"
+                unique-id="rte.id"
+                on-link-picker-click="rte.openLinkPicker"
+                on-media-picker-click="rte.openMediaPicker"
+                on-embed-click="rte.openEmbed"
+                on-macro-picker-click="rte.openMacroPicker" 
+                localize="placeholder"
+                placeholder="@terratypeLabelStandard_contentDescription"
+                on-focus="rte.focus()"
+                on-blur="rte.blur()">
+            </div>
+
+            <!--
+            <div id="terratype_{{identifier}}_label_standard_foreground_color" style="margin-top:5px;">
+                <div style="float:left;">
+                    <localize key="terratypeLabelStandard_foregroundLabel">Foreground</localize>&nbsp;
+                </div>
+                <div style="border:1px solid #ccc;float:left;">
+                    <div ng-repeat="c in colors" style="float:left;">
+                        <div ng-show="c.id != store().label.forecolor" style="min-height:20px;min-width:20px;background-color:{{c.id}};padding:2px;cursor:pointer;" ng-click="setForeground(c.id)">&nbsp;</div>
+                        <div ng-show="c.id == store().label.forecolor" style="min-height:20px;min-width:20px;background-color:{{c.id}};padding:1px;border:1px solid black">&nbsp;</div>
+                    </div>
+                </div>
+                <div style="clear:both;"></div>
+            </div>
+
+            <div id="terratype_{{identifier}}_label_standard_background_color" style="margin-top:5px;">
+                <div style="float:left;">
+                    <localize key="terratypeLabelStandard_backgroundLabel">Background</localize>&nbsp;
+                </div>
+                <div style="border:1px solid #ccc;float:left;">
+                    <div ng-repeat="c in colors" style="float:left;">
+                        <div ng-show="c.id != store().label.backcolor" style="display:inline-block;min-height:20px;min-width:20px;background-color:{{c.id}};padding:2px;cursor:pointer;" ng-click="setBackground(c.id)">&nbsp;</div>
+                        <div ng-show="c.id == store().label.backcolor" style="display:inline-block;min-height:20px;min-width:20px;background-color:{{c.id}};padding:1px;border:1px solid black">&nbsp;</div>
+                    </div>
+                </div>
+                <div style="clear:both;"></div>
+            </div>
+            -->
+
+            <umb-overlay 
+                ng-if="rte.linkPickerOverlay.show"
+                model="rte.linkPickerOverlay"
+                view="rte.linkPickerOverlay.view"
+                position="right">
+            </umb-overlay>
+            <umb-overlay 
+                ng-if="rte.mediaPickerOverlay.show"
+                model="rte.mediaPickerOverlay"
+                view="rte.mediaPickerOverlay.view"
+                position="right">
+            </umb-overlay>
+            <umb-overlay 
+                ng-if="rte.embedOverlay.show"
+                model="rte.embedOverlay"
+                view="rte.embedOverlay.view"
+                position="right">
+            </umb-overlay>
+            <umb-overlay 
+                ng-if="rte.macroPickerOverlay.show"
+                model="rte.macroPickerOverlay"
+                view="rte.macroPickerOverlay.view"
+                position="right">
+            </umb-overlay>
+        </div>
+    </div>
+</div>

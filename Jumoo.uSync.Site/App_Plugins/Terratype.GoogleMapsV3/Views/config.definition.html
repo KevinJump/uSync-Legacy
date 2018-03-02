@@ -1,0 +1,294 @@
+﻿<div ng-disabled="vm().provider.status.loading">
+    <div class="umb-el-wrap control-group">
+        <label for="terratype_{{identifier}}_googlemapv3_version" class="control-label">
+            <localize key="terratypeGoogleMapsV3ConfigDefinition_versionLabel">Version:</localize>
+            <small>
+                <localize key="terratypeGoogleMapsV3ConfigDefinition_versionDescription">Which release of Google Maps V3 would you like to target (Note: Even when specifying a specific version the loaded version will vary depending on your browser)</localize>
+            </small>
+        </label>
+        <div class="controls">
+            <select id="terratype_{{identifier}}_googlemapv3_version" ng-model="config().provider.version" class="umb-editor" ng-change="vm().provider.events.versionChange()">
+                <option value="3" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version3"></option>
+                <option value="3.exp" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version3exp"></option>
+                <option value="3.28" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version328"></option>
+                <option value="3.27" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version327"></option>
+                <option value="3.26" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version326"></option>
+                <option value="3.25" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version325"></option>
+                <option value="3.24" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version324"></option>
+                <option value="3.23" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version323"></option>
+                <option value="3.22" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version322"></option>
+                <option value="3.21" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version321"></option>
+                <option value="3.20" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version320"></option>
+                <option value="3.19" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version319"></option>
+                <option value="3.18" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version318"></option>
+                <option value="3.17" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version317"></option>
+                <option value="3.16" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version316"></option>
+                <option value="3.15" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version315"></option>
+                <option value="3.14" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version314"></option>
+                <option value="3.13" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version313"></option>
+                <option value="3.12" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version312"></option>
+                <option value="3.11" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version311"></option>
+                <option value="3.10" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version310"></option>
+                <option value="3.9" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version39"></option>
+                <option value="3.8" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version38"></option>
+                <option value="3.7" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version37"></option>
+                <option value="3.6" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version36"></option>
+                <option value="3.5" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version35"></option>
+                <option value="3.4" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version34"></option>
+                <option value="3.3" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version33"></option>
+                <option value="3.2" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version32"></option>
+                <option value="3.1" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version31"></option>
+                <option value="3.0" terratype-translate="@terratypeGoogleMapsV3ConfigDefinition_version30"></option>
+            </select>
+            <div ng-show="vm().provider.version">
+                <small terratype-translate="terratypeGoogleMapsV3ConfigDefinition_versionLoaded">
+                </small>
+            </div>
+        </div>
+    </div>
+    <div class="umb-el-wrap control-group">
+        <label for="terratype_{{identifier}}_googlemapv3_apikey" class="control-label">
+            <localize key="terratypeGoogleMapsV3ConfigDefinition_apiKeyLabel">Google API Key:</localize>
+            <small>
+                <localize key="terratypeGoogleMapsV3ConfigDefinition_apiKeyDescription">Your Google API Key</localize>
+            </small>
+        </label>
+        <div class="controls">
+            <input id="terratype_{{identifier}}_googlemapv3_apikey" list="terratype_{{identifier}}_googlemapv3_apikeys" type="text" ng-model="config().provider.apiKey" class="umb-editor umb-textstring textstring" localize="placeholder" placeholder="@terratypeGoogleMapsV3ConfigDefinition_apiKeyPlaceholder" spellcheck="false" ng-change="vm().status.reload = true" />
+            <datalist id="terratype_{{identifier}}_googlemapv3_apikeys">
+                <option ng-repeat="x in vm().provider.events.httpCalls.apiKey.values" value="{{x}}"></option>
+            </datalist>
+            <div>
+                <div>
+                    <a href="https://developers.google.com/maps/documentation/javascript/get-api-key#get-an-api-key" target="_blank" style="font-size:smaller;">
+                        <localize key="terratypeGoogleMapsV3ConfigDefinition_apiKeyGet">[Get a key]</localize>
+                    </a>
+                </div>
+                <div>
+                    <div ng-show="vm().status.loading">
+                        <img ng-src="{{terratype.images.loading}}" />
+                    </div>
+                    <div ng-show="vm().status.failed">
+                        <img ng-src="{{terratype.images.failed}}" />
+                        <span style="color:red;padding-right:10px;"><localize key="terratypeGoogleMapsV3ConfigDefinition_apiKeyInvalid">Invalid API Key</localize></span>
+                    </div>
+                    <div ng-show="vm().status.success">
+                        <img ng-src="{{terratype.images.success}}" />
+                        <span style="color:green;"><localize key="terratypeGoogleMapsV3ConfigDefinition_apiKeyValid">API Key is valid</localize></span>
+                    </div>
+                    <div ng-show="vm().status.reload">
+                        <button type="button" ng-click="vm().provider.events.reload()" localize="title" title="@terratypeGoogleMapsV3ConfigDefinition_retryTitle"><localize key="terratypeGoogleMapsV3ConfigDefinition_retryLabel">Retry</localize></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="umb-el-wrap control-group">
+        <label for="terratype_{{identifier}}_googlemapv3_forcehttps" class="control-label">
+            <localize key="terratypeGoogleMapsV3ConfigDefinition_httpsLabel">Force Https:</localize>
+            <small>
+                <localize key="terratypeGoogleMapsV3ConfigDefinition_httpsDescription">Force all Google Map requests to use HTTPS protocol, even if the Umbraco instance is running on HTTP. Only relevant when Umbraco is running on HTTP</localize>
+            </small>
+        </label>
+        <div class="controls">
+            <input id="terratype_{{identifier}}_googlemapv3_forcehttps" type="checkbox" ng-model="config().provider.forceHttps" ng-change="vm().provider.events.forceHttpsChange()" />
+        </div>
+    </div>
+    <div class="umb-el-wrap control-group">
+        <label for="terratype_{{identifier}}_googlemapv3_language" class="control-label">
+            <localize key="terratypeGoogleMapsV3ConfigDefinition_languageLabel">Language:</localize>
+            <small>
+                <localize key="terratypeGoogleMapsV3ConfigDefinition_languageDescription">Primary language used to display places</localize>
+            </small>
+        </label>
+        <div class="controls">
+            <select id="terratype_{{identifier}}_googlemapv3_language" ng-model="config().provider.language" class="umb-editor" ng-change="vm().provider.events.languageChange()">
+                <option value=""><localize key="terratypeGoogleMapsV3ConfigDefinition_languageUseDefault">[Use Umbraco]</localize></option>
+                <option value="ab"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageAB">Abkhaz (аҧсуа бызшәа, аҧсшәа)</localize></option>
+                <option value="aa"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageAA">Afar (Afaraf)</localize></option>
+                <option value="af"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageAF">Afrikaans (Afrikaans)</localize></option>
+                <option value="ak"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageAK">Akan (Akan)</localize></option>
+                <option value="sq"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageSQ">Albanian (Shqip)</localize></option>
+                <option value="am"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageAM">Amharic (አማርኛ)</localize></option>
+                <option value="ar"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageAR">Arabic (العربية)</localize></option>
+                <option value="an"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageAN">Aragonese (aragonés)</localize></option>
+                <option value="hy"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageHY">Armenian (Հայերեն)</localize></option>
+                <option value="as"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageAS">Assamese (অসমীয়া)</localize></option>
+                <option value="av"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageAV">Avaric (авар мацӀ, магӀарул мацӀ)</localize></option>
+                <option value="ae"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageAE">Avestan (avesta)</localize></option>
+                <option value="ay"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageAY">Aymara (aymar aru)</localize></option>
+                <option value="az"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageAZ">Azerbaijani (azərbaycan dili)</localize></option>
+                <option value="bm"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageBM">Bambara (bamanankan)</localize></option>
+                <option value="ba"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageBA">Bashkir (башҡорт теле)</localize></option>
+                <option value="eu"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageEU">Basque (euskara, euskera)</localize></option>
+                <option value="be"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageBE">Belarusian (беларуская мова)</localize></option>
+                <option value="bn"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageBN">Bengali (বাংলা)</localize></option>
+                <option value="bh"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageBH">Bihari (भोजपुरी)</localize></option>
+                <option value="bi"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageBI">Bislama (Bislama)</localize></option>
+                <option value="bs"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageBS">Bosnian (bosanski jezik)</localize></option>
+                <option value="br"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageBR">Breton (brezhoneg)</localize></option>
+                <option value="bg"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageBG">Bulgarian (български език)</localize></option>
+                <option value="my"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageMY">Burmese (ဗမာစာ)</localize></option>
+                <option value="ca"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageCA">Catalan (català)</localize></option>
+                <option value="ch"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageCH">Chamorro (Chamoru)</localize></option>
+                <option value="ce"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageCE">Chechen (нохчийн мотт)</localize></option>
+                <option value="ny"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageNY">Chichewa (chiCheŵa, chinyanja)</localize></option>
+                <option value="zh"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageZH">Chinese (中文, 汉语, 漢語)</localize></option>
+                <option value="cv"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageCV">Chuvash (чӑваш чӗлхи)</localize></option>
+                <option value="kw"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageKW">Cornish (Kernewek)</localize></option>
+                <option value="co"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageCO">Corsican (corsu, lingua corsa)</localize></option>
+                <option value="cr"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageCR">Cree (ᓀᐦᐃᔭᐍᐏᐣ)</localize></option>
+                <option value="hr"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageHR">Croatian (hrvatski jezik)</localize></option>
+                <option value="cs"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageCS">Czech (čeština, český jazyk)</localize></option>
+                <option value="da"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageDA">Danish (dansk)</localize></option>
+                <option value="dv"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageDV">Divehi (ދިވެހި)</localize></option>
+                <option value="nl"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageNL">Dutch (Nederlands, Vlaams)</localize></option>
+                <option value="dz"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageDZ">Dzongkha (རྫོང་ཁ)</localize></option>
+                <option value="pa"><localize key="terratypeGoogleMapsV3ConfigDefinition_languagePA">Eastern Punjabi (ਪੰਜਾਬੀ)</localize></option>
+                <option value="en"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageEN">English (English)</localize></option>
+                <option value="eo"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageEO">Esperanto (Esperanto)</localize></option>
+                <option value="et"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageET">Estonian (eesti, eesti keel)</localize></option>
+                <option value="ee"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageEE">Ewe (Eʋegbe)</localize></option>
+                <option value="fo"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageFO">Faroese (føroyskt)</localize></option>
+                <option value="fa"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageFA">Farsi (فارسی)</localize></option>
+                <option value="fj"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageFJ">Fijian (vosa Vakaviti)</localize></option>
+                <option value="fi"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageFI">Finnish (suomi, suomen kieli)</localize></option>
+                <option value="fr"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageFR">French (français)</localize></option>
+                <option value="ff"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageFF">Fula (Fulfulde, Pulaar, Pular)</localize></option>
+                <option value="gl"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageGL">Galician (galego)</localize></option>
+                <option value="lg"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageLG">Ganda (Luganda)</localize></option>
+                <option value="ka"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageKA">Georgian (ქართული)</localize></option>
+                <option value="de"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageDE">German (Deutsch)</localize></option>
+                <option value="el"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageEL">Greek (ελληνικά)</localize></option>
+                <option value="gn"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageGN">Guaraní (Avañe'ẽ)</localize></option>
+                <option value="gu"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageGU">Gujarati (ગુજરાતી)</localize></option>
+                <option value="ht"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageHT">Haitian (Kreyòl ayisyen)</localize></option>
+                <option value="ha"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageHA">Hausa ((Hausa) هَوُسَ)</localize></option>
+                <option value="he"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageHE">Hebrew (עברית)</localize></option>
+                <option value="hz"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageHZ">Herero (Otjiherero)</localize></option>
+                <option value="hi"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageHI">Hindi (हिन्दी, हिंदी)</localize></option>
+                <option value="ho"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageHO">Hiri Motu (Hiri Motu)</localize></option>
+                <option value="hu"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageHU">Hungarian (magyar)</localize></option>
+                <option value="is"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageIS">Icelandic (Íslenska)</localize></option>
+                <option value="io"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageIO">Ido (Ido)</localize></option>
+                <option value="ig"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageIG">Igbo (Asụsụ Igbo)</localize></option>
+                <option value="id"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageID">Indonesian (Bahasa Indonesia)</localize></option>
+                <option value="ia"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageIA">Interlingua (Interlingua)</localize></option>
+                <option value="ie"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageIE">Interlingue (Interlingue)</localize></option>
+                <option value="iu"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageIU">Inuktitut (ᐃᓄᒃᑎᑐᑦ)</localize></option>
+                <option value="ik"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageIK">Inupiaq (Iñupiaq, Iñupiatun)</localize></option>
+                <option value="ga"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageGA">Irish (Gaeilge)</localize></option>
+                <option value="it"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageIT">Italian (Italiano)</localize></option>
+                <option value="ja"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageJA">Japanese (日本語 (にほんご))</localize></option>
+                <option value="jv"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageJV">Javanese (ꦧꦱꦗꦮ)</localize></option>
+                <option value="kl"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageKL">Kalaallisut (kalaallisut, kalaallit oqaasii)</localize></option>
+                <option value="kn"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageKN">Kannada (ಕನ್ನಡ)</localize></option>
+                <option value="kr"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageKR">Kanuri (Kanuri)</localize></option>
+                <option value="ks"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageKS">Kashmiri (कश्मीरी, كشميري‎)</localize></option>
+                <option value="kk"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageKK">Kazakh (қазақ тілі)</localize></option>
+                <option value="km"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageKM">Khmer (ខ្មែរ, ខេមរភាសា, ភាសាខ្មែរ)</localize></option>
+                <option value="ki"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageKI">Kikuyu (Gĩkũyũ)</localize></option>
+                <option value="rw"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageRW">Kinyarwanda (Ikinyarwanda)</localize></option>
+                <option value="rn"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageRN">Kirundi (Ikirundi)</localize></option>
+                <option value="kv"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageKV">Komi (коми кыв)</localize></option>
+                <option value="kg"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageKG">Kongo (Kikongo)</localize></option>
+                <option value="ko"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageKO">Korean (한국어)</localize></option>
+                <option value="ku"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageKU">Kurdish (Kurdî, كوردی‎)</localize></option>
+                <option value="kj"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageKJ">Kwanyama (Kuanyama)</localize></option>
+                <option value="ky"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageKY">Kyrgyz (Кыргызча, Кыргыз тили)</localize></option>
+                <option value="lo"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageLO">Lao (ພາສາລາວ)</localize></option>
+                <option value="la"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageLA">Latin (latine)</localize></option>
+                <option value="lv"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageLV">Latvian (latviešu valoda)</localize></option>
+                <option value="li"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageLI">Limburgish (Limburgs)</localize></option>
+                <option value="ln"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageLN">Lingala (Lingála)</localize></option>
+                <option value="lt"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageLT">Lithuanian (lietuvių kalba)</localize></option>
+                <option value="lu"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageLU">Luba-Katanga (Tshiluba)</localize></option>
+                <option value="lb"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageLB">Luxembourgish (Lëtzebuergesch)</localize></option>
+                <option value="mk"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageMK">Macedonian (македонски јазик)</localize></option>
+                <option value="mg"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageMG">Malagasy (fiteny malagasy)</localize></option>
+                <option value="ms"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageMS">Malay ( بهاس ملايو‎)</localize></option>
+                <option value="ml"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageML">Malayalam (മലയാളം)</localize></option>
+                <option value="mt"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageMT">Maltese (Malti)</localize></option>
+                <option value="gv"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageGV">Manx (Gaelg, Gailck)</localize></option>
+                <option value="mr"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageMR">Marathi (Marāṭhī) (मराठी)</localize></option>
+                <option value="mh"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageMH">Marshallese (Kajin M̧ajeļ)</localize></option>
+                <option value="mn"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageMN">Mongolian (Монгол хэл)</localize></option>
+                <option value="mi"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageMI">Māori (te reo Māori)</localize></option>
+                <option value="na"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageNA">Nauruan (Dorerin Naoero)</localize></option>
+                <option value="nv"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageNV">Navajo (Diné bizaad)</localize></option>
+                <option value="ng"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageNG">Ndonga (Owambo)</localize></option>
+                <option value="ne"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageNE">Nepali (नेपाली)</localize></option>
+                <option value="nd"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageND">Northern Ndebele (isiNdebele)</localize></option>
+                <option value="se"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageSE">Northern Sami (Davvisámegiella)</localize></option>
+                <option value="no"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageNO">Norwegian (Norsk)</localize></option>
+                <option value="nb"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageNB">Norwegian Bokmål (Norsk bokmål)</localize></option>
+                <option value="nn"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageNN">Norwegian Nynorsk (Norsk nynorsk)</localize></option>
+                <option value="ii"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageII">Nuosu (ꆈꌠ꒿)</localize></option>
+                <option value="oc"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageOC">Occitan (occitan, lenga d'òc)</localize></option>
+                <option value="oj"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageOJ">Ojibwe (ᐊᓂᔑᓈᐯᒧᐎᓐ)</localize></option>
+                <option value="cu"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageCU">Old Bulgarian (ѩзыкъ словѣньскъ)</localize></option>
+                <option value="or"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageOR">Oriya (ଓଡ଼ିଆ)</localize></option>
+                <option value="om"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageOM">Oromo (Afaan Oromoo)</localize></option>
+                <option value="os"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageOS">Ossetian (ирон æвзаг)</localize></option>
+                <option value="ps"><localize key="terratypeGoogleMapsV3ConfigDefinition_languagePS">Pashto (پښتو)</localize></option>
+                <option value="pl"><localize key="terratypeGoogleMapsV3ConfigDefinition_languagePL">Polish (język polski, polszczyzna)</localize></option>
+                <option value="pt"><localize key="terratypeGoogleMapsV3ConfigDefinition_languagePT">Portuguese (Português)</localize></option>
+                <option value="pi"><localize key="terratypeGoogleMapsV3ConfigDefinition_languagePI">Pāli (पाऴि)</localize></option>
+                <option value="qu"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageQU">Quechua (Runa Simi, Kichwa)</localize></option>
+                <option value="ro"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageRO">Romanian (Română)</localize></option>
+                <option value="rm"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageRM">Romansh (rumantsch grischun)</localize></option>
+                <option value="ru"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageRU">Russian (Русский)</localize></option>
+                <option value="sm"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageSM">Samoan (gagana fa'a Samoa)</localize></option>
+                <option value="sg"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageSG">Sango (yângâ tî sängö)</localize></option>
+                <option value="sa"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageSA">Sanskrit (संस्कृतम्)</localize></option>
+                <option value="sc"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageSC">Sardinian (sardu)</localize></option>
+                <option value="gd"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageGD">Scottish Gaelic (Gàidhlig)</localize></option>
+                <option value="sr"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageSR">Serbian (српски језик)</localize></option>
+                <option value="sn"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageSN">Shona (chiShona)</localize></option>
+                <option value="sd"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageSD">Sindhi (सिन्धी, سنڌي، سندھی‎)</localize></option>
+                <option value="si"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageSI">Sinhalese (සිංහල)</localize></option>
+                <option value="sk"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageSK">Slovak (slovenčina, slovenský jazyk)</localize></option>
+                <option value="sl"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageSL">Slovene (slovenski jezik, slovenščina)</localize></option>
+                <option value="so"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageSO">Somali (Soomaaliga, af Soomaali)</localize></option>
+                <option value="nr"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageNR">Southern Ndebele (isiNdebele)</localize></option>
+                <option value="st"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageST">Southern Sotho (Sesotho)</localize></option>
+                <option value="es"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageES">Spanish (Español)</localize></option>
+                <option value="su"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageSU">Sundanese (Basa Sunda)</localize></option>
+                <option value="sw"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageSW">Swahili (Kiswahili)</localize></option>
+                <option value="ss"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageSS">Swati (SiSwati)</localize></option>
+                <option value="sv"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageSV">Swedish (svenska)</localize></option>
+                <option value="tl"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageTL">Tagalog (Wikang Tagalog)</localize></option>
+                <option value="ty"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageTY">Tahitian (Reo Tahiti)</localize></option>
+                <option value="tg"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageTG">Tajik (тоҷикӣ, toçikī, تاجیکی‎)</localize></option>
+                <option value="ta"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageTA">Tamil (தமிழ்)</localize></option>
+                <option value="tt"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageTT">Tatar (татар теле, tatar tele)</localize></option>
+                <option value="te"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageTE">Telugu (తెలుగు)</localize></option>
+                <option value="th"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageTH">Thai (ไทย)</localize></option>
+                <option value="bo"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageBO">Tibetan (བོད་ཡིག)</localize></option>
+                <option value="ti"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageTI">Tigrinya (ትግርኛ)</localize></option>
+                <option value="to"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageTO">Tonga (faka Tonga)</localize></option>
+                <option value="ts"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageTS">Tsonga (Xitsonga)</localize></option>
+                <option value="tn"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageTN">Tswana (Setswana)</localize></option>
+                <option value="tr"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageTR">Turkish (Türkçe)</localize></option>
+                <option value="tk"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageTK">Turkmen (Türkmen, Түркмен)</localize></option>
+                <option value="tw"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageTW">Twi (Twi)</localize></option>
+                <option value="uk"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageUK">Ukrainian (Українська)</localize></option>
+                <option value="ur"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageUR">Urdu (اردو)</localize></option>
+                <option value="ug"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageUG">Uyghur (ئۇيغۇرچە‎, Uyghurche)</localize></option>
+                <option value="uz"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageUZ">Uzbek (Oʻzbek, Ўзбек, أۇزبېك‎)</localize></option>
+                <option value="ve"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageVE">Venda (Tshivenḓa)</localize></option>
+                <option value="vi"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageVI">Vietnamese (Tiếng Việt)</localize></option>
+                <option value="vo"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageVO">Volapük (Volapük)</localize></option>
+                <option value="wa"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageWA">Walloon (walon)</localize></option>
+                <option value="cy"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageCY">Welsh (Cymraeg)</localize></option>
+                <option value="fy"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageFY">Western Frisian (Frysk)</localize></option>
+                <option value="wo"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageWO">Wolof (Wollof)</localize></option>
+                <option value="xh"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageXH">Xhosa (isiXhosa)</localize></option>
+                <option value="yi"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageYI">Yiddish (ייִדיש)</localize></option>
+                <option value="yo"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageYO">Yoruba (Yorùbá)</localize></option>
+                <option value="za"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageZA">Zhuang (Saɯ cueŋƅ, Saw cuengh)</localize></option>
+                <option value="zu"><localize key="terratypeGoogleMapsV3ConfigDefinition_languageZU">Zulu (isiZulu)</localize></option>
+            </select>
+        </div>
+    </div>
+</div>

@@ -38,8 +38,8 @@ namespace Jumoo.uSync.Core.Serializers
 
         public SyncAttempt<T> Deserialize(XElement node, int parentId, bool forceUpdate = false)
         {
-            if (node.Name.LocalName == "uSyncArchive")
-                return SyncAttempt<T>.Succeed(node.Attribute("name").ValueOrDefault("old_file"), ChangeType.Removed);
+            if (node.IsArchiveFile())
+                return SyncAttempt<T>.Succeed(node.Attribute("name").ValueOrDefault("old_file"), ChangeType.NoChange);
 
             // for content, we always call deserialize, because the first step will 
             // do the item lookup, and we want to return item so we can import 

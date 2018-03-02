@@ -213,6 +213,9 @@ namespace Jumoo.uSync.Core.Serializers
 
         public override bool IsUpdate(XElement node)
         {
+            if (node.IsArchiveFile())
+                return false;
+
             if (uSyncCoreContext.Instance.Configuration.Settings.ContentMatch.Equals("mismatch", StringComparison.OrdinalIgnoreCase))
                 return IsDiffrent(node);
             else

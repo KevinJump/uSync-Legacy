@@ -198,9 +198,13 @@ namespace Jumoo.uSync.Core.Helpers
                 // compare element value
                 if (targetNode.Value != sourceNode.Value)
                 {
+                    var index = path.LastIndexOf('.');
+                    if (index == -1)
+                        index = path.Length;
+
                     changes.Add(new uSyncChange
                     {
-                        Path = path.Substring(0, path.LastIndexOf('.')),
+                        Path = path.Substring(0, index),
                         Name = GetElementName(targetNode.Name.LocalName, targetNode),
                         Change = ChangeDetailType.Update,
                         NewVal = targetNode.Value,

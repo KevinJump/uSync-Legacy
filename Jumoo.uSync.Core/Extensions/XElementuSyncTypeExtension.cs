@@ -43,5 +43,13 @@ namespace Jumoo.uSync.Core.Extensions
                     return default(Type);
             }
         }
+
+        public static bool IsArchiveFile(this XElement node)
+        {
+            if (node != null && node.Name != null)
+                return (node.Name.LocalName.InvariantEquals("usyncarchive"));
+
+            return false;
+        }
     }
 }

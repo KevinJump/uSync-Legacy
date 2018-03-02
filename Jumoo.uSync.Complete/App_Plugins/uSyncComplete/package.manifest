@@ -1,0 +1,9 @@
+﻿{
+	javascript: [
+		"~/App_Plugins/uSyncComplete/dashboardController.js",
+		"~/App_Plugins/uSyncComplete/usyncService.js"
+	],
+	css: [
+		"~/App_Plugins/uSyncComplete/usync.css"
+	]
+}

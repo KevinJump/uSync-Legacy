@@ -1,0 +1,292 @@
+﻿<div class="umb-el-wrap control-group">
+    <label for="terratype_{{identifier}}_googlemapv3_search_enable" class="control-label">
+        <localize key="terratypeGoogleMapsV3ConfigSearch_typeLabel">Search:</localize>
+        <small>
+            <localize key="terratypeGoogleMapsV3ConfigSearch_typeDescription">Do you want to include a text box, to lookup locations</localize>
+        </small>
+    </label>
+    <div class="controls">
+        <select id="terratype_{{identifier}}_googlemapv3_search_enable" ng-model="config().search.enable" ng-change="vm().provider.events.searchChange()" class="umb-editor" convert-to-number>
+            <option value="0"><localize key="terratypeGoogleMapsV3ConfigSearch_typeDisable">Hide Search</localize></option>
+            <option value="1"><localize key="terratypeGoogleMapsV3ConfigSearch_typeEnable">Enable Search</localize></option>
+            <option value="2"><localize key="terratypeGoogleMapsV3ConfigSearch_typeAutocomplete">Enable Search with Autocomplete</localize></option>
+        </select>
+        <div class="comment">
+            <div ng-show="vm().status.searchFailed">
+                <img ng-src="{{terratype.images.failed}}" />
+                <span style="color:red;padding-right:10px;"><localize key="terratypeGoogleMapsV3ConfigSearch_typeError">Error</localize></span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="umb-el-wrap control-group" ng-show="config().search.enable && config().search.enable != 0">
+    <label for="terratype_{{identifier}}_googlemapv3_searchcountry" class="control-label">
+        <localize key="terratypeGoogleMapsV3ConfigSearch_countryLabel">Limit:</localize>
+        <small>
+            <localize key="terratypeGoogleMapsV3ConfigSearch_countryDescription">Limited all search results to a particular country or countries.</localize>
+        </small>
+    </label>
+    <div class="controls">
+        <div ng-show="vm().provider.version && vm().provider.versionMajor < 27">
+            <small terratype-translate="terratypeGoogleMapsV3ConfigSearch_countryMax"></small>
+        </div>
+        <select id="terratype_{{identifier}}_googlemapv3_searchcountry" ng-model="config().search.limit.countries" multiple class="umb-editor" style="height:250px;" ng-change="vm().provider.events.searchCountryChange()">
+            <option value="AF"><localize key="terratypeGoogleMapsV3ConfigSearch_countryAF">Afghanistan</localize></option>
+            <option value="AX"><localize key="terratypeGoogleMapsV3ConfigSearch_countryAX">Aland Islands</localize></option>
+            <option value="AL"><localize key="terratypeGoogleMapsV3ConfigSearch_countryAL">Albania</localize></option>
+            <option value="DZ"><localize key="terratypeGoogleMapsV3ConfigSearch_countryDZ">Algeria</localize></option>
+            <option value="AS"><localize key="terratypeGoogleMapsV3ConfigSearch_countryAS">American Samoa</localize></option>
+            <option value="AD"><localize key="terratypeGoogleMapsV3ConfigSearch_countryAD">Andorra</localize></option>
+            <option value="AO"><localize key="terratypeGoogleMapsV3ConfigSearch_countryAO">Angola</localize></option>
+            <option value="AI"><localize key="terratypeGoogleMapsV3ConfigSearch_countryAI">Anguilla</localize></option>
+            <option value="AQ"><localize key="terratypeGoogleMapsV3ConfigSearch_countryAQ">Antarctica</localize></option>
+            <option value="AG"><localize key="terratypeGoogleMapsV3ConfigSearch_countryAG">Antigua and Barbuda</localize></option>
+            <option value="AR"><localize key="terratypeGoogleMapsV3ConfigSearch_countryAR">Argentina</localize></option>
+            <option value="AM"><localize key="terratypeGoogleMapsV3ConfigSearch_countryAM">Armenia</localize></option>
+            <option value="AW"><localize key="terratypeGoogleMapsV3ConfigSearch_countryAW">Aruba</localize></option>
+            <option value="AU"><localize key="terratypeGoogleMapsV3ConfigSearch_countryAU">Australia</localize></option>
+            <option value="AT"><localize key="terratypeGoogleMapsV3ConfigSearch_countryAT">Austria</localize></option>
+            <option value="AZ"><localize key="terratypeGoogleMapsV3ConfigSearch_countryAZ">Azerbaijan</localize></option>
+            <option value="BS"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBS">Bahamas</localize></option>
+            <option value="BH"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBH">Bahrain</localize></option>
+            <option value="BD"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBD">Bangladesh</localize></option>
+            <option value="BB"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBB">Barbados</localize></option>
+            <option value="BY"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBY">Belarus</localize></option>
+            <option value="BE"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBE">Belgium</localize></option>
+            <option value="BZ"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBZ">Belize</localize></option>
+            <option value="BJ"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBJ">Benin</localize></option>
+            <option value="BM"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBM">Bermuda</localize></option>
+            <option value="BT"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBT">Bhutan</localize></option>
+            <option value="BO"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBO">Bolivia</localize></option>
+            <option value="BA"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBA">Bosnia and Herzegovina</localize></option>
+            <option value="BW"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBW">Botswana</localize></option>
+            <option value="BV"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBV">Bouvet Island</localize></option>
+            <option value="BR"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBR">Brazil</localize></option>
+            <option value="IO"><localize key="terratypeGoogleMapsV3ConfigSearch_countryIO">British Indian Ocean Territory</localize></option>
+            <option value="VG"><localize key="terratypeGoogleMapsV3ConfigSearch_countryVG">British Virgin Islands</localize></option>
+            <option value="BN"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBN">Brunei Darussalam</localize></option>
+            <option value="BG"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBG">Bulgaria</localize></option>
+            <option value="BF"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBF">Burkina Faso</localize></option>
+            <option value="BI"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBI">Burundi</localize></option>
+            <option value="KH"><localize key="terratypeGoogleMapsV3ConfigSearch_countryKH">Cambodia</localize></option>
+            <option value="CM"><localize key="terratypeGoogleMapsV3ConfigSearch_countryCM">Cameroon</localize></option>
+            <option value="CA"><localize key="terratypeGoogleMapsV3ConfigSearch_countryCA">Canada</localize></option>
+            <option value="CV"><localize key="terratypeGoogleMapsV3ConfigSearch_countryCV">Cape Verde</localize></option>
+            <option value="KY"><localize key="terratypeGoogleMapsV3ConfigSearch_countryKY">Cayman Islands</localize></option>
+            <option value="CF"><localize key="terratypeGoogleMapsV3ConfigSearch_countryCF">Central African Republic</localize></option>
+            <option value="TD"><localize key="terratypeGoogleMapsV3ConfigSearch_countryTD">Chad</localize></option>
+            <option value="CL"><localize key="terratypeGoogleMapsV3ConfigSearch_countryCL">Chile</localize></option>
+            <option value="CN"><localize key="terratypeGoogleMapsV3ConfigSearch_countryCN">China</localize></option>
+            <option value="CX"><localize key="terratypeGoogleMapsV3ConfigSearch_countryCX">Christmas Island</localize></option>
+            <option value="CC"><localize key="terratypeGoogleMapsV3ConfigSearch_countryCC">Cocos Islands</localize></option>
+            <option value="CO"><localize key="terratypeGoogleMapsV3ConfigSearch_countryCO">Colombia</localize></option>
+            <option value="KM"><localize key="terratypeGoogleMapsV3ConfigSearch_countryKM">Comoros</localize></option>
+            <option value="CD"><localize key="terratypeGoogleMapsV3ConfigSearch_countryCD">Congo</localize></option>
+            <option value="CG"><localize key="terratypeGoogleMapsV3ConfigSearch_countryCG">Congo (Brazzaville)</localize></option>
+            <option value="CK"><localize key="terratypeGoogleMapsV3ConfigSearch_countryCK">Cook Islands</localize></option>
+            <option value="CR"><localize key="terratypeGoogleMapsV3ConfigSearch_countryCR">Costa Rica</localize></option>
+            <option value="CI"><localize key="terratypeGoogleMapsV3ConfigSearch_countryCI">Côte d'Ivoire</localize></option>
+            <option value="HR"><localize key="terratypeGoogleMapsV3ConfigSearch_countryHR">Croatia</localize></option>
+            <option value="CU"><localize key="terratypeGoogleMapsV3ConfigSearch_countryCU">Cuba</localize></option>
+            <option value="CY"><localize key="terratypeGoogleMapsV3ConfigSearch_countryCY">Cyprus</localize></option>
+            <option value="CZ"><localize key="terratypeGoogleMapsV3ConfigSearch_countryCZ">Czech Republic</localize></option>
+            <option value="DK"><localize key="terratypeGoogleMapsV3ConfigSearch_countryDK">Denmark</localize></option>
+            <option value="DJ"><localize key="terratypeGoogleMapsV3ConfigSearch_countryDJ">Djibouti</localize></option>
+            <option value="DM"><localize key="terratypeGoogleMapsV3ConfigSearch_countryDM">Dominica</localize></option>
+            <option value="DO"><localize key="terratypeGoogleMapsV3ConfigSearch_countryDO">Dominican Republic</localize></option>
+            <option value="EC"><localize key="terratypeGoogleMapsV3ConfigSearch_countryEC">Ecuador</localize></option>
+            <option value="EG"><localize key="terratypeGoogleMapsV3ConfigSearch_countryEG">Egypt</localize></option>
+            <option value="SV"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySV">El Salvador</localize></option>
+            <option value="GQ"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGQ">Equatorial Guinea</localize></option>
+            <option value="ER"><localize key="terratypeGoogleMapsV3ConfigSearch_countryER">Eritrea</localize></option>
+            <option value="EE"><localize key="terratypeGoogleMapsV3ConfigSearch_countryEE">Estonia</localize></option>
+            <option value="ET"><localize key="terratypeGoogleMapsV3ConfigSearch_countryET">Ethiopia</localize></option>
+            <option value="FK"><localize key="terratypeGoogleMapsV3ConfigSearch_countryFK">Falkland Islands</localize></option>
+            <option value="FO"><localize key="terratypeGoogleMapsV3ConfigSearch_countryFO">Faroe Islands</localize></option>
+            <option value="FJ"><localize key="terratypeGoogleMapsV3ConfigSearch_countryFJ">Fiji</localize></option>
+            <option value="FI"><localize key="terratypeGoogleMapsV3ConfigSearch_countryFI">Finland</localize></option>
+            <option value="FR"><localize key="terratypeGoogleMapsV3ConfigSearch_countryFR">France</localize></option>
+            <option value="GF"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGF">French Guiana</localize></option>
+            <option value="PF"><localize key="terratypeGoogleMapsV3ConfigSearch_countryPF">French Polynesia</localize></option>
+            <option value="TF"><localize key="terratypeGoogleMapsV3ConfigSearch_countryTF">French Southern Territories</localize></option>
+            <option value="GA"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGA">Gabon</localize></option>
+            <option value="GM"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGM">Gambia</localize></option>
+            <option value="GE"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGE">Georgia</localize></option>
+            <option value="DE"><localize key="terratypeGoogleMapsV3ConfigSearch_countryDE">Germany</localize></option>
+            <option value="GH"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGH">Ghana</localize></option>
+            <option value="GI"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGI">Gibraltar</localize></option>
+            <option value="GR"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGR">Greece</localize></option>
+            <option value="GL"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGL">Greenland</localize></option>
+            <option value="GD"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGD">Grenada</localize></option>
+            <option value="GP"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGP">Guadeloupe</localize></option>
+            <option value="GU"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGU">Guam</localize></option>
+            <option value="GT"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGT">Guatemala</localize></option>
+            <option value="GG"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGG">Guernsey</localize></option>
+            <option value="GN"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGN">Guinea</localize></option>
+            <option value="GW"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGW">Guinea-Bissau</localize></option>
+            <option value="GY"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGY">Guyana</localize></option>
+            <option value="HT"><localize key="terratypeGoogleMapsV3ConfigSearch_countryHT">Haiti</localize></option>
+            <option value="HM"><localize key="terratypeGoogleMapsV3ConfigSearch_countryHM">Heard Island and Mcdonald Islands</localize></option>
+            <option value="VA"><localize key="terratypeGoogleMapsV3ConfigSearch_countryVA">Holy See (Vatican City State)</localize></option>
+            <option value="HN"><localize key="terratypeGoogleMapsV3ConfigSearch_countryHN">Honduras</localize></option>
+            <option value="HK"><localize key="terratypeGoogleMapsV3ConfigSearch_countryHK">Hong Kong</localize></option>
+            <option value="HU"><localize key="terratypeGoogleMapsV3ConfigSearch_countryHU">Hungary</localize></option>
+            <option value="IS"><localize key="terratypeGoogleMapsV3ConfigSearch_countryIS">Iceland</localize></option>
+            <option value="IN"><localize key="terratypeGoogleMapsV3ConfigSearch_countryIN">India</localize></option>
+            <option value="ID"><localize key="terratypeGoogleMapsV3ConfigSearch_countryID">Indonesia</localize></option>
+            <option value="IR"><localize key="terratypeGoogleMapsV3ConfigSearch_countryIR">Iran</localize></option>
+            <option value="IQ"><localize key="terratypeGoogleMapsV3ConfigSearch_countryIQ">Iraq</localize></option>
+            <option value="IE"><localize key="terratypeGoogleMapsV3ConfigSearch_countryIE">Ireland</localize></option>
+            <option value="IM"><localize key="terratypeGoogleMapsV3ConfigSearch_countryIM">Isle of Man</localize></option>
+            <option value="IL"><localize key="terratypeGoogleMapsV3ConfigSearch_countryIL">Israel</localize></option>
+            <option value="IT"><localize key="terratypeGoogleMapsV3ConfigSearch_countryIT">Italy</localize></option>
+            <option value="JM"><localize key="terratypeGoogleMapsV3ConfigSearch_countryJM">Jamaica</localize></option>
+            <option value="JP"><localize key="terratypeGoogleMapsV3ConfigSearch_countryJP">Japan</localize></option>
+            <option value="JE"><localize key="terratypeGoogleMapsV3ConfigSearch_countryJE">Jersey</localize></option>
+            <option value="JO"><localize key="terratypeGoogleMapsV3ConfigSearch_countryJO">Jordan</localize></option>
+            <option value="KZ"><localize key="terratypeGoogleMapsV3ConfigSearch_countryKZ">Kazakhstan</localize></option>
+            <option value="KE"><localize key="terratypeGoogleMapsV3ConfigSearch_countryKE">Kenya</localize></option>
+            <option value="KI"><localize key="terratypeGoogleMapsV3ConfigSearch_countryKI">Kiribati</localize></option>
+            <option value="KW"><localize key="terratypeGoogleMapsV3ConfigSearch_countryKW">Kuwait</localize></option>
+            <option value="KG"><localize key="terratypeGoogleMapsV3ConfigSearch_countryKG">Kyrgyzstan</localize></option>
+            <option value="LA"><localize key="terratypeGoogleMapsV3ConfigSearch_countryLA">Lao PDR</localize></option>
+            <option value="LV"><localize key="terratypeGoogleMapsV3ConfigSearch_countryLV">Latvia</localize></option>
+            <option value="LB"><localize key="terratypeGoogleMapsV3ConfigSearch_countryLB">Lebanon</localize></option>
+            <option value="LS"><localize key="terratypeGoogleMapsV3ConfigSearch_countryLS">Lesotho</localize></option>
+            <option value="LR"><localize key="terratypeGoogleMapsV3ConfigSearch_countryLR">Liberia</localize></option>
+            <option value="LY"><localize key="terratypeGoogleMapsV3ConfigSearch_countryLY">Libya</localize></option>
+            <option value="LI"><localize key="terratypeGoogleMapsV3ConfigSearch_countryLI">Liechtenstein</localize></option>
+            <option value="LT"><localize key="terratypeGoogleMapsV3ConfigSearch_countryLT">Lithuania</localize></option>
+            <option value="LU"><localize key="terratypeGoogleMapsV3ConfigSearch_countryLU">Luxembourg</localize></option>
+            <option value="MO"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMO">Macao</localize></option>
+            <option value="MK"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMK">Macedonia</localize></option>
+            <option value="MG"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMG">Madagascar</localize></option>
+            <option value="MW"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMW">Malawi</localize></option>
+            <option value="MY"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMY">Malaysia</localize></option>
+            <option value="MV"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMV">Maldives</localize></option>
+            <option value="ML"><localize key="terratypeGoogleMapsV3ConfigSearch_countryML">Mali</localize></option>
+            <option value="MT"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMT">Malta</localize></option>
+            <option value="MH"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMH">Marshall Islands</localize></option>
+            <option value="MQ"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMQ">Martinique</localize></option>
+            <option value="MR"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMR">Mauritania</localize></option>
+            <option value="MU"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMU">Mauritius</localize></option>
+            <option value="YT"><localize key="terratypeGoogleMapsV3ConfigSearch_countryYT">Mayotte</localize></option>
+            <option value="MX"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMX">Mexico</localize></option>
+            <option value="FM"><localize key="terratypeGoogleMapsV3ConfigSearch_countryFM">Micronesia</localize></option>
+            <option value="MD"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMD">Moldova</localize></option>
+            <option value="MC"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMC">Monaco</localize></option>
+            <option value="MN"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMN">Mongolia</localize></option>
+            <option value="ME"><localize key="terratypeGoogleMapsV3ConfigSearch_countryME">Montenegro</localize></option>
+            <option value="MS"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMS">Montserrat</localize></option>
+            <option value="MA"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMA">Morocco</localize></option>
+            <option value="MZ"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMZ">Mozambique</localize></option>
+            <option value="MM"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMM">Myanmar</localize></option>
+            <option value="NA"><localize key="terratypeGoogleMapsV3ConfigSearch_countryNA">Namibia</localize></option>
+            <option value="NR"><localize key="terratypeGoogleMapsV3ConfigSearch_countryNR">Nauru</localize></option>
+            <option value="NP"><localize key="terratypeGoogleMapsV3ConfigSearch_countryNP">Nepal</localize></option>
+            <option value="NL"><localize key="terratypeGoogleMapsV3ConfigSearch_countryNL">Netherlands</localize></option>
+            <option value="AN"><localize key="terratypeGoogleMapsV3ConfigSearch_countryAN">Netherlands Antilles</localize></option>
+            <option value="NC"><localize key="terratypeGoogleMapsV3ConfigSearch_countryNC">New Caledonia</localize></option>
+            <option value="NZ"><localize key="terratypeGoogleMapsV3ConfigSearch_countryNZ">New Zealand</localize></option>
+            <option value="NI"><localize key="terratypeGoogleMapsV3ConfigSearch_countryNI">Nicaragua</localize></option>
+            <option value="NE"><localize key="terratypeGoogleMapsV3ConfigSearch_countryNE">Niger</localize></option>
+            <option value="NG"><localize key="terratypeGoogleMapsV3ConfigSearch_countryNG">Nigeria</localize></option>
+            <option value="NU"><localize key="terratypeGoogleMapsV3ConfigSearch_countryNU">Niue</localize></option>
+            <option value="NF"><localize key="terratypeGoogleMapsV3ConfigSearch_countryNF">Norfolk Island</localize></option>
+            <option value="KP"><localize key="terratypeGoogleMapsV3ConfigSearch_countryKP">North Korea</localize></option>
+            <option value="MP"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMP">Northern Mariana Islands</localize></option>
+            <option value="NO"><localize key="terratypeGoogleMapsV3ConfigSearch_countryNO">Norway</localize></option>
+            <option value="OM"><localize key="terratypeGoogleMapsV3ConfigSearch_countryOM">Oman</localize></option>
+            <option value="PK"><localize key="terratypeGoogleMapsV3ConfigSearch_countryPK">Pakistan</localize></option>
+            <option value="PW"><localize key="terratypeGoogleMapsV3ConfigSearch_countryPW">Palau</localize></option>
+            <option value="PS"><localize key="terratypeGoogleMapsV3ConfigSearch_countryPS">Palestinian Territory</localize></option>
+            <option value="PA"><localize key="terratypeGoogleMapsV3ConfigSearch_countryPA">Panama</localize></option>
+            <option value="PG"><localize key="terratypeGoogleMapsV3ConfigSearch_countryPG">Papua New Guinea</localize></option>
+            <option value="PY"><localize key="terratypeGoogleMapsV3ConfigSearch_countryPY">Paraguay</localize></option>
+            <option value="PE"><localize key="terratypeGoogleMapsV3ConfigSearch_countryPE">Peru</localize></option>
+            <option value="PH"><localize key="terratypeGoogleMapsV3ConfigSearch_countryPH">Philippines</localize></option>
+            <option value="PN"><localize key="terratypeGoogleMapsV3ConfigSearch_countryPN">Pitcairn</localize></option>
+            <option value="PL"><localize key="terratypeGoogleMapsV3ConfigSearch_countryPL">Poland</localize></option>
+            <option value="PT"><localize key="terratypeGoogleMapsV3ConfigSearch_countryPT">Portugal</localize></option>
+            <option value="PR"><localize key="terratypeGoogleMapsV3ConfigSearch_countryPR">Puerto Rico</localize></option>
+            <option value="QA"><localize key="terratypeGoogleMapsV3ConfigSearch_countryQA">Qatar</localize></option>
+            <option value="RE"><localize key="terratypeGoogleMapsV3ConfigSearch_countryRE">Réunion</localize></option>
+            <option value="RO"><localize key="terratypeGoogleMapsV3ConfigSearch_countryRO">Romania</localize></option>
+            <option value="RU"><localize key="terratypeGoogleMapsV3ConfigSearch_countryRU">Russian Federation</localize></option>
+            <option value="RW"><localize key="terratypeGoogleMapsV3ConfigSearch_countryRW">Rwanda</localize></option>
+            <option value="SH"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySH">Saint Helena</localize></option>
+            <option value="KN"><localize key="terratypeGoogleMapsV3ConfigSearch_countryKN">Saint Kitts and Nevis</localize></option>
+            <option value="LC"><localize key="terratypeGoogleMapsV3ConfigSearch_countryLC">Saint Lucia</localize></option>
+            <option value="PM"><localize key="terratypeGoogleMapsV3ConfigSearch_countryPM">Saint Pierre and Miquelon</localize></option>
+            <option value="VC"><localize key="terratypeGoogleMapsV3ConfigSearch_countryVC">Saint Vincent and Grenadines</localize></option>
+            <option value="BL"><localize key="terratypeGoogleMapsV3ConfigSearch_countryBL">Saint-Barthélemy</localize></option>
+            <option value="MF"><localize key="terratypeGoogleMapsV3ConfigSearch_countryMF">Saint-Martin (French part)</localize></option>
+            <option value="WS"><localize key="terratypeGoogleMapsV3ConfigSearch_countryWS">Samoa</localize></option>
+            <option value="SM"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySM">San Marino</localize></option>
+            <option value="ST"><localize key="terratypeGoogleMapsV3ConfigSearch_countryST">Sao Tome and Principe</localize></option>
+            <option value="SA"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySA">Saudi Arabia</localize></option>
+            <option value="SN"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySN">Senegal</localize></option>
+            <option value="RS"><localize key="terratypeGoogleMapsV3ConfigSearch_countryRS">Serbia</localize></option>
+            <option value="SC"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySC">Seychelles</localize></option>
+            <option value="SL"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySL">Sierra Leone</localize></option>
+            <option value="SG"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySG">Singapore</localize></option>
+            <option value="SK"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySK">Slovakia</localize></option>
+            <option value="SI"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySI">Slovenia</localize></option>
+            <option value="SB"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySB">Solomon Islands</localize></option>
+            <option value="SO"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySO">Somalia</localize></option>
+            <option value="ZA"><localize key="terratypeGoogleMapsV3ConfigSearch_countryZA">South Africa</localize></option>
+            <option value="GS"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGS">South Georgia and the South Sandwich Islands</localize></option>
+            <option value="KR"><localize key="terratypeGoogleMapsV3ConfigSearch_countryKR">South Korea</localize></option>
+            <option value="SS"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySS">South Sudan</localize></option>
+            <option value="ES"><localize key="terratypeGoogleMapsV3ConfigSearch_countryES">Spain</localize></option>
+            <option value="LK"><localize key="terratypeGoogleMapsV3ConfigSearch_countryLK">Sri Lanka</localize></option>
+            <option value="SD"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySD">Sudan</localize></option>
+            <option value="SR"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySR">Suriname *</localize></option>
+            <option value="SJ"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySJ">Svalbard and Jan Mayen</localize></option>
+            <option value="SZ"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySZ">Swaziland</localize></option>
+            <option value="SE"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySE">Sweden</localize></option>
+            <option value="CH"><localize key="terratypeGoogleMapsV3ConfigSearch_countryCH">Switzerland</localize></option>
+            <option value="SY"><localize key="terratypeGoogleMapsV3ConfigSearch_countrySY">Syria</localize></option>
+            <option value="TW"><localize key="terratypeGoogleMapsV3ConfigSearch_countryTW">Taiwan</localize></option>
+            <option value="TJ"><localize key="terratypeGoogleMapsV3ConfigSearch_countryTJ">Tajikistan</localize></option>
+            <option value="TZ"><localize key="terratypeGoogleMapsV3ConfigSearch_countryTZ">Tanzania</localize></option>
+            <option value="TH"><localize key="terratypeGoogleMapsV3ConfigSearch_countryTH">Thailand</localize></option>
+            <option value="TL"><localize key="terratypeGoogleMapsV3ConfigSearch_countryTL">Timor-Leste</localize></option>
+            <option value="TG"><localize key="terratypeGoogleMapsV3ConfigSearch_countryTG">Togo</localize></option>
+            <option value="TK"><localize key="terratypeGoogleMapsV3ConfigSearch_countryTK">Tokelau</localize></option>
+            <option value="TO"><localize key="terratypeGoogleMapsV3ConfigSearch_countryTO">Tonga</localize></option>
+            <option value="TT"><localize key="terratypeGoogleMapsV3ConfigSearch_countryTT">Trinidad and Tobago</localize></option>
+            <option value="TN"><localize key="terratypeGoogleMapsV3ConfigSearch_countryTN">Tunisia</localize></option>
+            <option value="TR"><localize key="terratypeGoogleMapsV3ConfigSearch_countryTR">Turkey</localize></option>
+            <option value="TM"><localize key="terratypeGoogleMapsV3ConfigSearch_countryTM">Turkmenistan</localize></option>
+            <option value="TC"><localize key="terratypeGoogleMapsV3ConfigSearch_countryTC">Turks and Caicos</localize></option>
+            <option value="TV"><localize key="terratypeGoogleMapsV3ConfigSearch_countryTV">Tuvalu</localize></option>
+            <option value="UG"><localize key="terratypeGoogleMapsV3ConfigSearch_countryUG">Uganda</localize></option>
+            <option value="UA"><localize key="terratypeGoogleMapsV3ConfigSearch_countryUA">Ukraine</localize></option>
+            <option value="AE"><localize key="terratypeGoogleMapsV3ConfigSearch_countryAE">United Arab Emirates</localize></option>
+            <option value="GB"><localize key="terratypeGoogleMapsV3ConfigSearch_countryGB">United Kingdom</localize></option>
+            <option value="UM"><localize key="terratypeGoogleMapsV3ConfigSearch_countryUM">United States Minor Outlying Islands</localize></option>
+            <option value="US"><localize key="terratypeGoogleMapsV3ConfigSearch_countryUS">United States of America</localize></option>
+            <option value="UY"><localize key="terratypeGoogleMapsV3ConfigSearch_countryUY">Uruguay</localize></option>
+            <option value="UZ"><localize key="terratypeGoogleMapsV3ConfigSearch_countryUZ">Uzbekistan</localize></option>
+            <option value="VU"><localize key="terratypeGoogleMapsV3ConfigSearch_countryVU">Vanuatu</localize></option>
+            <option value="VE"><localize key="terratypeGoogleMapsV3ConfigSearch_countryVE">Venezuela</localize></option>
+            <option value="VN"><localize key="terratypeGoogleMapsV3ConfigSearch_countryVN">Viet Nam</localize></option>
+            <option value="VI"><localize key="terratypeGoogleMapsV3ConfigSearch_countryVI">Virgin Islands, US</localize></option>
+            <option value="WF"><localize key="terratypeGoogleMapsV3ConfigSearch_countryWF">Wallis and Futuna Islands</localize></option>
+            <option value="EH"><localize key="terratypeGoogleMapsV3ConfigSearch_countryEH">Western Sahara</localize></option>
+            <option value="YE"><localize key="terratypeGoogleMapsV3ConfigSearch_countryYE">Yemen</localize></option>
+            <option value="ZM"><localize key="terratypeGoogleMapsV3ConfigSearch_countryZM">Zambia</localize></option>
+            <option value="ZW"><localize key="terratypeGoogleMapsV3ConfigSearch_countryZW">Zimbabwe</localize></option>
+        </select>
+        <div style="padding-top:5px;" ng-show="config().search.limit.countries.length != 0">
+            <button type="button" ng-click="config().search.limit.countries=[]" localize="title" title="@terratypeGoogleMapsV3ConfigSearch_countryClearTitle"><localize key="terratypeGoogleMapsV3ConfigSearch_countryClearLabel">Clear</localize></button>
+        </div>
+        <div ng-show="vm().provider.versionMajor < 27 && config().search.limit.countries.length > 1">
+            <small style="color:red;" terratype-translate="terratypeGoogleMapsV3ConfigSearch_countryLimit1"></small>
+        </div>
+        <div ng-show="vm().provider.versionMajor >= 27 && config().search.limit.countries.length > 5">
+            <small style="color:red;" terratype-translate="terratypeGoogleMapsV3ConfigSearch_countryLimit5"></small>
+        </div>
+    </div>
+</div>
