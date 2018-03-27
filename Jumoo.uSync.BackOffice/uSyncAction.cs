@@ -142,7 +142,7 @@ namespace Jumoo.uSync.BackOffice
 
                 XElement logFile = new XElement("uSync",
                     new XAttribute("Name", string.IsNullOrEmpty(name) ? "" : name),
-                    new XAttribute("DateTime", DateTime.Now.ToString("g")));
+                    new XAttribute("DateTime", DateTime.Now.ToString("U")));
 
                 XElement logNode = new XElement("Actions");
 
