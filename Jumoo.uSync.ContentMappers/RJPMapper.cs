@@ -51,7 +51,7 @@ namespace Jumoo.uSync.ContentMappers
                     if (link.id != null)
                     {
                         Guid key;
-                        if (Guid.TryParse(link.id, out key))
+                        if (Guid.TryParse(link.id.ToString(), out key))
                         {
                             var id = _entityService.GetByKey(key);
                             if (id != null)
