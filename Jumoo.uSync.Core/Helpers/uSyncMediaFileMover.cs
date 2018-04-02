@@ -104,8 +104,16 @@ namespace Jumoo.uSync.Core.Helpers
                 else
                 {
                     // this is a new file.
+
+                    // Change as per issue #134 - setting value to null first stops umbraco from
+                    // trying to delete the existing value and breaking if it's a JSON Cropper value
+                    // 
                     using (FileStream s = new FileStream(file, FileMode.Open))
                     {
+                        // Set the umbracoFile value to null, so that when SetValue is called 
+                        // the 'old' value will be null and Umbraco will not try to delete the file
+                        item.Properties["umbracoFile"].Value = null;
+
                         item.SetValue("umbracoFile", Path.GetFileName(file), s);
                         changes = true;
                     }
