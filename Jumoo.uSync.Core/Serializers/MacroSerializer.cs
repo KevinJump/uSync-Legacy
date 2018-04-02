@@ -112,6 +112,7 @@ namespace Jumoo.uSync.Core.Serializers
                         itemProperty.Alias = alias;
                         itemProperty.Name = property.Attribute("name").Value;
                         itemProperty.EditorAlias = property.Attribute("propertyType").Value;
+                        itemProperty.SortOrder = property.Attribute("sortOrder").ValueOrDefault(0);
                     }
                 }
             }
