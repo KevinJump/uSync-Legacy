@@ -50,7 +50,7 @@ namespace Jumoo.uSync.ContentMappers
                     {
                         LogHelper.Debug<LeBlenderContentMapper>("Value: {0}", () => val.ToString());
                         var dtdValue = val.Value<string>("dataTypeGuid");
-                        var propValue = val.Value<string>("value");
+                        var propValue = val["value"].ToString();
                         Guid dtdGuid;
                         if (Guid.TryParse(dtdValue, out dtdGuid))
                         {
