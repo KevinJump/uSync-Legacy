@@ -50,7 +50,14 @@ namespace Jumoo.uSync.ContentMappers
                     {
                         LogHelper.Debug<LeBlenderContentMapper>("Value: {0}", () => val.ToString());
                         var dtdValue = val.Value<string>("dataTypeGuid");
-                        var propValue = val["value"].ToString();
+                        string propValue = val["value"].ToString();
+                        var isJson = false;
+                        if (val["value"] is JObject || val["value"] is JArray)
+                        {
+                            isJson = true;
+                            propValue = JsonConvert.SerializeObject(val["value"]);
+                        }
+
                         Guid dtdGuid;
                         if (Guid.TryParse(dtdValue, out dtdGuid))
                         {
@@ -67,6 +74,11 @@ namespace Jumoo.uSync.ContentMappers
                                         mappedValue = mapper.GetExportValue(prop.Id, propValue);
 
                                     val["value"] = mappedValue;
+                                    if (isJson)
+                                    {
+                                        val["value"] = JToken.Parse(mappedValue);
+                                    }
+                                    
 
                                 }
 
