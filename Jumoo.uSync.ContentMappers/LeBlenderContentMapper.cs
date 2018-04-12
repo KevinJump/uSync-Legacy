@@ -55,7 +55,6 @@ namespace Jumoo.uSync.ContentMappers
                         if (val["value"] is JObject || val["value"] is JArray)
                         {
                             isJson = true;
-                            propValue = JsonConvert.SerializeObject(val["value"]);
                         }
 
                         Guid dtdGuid;
