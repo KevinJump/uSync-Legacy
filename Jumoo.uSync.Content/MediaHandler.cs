@@ -105,6 +105,12 @@ namespace Jumoo.uSync.Content
             if (item == null)
                 return uSyncAction.Fail(Path.GetFileName(path), typeof(IMedia), "item not set");
 
+            if (this.handlerSettings.UseRulesOnExport)
+            {
+                if (!base.IncludeItem(path, item))
+                    return uSyncAction.SetAction(false, item.Name, typeof(IMedia), ChangeType.NoChange, "Item ignored due to config");
+            }
+
             try
             {
                 var attempt = uSyncCoreContext.Instance.MediaSerializer.Serialize(item);
@@ -183,6 +189,10 @@ namespace Jumoo.uSync.Content
         public override uSyncAction ReportItem(string file)
         {
             var node = XElement.Load(file);
+
+            if (!IncludeItem(Path.GetDirectoryName(file)))
+                return uSyncActionHelper<IContent>.ReportAction(false, node.NameFromNode(), "Ignored via config");
+
             var update = uSyncCoreContext.Instance.MediaSerializer.IsUpdate(node);
             return uSyncActionHelper<IMedia>.ReportAction(update, node.NameFromNode());
         }

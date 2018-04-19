@@ -209,14 +209,15 @@ namespace Jumoo.uSync.Content
                             if (bool.TryParse(setting.Value, out idNameVal))
                                 handlerSettings.UseShortName = idNameVal;
                             break;
+                        case "include":
                         case "root":
                             handlerSettings.Root = setting.Value.ToDelimitedList();
-                            _rootPathSettingOn = handlerSettings.Root != null && !handlerSettings.Root.Any();
+                            _rootPathSettingOn = handlerSettings.Root != null && handlerSettings.Root.Any();
                             LogHelper.Debug<ContentHandler>("Root Setting: {0}", () => handlerSettings.Root);
                             break;
                         case "ignore":
                             handlerSettings.Ignore = setting.Value.ToDelimitedList();
-                            _ignorePathSettingOn = handlerSettings.Ignore != null && !handlerSettings.Ignore.Any();
+                            _ignorePathSettingOn = handlerSettings.Ignore != null && handlerSettings.Ignore.Any();
                             LogHelper.Debug<ContentHandler>("Ignore Setting: {0}", () => string.Join(",", handlerSettings.Ignore));
                             break;
                         case "levelpath":
@@ -227,6 +228,11 @@ namespace Jumoo.uSync.Content
                             bool delete = false;
                             if (bool.TryParse(setting.Value, out delete))
                                 handlerSettings.DeleteActions = delete;
+                            break;
+                        case "rulesonexport":
+                            bool rulesOnExport = false;
+                            if (bool.TryParse(setting.Value, out rulesOnExport))
+                                handlerSettings.UseRulesOnExport = true;
                             break;
                     }
                 }
@@ -285,7 +291,10 @@ namespace Jumoo.uSync.Content
         {
             if (!_ignorePathSettingOn && !_rootPathSettingOn)
                 return true;
-            
+
+            if (item == null)
+                return true;
+           
             var itemPath = Path.Combine(path, item.Name.ToSafeFileName());
 
             return IncludeItem(itemPath);
@@ -307,7 +316,7 @@ namespace Jumoo.uSync.Content
                     {
                         if (path.InvariantContains(item))
                         {
-                            LogHelper.Debug<ContentHandler>("Ignoring: {0} {1}", () => path, () => handlerSettings.Ignore);
+                            LogHelper.Debug<ContentHandler>("Ignoring: {0} ({1})", () => path, () => string.Join(",", handlerSettings.Ignore));
                             return false;
                         }
                     }
@@ -318,15 +327,17 @@ namespace Jumoo.uSync.Content
             {
                 LogHelper.Debug<ContentHandler>("Checking : {0} in root path settings", () => path);
                 // if root is set but the path DOESN'T start with it we don't include it.
-                if (handlerSettings.Root != null)
+                if (handlerSettings.Root != null && handlerSettings.Root.Any())
                 {
                     foreach(var item in handlerSettings.Root)
                     {
-                        if (!path.InvariantContains(item)) {
-                            LogHelper.Debug<ContentHandler>("Not under root: {0} {1}", () => path, () => handlerSettings.Root);
-                            return false;
+                        if (path.InvariantContains(item)) {
+                            return true;
                         }
                     }
+
+                    LogHelper.Debug<ContentHandler>("Not under root: {0} ({1})", () => path, () => string.Join(",", handlerSettings.Root));
+                    return false;
                 }
             }
 
@@ -340,6 +351,8 @@ namespace Jumoo.uSync.Content
 
             public IList<string> Root { get; set; }
             public IList<string> Ignore { get; set; }
+
+            public bool UseRulesOnExport { get; set; }
 
             public bool DeleteActions { get; set; }
         }
