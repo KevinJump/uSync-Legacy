@@ -38,6 +38,9 @@ namespace Jumoo.uSync.Content
             if (!System.IO.File.Exists(filePath))
                 throw new FileNotFoundException(filePath);
 
+            if (!IncludeItem(Path.GetDirectoryName(filePath)))
+                return SyncAttempt<IContent>.Fail(filePath, default(IContent), ChangeType.NoChange, "ignored via config");
+
             var node = XElement.Load(filePath);
             return uSyncCoreContext.Instance.ContentSerializer.Deserialize(node, parentId, force);
            

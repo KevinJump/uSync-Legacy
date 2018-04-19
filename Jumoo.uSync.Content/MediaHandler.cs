@@ -36,6 +36,9 @@ namespace Jumoo.uSync.Content
             if (!System.IO.File.Exists(file))
                 throw new FileNotFoundException(file);
 
+            if (!IncludeItem(Path.GetDirectoryName(file)))
+                return SyncAttempt<IMedia>.Fail(file, default(IMedia), ChangeType.NoChange, "ignored via config");
+
             var node = XElement.Load(file);
             var attempt = uSyncCoreContext.Instance.MediaSerializer.Deserialize(node, parentId, force);
             

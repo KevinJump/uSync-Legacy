@@ -200,7 +200,7 @@ namespace Jumoo.uSync.Content
 
             if (_settings.Any())
             {
-                foreach(var setting in _settings.ToList())
+                foreach(var setting in _settings)
                 {
                     switch(setting.Key.ToLower())
                     {
@@ -210,14 +210,14 @@ namespace Jumoo.uSync.Content
                                 handlerSettings.UseShortName = idNameVal;
                             break;
                         case "root":
-                            handlerSettings.Root = setting.Value;
-                            _rootPathSettingOn = !String.IsNullOrEmpty(handlerSettings.Root);
+                            handlerSettings.Root = setting.Value.ToDelimitedList();
+                            _rootPathSettingOn = handlerSettings.Root != null && !handlerSettings.Root.Any();
                             LogHelper.Debug<ContentHandler>("Root Setting: {0}", () => handlerSettings.Root);
                             break;
                         case "ignore":
-                            handlerSettings.Ignore = setting.Value;
-                            _ignorePathSettingOn = !String.IsNullOrEmpty(handlerSettings.Ignore);
-                            LogHelper.Debug<ContentHandler>("Ignore Setting: {0}", () => handlerSettings.Ignore);
+                            handlerSettings.Ignore = setting.Value.ToDelimitedList();
+                            _ignorePathSettingOn = handlerSettings.Ignore != null && !handlerSettings.Ignore.Any();
+                            LogHelper.Debug<ContentHandler>("Ignore Setting: {0}", () => string.Join(",", handlerSettings.Ignore));
                             break;
                         case "levelpath":
                             bool.TryParse(setting.Value, out _levelPathsOn);
@@ -272,6 +272,15 @@ namespace Jumoo.uSync.Content
             return uSyncIOHelper.GetShortGuidPath(Guid.NewGuid());
         }
 
+        protected bool IncludeItem(int contentId)
+        {
+            if (!_ignorePathSettingOn && !_rootPathSettingOn)
+                return true;
+
+            var content = _contentService.GetById(contentId);
+            return IncludeItem(content.Path);
+        }
+
         protected bool IncludeItem(string path, IContentBase item)
         {
             if (!_ignorePathSettingOn && !_rootPathSettingOn)
@@ -279,37 +288,58 @@ namespace Jumoo.uSync.Content
             
             var itemPath = Path.Combine(path, item.Name.ToSafeFileName());
 
+            return IncludeItem(itemPath);
+        }
+
+
+        protected bool IncludeItem(string path)
+        {
+            if ((!_ignorePathSettingOn && !_rootPathSettingOn) || string.IsNullOrWhiteSpace(path))
+                return true;
+
             if (_ignorePathSettingOn)
             {
+                LogHelper.Debug<ContentHandler>("Checking : {0} in ignore path settings", () => path);
                 // if the path starts with the ignore thing, then we don't include it.
-                if (!string.IsNullOrEmpty(handlerSettings.Ignore) 
-                    && itemPath.StartsWith(handlerSettings.Ignore, StringComparison.InvariantCultureIgnoreCase))
+                if (handlerSettings.Ignore != null) 
                 {
-                    LogHelper.Debug<ContentHandler>("Ignoring: {0} {1}", () => itemPath, () => handlerSettings.Ignore);
-                    return false;
+                    foreach(var item in handlerSettings.Ignore)
+                    {
+                        if (path.InvariantContains(item))
+                        {
+                            LogHelper.Debug<ContentHandler>("Ignoring: {0} {1}", () => path, () => handlerSettings.Ignore);
+                            return false;
+                        }
+                    }
                 }
             }
 
             if (_rootPathSettingOn)
             {
+                LogHelper.Debug<ContentHandler>("Checking : {0} in root path settings", () => path);
                 // if root is set but the path DOESN'T start with it we don't include it.
-                if (!string.IsNullOrEmpty(handlerSettings.Root)
-                    && !itemPath.StartsWith(handlerSettings.Root, StringComparison.InvariantCultureIgnoreCase))
+                if (handlerSettings.Root != null)
                 {
-                    LogHelper.Debug<ContentHandler>("Not under root: {0} {1}", () => itemPath, () => handlerSettings.Root);
-                    return false;
+                    foreach(var item in handlerSettings.Root)
+                    {
+                        if (!path.InvariantContains(item)) {
+                            LogHelper.Debug<ContentHandler>("Not under root: {0} {1}", () => path, () => handlerSettings.Root);
+                            return false;
+                        }
+                    }
                 }
             }
 
             return true;
         }
 
+
         protected class BaseContentHandlerSettings
         {
             public bool UseShortName { get; set; }
 
-            public string Root { get; set; }
-            public string Ignore { get; set; }
+            public IList<string> Root { get; set; }
+            public IList<string> Ignore { get; set; }
 
             public bool DeleteActions { get; set; }
         }
