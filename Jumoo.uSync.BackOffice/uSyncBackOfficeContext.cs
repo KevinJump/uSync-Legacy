@@ -91,7 +91,7 @@
 
                         if (typeInstance is ISyncHandlerConfig)
                         {
-                            ((ISyncHandlerConfig)typeInstance).LoadHandlerConfig(HandlerSettings(typeInstance.Name));
+                            ((ISyncHandlerConfig)typeInstance).LoadHandlerConfig(HandlerSettings(typeInstance.Name, handlerGroup));
                         }
                     }
                 }
