@@ -223,71 +223,80 @@ namespace Jumoo.uSync.Core.Serializers
             return nodeCopy;
         }
 
+        private string[] listTypes = new string[] {
+            "Umbraco.CheckBoxList",
+            "Umbraco.DropDown",
+            "Umbraco.DropDownMultiple",
+            "Umbraco.RadioButtonList",
+            "Umbraco.DropDown.Flexible" };
+
         private void DeserializeUpdatePreValues(IDataTypeDefinition item, XElement node)
         {
-            var itemPreValues = _dataTypeService.GetPreValuesCollectionByDataTypeId(item.Id)
+            bool isListType = listTypes.InvariantContains(item.PropertyEditorAlias);
+
+            var existingPreValues = _dataTypeService.GetPreValuesCollectionByDataTypeId(item.Id)
                                     .FormatAsDictionary();
 
-            var mappedNode = DeserializeGetMappedValues(node, itemPreValues);
+            var mappedNode = DeserializeGetMappedValues(node, existingPreValues);
 
-            var preValueRootNode = mappedNode.Element("PreValues");
-            if (preValueRootNode != null)
+            var updatedPreValues = new SortedDictionary<string, PreValue>();
+
+            var rootElement = mappedNode.Element("PreValues");
+            if (rootElement != null)
             {
-                List<string> preValsToRemove = new List<string>();
-
-                foreach (var preValue in itemPreValues)
+                foreach (var preValue in existingPreValues)
                 {
-
-                    var preValNode = preValueRootNode.Elements("PreValue")
-                                        .Where(x => x.Attribute("Alias") != null && ((string)x.Attribute("Alias").Value == preValue.Key))
-                                        .FirstOrDefault();
-
-                    if (preValNode != null)
+                    XElement nodeValue = default(XElement);
+                    if (isListType)
                     {
-                        // set the value of preValue value to the value of the value attribute :)
-                        if (preValue.Value.Value != preValNode.Value)
-                        {
-                            preValue.Value.Value = preValNode.Value;
-                        }
-                    }
-                    else
-                    {
-                        preValsToRemove.Add(preValue.Key);
+                        // for list types we try to match on the name before the alias - as that changes depending on the sort order :(
+                        nodeValue = rootElement.Elements("PreValue")
+                            .Where(x => x.Value != null && x.Value.InvariantEquals(preValue.Value.Value))
+                            .FirstOrDefault();
+
                     }
 
+                    if (nodeValue == null)
+                    {
+                        nodeValue = rootElement.Elements("PreValue")
+                                           .Where(x => x.Attribute("Alias") != null && ((string)x.Attribute("Alias").Value == preValue.Key))
+                                           .FirstOrDefault();
+                    }
 
-                }
+                    if (nodeValue != null)
+                    {
+                        var updatedValue = preValue.Value;
 
-                // remove things that we didn't find
-                foreach (var key in preValsToRemove)
-                {
-                    itemPreValues.Remove(key);
+                        if (updatedValue.Value != nodeValue.Value)
+                            updatedValue.Value = nodeValue.Value;
+
+                        var alias = nodeValue.Attribute("Alias").Value;
+
+                        // add it to our new dictionary. 
+                        updatedPreValues.Add(alias, updatedValue);
+                    }
                 }
 
                 // now add any new prevalues from the xml
-                /*
-                var valuesWithKeys = preValueRootNode.Elements("PreValue")
-                                        .Where(x => (string.IsNullOrWhiteSpace((string)x.Attribute("Alias")) == false))
-                                        .ToDictionary(key => (string)key.Attribute("Alias"), val => (string)val.Attribute("Value"));
-                */
-
-                foreach (var nodeValue in preValueRootNode.Elements("PreValue"))
+                foreach (var nodeValue in rootElement.Elements("PreValue"))
                 {
                     var alias = nodeValue.Attribute("Alias").ValueOrDefault(string.Empty);
                     var value = nodeValue.ValueOrDefault(string.Empty);
 
                     if (!string.IsNullOrEmpty(alias))
                     {
-                        if (!itemPreValues.ContainsKey(alias))
+                        if (!updatedPreValues.ContainsKey(alias))
                         {
-                            itemPreValues.Add(alias, new PreValue(value));
+                            updatedPreValues.Add(alias, new PreValue(value));
                         }
                     }
                 }
 
-                _dataTypeService.SavePreValues(item, itemPreValues);
+                _dataTypeService.SavePreValues(item, updatedPreValues);
             }
         }
+
+
 
         internal override SyncAttempt<XElement> SerializeCore(IDataTypeDefinition item)
         {
@@ -338,8 +347,9 @@ namespace Jumoo.uSync.Core.Serializers
                 var preValue = itemPreValuePair.Value;
                 var preValueValue = preValue.Value;
 
-                XElement preValueNode = new XElement("PreValue",
-                    new XAttribute("Id", preValue.Id.ToString()));
+                XElement preValueNode = new XElement("PreValue");
+                    // new XAttribute("Id", preValue.Id.ToString()));
+
                 preValueNode.Add(new XCData(String.IsNullOrEmpty(preValueValue) ? "" : preValueValue));
 
                 if (!itemPreValuePair.Key.StartsWith("zzzuSync"))
