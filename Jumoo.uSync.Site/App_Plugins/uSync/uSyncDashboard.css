@@ -42,3 +42,12 @@
     text-align: center;
     margin: 2em 0;
 }
+
+.usync-actions {
+    display: flex;
+    justify-content: space-around;
+}
+
+.usync-actions div {
+
+}

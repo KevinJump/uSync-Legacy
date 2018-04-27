@@ -1,7 +1,8 @@
 ﻿{
 	javascript: [
 		'~/App_Plugins/uSync/uSyncDashboardController.js',
-		'~/App_Plugins/uSync/uSyncDashboardService.js'
+		'~/App_Plugins/uSync/uSyncDashboardService.js',
+		'~/App_Plugins/uSync/uSyncMainActionController.js'
 	],
 	css: [
 		'~/App_Plugins/uSync/uSyncDashboard.css'

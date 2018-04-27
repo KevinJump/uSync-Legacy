@@ -1,0 +1,93 @@
+<p>
+    uSync is written and developed by <a href="http://jumoo.uk" target="_blank">Jumoo</a>, and is completely
+    free and open source.
+</p>
+<!-- licencing -->
+<div ng-hide="settings.licenced">
+    <p>
+        <!-- yes you can just remove this box, and lose the warning (don't forget the icon on the tab above)
+                but you will feel dirty, like you've stolen someones' chips.
+        -->
+        <div class="alert alert-warning">
+            Your version of uSync is unlicenced.
+            It doesn't stop anything from working, but you can make yourself feel better with a
+            <a href="http://jumoo.uk/usync/licence/" target="_blank" style="text-decoration:underline;">goodwill licence</a>, and it will
+            make this warning go away.
+        </div>
+    </p>
+</div>
+<div ng-show="settings.licenced">
+    <p>
+        <div class="alert alert-success">You are licenced, we like you. :) </div>
+    </p>
+</div>
+
+<div class="row">
+    <div class="span6">
+        <h3 class="page-header">Getting Help</h3>
+        <p>
+            There are a number of places you can go to get help with uSync.
+        </p>
+        <h4>uSync Forums on our.umbraco.org</h4>
+        <p>
+            The forums are the best place to go to get answers, not least because
+            other people beyond Kevin might answer them
+        </p>
+        <div class="usync-button">
+            <a href="https://our.umbraco.org/projects/developer-tools/usync/usync/" target="_blank" class="btn btn-success">
+                uSync Forums on our.umbraco.org
+            </a>
+        </div>
+        <h4>uSync GitHub Repository</h4>
+        <p>
+            If you want to get underneath the hood, and look at the code, then
+            the GitHub repo is the place to look.
+        </p>
+        <div class="usync-button">
+            <a href="https://github.com/KevinJump/uSync/" target="_blank" class="btn btn-default">uSync on GitHub</a>
+        </div>
+        <h4>Complex Stuff via Jumoo</h4>
+        <p>
+            If you have some complex weird requirements, that you think uSync could
+            do but doesn't then <a href="mailto:usync@jumoo.co.uk">drop us a line</a>.
+        </p>
+        <p>
+            We are always willing to look at adding new features, and we are not
+            immune to doing some bespoke paid for extensions if you really need them.
+        </p>
+        <div class="usync-button">
+            <a href="mailto:usync@jumoo.co.uk" class="btn btn-mini btn-default">Contact Us</a>
+        </div>
+    </div>
+    <div class="span6">
+        <h3 class="page-header">Helping uSync</h3>
+        <p>
+            uSync is a completely open source project, and you can contribute to it
+            in a number of ways.
+        </p>
+        <h4>Submit Code</h4>
+        <p>
+            If you want to add a cool feature or just fix that annoying bug, you can
+            do it yourself!.
+        </p>
+        <div class="usync-button">
+            <a href="https://github.com/KevinJump/uSync/" target="_blank" class="btn btn-default">uSync on GitHub</a>
+        </div>
+        <p>
+            Go look at the uSync GitHub repository, fork it, do some code stuff and
+            submit a pull request. We'll merge it in and put it in the next release.
+        </p>
+        <h4>Submit bugs</h4>
+        <p>
+            If most of that sounded like a foreign language, or if you can't be bothered
+            with it, you can still submit bugs to our issue tracker.
+        </p>
+        <div class="usync-button">
+            <a href="https://github.com/KevinJump/uSync/issues" target="_blank" class="btn btn-warning btn-lg">Submit an issue</a>
+        </div>
+        <p>
+            We will work with you to get to the bottom of whats going on, and more than
+            likely we'll fix the issue for you.
+        </p>
+    </div>
+</div>

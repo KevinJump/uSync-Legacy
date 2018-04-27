@@ -325,6 +325,7 @@
     <Compile Include="Interfaces\ISyncHandlerConfig.cs" />
     <Compile Include="Interfaces\ISyncSecondPass.cs" />
     <Compile Include="Licence\GoodwillLicence.cs" />
+    <Compile Include="Tabs\uSyncTabs.cs" />
     <Compile Include="uSyncAction.cs" />
     <Compile Include="uSyncApplicationEventHandler.cs" />
     <Compile Include="uSyncBackOfficeConfig.cs" />
@@ -348,10 +349,16 @@
     <None Include="Config\dashboard.config.install.xdt" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Plugins\uSync\about.html" />
+    <Content Include="App_Plugins\uSync\config.html" />
+    <Content Include="App_Plugins\uSync\history.html" />
+    <Content Include="App_Plugins\uSync\lang\en-US.xml" />
+    <Content Include="App_Plugins\uSync\main.html" />
     <Content Include="App_Plugins\uSync\uSyncDashboard.css" />
     <Content Include="App_Plugins\uSync\uSyncDashboardController.js" />
     <Content Include="App_Plugins\uSync\uSyncDashboard.html" />
     <Content Include="App_Plugins\uSync\uSyncDashboardService.js" />
+    <Content Include="App_Plugins\uSync\uSyncMainActionController.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -1,0 +1,73 @@
+﻿<div class="row">
+    <div class="span12">
+        <div ng-show="contentEdition" class="alert alert-success">
+            uSync.ContentEdition is installed. Content and Media Handlers can now import and export content, as part of
+            a standard sync.
+        </div>
+    </div>
+    <div class="span6">
+        <div class="usync-info">
+            <h4>Setup</h4>
+            <p>Choose how uSync behaves on your site</p>
+            <label class="radio">
+                <input type="radio" ng-model="uSyncMode" value="auto" />
+                Auto Sync <small>Run import at startup, save changes to disk when they occur</small>
+            </label>
+            <label class="radio">
+                <input type="radio" ng-model="uSyncMode" value="target" />
+                Sync Target <small>Will run import at startup only</small>
+            </label>
+            <label class="radio">
+                <input type="radio" ng-model="uSyncMode" value="source" />
+                Sync Source <small>Don't import but save any changes that are made to disk</small>
+            </label>
+            <label class="radio">
+                <input type="radio" ng-model="uSyncMode" value="manual" />
+                Manual Sync <small>
+                    No automatic imports or saves.
+                    (why not try <a href="https://our.umbraco.org/projects/developer-tools/usyncSnapshots/" target="_blank">uSync.Snapshots</a>?)
+                </small>
+            </label>
+            <label class="radio">
+                <input type="radio" ng-model="uSyncMode" value="other" enabled="false" />
+                Other <small>Some other weird setup - see your uSyncBackOffice.config</small>
+            </label>
+            <hr />
+            <div class="text-center">
+                <button class="btn btn-default" ng-click="updateSettings()">Save Settings</button>
+            </div>
+        </div>
+    </div>
+    <div class="span6">
+        <h4>Handlers [Group: {{settings.settings.HandlerGroup}}]</h4>
+        <p>
+            Installed handlers, that actually do all the work of getting things to and from disk. You
+            can turn handlers on and off in the uSyncBackoffice.config file.
+        </p>
+        <strong>Handler Groups</strong>
+        <p>
+            Handlers are loaded by group - the <strong>{{settings.settings.HandlerGroup}}</strong> group is used on all default
+            actions
+        </p>
+        <div id="handlerAccordion">
+            <div ng-repeat="handlerGroup in settings.settings.Handlers">
+                <h4>
+                    <a href data-toggle="collapse" data-target="#group_{{handlerGroup.Group}}">
+                        Group Name : <em>{{handlerGroup.Group}}</em>
+                    </a>
+                    <small ng-if="handlerGroup.EnableMissing">will also load handlers not explicity listed in config file</small>
+                </h4>
+                <ul class="collapse" ng-class="{'in': handlerGroup.Group == settings.settings.HandlerGroup}"
+                    id="group_{{handlerGroup.Group}}">
+                    <li ng-repeat="handler in handlerGroup.Handlers"
+                        ng-class="{'text-error': !handler.Enabled, 'text-success': handler.Enabled}">
+                        <i class="icon icon-check" ng-if="handler.Enabled"></i>
+                        <i class="icon icon-wrong" ng-if="!handler.Enabled"></i>
+
+                        {{handler.Name}} (Enabled: {{handler.Enabled}})
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
