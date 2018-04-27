@@ -536,7 +536,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             var properties = new XElement("GenericProperties");
 
-            foreach(var property in item.PropertyTypes.OrderBy(x => x.Name))
+            foreach(var property in item.PropertyTypes.OrderBy(x => x.Alias))
             {
                 var propNode = new XElement("GenericProperty");
 
