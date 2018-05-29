@@ -18,6 +18,8 @@ namespace Jumoo.uSync.BackOffice.Handlers
     using System.Collections.Generic;
     using Umbraco.Core.Models.EntityBase;
     using Umbraco.Core.Events;
+    using System.Timers;
+
     public class ContentTypeHandler : uSyncBaseHandler<IContentType>, ISyncHandler, ISyncPostImportHandler
     {
         // sets our running order in usync. 
@@ -25,7 +27,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
         public string Name { get { return "uSync: ContentTypeHandler"; } }
         public string SyncFolder { get { return Constants.Packaging.DocumentTypeNodeName; } }
 
-        private readonly IContentTypeService _contentTypeService ;
+        private readonly IContentTypeService _contentTypeService;
         private readonly IEntityService _entityService;
 
         public ContentTypeHandler()
@@ -95,7 +97,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             }
 
             var nodes = _entityService.GetChildren(parent, UmbracoObjectTypes.DocumentType);
-            foreach(var node in nodes)
+            foreach (var node in nodes)
             {
                 var item = _contentTypeService.GetContentType(node.Key);
                 actions.Add(ExportToDisk(item, folder));
@@ -116,7 +118,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             try
             {
                 var attempt = uSyncCoreContext.Instance.ContentTypeSerializer.Serialize(item);
-                var filename = string.Empty; 
+                var filename = string.Empty;
 
                 if (attempt.Success)
                 {
@@ -149,7 +151,6 @@ namespace Jumoo.uSync.BackOffice.Handlers
             ContentTypeService.SavedContentTypeContainer += ContentTypeService_SavedContentTypeContainer;
         }
 
-
         private void ContentTypeService_SavedContentTypeContainer(IContentTypeService sender, SaveEventArgs<EntityContainer> e)
         {
             if (uSyncEvents.Paused)
@@ -157,8 +158,10 @@ namespace Jumoo.uSync.BackOffice.Handlers
 
             foreach (var item in e.SavedEntities)
             {
+                // _saveQueue.Enqueue(item.Id);
                 Export(item.Id, uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
             }
+
         }
 
         private void ContentTypeService_DeletedContentType(IContentTypeService sender, Umbraco.Core.Events.DeleteEventArgs<IContentType> e)
@@ -180,10 +183,12 @@ namespace Jumoo.uSync.BackOffice.Handlers
             if (uSyncEvents.Paused)
                 return;
 
-            foreach (var item in e.SavedEntities)
-            {
-                SaveContentItem(item);
-            }
+
+                foreach (var item in e.SavedEntities)
+                {
+                    SaveContentItem(item);
+                    
+                }
         }
 
         private void ContentTypeService_MovedContentType(IContentTypeService sender, MoveEventArgs<IContentType> e)
@@ -196,7 +201,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
                 SaveContentItem(item.Entity);
             }
         }
-    
+
 
         private void SaveContentItem(IContentType item)
         {

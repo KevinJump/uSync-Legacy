@@ -555,9 +555,16 @@ namespace Jumoo.uSync.Core.Serializers
                 var def = _dataTypeService.GetDataTypeDefinitionById(property.DataTypeDefinitionId);
 
                 if (def != null)
+                {
                     propNode.Add(new XElement("Definition", def.Key));
+                    propNode.Add(new XElement("Type", def.PropertyEditorAlias));
+                }
+                else
+                {
+                    propNode.Add(new XElement("Type", property.PropertyEditorAlias));
+                }
 
-                propNode.Add(new XElement("Type", property.PropertyEditorAlias));
+
                 propNode.Add(new XElement("Mandatory", property.Mandatory));
 
                 propNode.Add(new XElement("Validation", property.ValidationRegExp != null ? property.ValidationRegExp : "" ));
