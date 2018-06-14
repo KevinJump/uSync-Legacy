@@ -260,6 +260,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Complete\UsyncCompleteApiController.cs" />
+    <Compile Include="Models\IUsyncCompleteTab.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -268,6 +270,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Plugins\uSyncComplete\CompleteDashboard.html" />
     <Content Include="App_Plugins\uSyncComplete\dashboardController.js" />
     <Content Include="App_Plugins\uSyncComplete\uSyncService.js" />
   </ItemGroup>

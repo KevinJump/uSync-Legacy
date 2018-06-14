@@ -1,0 +1,52 @@
+﻿<div class="row">
+    <div class="span12">
+        <p>
+            uSync logs each successful run in ~/app_data/temp/usync, to clear the history
+            just delete these files.
+            <button class="btn btn-mini btn-danger" ng-click="clearHistory()">Clear History</button>
+        </p>
+        <div ng-show="historyCleared > 0" class="alert alert-info">Removed {{historyCleared}} history files</div>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Changes</th>
+                    <th>Sync Type</th>
+                    <th>Date</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody ng-repeat="item in history">
+                <tr>
+                    <td>{{item.name}}</td>
+                    <td>{{getChangeCount(item.actions)}}</td>
+                    <td>{{item.type}}</td>
+                    <td>{{item.date}}</td>
+                    <td>
+                        <button class="btn btn-mini" ng-click="item.showDetail = !item.showDetail">Details</button>
+                    </td>
+                </tr>
+                <tr ng-show="item.showDetail">
+                    <td colspan="5">
+                        <table class="table">
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Change</th>
+                                <th>Message</th>
+                            </tr>
+                            <tr ng-repeat="change in item.actions" ng-show="change.Change != 0"
+                                ng-class="{'text-warning' : !change.Success, 'muted' : change.Change == 0 }">
+                                <td>{{change.Name}}</td>
+                                <td>{{getTypeName(change.ItemType)}}</td>
+                                <td>{{getChangeName(change.Change)}}</td>
+                                <td>{{change.Message}}</td>
+                            </tr>
+                        </table>
+                        <!-- details will go here...-->
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

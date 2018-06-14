@@ -37,6 +37,6 @@
     }
 
     angular.module('umbraco')
-        .controller('usyncCompleteDashboardController', dashboardController);
+        .controller('usyncCompleateDashboardController', dashboardController);
 
 })();
