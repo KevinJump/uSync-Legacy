@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<language alias="en" intName="English (UK)" localName="English (UK)" lcid="" culture="en-GB">
+  <creator>
+    <name>Jumoo</name>
+    <link>http://jumoo.uk</link>
+  </creator>
+  <area alias="usync">
+    <key alias="import">Import</key>
+    <key alias="importFull">Full import</key>
+    <key alias="export">Export</key>
+    <key alias="report">Report</key>
+  </area>
+</language>

@@ -130,7 +130,7 @@ namespace Jumoo.uSync.BackOffice.Controllers
                 addOns = addOnString,
                 settings = uSyncBackOfficeContext.Instance.Configuration.Settings,
                 licenced = l.IsLicenced(),
-                addOnTabs = addOnTabs,
+                addOnTabs = addOnTabs.OrderBy(x => x.sortOrder),
                 Handlers = uSyncBackOfficeContext.Instance.Handlers.Select(x => x.Name)
             };
 
@@ -223,6 +223,8 @@ namespace Jumoo.uSync.BackOffice.Controllers
     {
         public string name { get; set; }
         public string template { get; set; }
+
+        public int sortOrder { get; set; }
     }
 
  

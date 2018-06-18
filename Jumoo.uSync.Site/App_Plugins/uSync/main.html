@@ -1,0 +1,193 @@
+<div ng-controller="uSync.MainAction.Controller as vm">
+    <div class="row">
+        <div class="span12">
+            <small>(uSync.BackOffice {{settings.backOfficeVersion}})</small>
+            <small>
+                (uSync.Core {{settings.coreVersion}})
+                <span class="text-success">
+                    {{settings.addOns}}
+                </span>
+            </small>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span12">
+            <div class="usync-actions">
+                <div>
+                    <umb-button
+                                action="report()"
+                                type="button"
+                                button-style="info"
+                                state="vm.state()"
+                                label="Report"
+                                disabled="reporting">
+                    </umb-button>
+                </div>
+                <div>
+                    <umb-button-group default-button="vm.importGroup.defaultButton"
+                                      sub-buttons="vm.importGroup.subButtons"
+                                      direction="down"
+                                      state="vm.state()">
+                    </umb-button-group>
+                </div>
+                <div>
+                    <umb-button
+                                action="export()"
+                                type="button"
+                                button-style="warning"
+                                state="vm.state()"
+                                label="export"
+                                disabled="reporting">
+                    </umb-button>
+                </div>
+            </div>
+            <h4 class="page-header">Import / Export</h4>
+            <p>
+                Perfom import and exports of your stuff - these actions are
+                processed against the files in <em>{{settings.settings.Folder}}</em>
+            </p>
+            <p>
+                &nbsp;
+            </p>
+            <div class="span6">
+                <p>
+                    <button class="btn btn-info" ng-click="report()" ng-disabled="reporting">Report</button>
+                    <small class="muted">Find out what will change if you import</small>
+                </p>
+                <p>
+                    <button class="btn btn-success" ng-click="import(false)" ng-disabled="reporting">Import</button>
+                    <small class="muted">Import on the things that have changed</small>
+                </p>
+
+            </div>
+            <div class="span6">
+                <p>
+                    <button class="btn btn-mini btn-warning" ng-click="import(true)" ng-disabled="reporting">Full Import</button>
+                    <small class="muted">Import everything (even if it's the same)</small>
+                </p>
+                <p>
+                    <button class="btn btn-mini btn-inverse" ng-click="export()" ng-disabled="reporting">Full Export</button>
+                    <small class="muted">
+                        Export everything to disk (wipes current folder)
+                        <br />
+                        <label style="padding-left: 5em;"><input type="checkbox" ng-model="deleteActionFile" /> also delete the action file (<a href="http://usync.readthedocs.io/action-file/" target="_blank">should I?</a>))</label>
+                    </small>
+
+                </p>
+                <p>
+                    <button class="btn btn-mini btn-default" ng-click="loadActions()">view uSync Actions</button>
+                    <small class="muted">uSync Actions track things like deletes</small>
+                </p>
+            </div>
+            <div class="span12"><hr /></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span12">
+            <div class="report-detail">
+                <div ng-show="reporting">
+                    <ul class="usync-progress animated -half-second" style="list-style: none;position:relative;">
+                        <li class="umb-load-indicator__bubble"></li>
+                        <li class="umb-load-indicator__bubble"></li>
+                        <li class="umb-load-indicator__bubble"></li>
+                    </ul>
+                </div>
+
+                <div ng-show="reported">
+                    <div class="span8">
+                        <h4>{{reportName}} Processed <small>{{changes.length}} items, {{getChangeCount(changes)}} Changes</small></h4>
+                    </div>
+                    <div class="span4">
+                        <div class="report-controls">
+                            show 'no change' items <input ng-model="showNoChange" type="checkbox" class="form-control" no-Dirty-Check>
+                        </div>
+                    </div>
+                    <table class="table" ng-show="showNoChange || getChangeCount(changes) > 0">
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Change</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        <tbody ng-repeat="change in changes">
+                            <tr ng-class="{'text-warning' : !change.Success, 'muted' : change.Change == 0 }" ng-show="showChange(change.Change)">
+                                <td>{{change.Name}}</td>
+                                <td>{{getChangeName(change.Change)}}</td>
+                                <td>{{getTypeName(change.ItemType)}}</td>
+                                <td>
+                                    {{change.Message}}
+                                </td>
+                                <td>
+                                    <button ng-show="change.Details != null && change.Details.length > 0"
+                                            ng-click="showDetail(change)" class="btn btn-mini">
+                                        Details
+                                    </button>
+                                </td>
+
+                            </tr>
+                            <tr ng-if="change.Details != null && change.Details.length > 0" ng-show="change.showDetail">
+                                <td colspan="5">
+                                    <div class="change-detail">
+                                        <h4>Changes for : {{change.Name}} <small>({{getTypeName(change.ItemType)}})</small></h4>
+                                        <table class="table">
+                                            <tr>
+                                                <th>Action</th>
+                                                <th>Path</th>
+                                                <th>Name</th>
+                                                <th>Old Value</th>
+                                                <th>New Value</th>
+                                            </tr>
+                                            <tr ng-repeat="detail in change.Details"
+                                                ng-class="{'text-error' : detail.Change == 2, 'text-success' : detail.Change == 0}">
+                                                <td>{{getDetailChange(detail.Change)}}</td>
+                                                <td>{{detail.Path}}</td>
+                                                <td>{{detail.Name}}</td>
+                                                <td class="text-error">{{getDetailValue(detail.OldVal)}}</td>
+                                                <td class="text-success">{{getDetailValue(detail.NewVal)}}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row" ng-show="showActions">
+        <h3 class="page-header">uSync Actions</h3>
+        <p>
+            uSync stores actions (like, deletes, and renames of certain types) in a separate file (uSyncActions.config),
+            this lets uSync handle the bits that are more than changes of properties.
+        </p>
+        <p>
+            Sometimes you can end up with orphaned, actions in the action file; they usually do no harm, but if you want
+            you can remove them here.
+        </p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Action</th>
+                    <th>Type</th>
+                    <th>Key (Guid)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="action in uSyncActions">
+                    <td>{{action.Name}}</td>
+                    <td>{{action.Action}}</td>
+                    <td>{{action.TypeName}}</td>
+                    <td>{{action.Key}}</td>
+                    <td><button class="btn btn-mini" ng-click="removeAction(action.Name, action.TypeName)">Remove</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
