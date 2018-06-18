@@ -239,7 +239,7 @@ namespace Jumoo.uSync.Core.Serializers
 
             var mappedNode = DeserializeGetMappedValues(node, existingPreValues);
 
-            var updatedPreValues = new SortedDictionary<string, PreValue>();
+            var updatedPreValues = new Dictionary<string, PreValue>();
 
             var rootElement = mappedNode.Element("PreValues");
             if (rootElement != null)
@@ -272,6 +272,13 @@ namespace Jumoo.uSync.Core.Serializers
 
                         var alias = nodeValue.Attribute("Alias").Value;
 
+                        var sortOrder = nodeValue.Attribute("SortOrder").ValueOrDefault(-1);
+                        if (sortOrder != -1)
+                        {
+                            updatedValue = new PreValue(updatedValue.Id, updatedValue.Value, sortOrder);
+                            // updatedValue.SortOrder = sortOrder;
+                        }                           
+
                         // add it to our new dictionary. 
                         updatedPreValues.Add(alias, updatedValue);
                     }
@@ -282,17 +289,18 @@ namespace Jumoo.uSync.Core.Serializers
                 {
                     var alias = nodeValue.Attribute("Alias").ValueOrDefault(string.Empty);
                     var value = nodeValue.ValueOrDefault(string.Empty);
+                    var sortOrder = nodeValue.Attribute("SortOrder").ValueOrDefault(0);
 
                     if (!string.IsNullOrEmpty(alias))
                     {
                         if (!updatedPreValues.ContainsKey(alias))
                         {
-                            updatedPreValues.Add(alias, new PreValue(value));
+                            updatedPreValues.Add(alias, new PreValue(0, value, sortOrder));
                         }
                     }
                 }
 
-                _dataTypeService.SavePreValues(item, updatedPreValues);
+                _dataTypeService.SavePreValues(item, updatedPreValues.OrderBy(x => x.Value.SortOrder).ToDictionary(k => k.Key, v => v.Value));
             }
         }
 
@@ -347,8 +355,10 @@ namespace Jumoo.uSync.Core.Serializers
                 var preValue = itemPreValuePair.Value;
                 var preValueValue = preValue.Value;
 
-                XElement preValueNode = new XElement("PreValue");
+                XElement preValueNode = new XElement("PreValue",
+                    new XAttribute("SortOrder", preValue.SortOrder.ToString()));
                     // new XAttribute("Id", preValue.Id.ToString()));
+
 
                 preValueNode.Add(new XCData(String.IsNullOrEmpty(preValueValue) ? "" : preValueValue));
 
