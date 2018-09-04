@@ -58,7 +58,7 @@ namespace Jumoo.uSync.Core.Serializers
             
 
             IDictionaryItem item = default(IDictionaryItem);
-            
+
             /*
              
             // currently (v7.5.3) you can't set the key value of a dictionary item
@@ -72,6 +72,14 @@ namespace Jumoo.uSync.Core.Serializers
                 item = _localizationService.GetDictionaryItemById(guid);
             }
             */
+
+            // we need to know what version this becomes a viable option
+            //
+            var guid = node.Attribute("guid").ValueOrDefault(Guid.Empty);
+            if (guid != Guid.Empty)
+            {
+                item = _localizationService.GetDictionaryItemById(guid);
+            }
 
             if (item == null && _localizationService.DictionaryItemExists(itemKey))
             {
@@ -88,10 +96,12 @@ namespace Jumoo.uSync.Core.Serializers
                     item = new DictionaryItem(itemKey);
             }
 
-            /*
             if (guid != Guid.Empty)
+            {
                 item.Key = guid;
-            */
+                LogHelper.Debug<DictionarySerializer>("Set the Guid of the Dictionary from {0} to {1}", () => item.Key, () => guid);
+            }
+                
 
             foreach (var valueNode in node.Elements("Value"))
             {

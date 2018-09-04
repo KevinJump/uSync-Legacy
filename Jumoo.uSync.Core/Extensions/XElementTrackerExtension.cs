@@ -73,8 +73,10 @@ namespace Jumoo.uSync.Core.Extensions
 
             if (copy.Name.LocalName == "DictionaryItem")
             {
+                /* 
+                // now we can set guids we don't remove them anymore...
                 if (copy.Attribute("guid") != null)
-                    copy.Attribute("guid").Remove();
+                    copy.Attribute("guid").Remove();*/
 
                 foreach (var val in copy.Elements("Value"))
                 {
