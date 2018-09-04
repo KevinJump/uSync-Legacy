@@ -46,6 +46,21 @@ namespace Jumoo.uSync.BackOffice
             {
                 LogHelper.Warn<uSyncApplicationEventHandler>("This version of uSync isn't compatible with this version of Umbraco.");
             }
+
+            Umbraco.Core.Services.ContentService.Published += ContentService_Published;
+        }
+
+        private void ContentService_Published(Umbraco.Core.Publishing.IPublishingStrategy sender, Umbraco.Core.Events.PublishEventArgs<Umbraco.Core.Models.IContent> e)
+        {
+            foreach (var item in e.PublishedEntities)
+            {
+                var attempt = uSyncCoreContext.Instance.ContentSerializer.Serialize(item);
+                if (attempt.Success)
+                {
+                    // at this point the attempt.item
+                    attempt.Item.Save("some/file/path");
+                }
+             }
         }
 
         private void Setup()
