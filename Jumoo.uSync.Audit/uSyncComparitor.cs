@@ -102,16 +102,21 @@ namespace Jumoo.uSync.Audit
         }
 
         public uSyncChangeGroup GetChanges(IEnumerable<TItem> items)
-        { 
-            uSyncChangeGroup changes = new uSyncChangeGroup(_user.Id, _user.Name);
-            changes.ItemType = _typeName;
-
-            foreach(var item in items)
+        {
+            if (_user != null)
             {
-                changes.ItemChanges.Add(this.GetUpdates(item));
+                uSyncChangeGroup changes = new uSyncChangeGroup(_user.Id, _user.Name);
+                changes.ItemType = _typeName;
+
+                foreach (var item in items)
+                {
+                    changes.ItemChanges.Add(this.GetUpdates(item));
+                }
+
+                return changes;
             }
 
-            return changes;
+            return null;
         }
 
         public IDictionary<Guid, string> SaveUpdates(IEnumerable<TItem> items)
