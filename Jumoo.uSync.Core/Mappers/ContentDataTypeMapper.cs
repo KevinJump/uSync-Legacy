@@ -60,39 +60,37 @@ namespace Jumoo.uSync.Core.Mappers
 
         public string GetImportValue(int dataTypeDefinitionId, string content)
         {
-            if (string.IsNullOrWhiteSpace(content))
-                return content;
+            LogHelper.Debug<ContentDataTypeMapper>("Mapping a datatype: {0} {1}", () => dataTypeDefinitionId, () => content);
 
             var prevalues =
-                ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(dataTypeDefinitionId).PreValuesAsDictionary;
+                ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(dataTypeDefinitionId)
+                                  .PreValuesAsDictionary;
 
             if (prevalues != null && prevalues.Count > 0)
             {
-
-                var values = content.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 var importValue = "";
 
-                foreach (var val in values)
-                {
-                    // ? needs to be set to the key value . 
-                    int inValue = prevalues.Where(kvp => kvp.Value.Value == val)
-                                            .Select(kvp => kvp.Value.Id)
-                                            .SingleOrDefault();
+                var values = content.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-                    if (inValue >= 0)
+                foreach (var alias in values)
+                {
+                    string preValue = prevalues.Where(kvp => kvp.Key == alias)
+                                        .Select(kvp => kvp.Value.Id.ToString())
+                                        .SingleOrDefault();
+
+                    if (!String.IsNullOrWhiteSpace(preValue))
                     {
-                        importValue += inValue + ",";
+                        importValue = string.Format("{0}{1},", importValue, preValue);
                     }
                     else
                     {
-                        importValue += val + ",";
+                        importValue = string.Format("{0}{1},", alias, preValue);
                     }
                 }
-
+                LogHelper.Debug<ContentDataTypeMapper>("Setting value {0} to {1}", () => content, () => importValue.Trim(","));
                 return importValue.Trim(",");
             }
-
             return content;
         }
-    }
+    }   
 }
