@@ -1,0 +1,8 @@
+﻿{
+  "javascript": [
+    "~/App_Plugins/StackedContent/js/stackedcontent.js"
+  ],
+  "css": [
+    "~/App_Plugins/StackedContent/css/stackedcontent.css"
+  ]
+}
