@@ -6,13 +6,18 @@ using System.Threading.Tasks;
 using Jumoo.uSync.Core.Mappers;
 using Newtonsoft.Json;
 using Umbraco.Core;
+using Umbraco.Core.Models;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
+using Newtonsoft.Json.Linq;
 
 namespace Jumoo.uSync.ContentMappers
 {
     public class InnerContentMapper : IContentMapper2
     {
+        private const string GuidPropertyKey = "icContentTypeGuid";
+        private const string AliasPropertyKey = "icContentTypeAlias";
+
         IContentTypeService _contentTypeService;
         IDataTypeService _dataTypeService;
 
@@ -26,113 +31,110 @@ namespace Jumoo.uSync.ContentMappers
 
         public string GetExportValue(int dataTypeDefinitionId, string value)
         {
-            if (string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(value) || !IsJson(value))
                 return null;
 
-            if (!IsJson(value))
-                return null;
+            LogHelper.Debug<InnerContentMapper>("InnerContent : {0}", () => value);
 
-            var innerContent = JsonConvert.DeserializeObject<InnerContentValue[]>(value);
+            var token = JsonConvert.DeserializeObject<JToken>(value);
+            if (token == null)
+                return value;
 
-            if (innerContent == null)
-                return null;
+            RecurseInnerValues(token, true);
 
-            var allContentTypes = innerContent.Select(x => x.IcContentTypeAlias)
-                .Distinct()
-                .ToDictionary(a => a, a => _contentTypeService.GetContentType(a));
+            LogHelper.Debug<InnerContentMapper>("InnerContent Export: {0}", () => JsonConvert.SerializeObject(token, Formatting.Indented));
 
-            //Ensure all of these content types are found
-            if (allContentTypes.Values.Any(contentType => contentType == null))
-            {
-                throw new InvalidOperationException($"Could not resolve these content types for the Inner Content property: {string.Join(",", allContentTypes.Where(x => x.Value == null).Select(x => x.Key))}");
-            }
-
-            foreach (var row in innerContent)
-            {
-                var contentType = allContentTypes[row.IcContentTypeAlias];
-
-                foreach (var key in row.PropertyValues.Keys.ToArray())
-                {
-                    var propertyType = contentType.CompositionPropertyTypes.FirstOrDefault(x => x.Alias == key);
-                    if (propertyType == null)
-                    {
-                        LogHelper.Debug<InnerContentMapper>($"No Property Type found with alias {key} on Content Type {contentType.Alias}");
-                        continue;
-                    }
-
-                    // (can we just use ? ) propertyType.PropertyEditorAlias
-                    //  -  i think for legacy (pre v7 it was harder)
-                    var dataType = _dataTypeService.GetDataTypeDefinitionById(propertyType.DataTypeDefinitionId);
-                    if (dataType != null)
-                    {
-                        var mapper = ContentMapperFactory.GetMapper(dataType.PropertyEditorAlias);
-                        if (mapper != null)
-                        {
-                            row.PropertyValues[key] = mapper.GetExportValue(
-                                dataType.Id, row.PropertyValues[key].ToString());
-                        }
-                    }
-                }
-            }
-
-            value = JsonConvert.SerializeObject(innerContent);
-            return value;
+            return JsonConvert.SerializeObject(token);
         }
 
         public string GetImportValue(int dataTypeDefinitionId, string value)
         {
-            if (string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(value) || !IsJson(value))
                 return null;
 
-            if (!IsJson(value))
-                return null;
+            LogHelper.Debug<InnerContentMapper>("InnerContent : {0}", () => value);
 
-            var innerContent = JsonConvert.DeserializeObject<InnerContentValue[]>(value);
+            var token = JsonConvert.DeserializeObject<JToken>(value);
+            if (token == null)
+                return value;
 
-            if (innerContent == null)
-                return null;
+            RecurseInnerValues(token, true);
 
-            var allContentTypes = innerContent.Select(x => x.IcContentTypeAlias)
-                .Distinct()
-                .ToDictionary(a => a, a => _contentTypeService.GetContentType(a));
+            LogHelper.Debug<InnerContentMapper>("InnerContent Import: {0}", () => JsonConvert.SerializeObject(token, Formatting.Indented));
 
-            //Ensure all of these content types are found
-            if (allContentTypes.Values.Any(contentType => contentType == null))
+            return JsonConvert.SerializeObject(token);
+        }
+
+
+        private void RecurseInnerValues(JToken token, bool isExport)
+        {
+            if (token is JArray)
             {
-                throw new InvalidOperationException($"Could not resolve these content types for the Inner Content property: {string.Join(",", allContentTypes.Where(x => x.Value == null).Select(x => x.Key))}");
+                var jArr = token as JArray;
+                foreach (var item in jArr)
+                {
+                    RecurseInnerValues(item, isExport);
+                }
             }
 
-            foreach (var row in innerContent)
+            if (token is JObject)
             {
-                var contentType = allContentTypes[row.IcContentTypeAlias];
+                var obj = token as JObject;
 
-                foreach (var key in row.PropertyValues.Keys.ToArray())
+                if (obj[GuidPropertyKey] != null || obj[AliasPropertyKey] != null)
                 {
-                    var propertyType = contentType.CompositionPropertyTypes.FirstOrDefault(x => x.Alias == key);
-                    if (propertyType == null)
+                    GetInnerValue(obj, isExport);
+                }
+                else
+                {
+                    foreach(var kvp in obj)
                     {
-                        LogHelper.Debug<InnerContentMapper>($"No Property Type found with alias {key} on Content Type {contentType.Alias}");
-                        continue;
+                        if (kvp.Value is JArray || kvp.Value is JObject)
+                        {
+                            RecurseInnerValues(kvp.Value, isExport);
+                        }
                     }
+                }
+            }
+        }
 
-                    // (can we just use ? ) propertyType.PropertyEditorAlias
-                    //  -  i think for legacy (pre v7 it was harder)
-                    var dataType = _dataTypeService.GetDataTypeDefinitionById(propertyType.DataTypeDefinitionId);
+        private void GetInnerValue(JObject item, bool isExport)
+        {
+            if (item == null) return;
+
+            var contentType = GetContentType(item);
+            if (contentType == null)
+                return;
+
+            var propValueKey = item.Properties().Select(x => x.Name).ToArray();
+
+            foreach(var propKey in propValueKey)
+            {
+                var propType = contentType.CompositionPropertyTypes.FirstOrDefault(x => x.Alias.InvariantEquals(propKey));
+                if (propType != null)
+                {
+                    var dataType = _dataTypeService.GetDataTypeDefinitionById(propType.DataTypeDefinitionId);
                     if (dataType != null)
                     {
                         var mapper = ContentMapperFactory.GetMapper(dataType.PropertyEditorAlias);
                         if (mapper != null)
                         {
-                            row.PropertyValues[key] = mapper.GetImportValue(
-                                dataType.Id, row.PropertyValues[key].ToString());
+                            if (isExport)
+                            {
+                                item[propKey] = mapper.GetExportValue(
+                                    dataType.Id, item[propKey].ToString());
+                            }
+                            else 
+                            {
+                                item[propKey] = mapper.GetImportValue(
+                                    dataType.Id, item[propKey].ToString());
+                            }
                         }
                     }
                 }
             }
-
-            value = JsonConvert.SerializeObject(innerContent);
-            return value;
         }
+
 
         // we can't use DetectIsJson - as we target a version prior to it 
         // been made public in umbraco        
@@ -143,6 +145,44 @@ namespace Jumoo.uSync.ContentMappers
                 || (val.StartsWith("[") && val.EndsWith("]"));
         }
 
+        private IContentType GetContentType(JObject value)
+        {
+            var guid = GetContentGuid(value);
+            if(guid.HasValue && guid.Value != Guid.Empty)
+            {
+                return _contentTypeService.GetContentType(guid.Value);
+            }
+
+            var alias = GetContentAlias(value);
+            if (string.IsNullOrWhiteSpace(alias))
+            {
+                return _contentTypeService.GetContentType(alias);
+            }
+
+            return null;
+        }
+
+        private Guid? GetContentGuid(JObject item)
+        {
+            var guid = item?[GuidPropertyKey];
+            return guid?.ToObject<Guid?>();
+        }
+
+        private string GetContentAlias(JObject item)
+        {
+            var alias = item?[AliasPropertyKey];
+            return alias?.ToObject<string>();
+        }
+
+        private bool IsSystemPropertyKey(string propKey)
+        {
+            return propKey == "name"
+                            || propKey == "children"
+                            || propKey == "key"
+                            || propKey == "icon"
+                            || propKey == GuidPropertyKey
+                            || propKey == AliasPropertyKey;
+        }
     }
 
     public class InnerContentValue
@@ -153,8 +193,12 @@ namespace Jumoo.uSync.ContentMappers
         public string Name { get; set; }
         [JsonProperty("icon")]
         public string Icon { get; set; }
+
         [JsonProperty("icContentTypeAlias")]
         public string IcContentTypeAlias { get; set; }
+
+        [JsonProperty("icContentTypeGuid")]
+        public Guid? IcContentTypeGuid { get; set; }
 
         /// <summary>
         /// The remaining properties will be serialized to a dictionary
