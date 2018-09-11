@@ -154,7 +154,7 @@ namespace Jumoo.uSync.ContentMappers
             }
 
             var alias = GetContentAlias(value);
-            if (string.IsNullOrWhiteSpace(alias))
+            if (!string.IsNullOrWhiteSpace(alias))
             {
                 return _contentTypeService.GetContentType(alias);
             }
