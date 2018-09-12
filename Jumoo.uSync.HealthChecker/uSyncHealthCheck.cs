@@ -8,6 +8,7 @@ using Umbraco.Web.HealthCheck;
 
 using Jumoo.uSync.BackOffice;
 using Umbraco.Core.Logging;
+using Umbraco.Core.IO;
 
 namespace Jumoo.uSync.HealthChecker
 {
@@ -31,6 +32,7 @@ namespace Jumoo.uSync.HealthChecker
             status.AddRange(CheckImports());
             status.AddRange(CheckReport());
             status.AddRange(CheckKeys());
+            status.AddRange(CheckFolder());
 
             return status;
         }
@@ -136,5 +138,51 @@ namespace Jumoo.uSync.HealthChecker
 
             return status;
         }
+
+        private IEnumerable<HealthCheckStatus> CheckFolder()
+        {
+            List<HealthCheckStatus> actions = new List<HealthCheckStatus>();
+
+            var folder = 
+                IOHelper.MapPath(uSyncBackOfficeContext.Instance.Configuration.Settings.Folder);
+            try
+            {
+                if (!System.IO.Directory.Exists(folder)) {
+                    System.IO.Directory.CreateDirectory(folder);
+                }
+
+                var testFile = "permissions.txt";
+                var filePath = System.IO.Path.Combine(folder, testFile);
+                if (System.IO.File.Exists(filePath))
+                    System.IO.File.Delete(filePath);
+
+                using (var text = System.IO.File.CreateText(filePath))
+                {
+                    text.WriteLine("hello");
+                }
+
+                if (System.IO.File.Exists(filePath))
+                    System.IO.File.Delete(filePath);
+
+                actions.Add(new HealthCheckStatus("File Permissions OK")
+                {
+                    ResultType = StatusResultType.Success,
+                    Description = "Files can be created and deleted in the uSync folder"
+                });
+
+            }
+            catch (Exception ex)
+            {
+                actions.Add(new HealthCheckStatus("File permissions fail")
+                {
+                    ResultType = StatusResultType.Error,
+                    Description = "uSync cannot write to the usync folder: " + ex.Message,
+                });
+            }
+
+            return actions;
+
+        }
+
     }
 }

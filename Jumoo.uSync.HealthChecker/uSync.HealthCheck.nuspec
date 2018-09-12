@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
   <metadata>
     <id>uSync.HealthCheck</id>
-    <version>1.0.0-beta</version>
+    <version>1.0.0</version>
     <title>uSync HealthCheck</title>
     <authors>Kevin Jump</authors>
     <owners>Jumoo</owners>
@@ -13,7 +13,7 @@
     <copyright>Jumoo 2017</copyright>
     <tags>umbraco, umbraco-cms</tags>
     <dependencies>
-      <dependency id="uSync" version="3.3.0" />
+      <dependency id="uSync" version="4.0.5" />
     </dependencies>
   </metadata>
   <files>
