@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>uSync.Chauffeur</id>
+    <version>1.0.0</version>
+    <title>uSync for Chauffeur</title>
+    <authors>Kevin Jump</authors>
+    <owners>Kevin Jump</owners>
+    <description>uSync Deliverable for Chauffeur so you can run usync commands against your umbraco site.</description>
+    <summary>uSync Deliverable for Chauffeur so you can run usync commands against your umbraco site.</summary>
+    <releaseNotes>1.0 Initial Release</releaseNotes>
+    <tags>Umbraco, uSync</tags>
+    <dependencies>
+      <dependency id="Chauffeur.Runner" version="1.3.0" />
+      <dependency id="uSync" version="4.0.5" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\release\Jumoo.uSync.Chauffeur.dll" target="lib\net462" />
+    <file src="readme.txt" target="" />
+  </files>
+</package>

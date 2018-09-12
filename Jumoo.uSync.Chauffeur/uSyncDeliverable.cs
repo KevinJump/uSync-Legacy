@@ -94,8 +94,14 @@ namespace Jumoo.uSync.Chauffeur
                 case "content":
                     await HandlerAction("uSync: ContentHandler", args.Skip(1).ToArray());
                     break;
+                case "content-template":
+                    await HandlerAction("uSync: ContentTemplateHandler", args.Skip(1).ToArray());
+                    break;
                 case "media":
                     await HandlerAction("uSync: MediaHandler", args.Skip(1).ToArray());
+                    break;
+                case "domain":
+                    await HandlerAction("uSync: Domain", args.Skip(1).ToArray());
                     break;
                 default:
                     await Out.WriteLineAsync(string.Format("The command: {0} is not supported", command));
@@ -241,15 +247,18 @@ namespace Jumoo.uSync.Chauffeur
             await Out.WriteLineAsync("");
             await Out.WriteLineAsync("Specific Operations");
             await Out.WriteLineAsync("");
-            await Out.WriteLineAsync("\t content-type <action> [options]");
-            await Out.WriteLineAsync("\t data-type    <action> [options]");
-            await Out.WriteLineAsync("\t media-type   <action> [options]");
-            await Out.WriteLineAsync("\t member-type  <action> [options]");
-            await Out.WriteLineAsync("\t language     <action> [options]");
-            await Out.WriteLineAsync("\t dictionary   <action> [options]");
-            await Out.WriteLineAsync("\t macro        <action> [options]");
-            await Out.WriteLineAsync("\t content      <action> [options]");
-            await Out.WriteLineAsync("\t media        <action> [options]");
+            await Out.WriteLineAsync("\t content-type       <action> [options]");
+            await Out.WriteLineAsync("\t data-type          <action> [options]");
+            await Out.WriteLineAsync("\t media-type         <action> [options]");
+            await Out.WriteLineAsync("\t member-type        <action> [options]");
+            await Out.WriteLineAsync("\t template           <action> [options]");
+            await Out.WriteLineAsync("\t language           <action> [options]");
+            await Out.WriteLineAsync("\t dictionary         <action> [options]");
+            await Out.WriteLineAsync("\t macro              <action> [options]");
+            await Out.WriteLineAsync("\t content            <action> [options]      (umbraco content)");
+            await Out.WriteLineAsync("\t media              <action> [options]      (media settings and files)");
+            await Out.WriteLineAsync("\t content-template   <action> [options]      (content blueprints)");
+            await Out.WriteLineAsync("\t domain             <actiom> [options]      (domain / host settings)" );
             await Out.WriteLineAsync("");
             await Out.WriteLineAsync("Options:");
             await Out.WriteLineAsync("\tall commands use the same basic options");
