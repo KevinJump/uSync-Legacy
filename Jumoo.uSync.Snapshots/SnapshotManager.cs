@@ -7,6 +7,7 @@ using Umbraco.Core.IO;
 using Jumoo.uSync.BackOffice;
 using Umbraco.Core.Logging;
 using Jumoo.uSync.Snapshots.Data;
+using System.IO.Compression;
 
 namespace Jumoo.uSync.Snapshots
 {
@@ -278,5 +279,60 @@ namespace Jumoo.uSync.Snapshots
             logger.ApplySnapshot(snap, force);
         }
 
+
+        public string ZipSnapshot(string name)
+        {
+            var snapshot = FindSnapshot(name);
+            if (snapshot == null) return null;
+            return ZipFolder(snapshot.Folder);
+        }
+
+        public string ZipAll()
+        {
+            var all = CombineSnapshots(_root);
+            return ZipFolder(all, IOHelper.MapPath("~/uSync/"));
+        }
+
+        public string ZipFolder(string snapshotFolder, string outFolder = "")
+        {
+            var savePath = snapshotFolder.TrimEnd('\\') + ".zip";
+            if (!string.IsNullOrWhiteSpace(outFolder))
+            {
+                savePath = outFolder + DateTime.Now.ToString("yyyyMMdd_HHmmss") + "_Full-Snapshot" + ".zip";
+            }
+            if (File.Exists(savePath))
+                File.Delete(savePath);
+
+            var folder = new DirectoryInfo(snapshotFolder);
+            var files = folder.GetFiles("*.*", SearchOption.AllDirectories);
+
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+                {
+                    foreach (var file in files)
+                    {
+                        var relative = file.FullName.Substring(snapshotFolder.Length + 1);
+                        archive.CreateEntryFromFile(file.FullName, relative);
+                    }
+                }
+
+                using (var fileStream = new FileStream(savePath, FileMode.Create))
+                {
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    memoryStream.CopyTo(fileStream);
+                }
+            }
+
+            return savePath;
+        }
+
+        public string UnZipFolder(string zipFile)
+        {
+            var name = Path.GetFileNameWithoutExtension(zipFile);
+            var taget = Path.Combine(_root, name);
+            ZipFile.ExtractToDirectory(zipFile, taget);
+            return name;
+        }
     }
 }

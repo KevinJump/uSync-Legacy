@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Umbraco.Core.IO;
 
 namespace Jumoo.uSync.Snapshots
 {
@@ -16,6 +17,8 @@ namespace Jumoo.uSync.Snapshots
         public DateTime Applied { get; set; }
         public bool Local { get; set; }
         public string Folder { get; set; }
+
+        public string ZipFile { get; set; }
 
         public int FileCount { get; set; }
 
@@ -37,6 +40,12 @@ namespace Jumoo.uSync.Snapshots
                 DateTimeStyles.None, out when))
             {
                 Created = when;
+            }
+
+            var zip = Folder.TrimEnd('\\') + ".zip";
+            if (File.Exists(zip))
+            {
+                ZipFile = "/" + zip.Substring(IOHelper.MapPath("~/").Length).Replace("\\", "/");                
             }
 
             FileCount = CountFiles(folder);

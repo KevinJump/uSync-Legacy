@@ -181,6 +181,8 @@
       <HintPath>..\packages\UmbracoCms.Core.7.7.6\lib\net45\System.Data.SqlServerCe.Entity.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
@@ -276,6 +278,7 @@
     <Compile Include="Helpers\IDHunter.cs" />
     <Compile Include="Helpers\SnapshotIO.cs" />
     <Compile Include="SnapshotConfig.cs" />
+    <Compile Include="SnapshotDownloadController.cs" />
     <Compile Include="SnapshotInfo.cs" />
     <Compile Include="SnapshotManager.cs" />
     <Compile Include="SnapshotServiceController.cs" />
@@ -298,11 +301,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Plugins\uSyncSnapshots\libs\ng-file-upload-all.js" />
     <Content Include="App_Plugins\uSyncSnapshots\snapshotdashboard.css" />
     <Content Include="App_Plugins\uSyncSnapshots\SnapshotDashboard.html" />
     <Content Include="App_Plugins\uSyncSnapshots\SnapshotDashboardController.js" />
     <Content Include="App_Plugins\uSyncSnapshots\SnapshotDashboardService.js" />
     <Content Include="package.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Config\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

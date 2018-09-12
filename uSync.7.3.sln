@@ -49,6 +49,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Jumoo.uSync.Snapshots", "Ju
 	ProjectSection(SolutionItems) = preProject
 		BuildPackage\Jumoo.uSync.Snapshots\package.nuspec = BuildPackage\Jumoo.uSync.Snapshots\package.nuspec
 		BuildPackage\Jumoo.uSync.Snapshots\package.xml = BuildPackage\Jumoo.uSync.Snapshots\package.xml
+		BuildPackage\Jumoo.uSync.Snapshots\readme.txt = BuildPackage\Jumoo.uSync.Snapshots\readme.txt
 		BuildPackage\Jumoo.uSync.Snapshots\Snapshots.Package.build.xml = BuildPackage\Jumoo.uSync.Snapshots\Snapshots.Package.build.xml
 	EndProjectSection
 EndProject

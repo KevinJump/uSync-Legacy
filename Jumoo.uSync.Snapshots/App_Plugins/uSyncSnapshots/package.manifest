@@ -1,5 +1,6 @@
 ﻿{
 	javascript: [
+		'~/App_Plugins/uSyncSnapshots/libs/ng-file-upload-all.js',
 		'~/App_Plugins/uSyncSnapshots/SnapshotDashboardController.js',
 		'~/App_Plugins/uSyncSnapshots/SnapshotDashboardService.js'
 	],

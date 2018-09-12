@@ -12,6 +12,8 @@
         $scope.reporting = false;
         $scope.reported = false;
 
+        $scope.fullDownload = { Path: "" } ;
+
         LoadSettings();
         GetSnapshots();
 
@@ -19,7 +21,6 @@
             uSyncSnapshotDashboardService.getSettings()
             .then(function (response) {
                 $scope.settings = response.data;
-                $scope.settings.Mode = "combined";
             });
         }
 
@@ -127,7 +128,22 @@
                     $scope.setError(error.data);
                 });
             }
+        }
 
+        $scope.download = function (name) {
+            uSyncSnapshotDashboardService.zipFile(name)
+                .then(function (response) {
+                    $scope.refresh(false);
+                    console.log(response.data);
+                });
+        }
+
+        $scope.zipAll = function () {
+            uSyncSnapshotDashboardService.zipAll()
+                .then(function (response) {
+                    console.log(response.data);
+                    $scope.fullDownload = response.data;
+                });
         }
 
         $scope.applyAll = function () {
@@ -262,5 +278,25 @@
         $scope.clearError = function () {
             $scope.errorMsg = "";
             $scope.isInError = false;
+        }
+
+        $scope.fileSelected = function(files) {
+            $scope.file = files;
+        }
+
+        /// file uploading
+        $scope.fileUpload = function () {
+
+            $scope.working = true;
+            if ($scope.file === undefined)
+                return;
+
+            uSyncSnapshotDashboardService.fileUpload($scope.file)
+                .then(function (result) {
+                    $scope.refresh();
+                    $scope.files = '';
+                    $scope.file = '';
+                    $scope.working = false;
+                });
         }
     });
