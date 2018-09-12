@@ -20,7 +20,7 @@
   <PropertyGroup>
     <ProjectName>uSync Snapshots</ProjectName>
     <ProjectNamespace>Jumoo.uSync.Snapshots</ProjectNamespace>
-    <PackageVersion>1.3.0.740</PackageVersion>
+    <PackageVersion>1.4.0</PackageVersion>
     <VersionSuffix></VersionSuffix>
     <MinUmbracoVersion>7.4.0</MinUmbracoVersion>
   </PropertyGroup>
@@ -41,7 +41,7 @@
     <ProjectFile>$(ProjectNamespace).csproj</ProjectFile>
 
     <ProjectConfigDir>$(ProjectDir)\Config</ProjectConfigDir>
-    <AppPluginDir>$(ProjectDir)\App_Plugns</AppPluginDir>
+    <AppPluginDir>$(ProjectDir)\App_Plugins</AppPluginDir>
   </PropertyGroup>
 
 
@@ -82,16 +82,26 @@
       <CoreNuSpecFile Include="$(BuildDir)\package.nuspec" />      
       <CoreBinFile Include="$(ProjectDir)\Bin\Release\$(ProjectNamespace).dll" />
       <CoreConfigFiles Include="$(ProjectDir)\Config\*.*" />
+      <!-- <ReadMe Include="$(BuildDir)\readme.txt" /> -->
+      <AppPluginFiles Include="$(AppPluginDir)\**\*" />
+
     </ItemGroup>
 
     <Copy SourceFiles="@(CorePackageFile)" DestinationFiles="$(BuildPackageDir)\package.xml" />
     <Copy SourceFiles="@(CoreNuSpecFile)" DestinationFiles="$(BuildNuGetDir)\package.nuspec" />
 
+    <!-- <Copy SourceFiles="@(ReadMe)" DestinationFiles="$(BuildNuGetDir)\readme.txt" /> -->
+
     <Copy SourceFiles="@(CoreBinFile)" DestinationFolder="$(BuildPackageDir)\bin" />
     <Copy SourceFiles="@(CoreBinFile)" DestinationFolder="$(BuildNuGetDir)\lib\net45" />
     <Copy SourceFiles="@(CoreConfigFiles)" DestinationFolder="$(BuildPackageDir)\config" />
     <Copy SourceFiles="@(CoreConfigFiles)" DestinationFolder="$(BuildNuGetDir)\config" />
-    
+
+    <Copy SourceFiles="@(AppPluginFiles)"
+   DestinationFiles="@(AppPluginFiles->'$(BuildPackageDir)\App_Plugins\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(AppPluginFiles)"
+   DestinationFiles="@(AppPluginFiles->'$(BuildNuGetDir)\content\App_Plugins\%(RecursiveDir)%(Filename)%(Extension)')" />
+
   </Target>
 
   <!-- Umbraco Pacakge Manifest -->

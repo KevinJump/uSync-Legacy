@@ -1,7 +1,8 @@
 ﻿angular.module('umbraco.resources').factory('uSyncSnapshotDashboardService',
     function ($q, $http) {
 		
-	   var serviceRoot = 'backoffice/uSync/SnapshotService/';
+        var serviceRoot = 'backoffice/uSync/SnapshotService/';
+        var downloadService = 'backoffice/uSync/SnapshotDownload/';
 
         return {
             getSnapshots: function () {
@@ -34,6 +35,32 @@
 		  
 		  delete: function(name) {
 			  return $http.get(serviceRoot + 'Delete/?snapshotName=' + name);
+		  },
+
+		  zipFile: function (name) {
+		      return $http.get(downloadService + "GetZipFile/?name=" + name);
+		  },
+
+		  zipAll: function () {
+		      return $http.get(downloadService + "GetAll/");
+		  },
+
+		  fileUpload: function (file) {
+
+		      return $http({
+		          method: 'POST',
+		          url: downloadService + "uploadFile",
+		          headers: { 'Content-Type': undefined },
+		          transformRequest: function (data) {
+		              var formData = new FormData();
+		              formData.append("file", file);
+		              return formData;
+		          },
+		          data: file
+		      });
 		  }
+
+
+
         }
     });

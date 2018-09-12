@@ -41,6 +41,30 @@ namespace Jumoo.uSync.Snapshots
             if (Settings == null)
             {
                 Settings = new uSyncSnapshotSettings();
+                SaveConfig();
+            }
+
+        }
+
+        public void SaveConfig()
+        {
+            try
+            {
+                var configFile = IOHelper.MapPath(Path.Combine(SystemDirectories.Config, "uSyncSnapshot.config"));
+
+                if (System.IO.File.Exists(configFile))
+                    System.IO.File.Delete(configFile);
+
+                XmlSerializer serializer = new XmlSerializer(typeof(uSyncSnapshotSettings));
+
+                using (StreamWriter w = new StreamWriter(configFile))
+                {
+                    serializer.Serialize(w, Settings);
+                }
+            }
+            catch(Exception ex)
+            {
+                LogHelper.Warn<SnapshotConfig>("Error saving config to disk: {0}", () => ex.Message);
             }
         }
     }
@@ -49,17 +73,22 @@ namespace Jumoo.uSync.Snapshots
     public class uSyncSnapshotSettings
     {
         public string Mode { get; set; }
+        public bool Upload { get; set; }
+
         public List<uSyncSnapshotFolderSetting> Folders { get; set; }
 
         public uSyncSnapshotSettings()
         {
             Folders = new List<uSyncSnapshotFolderSetting>();
             Mode = SnapshotConstants.combined;
+            Upload = true;
         }
     }
 
+    [XmlType("Folder")]
     public class uSyncSnapshotFolderSetting
     {
+        [XmlAttribute(AttributeName = "Path")]
         public string Path { get; set; }
     }
 
