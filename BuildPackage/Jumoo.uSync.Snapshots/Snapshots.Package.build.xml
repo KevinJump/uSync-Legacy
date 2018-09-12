@@ -20,7 +20,7 @@
   <PropertyGroup>
     <ProjectName>uSync Snapshots</ProjectName>
     <ProjectNamespace>Jumoo.uSync.Snapshots</ProjectNamespace>
-    <PackageVersion>1.4.0</PackageVersion>
+    <PackageVersion>1.4.1</PackageVersion>
     <VersionSuffix></VersionSuffix>
     <MinUmbracoVersion>7.4.0</MinUmbracoVersion>
   </PropertyGroup>
@@ -95,7 +95,7 @@
     <Copy SourceFiles="@(CoreBinFile)" DestinationFolder="$(BuildPackageDir)\bin" />
     <Copy SourceFiles="@(CoreBinFile)" DestinationFolder="$(BuildNuGetDir)\lib\net45" />
     <Copy SourceFiles="@(CoreConfigFiles)" DestinationFolder="$(BuildPackageDir)\config" />
-    <Copy SourceFiles="@(CoreConfigFiles)" DestinationFolder="$(BuildNuGetDir)\config" />
+    <Copy SourceFiles="@(CoreConfigFiles)" DestinationFolder="$(BuildNuGetDir)\content\config" />
 
     <Copy SourceFiles="@(AppPluginFiles)"
    DestinationFiles="@(AppPluginFiles->'$(BuildPackageDir)\App_Plugins\%(RecursiveDir)%(Filename)%(Extension)')" />
