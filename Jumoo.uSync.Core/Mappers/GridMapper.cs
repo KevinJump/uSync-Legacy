@@ -22,12 +22,23 @@ namespace Jumoo.uSync.Core.Mappers
 
         public GridMapper()
         {
+            var appPlugins = "..\\App_Plugins";
+            var configFolder = "..\\Config";
+            var debugging = false;
+
+            if (HttpContext.Current != null && HttpContext.Current.Server != null)
+            {
+                appPlugins = HttpContext.Current.Server.MapPath(SystemDirectories.AppPlugins);
+                configFolder = HttpContext.Current.Server.MapPath(SystemDirectories.Config);
+                debugging = HttpContext.Current.IsDebuggingEnabled;
+            }
+
             gridConfig = UmbracoConfig.For.GridConfig(
                 ApplicationContext.Current.ProfilingLogger.Logger,
                 ApplicationContext.Current.ApplicationCache.RuntimeCache,
-                new DirectoryInfo(HttpContext.Current.Server.MapPath(SystemDirectories.AppPlugins)),
-                new DirectoryInfo(HttpContext.Current.Server.MapPath(SystemDirectories.Config)),
-                HttpContext.Current.IsDebuggingEnabled);
+                new DirectoryInfo(appPlugins),
+                new DirectoryInfo(configFolder),
+                debugging);
 
             // usyncMappings = uSyncCoreContext.Instance.Configuration.Settings.ContentMappings;
 
