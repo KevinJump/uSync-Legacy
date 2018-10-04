@@ -1,7 +1,7 @@
 Umbraco Developer Audit
 -
 
-Audit logs for all the back office developery stuff - Answeing the age old question *"just who did change that property on that doctype the other day?"* 
+Audit logs for all the back office developery stuff - Answering the age old question *"just who did change that property on that doctype the other day?"* 
 
 Tracks changes between what has just been saved and a cached version of what was there before. 
 

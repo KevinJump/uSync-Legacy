@@ -175,7 +175,7 @@
             <div class="span12">
                 <h3>uSync.TechnicalBits</h3>
 
-                <h4>Registred Handlers. (<asp:Label ID="uSyncHandlerCount" runat="server"></asp:Label>)</h4>
+                <h4>Registered Handlers. (<asp:Label ID="uSyncHandlerCount" runat="server"></asp:Label>)</h4>
                 <p><small>The handlers do the hard work, of importing and exporting data, they can be turned off in the 
                     config file
                 </small></p>

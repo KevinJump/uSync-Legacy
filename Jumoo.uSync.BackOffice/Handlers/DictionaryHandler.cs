@@ -99,7 +99,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
         {
             foreach (var save in _deleteSaves)
             {
-                LogHelper.Info<DictionaryHandler>("Saveing top after delete");
+                LogHelper.Info<DictionaryHandler>("Saving top after delete");
 
                 var item = ApplicationContext.Current.Services.LocalizationService.GetDictionaryItemByKey(save);
                 if (item != null)
