@@ -20,7 +20,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
     {
         // sets our running order in usync. 
         public int Priority { get { return uSyncConstants.Priority.ContentTypes; } }
-        public string Name { get { return "uSync: ContentTypeHanlder"; } }
+        public string Name { get { return "uSync: ContentTypeHandler"; } }
         public string SyncFolder { get { return Constants.Packaging.DocumentTypeNodeName; } }
 
         private IContentTypeService _contentTypeService ;

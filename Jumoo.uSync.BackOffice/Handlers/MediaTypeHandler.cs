@@ -106,7 +106,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             }
             catch (Exception ex)
             {
-                LogHelper.Warn<MediaTypeHandler>("Error Seralizing media: {0}", () => ex.ToString());
+                LogHelper.Warn<MediaTypeHandler>("Error Serializing media: {0}", () => ex.ToString());
                 return uSyncAction.Fail(item.Name, item.GetType(), ChangeType.Export, ex);
 
             }
