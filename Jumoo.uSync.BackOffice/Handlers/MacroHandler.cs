@@ -37,7 +37,7 @@ namespace Jumoo.uSync.BackOffice.Handlers
             var item = ApplicationContext.Current.Services.MacroService.GetByAlias(keyString);
             if (item != null)
             {
-                LogHelper.Info<MacroHandler>("Deleteing: {0}", () => item.Alias);
+                LogHelper.Info<MacroHandler>("Deleting: {0}", () => item.Alias);
                 ApplicationContext.Current.Services.MacroService.Delete(item);
 
                 return uSyncAction.SetAction(true, keyString, typeof(IMacro), ChangeType.Delete);
