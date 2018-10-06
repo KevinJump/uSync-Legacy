@@ -96,12 +96,28 @@ namespace Jumoo.uSync.Core.Serializers
                     item = new DictionaryItem(itemKey);
             }
 
+            IEnumerable<IDictionaryItem> childItems = null;
+
             if (guid != Guid.Empty)
             {
-                item.Key = guid;
+                // check for any child dictionary items and orphan them first
+                childItems = _localizationService.GetDictionaryItemChildren(item.Key);
+
+                if (childItems.Any())
+                {
+                    LogHelper.Debug<DictionarySerializer>("Remove child items from parent Dictionary item {0}", () => item.Key);
+
+                    foreach (var childItem in childItems)
+                    {
+                        childItem.ParentId = null;
+
+                        _localizationService.Save(childItem);
+                    }
+                }
+
                 LogHelper.Debug<DictionarySerializer>("Set the Guid of the Dictionary from {0} to {1}", () => item.Key, () => guid);
+                item.Key = guid;
             }
-                
 
             foreach (var valueNode in node.Elements("Value"))
             {
@@ -117,6 +133,19 @@ namespace Jumoo.uSync.Core.Serializers
             }
 
             _localizationService.Save(item);
+
+            if (childItems != null && childItems.Any())
+            {
+                // put the child dictionary items back using the new parent ID
+                LogHelper.Debug<DictionarySerializer>("Add child items back to parent Dictionary item {0}", () => item.Key);
+
+                foreach (var childItem in childItems)
+                {
+                    childItem.ParentId = item.Key;
+
+                    _localizationService.Save(childItem);
+                }
+            }
 
             // children
             foreach (var child in node.Elements("DictionaryItem"))
