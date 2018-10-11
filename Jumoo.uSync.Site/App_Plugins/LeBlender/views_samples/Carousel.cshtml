@@ -1,0 +1,47 @@
+﻿
+@inherits UmbracoViewPage<Lecoati.LeBlender.Extension.Models.LeBlenderModel>
+
+@{
+    Layout = "";
+}
+
+@if (Model.Items.Any())
+{
+    
+    <div id="carousel-generic" class="carousel slide" data-ride="carousel">
+            
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+            @foreach (var item in Model.Items)
+            {
+                <li data-target="#carousel-generic" data-slide-to="@Model.Items.IndexOf(item)" class="@(Model.Items.IndexOf(item) == 0 ? "active" : "")"></li>
+            }
+        </ol>
+
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner" role="listbox">
+            @foreach (var item in Model.Items)
+            {
+                <div class="item @(Model.Items.IndexOf(item) == 0 ? "active" : "")">
+                    <img src="@(item.GetValue<string>("image") != "" ? Umbraco.TypedMedia(item.GetValue<string>("image")).Url : "http://lorempixel.com/1200/600/sports/" + (Model.Items.IndexOf(item) + 1))" alt="@item.GetValue("title")">
+                    <div class="carousel-caption">
+                        <h3>@item.GetValue("title")</h3>
+                        <p>@item.GetValue("summary")</p>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Controls -->
+        <a class="left carousel-control" href="#carousel-generic" role="button" data-slide="prev">
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" href="#carousel-generic" role="button" data-slide="next">
+            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+
+    </div>
+
+}

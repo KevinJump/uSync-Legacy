@@ -1,0 +1,13 @@
+<div class="umb-panel" ng-controller="leblender.editormanager.delete">
+    <div class="umb-panel-body">
+        <p>Are you sure you want to delete {{model.value.name}} ?  -- {{currentNode.id}}</p>
+        <div>
+            <div class="umb-pane btn-toolbar umb-btn-toolbar">
+                <div class="control-group umb-control-group">
+                    <a href="" class="btn btn-link" ng-click="cancelDelete()"><localize key="general_cancel">Cancel</localize></a>
+                    <a href="" class="btn btn-primary" ng-click="delete(currentNode.id)"><localize key="general_ok">OK</localize></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

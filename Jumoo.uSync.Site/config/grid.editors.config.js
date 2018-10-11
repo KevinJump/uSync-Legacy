@@ -42,5 +42,30 @@
             "style": "border-left: 3px solid #ccc; padding: 10px; color: #ccc; font-family: serif; font-style: italic; font-size: 18px",
             "markup": "<blockquote>#value#</blockquote>"
         }
+    },
+    {
+        "name": "generic",
+        "alias": "generic",
+        "view": "/App_Plugins/LeBlender/editors/leblendereditor/LeBlendereditor.html",
+        "icon": "icon-zoom-out",
+        "render": "/App_Plugins/LeBlender/editors/leblendereditor/views/Base.cshtml",
+        "config": {
+            "editors": [
+                {
+                    "name": "image",
+                    "alias": "image",
+                    "PropertyEditorAlias": "",
+                    "propretyType": {}
+                },
+                {
+                    "name": "test",
+                    "alias": "text",
+                    "PropertyEditorAlias": "",
+                    "propretyType": {}
+                }
+            ],
+            "renderInGrid": "1",
+            "frontView": ""
+        }
     }
 ]

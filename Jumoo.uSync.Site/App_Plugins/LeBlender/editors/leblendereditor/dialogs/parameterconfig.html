@@ -1,0 +1,50 @@
+<div class="list-panel" ng-controller="LeBlender.Dialog.Parameterconfig.Controller">
+
+    <div id="blender-grid-editor-parameter" class="umb-panel">
+
+        <div class="umb-panel-body no-header with-footer">
+            <div class="umb-forms-settings">
+
+                <h3>{{name}}</h3>
+                <em>Edit your content here</em>
+
+                <div ng-if="configLoaded" ui-sortable="sortableOptions" ng-model="model.value">
+                    <div class="list list-field" ng-class="{'list-open':selected === item, 'multiple':!(fixed && config.min == 1)}" ng-click="select(item)" ng-repeat="item in model.value track by $index">
+                        
+                        <span ng-show="!(fixed && config.min == 1)" class="list-number">
+                            {{$index + 1}}
+                            <i ng-show="model.value.length > 1" class="icon right icon-navigation"></i>
+                            <i ng-show="!fixed && model.value.length > config.min" ng-click=" remove(item, $index);$event.stopPropagation()" class="icon right icon-delete"></i>
+                        </span>
+
+                        <umb-control-group label="{{property.$editor.name}}" description="{{property.$editor.description}}" 
+                                           ng-repeat="property in item | LeBlenderOrderObjectBy:'$order':false">
+                            <blender-editor-wrapper property="property" item="item"></blender-editor-wrapper>
+                        </umb-control-group>
+
+                    </div>
+                </div>
+            </div>
+
+            <div ng-show="!fixed && config.max > model.value.length" class="list-add-row">
+                <i ng-click="add()" class="icon right icon-add"></i>
+            </div>
+
+        </div>
+
+        <div class="umb-panel-footer">
+            <div class="umb-el-wrap umb-panel-buttons">
+                <div class="btn-toolbar umb-btn-toolbar pull-right">
+                    <a ng-click="close()" class="btn btn-link">
+                        <localize key="general_cancel">Cancel</localize>
+                    </a>
+                    <a ng-click="save()" class="btn btn-primary">
+                        <localize key="actions_update">Update</localize>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

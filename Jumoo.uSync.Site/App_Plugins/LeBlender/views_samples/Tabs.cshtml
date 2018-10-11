@@ -1,0 +1,29 @@
+﻿
+@inherits UmbracoViewPage<Lecoati.LeBlender.Extension.Models.LeBlenderModel>
+
+@{
+    Layout="";
+}
+
+@if (Model.Items.Any())
+{
+    <div id="tabs-generic" role="tabpanel">
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            @foreach (var item in Model.Items)
+            {
+                <li role="presentation" class="@(Model.Items.IndexOf(item) == 0 ? "active" : "")"><a href="#tab-@Model.Items.IndexOf(item)" aria-controls="home" role="tab" data-toggle="tab">@item.GetValue("title")</a></li>
+            }
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+        @foreach (var item in Model.Items)
+            {
+                <div role="tabpanel" class="tab-pane @(Model.Items.IndexOf(item) == 0 ? "active" : "")" id="tab-@Model.Items.IndexOf(item)">@Html.Raw(Umbraco.ReplaceLineBreaksForHtml(item.GetValue("content")))</div>
+            }
+        </div>
+
+    </div>
+}

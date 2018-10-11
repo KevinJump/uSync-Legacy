@@ -1,0 +1,10 @@
+﻿<div class="list-editor list-editor-{{control.editor.alias}}" ng-click="openListParameter()" ng-controller="LeBlenderEditor.controller">
+
+    <div ng-if="preview" ng-bind-html-unsafe="preview"></div>
+
+    <div class="usky-editor-placeholder preview-LeBlender" ng-hide="preview">
+        <i class="icon {{control.editor.icon}}"></i>
+        <div class="help-text ng-binding">{{control.editor.name}}</div>
+    </div>
+
+</div>

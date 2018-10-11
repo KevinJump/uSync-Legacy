@@ -145,16 +145,20 @@ namespace Jumoo.uSync.Core.Mappers
             var alias = editor.Value<string>("alias");
             var uSyncAlias = string.Format("grid.{0}", alias);
 
+            LogHelper.Debug<GridMapper>("Getting Mapper for {0}", () => uSyncAlias);
+
             // var mapping = usyncMappings.SingleOrDefault(x => x.EditorAlias == uSyncAlias);
             var mapper = ContentMapperFactory.GetMapper(uSyncAlias);
             if (mapper == null)
             {
+                LogHelper.Debug<GridMapper>("Not a normal mapper - look by view ?");
                 // get by view name. 
                 var config = gridConfig.EditorsConfig.Editors
                     .SingleOrDefault(x => x.Alias == alias);
 
                 if (config != null)
                 {
+                    LogHelper.Debug<GridMapper>("Getting Mapper by View: {0}", () => config.View);
                     mapper = ContentMapperFactory.GetByViewName(config.View);
                 }
             }

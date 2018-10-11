@@ -1,0 +1,29 @@
+<div class="umb-panel" ng-controller="leblender.editormanager.sort">
+    <div class="umb-panel-body no-header with-footer">
+        <div class="umb-pane">
+            <p>Drag the different items up or down below to set how they should be arranged.</p><br />
+            <ul class="unstyled list-icons umb-contentpicker" ui-sortable="" ng-model="editors">
+                <li class="smart" ng-repeat="editor in editors track by $index">
+                    <i class="icon icon-navigation handle"></i>
+                    <a href="#" prevent-default="" ng-click="openGridConfig(editor)">
+                        <i class="icon icon-settings-alt-2 blue hover-show"></i>
+                        <i class="{{editor.icon}} hover-hide"></i>
+                        {{editor.name}}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="umb-panel-footer">
+        <div class="umb-el-wrap umb-panel-buttons">
+            <div class="btn-toolbar umb-btn-toolbar pull-right">
+                <a ng-click="close()" class="btn btn-link">
+                    <localize key="general_cancel">Cancel</localize>
+                </a>
+                <a ng-click="save()" class="btn btn-primary">
+                    <localize key="buttons_save">Save</localize>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

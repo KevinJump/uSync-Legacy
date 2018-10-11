@@ -1,0 +1,97 @@
+﻿
+<form name="editormanagerForm"
+      ng-controller="leblender.editormanager.edit"
+      ng-show="loaded"
+      ng-submit="save()"
+      val-form-manager>
+
+    <umb-panel>
+
+        <umb-header>
+
+            <div class="span7">
+                <umb-content-name placeholder="@placeholders_entername" ng-model="model.value.name" />
+            </div>
+
+            <!--<div class="span5">
+                <div class="btn-toolbar pull-right umb-btn-toolbar">
+                    <umb-options-menu ng-show="currentNode"
+                                        current-node="currentNode"
+                                        current-section="{{currentSection}}">
+                    </umb-options-menu>
+                </div>
+            </div>-->
+
+        </umb-header>
+
+        <div class="umb-panel-body umb-scrollable row-fluid">
+            <div class="tab-content form-horizontal" style="padding-bottom: 90px">
+                <div class="umb-pane">
+
+                    <!-- editor name -->
+                    <umb-control-group label="Grid editor" description="Select a grid editor">
+                        <select ng-change="propertyGridEditorChanged()" ng-options="type.editor.view as type.name for type in propertyGridEditors" ng-model="model.value.view" >
+                            <option value="">- - custom - -</option>
+                        </select>
+                    </umb-control-group>
+
+                    <!-- editor alias -->
+                    <umb-control-group label="Grid editor alias" description="">
+                        <input class="umb-editor umb-textstring" type="text" ng-model="model.value.alias" required  />
+                    </umb-control-group>
+
+                    <!-- editor icon -->
+                    <umb-control-group label="Editor icon" description="">
+                        <div class="umbIconDropdownList">
+                            <i class="icon {{model.value.icon}}"></i>
+                            <a href="#" prevent-default ng-click="openIconPicker()" class="picker-icons">
+                                <localize key="general_choose">Choose</localize>...
+                            </a>
+                        </div>
+                    </umb-control-group>
+
+                    <!-- editor custom view -->
+                    <div ng-show="isCustom()">
+                        <umb-control-group label="View" description="Grid editor view">
+                            <input class="umb-editor umb-textstring" type="text" ng-model="model.value.view" required />
+                        </umb-control-group>
+                    </div>
+
+                    <!-- editor render -->
+                    <umb-control-group label="Render" description="Optional grid editor render">
+                        <input class="umb-editor umb-textstring" type="text" ng-model="model.value.render" />
+                    </umb-control-group>
+
+                    <!-- config for custom field -->
+                    <div ng-show="isCustom()">
+                        <umb-control-group label="Config" description="Optional custom editor config">
+                            <textarea style="min-width: 66.6%; height: 100px;" type="text" ng-change="configChanged(textAreaconfig)" ng-model="textAreaconfig"  />
+                        </umb-control-group>
+                    </div>
+
+                    <!-- prevalues -->
+                    <div ng-show="selectedPropertyGridEditor.prevalues && selectedPropertyGridEditor.prevalues.fields.length > 0">
+                        <umb-control-group label="{{field.label}}" description="{{field.description}}"
+                                           ng-repeat="field in selectedPropertyGridEditor.prevalues.fields">
+                            <propertygrideditorwrapper value="model.value"
+                                                       key="field.key"
+                                                       view="getFieldView(field.view)"></propertygrideditorwrapper>
+                        </umb-control-group>
+                    </div>
+
+                    <!-- save button -->
+                    <div class="umb-tab-buttons" detect-fold>
+                        <div class="btn-group">
+                            <button type="submit" data-hotkey="ctrl+s" class="btn btn-success">
+                                <localize key="buttons_save">Save</localize>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </umb-panel>
+
+</form>

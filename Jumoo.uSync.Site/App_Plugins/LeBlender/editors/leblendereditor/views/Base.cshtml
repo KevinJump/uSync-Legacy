@@ -1,0 +1,40 @@
+﻿@using System.Web.Mvc.Html;
+@using Lecoati.LeBlender.Extension
+@using Lecoati.LeBlender.Extension.Models
+
+@try
+{
+    
+    string guid = Model.guid != null && Model.guid.Value != null ? Model.guid.Value.ToString() : "";
+    LeBlenderModel blenderModel = Helper.DeserializeBlenderModel(Model);
+
+    var frontView = Model.editor.config == null || Model.editor.config.frontView == null || String.IsNullOrEmpty(Model.editor.config.frontView.Value) ?
+        "" : Model.editor.config.frontView.Value;
+
+    ViewDataDictionary datas = new ViewDataDictionary(this.ViewData) { { "editorAlias", Model.editor.alias }, { "frontView", frontView } };
+
+    int cacheExpiration = Helper.GetCacheExpiration(Model.editor.alias.ToString());
+
+    if (cacheExpiration > 0 && Helper.IsFrontEnd())
+    {
+        <text>
+            @Html.LeBlenderCachedPartial("/App_Plugins/LeBlender/editors/leblendereditor/views/LeBlender.cshtml", blenderModel, cacheExpiration, guid, datas)
+        </text>
+    }
+    else
+    {
+        <text>
+            @Html.Partial("/App_Plugins/LeBlender/editors/leblendereditor/views/LeBlender.cshtml", blenderModel, datas)
+        </text>
+    }
+
+}
+catch (Exception ex)
+{
+    if (!Helper.IsFrontEnd())
+    {
+        <p class="red">Something went wrong with this editor, below is the exception detail:</p>
+    }
+    <p class="leblender-exception">@Helper.GetInnerMessage(ex)</p>
+} 
+

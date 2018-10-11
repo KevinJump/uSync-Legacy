@@ -1,0 +1,25 @@
+﻿
+@inherits UmbracoViewPage<Lecoati.LeBlender.Extension.Models.LeBlenderModel>
+
+@{
+    Layout="";
+}
+
+@{
+    
+    var highlight = Model.Items.ElementAt(0);
+
+    var link = String.IsNullOrEmpty(highlight.GetValue<string>("content")) ? "#" : Umbraco.TypedContent(highlight.GetValue<string>("content")).Url;
+    var imageUrl = String.IsNullOrEmpty(highlight.GetValue<string>("image")) ? "#" : Umbraco.TypedMedia(highlight.GetValue<string>("image")).Url;
+}
+
+<div id="jumbotron-generic">
+    <div class="jumbotron">
+        <img class="img-responsive" src="@imageUrl" + (model.items.indexof(item) + 1))" />
+        <h3>@highlight.GetValue("title") @(highlight.GetValue<string>("content"))</h3>
+        <p>@Html.Raw(Umbraco.ReplaceLineBreaksForHtml(highlight.GetValue("summary")))</p>
+        <a class="btn btn-primary btn-lg" href="@link" role="button">Learn more</a>
+    </div>
+</div>
+
+

@@ -1,0 +1,119 @@
+
+.list-panel {
+    padding:50px 30px;
+}
+
+#blender-grid-editor-parameter em {
+    margin-bottom: 20px;
+    display: block;
+    margin-top: -15px;
+}
+
+#blender-grid-editor-parameter i {
+    margin-left:5px;
+}
+
+#blender-grid-editor-parameter .list {
+    padding: 0px 0 5px 0;
+    height:0;
+    position:relative;
+    background:#fff;
+    overflow:hidden;
+}
+#blender-grid-editor-parameter .list > span.list-number {
+    cursor:pointer;
+}
+
+#blender-grid-editor-parameter .multiple {
+    border: 1px solid #DBDBDB;
+    padding: 22px 0 5px 0;
+    margin-bottom: 5px;
+}
+
+#blender-grid-editor-parameter .multiple .umb-control-group {
+    padding: 0 15px 15px 15px;
+}
+
+#blender-grid-editor-parameter .twitter-typeahead input {
+    width: 336px;
+}
+
+#blender-grid-editor-parameter .list-open {
+    height:auto;
+    overflow:initial;
+}
+
+#blender-grid-editor-parameter a:hover, a:focus {
+    text-decoration: none;
+}
+
+#blender-grid-editor-parameter .umb-sortable-thumbnails li {
+    border: 1px solid #EBEBEB;
+}
+
+#blender-grid-editor-parameter .list-number {
+    right: 0;
+    left: 0;
+    font-weight: bolder;
+    margin-bottom: 10px;
+    display: block;
+    margin-top: -22px;
+    padding: 4px 10px;
+    color: #555;
+    background: #f8f8f8;
+}
+
+
+#blender-grid-editor-parameter .list-number span {
+    width: 80%;
+    display: inline-block;
+    overflow: hidden;
+    display: inline-block;
+    width: 280px;
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+}
+
+
+#blender-grid-editor-parameter .list-number i {
+    float:right;
+}
+
+#blender-grid-editor-parameter .list .list-number:hover {
+    background-color:#EBEBEB;
+}
+
+#blender-grid-editor-parameter .list-add-row {
+    padding: 5px;
+    color: #aaaaaa;
+    text-align: right;
+}
+
+#blender-grid-editor-parameter .list-add-row i {
+    cursor:pointer;
+}
+
+#blender-grid-editor-parameter .list-add-row i:hover {
+    color: #2e8aea;
+}
+
+#blender-grid-editor-parameter .umb-sortable-thumbnails {
+    text-align:center;
+}
+
+#blender-grid-editor-parameter .mce-container,
+#blender-grid-editor-parameter .mce-container-body {
+    visibility:visible;
+}
+
+#blender-grid-editor-parameter .mce-stack-layout-item {
+    display: block;
+    margin-top: 0px !important;
+    position: static !important;
+}
+
+#blender-grid-editor-parameter .list-icons li {
+    padding-left: 0px;
+
+}

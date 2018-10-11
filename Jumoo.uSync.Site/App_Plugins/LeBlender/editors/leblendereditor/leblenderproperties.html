@@ -1,0 +1,16 @@
+<div ng-controller="leblenderproperties.controller">
+
+    <ul class="unstyled list-icons umb-contentpicker" ui-sortable="" ng-model="model.value">
+        <li ng-repeat="property in model.value track by $index">
+            <i class="icon icon-navigation handle"></i>
+            <i class="icon icon-delete red pull-right" ng-click="remove($index)"></i>
+            <a href="#" prevent-default="" ng-click="openPropertyConfig(property)">
+                {{property.name}}
+            </a>
+        </li>
+    </ul>
+    <button class="btn btn-small" prevent-default="" ng-click="openPropertyConfig()">
+        <i class="icon icon-add"></i> Add property
+    </button>
+    
+</div>

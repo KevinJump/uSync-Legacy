@@ -42,11 +42,15 @@ namespace Jumoo.uSync.Core.Mappers
 
         public static IContentMapper GetMapper(string alias)
         {
+            LogHelper.Debug<ContentMapperFactory>("Looking for {0} in loaded mappers", () => alias);
+
             var mapping = uSyncCoreContext.Instance.Configuration.Settings.ContentMappings
                 .SingleOrDefault(x => x.EditorAlias.InvariantEquals(alias));
 
             if (mapping == null)
             {
+                LogHelper.Debug<ContentMapperFactory>("Looking for a dynamic mapper");
+
                 // look for a dynamic mappings
                 if (uSyncCoreContext.Instance.Mappers
                     .Any(x => x.Key.InvariantEquals(alias)))

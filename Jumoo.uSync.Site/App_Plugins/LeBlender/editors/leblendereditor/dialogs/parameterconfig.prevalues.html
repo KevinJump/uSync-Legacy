@@ -1,0 +1,65 @@
+﻿
+<form name="editoreditorForm"
+      ng-controller="LeBlender.Dialog.ParameterConfig.Prevalues.Controller"
+      ng-submit="save()"
+      val-form-manager>
+
+    <div class="umb-panel-body no-header with-footer">
+        <div class="umb-forms-settings">
+
+            <h4>Property setting</h4>
+
+            <div class="umb-property">
+                <div class="control-group umb-control-group">
+                    <umb-control-group ng-if="model.value.DataTypeName || !model.value.name" label="Data type" description="">
+                        <select ng-options="datatype.DataTypeName as datatype.name for datatype in availableDataTypes" ng-model="model.value.DataTypeName" required></select>
+                    </umb-control-group>
+
+                    <umb-control-group ng-if="!model.value.DataTypeName && model.value.dataType" label="Data type" description="">
+                        <select ng-options="datatype.guid as datatype.name for datatype in availableDataTypes" ng-model="model.value.dataType" required></select>
+                    </umb-control-group>
+
+                    <umb-control-group label="Name" description="">
+                        <input class="umb-editor umb-textstring" type="text" ng-model="model.value.name" required />
+                    </umb-control-group>
+
+                    <umb-control-group label="Alias" description="">
+                        <input class="umb-editor umb-textstring" type="text" ng-model="model.value.alias" required />
+                    </umb-control-group>
+
+                    <umb-control-group label="Description" description="">
+                        <textarea class="umb-editor umb-textstring" type="text" ng-model="model.value.description" />
+                    </umb-control-group>
+
+                    <div ng-show="isCustom()">
+                        <umb-control-group label="View" description="">
+                            <input class="umb-editor umb-textstring" type="text" ng-model="model.value.propretyType.view" />
+                        </umb-control-group>
+                    </div>
+
+                    <div ng-show="isCustom()">
+                        <umb-control-group label="Config" description="">
+                            <textarea class="umb-editor umb-textstring" type="text" style="min-width: 66.6%; height: 100px;" ng-model="textAreaconfig" />
+                        </umb-control-group>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="umb-panel-footer">
+        <div class="umb-el-wrap umb-panel-buttons">
+            <div class="btn-toolbar umb-btn-toolbar pull-right">
+                <a ng-click="close()" class="btn btn-link">
+                    <localize key="general_cancel" class="ng-isolate-scope ng-scope">Cancel</localize>
+                </a>
+                <button type="submit" data-hotkey="ctrl+s" class="btn btn-success">
+                    <localize key="buttons_save">Save</localize>
+                </button>
+            </div>
+        </div>
+    </div>
+
+</form>

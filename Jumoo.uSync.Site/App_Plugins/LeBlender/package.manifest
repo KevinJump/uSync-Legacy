@@ -1,0 +1,129 @@
+﻿{   
+	"propertyEditors": [
+        {
+            "name": "Rich text editor",
+            "alias": "rte",
+			      "isGridEditor": true,
+            "editor": {
+              "view": "rte",
+              "valueType": "TEXT"
+            }
+        },
+        {
+            "name": "Image",
+            "alias": "image",
+			      "isGridEditor": true, 
+            "editor": {
+                "view": "media"
+            }
+        },
+        {
+            "name": "Macro",
+            "alias": "macro",
+			      "isGridEditor": true, 
+            "editor": {
+                "view": "macro"
+            }
+        },
+        {
+            "name": "Embed",
+            "alias": "embed",
+			      "isGridEditor": true, 
+            "editor": {
+                "view": "embed"
+            }
+        },
+        {
+            "name": "Textstring",
+            "alias": "textstring",
+			      "isGridEditor": true, 
+            "editor": {
+                "view": "textstring"
+            },
+            "prevalues": {
+                "fields": [
+                    {
+                        "label": "Style",
+                        "key": "style",
+                        "description": "inline style",
+                        "view": "textstring",
+                        "advanced": false
+                    },
+                    {
+                        "label": "Markup",
+                        "key": "markup",
+                        "description": "markup of the input",
+                        "view": "textstring",
+                        "advanced": false
+                    }
+                ]
+            }
+        },
+        {
+            "name": "LeBlender Editor",
+            "alias": "leblenderEditor",
+			      "isGridEditor": true,
+            "editor": {
+                "view": "/App_Plugins/LeBlender/editors/leblendereditor/LeBlendereditor.html"
+            },
+            "prevalues": {
+                "fields": [
+                    {
+                        "label": "Properties",
+                        "key": "editors",
+                        "description": "LeBlender Editor properties",
+                        "view": "/App_Plugins/LeBlender/editors/leblendereditor/leblenderproperties.html",
+                        "advanced": false
+                    },
+                    {
+                        "label": "Render in the grid",
+                        "key": "renderInGrid",
+                        "description": "Render in the grid",
+                        "view": "boolean",
+                        "advanced": true
+                    },
+                    {
+                        "label": "Min",
+                        "key": "min",
+                        "description": "Minimum number of items",
+                        "view": "number",
+                        "advanced": true
+                    },
+                    {
+                        "label": "Max",
+                        "key": "max",
+                        "description": "Maximum number of items",
+                        "view": "number",
+                        "advanced": true
+                    },
+                    {
+                        "label": "Cache period",
+                        "key": "expiration",
+                        "description": "Cache period in seconds (by page)",
+                        "view": "number",
+                        "advanced": true
+                    }
+                ]
+            }
+        }
+    ],
+    "javascript": [
+		
+		"~/App_Plugins/LeBlender/Common/Services/requestHelper.Service.js",
+		"~/App_Plugins/LeBlender/Common/Filter/OrderObjectBy.filter.js",
+		
+		"~/App_Plugins/LeBlender/Common/Directive/LayersResizableDraggable.js",
+		"~/App_Plugins/LeBlender/Common/Directive/blendereditorwrapper.js",
+		"~/App_Plugins/LeBlender/Common/Directive/propertygrideditorwrapper.js",
+
+		"~/App_Plugins/LeBlender/Backoffice/GridEditorManager/edit.js",
+		"~/App_Plugins/LeBlender/Backoffice/GridEditorManager/delete.js",
+		"~/App_Plugins/LeBlender/Backoffice/GridEditorManager/sort.js",
+
+		"~/App_Plugins/LeBlender/editors/leblendereditor/leblenderproperties.controller.js",
+		"~/App_Plugins/LeBlender/editors/leblendereditor/leblendereditor.controller.js",
+		"~/App_Plugins/LeBlender/editors/leblendereditor/dialogs/parameterconfig.prevalues.controller.js",
+		"~/App_Plugins/LeBlender/editors/leblendereditor/dialogs/parameterconfig.controller.js",		
+
+    ]
+}
