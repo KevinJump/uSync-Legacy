@@ -53,7 +53,7 @@ namespace Jumoo.uSync.BackOffice.Helpers
             }
             catch(Exception ex)
             {
-                LogHelper.Warn<uSyncEvents>("Failed to save node: ", () => ex.ToString());
+                LogHelper.Warn<uSyncEvents>("Failed to save node: {0}", () => ex.ToString());
             }
         }
 
