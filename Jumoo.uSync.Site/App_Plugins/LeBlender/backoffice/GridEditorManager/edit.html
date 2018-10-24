@@ -43,9 +43,9 @@
                     <!-- editor icon -->
                     <umb-control-group label="Editor icon" description="">
                         <div class="umbIconDropdownList">
-                            <i class="icon {{model.value.icon}}"></i>
-                            <a href="#" prevent-default ng-click="openIconPicker()" class="picker-icons">
-                                <localize key="general_choose">Choose</localize>...
+                            <a href="#" prevent-default="" ng-click="openIconPicker()" class="btn btn-link picker-icons" style="text-decoration:none !important">
+                                <i class="icon {{model.value.icon}}"></i>
+                                <span >Choose...</span>
                             </a>
                         </div>
                     </umb-control-group>
@@ -65,7 +65,7 @@
                     <!-- config for custom field -->
                     <div ng-show="isCustom()">
                         <umb-control-group label="Config" description="Optional custom editor config">
-                            <textarea style="min-width: 66.6%; height: 100px;" type="text" ng-change="configChanged(textAreaconfig)" ng-model="textAreaconfig"  />
+                            <textarea style="min-width: 66.6%; height: 100px;" type="text" ng-model="textAreaconfig"  />
                         </umb-control-group>
                     </div>
 

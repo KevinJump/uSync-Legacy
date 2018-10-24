@@ -1,6 +1,6 @@
-<div class="list-panel" ng-controller="LeBlender.Dialog.Parameterconfig.Controller">
+﻿<div class="list-panel" ng-controller="LeBlender.Dialog.Parameterconfig.Controller">
 
-    <div id="blender-grid-editor-parameter" class="umb-panel">
+    <div id="blender-grid-editor-parameter">
 
         <div class="umb-panel-body no-header with-footer">
             <div class="umb-forms-settings">
@@ -36,10 +36,10 @@
             <div class="umb-el-wrap umb-panel-buttons">
                 <div class="btn-toolbar umb-btn-toolbar pull-right">
                     <a ng-click="close()" class="btn btn-link">
-                        <localize key="general_cancel">Cancel</localize>
+                        <localize key="general_cancel" class="ng-isolate-scope ng-scope">Cancel</localize>
                     </a>
                     <a ng-click="save()" class="btn btn-primary">
-                        <localize key="actions_update">Update</localize>
+                        <localize key="actions_update" class="ng-isolate-scope ng-scope">Update</localize>
                     </a>
                 </div>
             </div>
@@ -47,4 +47,7 @@
 
     </div>
 
-</div>
+
+
+            </div>
+        </div>

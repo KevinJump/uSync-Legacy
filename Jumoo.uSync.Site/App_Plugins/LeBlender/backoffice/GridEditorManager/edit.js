@@ -133,13 +133,12 @@
                 notificationsService.success("Success", $scope.model.value.name + " has been saved");
                 delete $scope.selectedPropertyGridEditor;
                 $scope.getSetting($scope.model.value.alias);
-                var editormanagerForm = angular.element('form[name=editormanagerForm]').scope().editormanagerForm;
                 if ($scope.model.value) {
                     $scope.$broadcast('gridEditorSaved');
-                    editormanagerForm.$dirty = false;
                 }
 
-                if ($routeParams.id == -1) {                    
+                if ($routeParams.id == -1) {
+                    var editormanagerForm = angular.element('form[name=editormanagerForm]').scope().editormanagerForm;
                     editormanagerForm.$dirty = false;
                     contentEditingHelper.redirectToCreatedContent($scope.model.value.alias, true);
                 }
@@ -163,7 +162,16 @@
                 else {
                     $scope.textAreaconfig = "";
                 }
+
+
             }
+            $scope.$watch('textAreaconfig', function () {
+                try {
+                    $scope.model.value.config = JSON.parse($scope.textAreaconfig);
+                } catch (exp) {
+                    //Exception handler
+                };
+            });
         };
 
         // open icon picker
@@ -245,17 +253,6 @@
                 })
             }
         }
-        
-        $scope.configChanged = function (textAreaconfig) {
-            try {
-                var configValue = JSON.parse(textAreaconfig);
-                $scope.model.value.config = configValue;
-            }
-            catch (e)
-            {
-
-            }
-        };
 
         // toCamelCase
         var toCamelCase = function (name) {
@@ -295,4 +292,5 @@
             $scope.propertyGridEditors = data;
             $scope.getSetting($routeParams.id);
         });
+
     });

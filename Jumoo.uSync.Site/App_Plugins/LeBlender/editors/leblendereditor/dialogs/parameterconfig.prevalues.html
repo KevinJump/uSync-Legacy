@@ -11,11 +11,8 @@
 
             <div class="umb-property">
                 <div class="control-group umb-control-group">
-                    <umb-control-group ng-if="model.value.DataTypeName || !model.value.name" label="Data type" description="">
-                        <select ng-options="datatype.DataTypeName as datatype.name for datatype in availableDataTypes" ng-model="model.value.DataTypeName" required></select>
-                    </umb-control-group>
 
-                    <umb-control-group ng-if="!model.value.DataTypeName && model.value.dataType" label="Data type" description="">
+                    <umb-control-group label="Data type" description="">
                         <select ng-options="datatype.guid as datatype.name for datatype in availableDataTypes" ng-model="model.value.dataType" required></select>
                     </umb-control-group>
 

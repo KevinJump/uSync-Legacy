@@ -15,13 +15,11 @@
 
 #blender-grid-editor-parameter .list {
     padding: 0px 0 5px 0;
+    cursor:pointer;
     height:0;
     position:relative;
     background:#fff;
     overflow:hidden;
-}
-#blender-grid-editor-parameter .list > span.list-number {
-    cursor:pointer;
 }
 
 #blender-grid-editor-parameter .multiple {

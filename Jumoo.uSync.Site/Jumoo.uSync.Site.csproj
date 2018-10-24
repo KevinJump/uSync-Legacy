@@ -96,8 +96,8 @@
       <HintPath>..\packages\UmbracoCms.Core.7.7.6\lib\net45\interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lecoati.LeBlender.Extension, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lecoati.LeBlender.1.0.9.2\lib\Lecoati.LeBlender.Extension.dll</HintPath>
+    <Reference Include="Lecoati.LeBlender.Extension, Version=1.0.8.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lecoati.LeBlender.1.0.8.4\lib\Lecoati.LeBlender.Extension.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
