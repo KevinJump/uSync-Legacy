@@ -96,10 +96,11 @@ namespace Jumoo.uSync.Core.Serializers
                     item = new DictionaryItem(itemKey);
             }
 
-            if (guid != Guid.Empty)
+            if (guid != Guid.Empty && guid != item.Key)
             {
-                item.Key = guid;
-                LogHelper.Debug<DictionarySerializer>("Set the Guid of the Dictionary from {0} to {1}", () => item.Key, () => guid);
+                // (< at least 7.13) this causes SQL errors down the line, because of conflicts in other tables 
+                // item.Key = guid;
+                // LogHelper.Debug<DictionarySerializer>("Set the Guid of the Dictionary from {0} to {1}", () => item.Key, () => guid);
             }
                 
 
