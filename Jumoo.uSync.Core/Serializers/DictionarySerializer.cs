@@ -93,7 +93,13 @@ namespace Jumoo.uSync.Core.Serializers
                 if (parent.HasValue)
                     item = new DictionaryItem(parent.Value, itemKey);
                 else
+                {
                     item = new DictionaryItem(itemKey);
+                    
+                    // We can do this for new ones, and then renames later down the 
+                    // line will work. 
+                    if (guid != Guid.Empty) { item.Key = guid; }
+                }
             }
 
             if (guid != Guid.Empty && guid != item.Key)
@@ -102,7 +108,11 @@ namespace Jumoo.uSync.Core.Serializers
                 // item.Key = guid;
                 // LogHelper.Debug<DictionarySerializer>("Set the Guid of the Dictionary from {0} to {1}", () => item.Key, () => guid);
             }
-                
+
+            if (item.ItemKey != itemKey)
+            {
+                item.ItemKey = itemKey;
+            }
 
             foreach (var valueNode in node.Elements("Value"))
             {
