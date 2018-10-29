@@ -111,6 +111,9 @@
                         case SyncActionType.Delete:
                             syncActions.Add(DeleteItem(action.Key, action.Name));
                             break;
+                        case SyncActionType.Rename:
+                            syncActions.Add(RenameItem(action.Key, action.Name));
+                            break;
                     }
                 }
             }
@@ -119,6 +122,11 @@
         }
 
         virtual public uSyncAction DeleteItem(Guid key, string keyString)
+        {
+            return new uSyncAction();
+        }
+
+        virtual public uSyncAction RenameItem(Guid key, string keyString)
         {
             return new uSyncAction();
         }

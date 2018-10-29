@@ -30,33 +30,38 @@ namespace Jumoo.uSync.BackOffice.Helpers
             Guid guidKey; 
             if (Guid.TryParse(string.Format("00000000-0000-0000-0000-{0:D12}", key), out guidKey))
             {
-                ManageOrphanFiles(typeFolder, guidKey, newFile);
+                ManageOrphanFiles(typeFolder, guidKey, newFile, false);
             }
         }
 
         public static void ManageOrphanFiles(string typeFolder, Guid Key, string newFile)
         {
-            string path = Path.Combine(uSyncBackOfficeContext.Instance.Configuration.Settings.MappedFolder(), typeFolder);
-
-            LogHelper.Debug<NameChecker>("Managing Orphaned Files for save: {0} {1} [{2}]", () => path, ()=> newFile, ()=> Key.ToString());
-            CheckFolder(path, Key, newFile);
+            ManageOrphanFiles(typeFolder, Key, newFile, false);
         }
 
-        private static void CheckFolder(string folder, Guid Key, string newFile)
+        public static void ManageOrphanFiles(string typeFolder, Guid Key, string newFile, bool addRename)
+        {
+            string path = Path.Combine(uSyncBackOfficeContext.Instance.Configuration.Settings.MappedFolder(), typeFolder);
+            LogHelper.Debug<NameChecker>("Managing Orphaned Files for save: {0} {1} [{2}]", () => path, () => newFile, () => Key.ToString());
+            CheckFolder(path, Key, newFile, addRename);
+
+        }
+
+        private static void CheckFolder(string folder, Guid Key, string newFile, bool addRename)
         {
             // LogHelper.Debug<NameChecker>("Checking Folder: {0}", () => folder);
 
             if (!Directory.Exists(folder))
                 return;
 
-            foreach(var file in Directory.GetFiles(folder, "*.config"))
+            foreach (var file in Directory.GetFiles(folder, "*.config"))
             {
                 if (!file.Equals(newFile, StringComparison.OrdinalIgnoreCase))
                 {
                     var fileKey = GetKey(file);
                     if (fileKey != Guid.Empty && fileKey == Key)
                     {
-                            ManageOrphan(file, newFile);
+                        ManageOrphan(file, newFile, addRename);
                     }
                 }
             }
@@ -68,7 +73,7 @@ namespace Jumoo.uSync.BackOffice.Helpers
             {
                 foreach (var directory in Directory.GetDirectories(folder))
                 {
-                    CheckFolder(directory, Key, newFile);
+                    CheckFolder(directory, Key, newFile, addRename);
                 }
             }
         }
@@ -112,7 +117,7 @@ namespace Jumoo.uSync.BackOffice.Helpers
         /// </summary>
         /// <param name="file"></param>
         /// <param name="newFile"></param>
-        private static void ManageOrphan(string file, string newFile)
+        private static void ManageOrphan(string file, string newFile, bool addRename)
         {
             LogHelper.Info<NameChecker>("Managing Orphaned File: {0}", () => file);
 
@@ -132,12 +137,25 @@ namespace Jumoo.uSync.BackOffice.Helpers
                 }
             }
 
+
+            if (addRename)
+            {
+                var newElement = XElement.Load(newFile);
+                var alias = newElement.NameFromNode();
+                var type = newElement.GetTypeFromElement();
+
+                // for things that don't have keys we really want to do this (dicrionary items)
+                // var existingElement = XElement.Load(file);
+                // var oldAlias = existingElement.NameFromNode();
+                // LogHelper.Debug<NameChecker>("Adding Rename: {0} {1}", () => oldAlias, ()=> alias);
+
+                if (type != null)
+                {
+                    uSyncBackOfficeContext.Instance.Tracker.AddAction(SyncActionType.Rename, GetKey(newFile), alias, newElement.GetTypeFromElement());
+                }
+            }
+
             uSyncIOHelper.ArchiveFile(file);
-/*
-            // delete the file
-            if (File.Exists(file))
-                File.Delete(file);
-*/
 
             // redirectcheck
             var redirect = Path.Combine(Path.GetDirectoryName(file), "redirect.config");
@@ -148,11 +166,10 @@ namespace Jumoo.uSync.BackOffice.Helpers
             // delete if empty (and still there)
             if (Directory.Exists(orphanDir))
             {
-                LogHelper.Debug<NameChecker>("Removing the Orphan Folder: {0}", ()=> orphanDir);
-
                 var folder = new DirectoryInfo(orphanDir);
                 if (folder.GetFileSystemInfos().Length == 0)
                 {
+                    LogHelper.Debug<NameChecker>("Removing the Orphan Folder: {0}", () => orphanDir);
                     folder.Delete();
                 }
             }

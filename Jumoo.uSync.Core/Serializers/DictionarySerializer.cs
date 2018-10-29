@@ -18,6 +18,8 @@ namespace Jumoo.uSync.Core.Serializers
     {
         IPackagingService _packagingService;
         ILocalizationService _localizationService;
+        ILogger _logger;
+
         public override string SerializerType { get { return uSyncConstants.Serailization.Dictionary; } }
 
 
@@ -26,12 +28,14 @@ namespace Jumoo.uSync.Core.Serializers
         {
             _packagingService = ApplicationContext.Current.Services.PackagingService;
             _localizationService = ApplicationContext.Current.Services.LocalizationService;
+            _logger = ApplicationContext.Current.ProfilingLogger.Logger;
         }
 
         public DictionarySerializer(string itemType) : base(itemType)
         {
             _packagingService = ApplicationContext.Current.Services.PackagingService;
             _localizationService = ApplicationContext.Current.Services.LocalizationService;
+            _logger = ApplicationContext.Current.ProfilingLogger.Logger;
         }
 
         internal override SyncAttempt<IDictionaryItem> DeserializeCore(XElement node)
@@ -130,12 +134,46 @@ namespace Jumoo.uSync.Core.Serializers
             _localizationService.Save(item);
 
             // children
+            var childNames = new List<string>();
             foreach (var child in node.Elements("DictionaryItem"))
             {
                 UpdateDictionaryValues(child, item.Key, languages);
+
+                var childName = child.Attribute("Key").ValueOrDefault(String.Empty);
+                if (!string.IsNullOrEmpty(childName))
+                    childNames.Add(childName);
             }
 
+            // Clean children - when they are removed from the source. 
+            /* 
+             * This is a true sync - but for dicrionary items it can be destructive, so we leave 
+             * the orphans this can mean a rename gets missed, but its better that then us deleting
+             * half the content edited dicrionary items. 
+             */
+
+            // var children = _localizationService.GetDictionaryItemChildren(item.Key);
+            // CleanChildren(childNames, children);
+            
+
             return item;
+        }
+
+        private void CleanChildren(IEnumerable<string> names, IEnumerable<IDictionaryItem> children)
+        {
+            if (children == null || !children.Any()) return;
+
+
+            var missing = children.Where(x => !names.InvariantContains(x.ItemKey));
+            if (missing != null && missing.Any())
+            {
+                _logger.Debug<DictionarySerializer>("Cleaning up orphaned children items");
+
+                foreach (var item in missing)
+                {
+                    _logger.Debug<DictionarySerializer>("Deleting: {0}", () => item.ItemKey);
+                    _localizationService.Delete(item);
+                }
+            }
         }
 
         internal override SyncAttempt<XElement> SerializeCore(IDictionaryItem item)

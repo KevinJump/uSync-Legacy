@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Umbraco.Core.Models;
 
 namespace Jumoo.uSync.Core.Extensions
 {
@@ -171,6 +172,27 @@ namespace Jumoo.uSync.Core.Extensions
             return defaultValue;
         }
 
+        public static Type GetTypeFromElement(this XElement element)
+        {
+            switch(element.Name.LocalName)
+            {
+                case "DictionaryItem":
+                    return typeof(IDictionaryItem);
+                case "DataType":
+                    return typeof(IDataTypeDefinition);
+                case "DocumentType":
+                    return typeof(IContentType);
+                case "MediaType":
+                    return typeof(IMediaType);
+                case "Template":
+                    return typeof(ITemplate);
+                case "Language":
+                    return typeof(ILanguage);
+                case "macro":
+                    return typeof(IMacro);
+            }
 
+            return null;
+        }
     }
 }
