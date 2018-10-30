@@ -75,7 +75,7 @@ namespace Jumoo.uSync.Core.Serializers
                 {
                     var prop = item.Properties[propertyTypeAlias];
                     string newValue = GetImportIds(prop.PropertyType, GetImportXml(property));
-                    // LogHelper.Debug<Events>("#### BASE: Setting property: [{0}] to {1}", () => propertyTypeAlias, ()=> newValue);
+                    LogHelper.Debug<ContentSerializer>("[BASE] Setting property: [{0}] to {1}", () => propertyTypeAlias, ()=> newValue);
 
                     try {
                         item.SetValue(propertyTypeAlias, newValue);
@@ -88,8 +88,8 @@ namespace Jumoo.uSync.Core.Serializers
                         //
                         // Ported from LocalGovKit PR https://github.com/KevinJump/LocalGovStarterKit/pull/4
                         // 
-                        LogHelper.Warn<ContentBaseSerializer<T>>(
-                            "Setting a value didn't work. Tried to set value '{0}' to the property '{1}' on '{2}'. Exception: {3}", 
+                        LogHelper.Warn<ContentSerializer>(
+                            "[BASE] Setting a value didn't work. Tried to set value '{0}' to the property '{1}' on '{2}'. Exception: {3}", 
                             ()=> newValue, ()=> propertyTypeAlias, ()=> item.Name, ()=> ex.Message);
                     }
                 }
@@ -105,7 +105,12 @@ namespace Jumoo.uSync.Core.Serializers
             var mapper = ContentMapperFactory.GetMapper(propType.PropertyEditorAlias);
 
             if (mapper != null)
+            {
+                LogHelper.Debug<ContentSerializer>("[BASE] Using Mapper: {0}", () => mapper.ToString());
                 return mapper.GetImportValue(propType.DataTypeDefinitionId, content);
+            }
+
+            LogHelper.Debug<ContentSerializer>("[BASE] No Mapper returing content: {0}", () => content);
 
             return content;
         }
