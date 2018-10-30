@@ -14,7 +14,7 @@ v3.0.2 - Trash content update.
         <dependencies>
             <dependency id="uSync.ContentMappers" version="4.1.4" />
             <dependency id="uSync" version="4.0.8" />
-            <dependency id="uSync.Core" version="6.0.8" />
+            <dependency id="uSync.Core" version="6.0.9" />
         </dependencies>
     </metadata>
 </package>
