@@ -10,6 +10,7 @@ using Umbraco.Core;
 using Umbraco.Web.Editors;
 using System.Web.Http;
 using Umbraco.Web.Mvc;
+using Umbraco.Web;
 
 namespace Jumoo.uSync.Content
 {
@@ -20,7 +21,7 @@ namespace Jumoo.uSync.Content
             return new BackOfficeTab()
             {
                 name = "Content",
-                template = "/app_plugins/uSync.Content/uSyncDashboardContent.html"
+                template = UriUtility.ToAbsolute("/app_plugins/uSync.Content/uSyncDashboardContent.html")
             };
         }
 

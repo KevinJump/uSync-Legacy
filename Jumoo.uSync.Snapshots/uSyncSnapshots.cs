@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Umbraco.Web;
 
 namespace Jumoo.uSync.Snapshots
 {
@@ -43,7 +44,7 @@ namespace Jumoo.uSync.Snapshots
             return new BackOfficeTab()
             {
                 name = "Snapshots",
-                template = "/app_plugins/usyncsnapshots/snapshotdashboard.html"
+                template = UriUtility.ToAbsolute("/app_plugins/usyncsnapshots/snapshotdashboard.html")
             };
         }
     }
