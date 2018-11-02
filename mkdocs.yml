@@ -1,6 +1,7 @@
 site_name: uSync
 
 repo_url: https://github.com/KevinJump/uSync/
+edit_uri: edit/v4_master/docs/
 
 pages:
     - 'Introduction': 'index.md'
