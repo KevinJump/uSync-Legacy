@@ -1,6 +1,6 @@
 site_name: uSync
 
-repo_url: https://github.com/KevinJump/uSync/tree/Dev-v7_4/docs 
+repo_url: https://github.com/KevinJump/uSync/
 
 pages:
     - 'Introduction': 'index.md'
