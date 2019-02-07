@@ -252,6 +252,7 @@ namespace Jumoo.uSync.Core.Serializers
                 }
             }
 
+            /*
             if (item.ParentId != -1 && compositions.Count == 0)
             {
                 // it might be that the item was created Umbraco 7.13 - 7.13.2 as a collection and it doesn't have it's 
@@ -263,6 +264,7 @@ namespace Jumoo.uSync.Core.Serializers
                     compositions.Add(parent);
                 }
             }
+            */
 
             LogHelper.Debug<ContentTypeSerializer>("Setting {0} compositions for element", () => item.ContentTypeComposition.Count());
             item.ContentTypeComposition = compositions;
