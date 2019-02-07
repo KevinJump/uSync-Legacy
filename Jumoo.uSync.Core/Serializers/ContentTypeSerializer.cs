@@ -333,12 +333,21 @@ namespace Jumoo.uSync.Core.Serializers
 
             // add content type/composistions
             var master = item.ContentTypeComposition.FirstOrDefault(x => x.Id == item.ParentId);
+
+            if (item.Level != 1 && master == null)
+            {
+                // it is possible that a doctype collection has done something here where
+                // it does have a parent but its not a composition 
+                master = _contentTypeService.GetContentType(item.ParentId);
+            }
+
             if (master != null)
                 info.Add(new XElement("Master", master.Alias,
                             new XAttribute("Key", master.Key)));
 
+
             if (item.Level != 1 && master == null)
-            {
+            { 
                 // we must be in a folder. 
                 var folders = _contentTypeService.GetContentTypeContainers(item)
                     .OrderBy(x => x.Level)
