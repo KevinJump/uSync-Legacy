@@ -2,6 +2,8 @@
 
 ![Build Status](https://jumoo.visualstudio.com/_apis/public/build/definitions/e5bc8d11-6d47-4620-9e6e-dd8199b2843e/6/badge)
 
+**for the Umbraco 8 version of uSync https://github.com/KevinJump/uSync8**
+
 **Documentation : http://usync.readthedocs.io/**
 
 uSync is a synchronization tool for the Umbraco CMS. It serializes the database config and data
