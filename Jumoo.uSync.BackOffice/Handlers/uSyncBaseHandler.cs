@@ -77,13 +77,20 @@
             {
                 foreach (string file in Directory.GetFiles(mappedfolder, "*.config"))
                 {
-                    var attempt = Import(file, force);
-                    if (attempt.Success && attempt.Item != null)
+                    try
                     {
-                        updates.Add(file, attempt.Item);
-                    }
+                        var attempt = Import(file, force);
+                        if (attempt.Success && attempt.Item != null)
+                        {
+                            updates.Add(file, attempt.Item);
+                        }
 
-                    actions.Add(uSyncActionHelper<T>.SetAction(attempt, file, RequiresPostProcessing));
+                        actions.Add(uSyncActionHelper<T>.SetAction(attempt, file, RequiresPostProcessing));
+                    }
+                    catch(Exception ex)
+                    {
+                        throw new Exception("Error Importing: " + Path.GetFileName(file) + " see log for more details", ex);
+                    }
                 }
 
                 foreach (var children in Directory.GetDirectories(mappedfolder))
@@ -185,7 +192,14 @@
             {
                 foreach (string file in Directory.GetFiles(mappedfolder, "*.config"))
                 {
-                    actions.Add(ReportItem(file));
+                    try
+                    {
+                        actions.Add(ReportItem(file));
+                    }
+                    catch(Exception ex)
+                    {
+                        throw new Exception("Error reporting " + Path.GetFileName(file) + " see log for more details", ex);
+                    }
 
                 }
 
