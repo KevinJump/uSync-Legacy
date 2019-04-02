@@ -8,19 +8,15 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Core serailize/deserialization library for uSync, on it's own it does nothing, other than give you a load of API calls to do stuff.</description>
         <summary>Core elements for uSync3 +</summary>
-        <releaseNotes>
-          v5.1    - media mover enhancements
-          v5.2.0  - Better Content Mappers, inc Archetype mapper.
-          v5.3.0  - Umbraco 7.4 Container Support
-          v5.3.1  - Fixes to how Containers are handled
-          v5.3.4  - Config updates for 3rd party media and content pickers.
-          v5.4    - Moved Content Mappers to their own project.          
-          v5.7.x  - Split Umbraco v7.4 and umbraco v7.6 branches.
-          v6      - Blueprint (content template) support
-          v6.0.x  - Patching
-
-          v5 - version issues with old nuget packages
-          v3 - works with Umbraco 7.3 really well</releaseNotes>
+        <releaseNotes>v5.1    - media mover enhancements
+v5.2.0  - Better Content Mappers, inc Archetype mapper.
+v5.3.0  - Umbraco 7.4 Container Support
+v5.3.1  - Fixes to how Containers are handled
+v5.3.4  - Config updates for 3rd party media and content pickers.
+v5.4    - Moved Content Mappers to their own project.          
+v5.7.x  - Split Umbraco v7.4 and umbraco v7.6 branches.
+v6      - Blueprint (content template) support
+v6.0.x  - Patching</releaseNotes>
         <dependencies>
           <!-- <dependency id="UmbracoCms.Core" version="7.6.0" /> -->
         </dependencies>
