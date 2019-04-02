@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Jumoo.uSync.Core")]
-[assembly: AssemblyCopyright("Copyright ?  2015")]
+[assembly: AssemblyCopyright("Mozilla Public License 2.0")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-// [assembly: AssemblyVersion("6.0.10")]
-[assembly: AssemblyVersion("6.0.10")]
+// [assembly: AssemblyVersion("6.0.11")]
+[assembly: AssemblyVersion("6.0.11")]
