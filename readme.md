@@ -2,8 +2,6 @@
 
 ![Build Status](https://jumoo.visualstudio.com/_apis/public/build/definitions/e5bc8d11-6d47-4620-9e6e-dd8199b2843e/6/badge)
 
-**for the Umbraco 8 version of uSync https://github.com/KevinJump/uSync8**
-
 **Documentation : http://usync.readthedocs.io/**
 
 uSync is a synchronization tool for the Umbraco CMS. It serializes the database config and data
@@ -25,6 +23,15 @@ It will save:
 * MemberTypes
 
 You can use **uSync.ContentEdition** to manage content and media if you also want to write them to disk.
+
+## Compatibility
+
+| Umbraco Version | uSync Version |
+| --------------- |:-------------:|
+| >= 8.x.x.       | [uSync8](https://github.com/KevinJump/uSync8) |
+| >= 7.6.x        | 4.x.x         |
+| <= 7.5.x        | 3.x.x         |
+
 
 ## The basics workings of uSync
 
