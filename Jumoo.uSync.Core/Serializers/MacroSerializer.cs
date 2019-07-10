@@ -51,11 +51,9 @@ namespace Jumoo.uSync.Core.Serializers
                 var key = node.Element("Key").ValueOrDefault(Guid.Empty);
                 if (key != Guid.Empty)
                 {
-                    var entities = _entityService.GetAll(key);
-                    if (entities != null && entities.Any() && entities.FirstOrDefault() != null)
-                    {
-                        item = _macroService.GetById(entities.FirstOrDefault().Id);
-                    }
+                    var macros = _macroService.GetAll(key);
+                    if (macros != null && macros.Any())
+                        item = macros.FirstOrDefault();
                 }
             }
 
