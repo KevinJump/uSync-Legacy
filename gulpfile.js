@@ -1,25 +1,40 @@
-/*
-    copy the app_plugins folder when it changes
-    means we don't have to rebuild, and umbraco
-    loads the changes quicker.
-*/
-var gulp = require('gulp'),
-    watch = require('gulp-watch');
+/// <binding ProjectOpened='default' />
+const { watch, src, dest } = require('gulp');
 
-var sources = [
+const sources = [
     './Jumoo.uSync.BackOffice/App_Plugins',
     './Jumoo.uSync.Content/App_Plugins',
     './Jumoo.uSync.Complete/App_Plugins',
-    './Jumoo.uSync.Snapshots/App_Plugins',
-],
-    dest = './Jumoo.uSync.Site/App_Plugins';
+    './Jumoo.uSync.Snapshots/App_Plugins'
+];
 
-gulp.task('monitor', function () {
+const destination = './Jumoo.uSync.Site/App_Plugins';
+
+function copy(path, base) {
+    return src(path, { base: base })
+        .pipe(dest(destination));
+}
+
+function time() {
+    return '[' + new Date().toISOString().slice(11, -5) + ']';
+}
+
+exports.default = function () {
 
     sources.forEach(function (source) {
-        watch(source + '/**/*', { ignoreInitial: false, verbose: true })
-            .pipe(gulp.dest(dest));
-    });
-});
 
-gulp.task('default', ['monitor'])
+        var searchPath = source + '/**/*';
+
+        watch(searchPath, { ignoreInitial: false })
+            .on('change', function (path, stats) {
+                console.log(time(), path, 'changed');
+                copy(path, source);
+            })
+            .on('add', function (path, stats) {
+                console.log(time(), path, 'added');
+                copy(path, source);
+            });
+    });
+};
+
+

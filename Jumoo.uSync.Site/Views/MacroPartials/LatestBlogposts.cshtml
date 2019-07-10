@@ -3,13 +3,17 @@
 @inherits Umbraco.Web.Macros.PartialViewMacroPage
 @{ 
     var startNodeId = Model.MacroParameters["startNodeId"] != null ? Model.MacroParameters["startNodeId"] : Model.Content.Id;
-    var numberOfPosts = Model.MacroParameters["numberOfPosts"] != null ? Model.MacroParameters["numberOfPosts"] : 3;
+    var numberOfPosts = 3;
+    if (Model.MacroParameters["numberOfPosts"] != null)
+    {
+        int.TryParse((string)Model.MacroParameters["numberOfPosts"], out numberOfPosts);
+    }
  }
 @if (startNodeId != null)
 {
     @* Get the starting page *@
     var startNode = Umbraco.TypedContent(startNodeId);
-    var blogposts = startNode.Children.OrderByDescending(x => x.CreateDate).Take(3);
+    var blogposts = startNode.Children.OrderByDescending(x => x.CreateDate).Take(numberOfPosts);
 
     if (blogposts.Any())
     {

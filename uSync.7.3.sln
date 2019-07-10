@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.BackOffice", "Jumoo.uSync.BackOffice\Jumoo.uSync.BackOffice.csproj", "{D6314004-6249-4535-A305-B65946205418}"
 EndProject
@@ -67,14 +67,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.Audit", "Jumoo.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.Complete", "Jumoo.uSync.Complete\Jumoo.uSync.Complete.csproj", "{E0B763F3-EE86-4E42-BD6E-A2B1D1EA925F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.Site", "Jumoo.uSync.Site\Jumoo.uSync.Site.csproj", "{B658A2EA-D3AF-48AC-994E-10162C788BD7}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2BCA7840-10E7-42C7-B829-B847CF063AF4}"
 	ProjectSection(SolutionItems) = preProject
 		gulpfile.js = gulpfile.js
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.Integrity.Test", "Jumoo.uSync.Integrity.Tests\Jumoo.uSync.Integrity.Test.csproj", "{454E0EBF-9AD8-45F2-BBD7-B47BED8000E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jumoo.uSync.Site", "Jumoo.uSync.Site\Jumoo.uSync.Site.csproj", "{B3E71447-27B4-429C-98C2-A6AF74ACF70C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -122,14 +122,14 @@ Global
 		{E0B763F3-EE86-4E42-BD6E-A2B1D1EA925F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0B763F3-EE86-4E42-BD6E-A2B1D1EA925F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0B763F3-EE86-4E42-BD6E-A2B1D1EA925F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B658A2EA-D3AF-48AC-994E-10162C788BD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B658A2EA-D3AF-48AC-994E-10162C788BD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B658A2EA-D3AF-48AC-994E-10162C788BD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B658A2EA-D3AF-48AC-994E-10162C788BD7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{454E0EBF-9AD8-45F2-BBD7-B47BED8000E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{454E0EBF-9AD8-45F2-BBD7-B47BED8000E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{454E0EBF-9AD8-45F2-BBD7-B47BED8000E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{454E0EBF-9AD8-45F2-BBD7-B47BED8000E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3E71447-27B4-429C-98C2-A6AF74ACF70C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3E71447-27B4-429C-98C2-A6AF74ACF70C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3E71447-27B4-429C-98C2-A6AF74ACF70C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3E71447-27B4-429C-98C2-A6AF74ACF70C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -141,5 +141,8 @@ Global
 		{F1BEDD23-0A8C-43CF-9A3F-0D24E0F1CFC6} = {2908711F-BB6B-4A41-A36B-2A71B3F65479}
 		{61244C4A-BC11-44D7-B959-3FF138A5B006} = {2908711F-BB6B-4A41-A36B-2A71B3F65479}
 		{BB4EE3FD-B8AF-4AF1-A3B1-7CAAD9F6CA84} = {E10E12B7-850F-4D86-9DD6-62E16B521C94}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4D471CF7-F473-4EE8-B992-10BAB0230E36}
 	EndGlobalSection
 EndGlobal

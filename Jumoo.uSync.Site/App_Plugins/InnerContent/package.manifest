@@ -1,8 +1,0 @@
-﻿{
-  "javascript": [
-    "~/App_Plugins/InnerContent/js/innercontent.js"
-  ],
-  "css": [
-    "~/App_Plugins/InnerContent/css/innercontent.css"
-  ]
-}
