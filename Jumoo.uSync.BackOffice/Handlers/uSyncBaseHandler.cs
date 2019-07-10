@@ -150,10 +150,10 @@
             {
                 if (item.ParentId > 0)
                 {
-                    var parent = ApplicationContext.Current.Services.EntityService.Get(item.ParentId);
-                    if (parent != null)
+                    var parents = ApplicationContext.Current.Services.EntityService.GetAll<IUmbracoEntity>(item.ParentId);
+                    if (parents != null || parents.Any() && parents.FirstOrDefault() != null)
                     {
-                        path = GetEntityPath(parent);
+                        path = GetEntityPath(parents.FirstOrDefault());
                     }
                 }
 

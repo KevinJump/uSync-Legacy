@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Umbraco.Core;
+using Umbraco.Core.Models.EntityBase;
 using Umbraco.Core.Services;
 
 namespace Jumoo.uSync.ContentMappers
@@ -29,10 +30,10 @@ namespace Jumoo.uSync.ContentMappers
                 {
                     if (link.id != null)
                     {
-                        var key = _entityService.Get((int)link.id);
-                        if (key != null)
+                        var keys = _entityService.GetAll<IUmbracoEntity>((int)link.id);
+                        if (keys != null && keys.Any() && keys.FirstOrDefault() != null)
                         {
-                            link.id = key.Key;
+                            link.id = keys.FirstOrDefault().Key;
                         }
                     }
                 }
@@ -53,10 +54,10 @@ namespace Jumoo.uSync.ContentMappers
                         Guid key;
                         if (Guid.TryParse(link.id.ToString(), out key))
                         {
-                            var id = _entityService.GetByKey(key);
-                            if (id != null)
+                            var ids = _entityService.GetAll(key);
+                            if (ids != null && ids.Any() && ids.FirstOrDefault() != null)
                             {
-                                link.id = id.Id;
+                                link.id = ids.FirstOrDefault().Id;
                             }
                         }
                     }

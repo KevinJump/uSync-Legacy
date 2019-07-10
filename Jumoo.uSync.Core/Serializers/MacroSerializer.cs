@@ -51,10 +51,10 @@ namespace Jumoo.uSync.Core.Serializers
                 var key = node.Element("Key").ValueOrDefault(Guid.Empty);
                 if (key != Guid.Empty)
                 {
-                    var entity = _entityService.GetByKey(key);
-                    if (entity != null)
+                    var entities = _entityService.GetAll(key);
+                    if (entities != null && entities.Any() && entities.FirstOrDefault() != null)
                     {
-                        item = _macroService.GetById(entity.Id);
+                        item = _macroService.GetById(entities.FirstOrDefault().Id);
                     }
                 }
             }

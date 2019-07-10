@@ -80,9 +80,9 @@ namespace Jumoo.uSync.Core.Serializers
                 var masterKey = masterNode.Attribute("Key").ValueOrDefault(Guid.Empty);
                 if (masterKey != Guid.Empty)
                 {
-                    var masterEntity = ApplicationContext.Current.Services.EntityService.GetByKey(masterKey);
-                    if (masterEntity != null)
-                        masterId = masterEntity.Id;
+                    var masterEntities = ApplicationContext.Current.Services.EntityService.GetAll(masterKey);
+                    if (masterEntities != null && masterEntities.Any() && masterEntities.FirstOrDefault() != null)
+                        masterId = masterEntities.FirstOrDefault().Id;
                 }
 
                 if (masterId == 0)
