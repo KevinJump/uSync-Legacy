@@ -150,11 +150,12 @@
             {
                 if (item.ParentId > 0)
                 {
-                    var parents = ApplicationContext.Current.Services.EntityService.GetAll<IUmbracoEntity>(item.ParentId);
-                    if (parents != null || parents.Any() && parents.FirstOrDefault() != null)
+                    var parent = ApplicationContext.Current.Services.EntityService.GetParent(item.Id);
+                    if (parent != null)
                     {
-                        path = GetEntityPath(parents.FirstOrDefault());
+                        path = GetEntityPath(parent);
                     }
+
                 }
 
                 path = Path.Combine(path, GetItemFileName(item));

@@ -61,10 +61,10 @@ namespace Jumoo.uSync.Core.Helpers
             var path = item.Name;
             if (item.ParentId != -1)
             {
-                var parents = _entityService.GetAll<IUmbracoEntity>(item.ParentId);
-                if (parents != null && parents.Any() && parents.FirstOrDefault() != null)
+                var parent = _entityService.GetParent(item.Id);
+                if (parent != null)
                 {
-                    path = GetPath(parents.FirstOrDefault()) + @"\" + path;
+                    path = GetPath(parent) + @"\" + path;
                 }
             }
 

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Umbraco.Core;
+using Umbraco.Core.Models;
 using Umbraco.Core.Models.EntityBase;
 using Umbraco.Core.Services;
 
@@ -30,10 +31,14 @@ namespace Jumoo.uSync.ContentMappers
                 {
                     if (link.id != null)
                     {
-                        var keys = _entityService.GetAll<IUmbracoEntity>((int)link.id);
-                        if (keys != null && keys.Any() && keys.FirstOrDefault() != null)
+                        var objectType = _entityService.GetObjectType((int)link.id);
+                        if (objectType != UmbracoObjectTypes.Unknown)
                         {
-                            link.id = keys.FirstOrDefault().Key;
+                            var keys = _entityService.GetAll(objectType, (int)link.id);
+                            if (keys != null && keys.Any() && keys.FirstOrDefault() != null)
+                            {
+                                link.id = keys.FirstOrDefault().Key;
+                            }
                         }
                     }
                 }

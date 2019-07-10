@@ -90,9 +90,14 @@ namespace Jumoo.uSync.Core.Mappers
 
         internal Guid? GetGuidFromId(int id)
         {
-            var items = ApplicationContext.Current.Services.EntityService.GetAll<IUmbracoEntity>(id);
-            if (items != null && items.Any() && items.FirstOrDefault() != null)
-                return items.FirstOrDefault().Key;
+            var objectType = ApplicationContext.Current.Services.EntityService.GetObjectType(id);
+
+            if (objectType != UmbracoObjectTypes.Unknown)
+            {
+                var items = ApplicationContext.Current.Services.EntityService.GetAll(objectType, id);
+                if (items != null && items.Any() && items.FirstOrDefault() != null)
+                    return items.FirstOrDefault().Key;
+            }
 
             return null;
         }
