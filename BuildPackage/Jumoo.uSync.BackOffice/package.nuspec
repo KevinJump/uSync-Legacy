@@ -17,7 +17,7 @@ v.3.4.0 - Umbraco v7.6+ features (including content templates)
     <licenseUrl>https://opensource.org/licenses/MPL-2.0</licenseUrl>
     <tags>umbraco umbraco7 developer backoffice</tags>
     <dependencies>
-      <dependency id="uSync.Core" version="6.0.10" />
+      <dependency id="uSync.Core" version="6.0.12" />
     </dependencies>
   </metadata>
 </package>
