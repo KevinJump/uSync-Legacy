@@ -21,10 +21,10 @@ namespace Jumoo.uSync.Core.Serializers
         public override string SerializerType { get { return uSyncConstants.Serailization.MediaType; } }
 
         public MediaTypeSerializer() 
-            : base("MediaType") { }
+            : base("MediaType", UmbracoObjectTypes.MediaType) { }
 
         public MediaTypeSerializer(string itemType) 
-            : base (itemType) { }
+            : base (itemType, UmbracoObjectTypes.MediaType) { }
 
         internal override SyncAttempt<IMediaType> DeserializeCore(XElement node)
         {
