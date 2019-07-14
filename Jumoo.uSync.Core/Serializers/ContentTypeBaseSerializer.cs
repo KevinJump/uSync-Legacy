@@ -80,7 +80,7 @@ namespace Jumoo.uSync.Core.Serializers
                 var masterKey = masterNode.Attribute("Key").ValueOrDefault(Guid.Empty);
                 if (masterKey != Guid.Empty)
                 {
-                    var masterEntities = ApplicationContext.Current.Services.EntityService.GetAll(masterKey);
+                    var masterEntities = ApplicationContext.Current.Services.EntityService.GetAll(UmbracoObjectTypes.DocumentType,new [] { masterKey } );
                     if (masterEntities != null && masterEntities.Any() && masterEntities.FirstOrDefault() != null)
                         masterId = masterEntities.FirstOrDefault().Id;
                 }
