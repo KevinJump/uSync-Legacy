@@ -91,9 +91,9 @@ namespace Jumoo.uSync.Core.Serializers
                 var masterKey = masterNode.Attribute("Key").ValueOrDefault(Guid.Empty);
                 if (masterKey != Guid.Empty)
                 {
-                    var masterEntities = ApplicationContext.Current.Services.EntityService.GetAll(baseObjectType,new [] { masterKey } );
-                    if (masterEntities != null && masterEntities.Any() && masterEntities.FirstOrDefault() != null)
-                        masterId = masterEntities.FirstOrDefault().Id;
+                    var attempt = ApplicationContext.Current.Services.EntityService.GetIdForKey(masterKey, baseObjectType);
+                    if (attempt.Success)
+                        masterId = attempt.Result;
                 }
 
                 if (masterId == 0)

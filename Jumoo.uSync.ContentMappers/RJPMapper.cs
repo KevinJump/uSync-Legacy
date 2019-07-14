@@ -10,6 +10,7 @@ using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Models.EntityBase;
 using Umbraco.Core.Services;
+using Jumoo.uSync.Core;
 
 namespace Jumoo.uSync.ContentMappers
 {
@@ -31,13 +32,9 @@ namespace Jumoo.uSync.ContentMappers
                 {
                     if (link.id != null)
                     {
-                        var objectType = _entityService.GetObjectType((int)link.id);
-                        if (objectType != UmbracoObjectTypes.Unknown)
-                        {
-                            var attempt = _entityService.GetKeyForId((int)link.Id, objectType);
-                            if (attempt.Success)
-                                link.id = attempt.Result;
-                        }
+                        var attempt = _entityService.uSyncGetKeyForId((int)link.Id);
+                        if (attempt.Success)
+                            link.id = attempt.Result;                        
                     }
                 }
             }
