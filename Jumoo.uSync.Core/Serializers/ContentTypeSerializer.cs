@@ -29,10 +29,10 @@ namespace Jumoo.uSync.Core.Serializers
         }
 
         public ContentTypeSerializer() :
-            base(Constants.Packaging.DocumentTypeNodeName)
+            base(Constants.Packaging.DocumentTypeNodeName, UmbracoObjectTypes.DocumentType)
         { }
 
-        public ContentTypeSerializer(string itemType) : base(itemType)
+        public ContentTypeSerializer(string itemType) : base(itemType, UmbracoObjectTypes.DocumentType)
         {
         }
 

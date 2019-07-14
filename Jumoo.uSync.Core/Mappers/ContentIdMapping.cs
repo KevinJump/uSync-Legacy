@@ -13,13 +13,20 @@ namespace Jumoo.uSync.Core.Mappers
 {
     class ContentIdMapper : IContentMapper
     {
-        private string _exportRegex; 
+        private string _exportRegex;
+        private UmbracoObjectTypes baseObjectType;
+
         public ContentIdMapper(string regex)
+            : this(regex, UmbracoObjectTypes.Document) { }
+
+        public ContentIdMapper(string regex, UmbracoObjectTypes objectType)
         {
             if (!regex.IsNullOrWhiteSpace())
                 _exportRegex = regex;
             else
                 _exportRegex = @"\d{4,9}";
+
+            this.baseObjectType = objectType;
         }
 
         public virtual string GetExportValue(int dataTypeDefinitionId, string value)
@@ -81,24 +88,19 @@ namespace Jumoo.uSync.Core.Mappers
 
         internal int GetIdFromGuid(Guid guid)
         {
-            var items = ApplicationContext.Current.Services.EntityService.GetAll(guid);
-            if (items != null && items.Any() && items.FirstOrDefault() != null)
-                return items.FirstOrDefault().Id;
+            var attempt = ApplicationContext.Current.Services.EntityService.GetIdForKey(guid, this.baseObjectType);
+            if (attempt.Success)
+                return attempt.Result;
 
             return -1;
         }
 
         internal Guid? GetGuidFromId(int id)
         {
-            var objectType = ApplicationContext.Current.Services.EntityService.GetObjectType(id);
-
-            if (objectType != UmbracoObjectTypes.Unknown)
-            {
-                var items = ApplicationContext.Current.Services.EntityService.GetAll(objectType, id);
-                if (items != null && items.Any() && items.FirstOrDefault() != null)
-                    return items.FirstOrDefault().Key;
-            }
-
+            var attempt = ApplicationContext.Current.Services.EntityService.uSyncGetKeyForId(id);
+            if (attempt.Success)
+                return attempt.Result;
+          
             return null;
         }
 

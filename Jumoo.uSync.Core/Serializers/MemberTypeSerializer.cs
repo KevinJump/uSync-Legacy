@@ -16,10 +16,10 @@ namespace Jumoo.uSync.Core.Serializers
         public override string SerializerType { get { return uSyncConstants.Serailization.MemberType; } }
 
         public MemberTypeSerializer() :
-            base("MemberType") { }
+            base("MemberType", UmbracoObjectTypes.MemberType) { }
 
         public MemberTypeSerializer(string type) 
-            : base(type) { }
+            : base(type, UmbracoObjectTypes.MemberType) { }
 
         internal override SyncAttempt<IMemberType> DeserializeCore(XElement node)
         {

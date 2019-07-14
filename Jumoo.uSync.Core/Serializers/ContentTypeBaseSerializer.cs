@@ -28,13 +28,24 @@ namespace Jumoo.uSync.Core.Serializers
         private List<IContentType> _allContentTypes;
         private List<IMediaType> _allMediaTypes;
 
+        private UmbracoObjectTypes baseObjectType;
 
-        public ContentTypeBaseSerializer(string itemType): base(itemType)
+        /*
+        [Obsolete("You should pass Object Type to base class so lookups work")]
+        public ContentTypeBaseSerializer(string itemType) : 
+            this(itemType, UmbracoObjectTypes.DocumentType)
+        {
+        }
+        */
+
+        public ContentTypeBaseSerializer(string itemType, UmbracoObjectTypes objectType): base(itemType)
         {
             _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
             _dataTypeService = ApplicationContext.Current.Services.DataTypeService;
             _memberTypeService = ApplicationContext.Current.Services.MemberTypeService;
             _entityService = ApplicationContext.Current.Services.EntityService;
+
+            baseObjectType = objectType;
         }
 
         #region ContentTypeBase Deserialize Helpers
@@ -80,9 +91,9 @@ namespace Jumoo.uSync.Core.Serializers
                 var masterKey = masterNode.Attribute("Key").ValueOrDefault(Guid.Empty);
                 if (masterKey != Guid.Empty)
                 {
-                    var masterEntities = ApplicationContext.Current.Services.EntityService.GetAll(masterKey);
-                    if (masterEntities != null && masterEntities.Any() && masterEntities.FirstOrDefault() != null)
-                        masterId = masterEntities.FirstOrDefault().Id;
+                    var attempt = ApplicationContext.Current.Services.EntityService.GetIdForKey(masterKey, baseObjectType);
+                    if (attempt.Success)
+                        masterId = attempt.Result;
                 }
 
                 if (masterId == 0)

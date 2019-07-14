@@ -27,22 +27,25 @@ namespace Jumoo.uSync.Core.Helpers
 
         public string GetPathFromId(int id, UmbracoObjectTypes type)
         {
-            var items = _entityService.GetAll(type, id);
-            if (items != null && items.Any())
+            if (_entityService.Exists(id))
             {
-                var item = items.FirstOrDefault();
-                if (item != null && !item.Trashed)
+                var items = _entityService.GetAll(type, id);
+                if (items != null && items.Any())
                 {
-                    return GetPath(item);
+                    var item = items.FirstOrDefault();
+                    if (item != null && !item.Trashed)
+                    {
+                        return GetPath(item);
+                    }
                 }
             }
 
             return string.Empty;
         }
 
-        public string GetPathFromKey(Guid key)
+        public string GetPathFromKey(Guid key, UmbracoObjectTypes objectType)
         {
-            var items = _entityService.GetAll(key);
+            var items = _entityService.GetAll(objectType, new[] { key });
             if (items != null && items.Any())
             {
                 var item = items.FirstOrDefault();

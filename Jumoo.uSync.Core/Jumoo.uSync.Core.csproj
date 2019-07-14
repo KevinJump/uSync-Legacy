@@ -293,6 +293,7 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="Events.cs" />
+    <Compile Include="Extensions\EntityServicePatchExtensions.cs" />
     <Compile Include="Extensions\XElementTrackerExtension.cs" />
     <Compile Include="Extensions\XElementuSyncTypeExtension.cs" />
     <Compile Include="Extensions\XElementValueExtensions.cs" />

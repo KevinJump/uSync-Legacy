@@ -10,6 +10,7 @@ using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Models.EntityBase;
 using Umbraco.Core.Services;
+using Jumoo.uSync.Core;
 
 namespace Jumoo.uSync.ContentMappers
 {
@@ -31,15 +32,9 @@ namespace Jumoo.uSync.ContentMappers
                 {
                     if (link.id != null)
                     {
-                        var objectType = _entityService.GetObjectType((int)link.id);
-                        if (objectType != UmbracoObjectTypes.Unknown)
-                        {
-                            var keys = _entityService.GetAll(objectType, (int)link.id);
-                            if (keys != null && keys.Any() && keys.FirstOrDefault() != null)
-                            {
-                                link.id = keys.FirstOrDefault().Key;
-                            }
-                        }
+                        var attempt = _entityService.uSyncGetKeyForId((int)link.Id);
+                        if (attempt.Success)
+                            link.id = attempt.Result;                        
                     }
                 }
             }
@@ -59,10 +54,9 @@ namespace Jumoo.uSync.ContentMappers
                         Guid key;
                         if (Guid.TryParse(link.id.ToString(), out key))
                         {
-                            var ids = _entityService.GetAll(key);
-                            if (ids != null && ids.Any() && ids.FirstOrDefault() != null)
-                            {
-                                link.id = ids.FirstOrDefault().Id;
+                            var attempt = GetItemIdFromGuid(key);
+                            if (attempt.Success) {
+                                link.id = attempt.Result;
                             }
                         }
                     }
@@ -70,7 +64,16 @@ namespace Jumoo.uSync.ContentMappers
             }
 
             return JsonConvert.SerializeObject(links, Formatting.Indented);
+        }
 
+        private Attempt<int> GetItemIdFromGuid(Guid key)
+        {
+            var attempt = _entityService.GetIdForKey(key, UmbracoObjectTypes.Document);
+            if (attempt.Success == false)
+                attempt = _entityService.GetIdForKey(key, UmbracoObjectTypes.Media);
+
+
+            return attempt;
         }
     }
 }
