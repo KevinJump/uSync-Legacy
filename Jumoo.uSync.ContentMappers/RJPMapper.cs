@@ -59,10 +59,9 @@ namespace Jumoo.uSync.ContentMappers
                         Guid key;
                         if (Guid.TryParse(link.id.ToString(), out key))
                         {
-                            var ids = _entityService.GetAll(key);
-                            if (ids != null && ids.Any() && ids.FirstOrDefault() != null)
-                            {
-                                link.id = ids.FirstOrDefault().Id;
+                            var id = GetItemIdFromGuid(key);
+                            if (id > 0) {
+                                link.id = id;
                             }
                         }
                     }
@@ -70,7 +69,20 @@ namespace Jumoo.uSync.ContentMappers
             }
 
             return JsonConvert.SerializeObject(links, Formatting.Indented);
+        }
 
+        private int GetItemIdFromGuid(Guid key)
+        {
+            var ids = _entityService.GetAll(UmbracoObjectTypes.Document, new[] { key });
+            if (ids == null || !ids.Any())
+                ids = _entityService.GetAll(UmbracoObjectTypes.Media, new[] { key });
+
+            if (ids !=null || ids.Any())
+            {
+                return ids.FirstOrDefault().Id;
+            }
+
+            return 0;
         }
     }
 }
