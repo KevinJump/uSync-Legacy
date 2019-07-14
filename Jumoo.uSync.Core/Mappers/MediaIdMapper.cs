@@ -5,13 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
+using Umbraco.Core.Models;
 
 namespace Jumoo.uSync.Core.Mappers
 {
     class MediaIdMapper : ContentIdMapper
     {
         public MediaIdMapper(string regex)
-            : base(regex) { }
+            : base(regex, UmbracoObjectTypes.Media) { }
 
         public override string GetExportValue(int dataTypeDefinitionId, string value)
         {

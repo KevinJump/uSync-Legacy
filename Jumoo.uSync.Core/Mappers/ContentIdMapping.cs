@@ -13,13 +13,20 @@ namespace Jumoo.uSync.Core.Mappers
 {
     class ContentIdMapper : IContentMapper
     {
-        private string _exportRegex; 
+        private string _exportRegex;
+        private UmbracoObjectTypes baseObjectType;
+
         public ContentIdMapper(string regex)
+            : this(regex, UmbracoObjectTypes.Document) { }
+
+        public ContentIdMapper(string regex, UmbracoObjectTypes objectType)
         {
             if (!regex.IsNullOrWhiteSpace())
                 _exportRegex = regex;
             else
                 _exportRegex = @"\d{4,9}";
+
+            this.baseObjectType = objectType;
         }
 
         public virtual string GetExportValue(int dataTypeDefinitionId, string value)
@@ -81,7 +88,7 @@ namespace Jumoo.uSync.Core.Mappers
 
         internal int GetIdFromGuid(Guid guid)
         {
-            var items = ApplicationContext.Current.Services.EntityService.GetAll(UmbracoObjectTypes.Document, new [] { guid } );
+            var items = ApplicationContext.Current.Services.EntityService.GetAll(this.baseObjectType, new [] { guid } );
             if (items != null && items.Any() && items.FirstOrDefault() != null)
                 return items.FirstOrDefault().Id;
 
