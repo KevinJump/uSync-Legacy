@@ -34,11 +34,9 @@ namespace Jumoo.uSync.ContentMappers
                         var objectType = _entityService.GetObjectType((int)link.id);
                         if (objectType != UmbracoObjectTypes.Unknown)
                         {
-                            var keys = _entityService.GetAll(objectType, (int)link.id);
-                            if (keys != null && keys.Any() && keys.FirstOrDefault() != null)
-                            {
-                                link.id = keys.FirstOrDefault().Key;
-                            }
+                            var attempt = _entityService.GetKeyForId((int)link.Id, objectType);
+                            if (attempt.Success)
+                                link.id = attempt.Result;
                         }
                     }
                 }
@@ -59,9 +57,9 @@ namespace Jumoo.uSync.ContentMappers
                         Guid key;
                         if (Guid.TryParse(link.id.ToString(), out key))
                         {
-                            var id = GetItemIdFromGuid(key);
-                            if (id > 0) {
-                                link.id = id;
+                            var attempt = GetItemIdFromGuid(key);
+                            if (attempt.Success) {
+                                link.id = attempt.Result;
                             }
                         }
                     }
@@ -71,18 +69,14 @@ namespace Jumoo.uSync.ContentMappers
             return JsonConvert.SerializeObject(links, Formatting.Indented);
         }
 
-        private int GetItemIdFromGuid(Guid key)
+        private Attempt<int> GetItemIdFromGuid(Guid key)
         {
-            var ids = _entityService.GetAll(UmbracoObjectTypes.Document, new[] { key });
-            if (ids == null || !ids.Any())
-                ids = _entityService.GetAll(UmbracoObjectTypes.Media, new[] { key });
+            var attempt = _entityService.GetIdForKey(key, UmbracoObjectTypes.Document);
+            if (attempt.Success == false)
+                attempt = _entityService.GetIdForKey(key, UmbracoObjectTypes.Media);
 
-            if (ids !=null || ids.Any())
-            {
-                return ids.FirstOrDefault().Id;
-            }
 
-            return 0;
+            return attempt;
         }
     }
 }
