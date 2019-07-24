@@ -81,6 +81,13 @@ namespace Jumoo.uSync.Core.Serializers
                 if (masterKey != Guid.Empty)
                 {
                     var masterEntity = ApplicationContext.Current.Services.EntityService.GetByKey(masterKey);
+                    
+                    if (masterEntity == null)
+                    {
+                        var message = $"Master entity with key '{masterKey}' couldn't be found for info '{info}'";
+                        throw new KeyNotFoundException(message);
+                    }
+                    
                     masterId = masterEntity.Id;
                 }
 
