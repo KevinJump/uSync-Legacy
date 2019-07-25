@@ -102,7 +102,7 @@ namespace Jumoo.uSync.Core.Serializers
                     
                     if (master == null)
                     {
-                        var message = $"Master entity with key '{masterKey}' couldn't be found for info '{info}'";
+                        var message = $"Master entity with alias '{masterAlias}' couldn't be found for info '{info}'";
                         throw new KeyNotFoundException(message);
                     }
 
