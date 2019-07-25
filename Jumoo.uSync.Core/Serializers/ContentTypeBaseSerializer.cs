@@ -82,25 +82,31 @@ namespace Jumoo.uSync.Core.Serializers
                 {
                     var masterEntity = ApplicationContext.Current.Services.EntityService.GetByKey(masterKey);
                     
-                    if (masterEntity == null)
+                    if (masterEntity != null)
                     {
-                        var message = $"Master entity with key '{masterKey}' couldn't be found for info '{info}'";
-                        throw new KeyNotFoundException(message);
+                        masterId = masterEntity.Id;
                     }
-                    
-                    masterId = masterEntity.Id;
+                    else
+                    {
+                        var generateMessageFormat = $"Failed to find master with id '{masterKey}' for item '{item}'";
+                        LogHelper.Debug<Events>(generateMessageFormat);
+                    }
                 }
 
                 if (masterId == 0)
                 {
                     // old school alias lookup
-                    var master = default(IContentTypeBase);
-
                     LogHelper.Debug<Events>("Looking up Content Master by Alias");
                     var masterAlias = masterNode.Value;
-                    master = LookupByAlias(masterAlias);
-                    if (master != null)
-                        masterId = master.Id;
+                    var master = LookupByAlias(masterAlias);
+                    
+                    if (master == null)
+                    {
+                        var message = $"Master entity with key '{masterKey}' couldn't be found for info '{info}'";
+                        throw new KeyNotFoundException(message);
+                    }
+
+                    masterId = master.Id;
                 }
 
                 if (masterId > 0)
