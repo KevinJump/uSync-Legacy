@@ -13,6 +13,7 @@ using Umbraco.Core.Services;
 using Jumoo.uSync.BackOffice.Helpers;
 using System.Xml.Linq;
 using Jumoo.uSync.Core.Extensions;
+using System.Diagnostics;
 
 namespace Jumoo.uSync.Content
 {
@@ -55,7 +56,11 @@ namespace Jumoo.uSync.Content
 
         public IEnumerable<uSyncAction> ImportAll(string folder, bool force)
         {
-            LogHelper.Debug<Logging>("Running Content Import: {0}", () => Path.GetFileName(folder));
+            var typeName = typeof(T).Name;
+            var sw = Stopwatch.StartNew();
+            LogHelper.Info<Logging>("<< Import: [{0}] {1}",
+                () => typeName,
+                () => Path.GetFileName(folder));
 
             Dictionary<string, T> updates = new Dictionary<string, T>();
 
@@ -74,6 +79,15 @@ namespace Jumoo.uSync.Content
                     ImportSecondPass(update.Key, update.Value);
                 }
             }
+
+            sw.Stop();
+            LogHelper.Info<Logging>(">> Import [{0}] Complete: {1} Items {2} changes {3} failures ({4}ms)",
+                () => typeName,
+                () => actions.Count(),
+                () => actions.Count(x => x.Change > ChangeType.NoChange),
+                () => actions.Count(x => x.Change > ChangeType.Fail),
+                () => sw.ElapsedMilliseconds);
+
 
             return actions;
         }

@@ -99,7 +99,7 @@ namespace Jumoo.uSync.BackOffice
 
 
                 sw.Stop();
-                LogHelper.Info<uSyncApplicationEventHandler>("uSync Complete ({0}ms)", () => sw.ElapsedMilliseconds);
+                LogHelper.Info<uSyncApplicationEventHandler>("uSync Startup Complete ({0}ms)", () => sw.ElapsedMilliseconds);
             }
             catch(Exception ex)
             {

@@ -17,7 +17,7 @@
         private static uSyncBackOfficeContext _instance;
         private SortedList<int, ISyncHandler> handlers;
 
-        public Helpers.ActionTracker Tracker; 
+        public Helpers.ActionTracker Tracker;
 
         public List<ISyncHandler> Handlers
         {
@@ -28,7 +28,8 @@
 
         public string Version
         {
-            get {
+            get
+            {
                 return typeof(Jumoo.uSync.BackOffice.uSyncApplicationEventHandler)
                   .Assembly.GetName().Version.ToString();
             }
@@ -63,7 +64,7 @@
             handlers = new SortedList<int, ISyncHandler>();
 
             var includeIfMissing = true;
-            var handlerGroup = Configuration.Settings.HandlerGroup; 
+            var handlerGroup = Configuration.Settings.HandlerGroup;
 
             var hGroup = Configuration.Settings.Handlers
                 .FirstOrDefault(x => x.Group.Equals(handlerGroup, StringComparison.OrdinalIgnoreCase));
@@ -74,7 +75,7 @@
             var types = TypeFinder.FindClassesOfType<ISyncHandler>();
             LogHelper.Info<uSyncBackOfficeContext>("Loading up Sync Handlers : {0}", () => types.Count());
             foreach (var t in types)
-            { 
+            {
                 var typeInstance = Activator.CreateInstance(t) as ISyncHandler;
                 if (typeInstance != null)
                 {
@@ -101,8 +102,8 @@
 
         public void SetupEvents()
         {
-            LogHelper.Info<uSyncApplicationEventHandler>("Setting up Events {0}", ()=> Configuration.Settings.HandlerGroup);
-            foreach(var handler in handlers.Select(x => x.Value))
+            LogHelper.Info<uSyncApplicationEventHandler>("Setting up Events {0}", () => Configuration.Settings.HandlerGroup);
+            foreach (var handler in handlers.Select(x => x.Value))
             {
                 if (HandlerEnabled(handler.Name, "events", Configuration.Settings.HandlerGroup))
                 {
@@ -141,7 +142,7 @@
             List<uSyncAction> actions = new List<uSyncAction>();
             actions.AddRange(Report(Configuration.Settings.HandlerGroup, folder));
 
-            return actions; 
+            return actions;
         }
 
         /// <summary>
@@ -170,6 +171,7 @@
 
         public IEnumerable<uSyncAction> Import(string groupName, string folder, bool force)
         {
+            var sw = Stopwatch.StartNew();
 
             // pause all saving etc. while we do an import
             uSyncEvents.Paused = true;
@@ -200,8 +202,16 @@
             uSyncEvents.fireBulkActionComplete(
                 new uSyncBulkEventArg() { action = ChangeType.Import });
 
-            uSyncEvents.Paused = false; 
+            uSyncEvents.Paused = false;
+
+            sw.Stop();
+            LogHelper.Info<uSyncApplicationEventHandler>("uSync Import Complete {0}ms [{1} Items {2} Changes {3} Failures]",
+                () => sw.ElapsedMilliseconds,
+                () => actions.Count(),
+                () => actions.Count(x => x.Change > ChangeType.NoChange),
+                () => actions.Count(x => x.Change > ChangeType.Fail));
             return actions;
+
         }
 
         public IEnumerable<uSyncAction> Import(IEnumerable<ISyncHandler> syncHandlers, string folder, bool checkConfig, bool force, string groupName = "")
@@ -213,7 +223,8 @@
             {
                 if (handler != null)
                 {
-                    if (!checkConfig || HandlerEnabled(handler.Name, "import", groupName)) {
+                    if (!checkConfig || HandlerEnabled(handler.Name, "import", groupName))
+                    {
                         var sw = Stopwatch.StartNew();
 
                         var syncFolder = System.IO.Path.Combine(folder, handler.SyncFolder);
@@ -299,6 +310,8 @@
             uSyncEvents.fireBulkActionComplete(
                 new uSyncBulkEventArg() { action = ChangeType.NoChange });
 
+            LogHelper.Info<uSyncApplicationEventHandler>("Report Complete");
+
             return actions;
 
         }
@@ -340,7 +353,7 @@
 
         public bool HandlerEnabled(string handlerName, string action, string group = "default")
         {
-            var validActions = new string[] { "all", action.ToLower() }; 
+            var validActions = new string[] { "all", action.ToLower() };
 
             var hGroup = Configuration.Settings.Handlers.FirstOrDefault(x => x.Group.Equals(group, StringComparison.OrdinalIgnoreCase));
             if (hGroup != null)
@@ -363,7 +376,7 @@
                     }
                 }
 
-                LogHelper.Debug<uSyncApplicationEventHandler>("Handler {0} is missing in group \"{1}\" Enabled = {2}", () => handlerName, ()=> group, () => hGroup.EnableMissing);
+                LogHelper.Debug<uSyncApplicationEventHandler>("Handler {0} is missing in group \"{1}\" Enabled = {2}", () => handlerName, () => group, () => hGroup.EnableMissing);
                 // return the group default (i.e if true, we include handlers not in this group) 
                 return hGroup.EnableMissing;
             }
