@@ -14,11 +14,20 @@ perform an export of your settings from the site.
 - Media Types
 - Templates
 - Macros
-- Languages
-- Dictionary Items
+- Languages (v7)
+- Dictionary Items (v7)
 - Member Types *(disabled by default)*
 
-The export will be placed in the ```uSync/data``` folder within your Umbraco site.
+**uSync.ContentEdition exports**
+
+- Content
+- Media
+- Domains
+- Content Templates (blueprints)
+- Languages(v8)
+- Dictionary Items (v8)
+
+The export will be placed in the ```uSync/data``` folder within your Umbraco site. (in v8 ```usync\v8```)
 
 ## Export On Save / Delete
 Once uSync is running it will listen for events related to saving or deleting 
