@@ -123,7 +123,7 @@ namespace Jumoo.uSync.BackOffice.Helpers
 
         internal static void DeleteFile(string file)
         {
-            LogHelper.Debug<uSyncIOHelper>("Delete File: {0}", () => file);
+            LogHelper.Debug<uSyncIOHelper>("Delete or Blank File: {0}", () => file);
 
             uSyncEvents.fireDeleting(new uSyncEventArgs { fileName = file });
             var blankOnDelete = uSyncBackOfficeContext.Instance.Configuration.Settings.PreserveAllFiles;
@@ -132,12 +132,12 @@ namespace Jumoo.uSync.BackOffice.Helpers
             {
                 if (!blankOnDelete)
                 {
-                    LogHelper.Debug<uSyncIOHelper>("Delete: {0}", () => file);
+                    LogHelper.Debug<uSyncIOHelper>("Delete File: {0}", () => file);
                     File.Delete(file);
                 }
                 else
                 {
-                    LogHelper.Debug<uSyncIOHelper>("Blank: {0}", () => file);
+                    LogHelper.Debug<uSyncIOHelper>("Blank File: {0}", () => file);
                     CreateBlank(file);
                 }
             }
