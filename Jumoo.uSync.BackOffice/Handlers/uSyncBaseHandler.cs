@@ -166,7 +166,7 @@
             {
                 if (item.ParentId > 0)
                 {
-                    var parent = ApplicationContext.Current.Services.EntityService.GetParent(item.Id);
+                    var parent = ApplicationContext.Current.Services.EntityService.Get(item.ParentId);
                     if (parent != null)
                     {
                         path = GetEntityPath(parent);
