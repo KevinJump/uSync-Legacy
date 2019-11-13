@@ -59,7 +59,6 @@ namespace Jumoo.uSync.BackOffice.Helpers
 
         public static void ArchiveFile(string path)
         {
-            LogHelper.Debug<uSyncIOHelper>("Archive: {0}", () => path);
             try
             {
                 if (!uSyncBackOfficeContext.Instance.Configuration.Settings.ArchiveVersions)
@@ -67,6 +66,8 @@ namespace Jumoo.uSync.BackOffice.Helpers
                     DeleteFile(path);
                     return;
                 }
+
+                LogHelper.Debug<uSyncIOHelper>("Archive: {0}", () => path);
 
                 string fileName = Path.GetFileNameWithoutExtension(path);
                 string folder = Path.GetDirectoryName(path);
