@@ -51,9 +51,28 @@ namespace Jumoo.uSync.Core.Serializers
                 var key = node.Element("Key").ValueOrDefault(Guid.Empty);
                 if (key != Guid.Empty)
                 {
+                    if (Umbraco.Core.Configuration.UmbracoVersion.Current.Major == 7 &&
+                        Umbraco.Core.Configuration.UmbracoVersion.Current.Minor == 15 &&
+                        Umbraco.Core.Configuration.UmbracoVersion.Current.Revision == 0)
+                    {
+                        // don't do this, because this is a breaking change in 7.15.0
+                    }
+                    else
+                    {
+                        // for all other previous and subsequent versions this call is fine.
+                        var entity = _entityService.GetByKey(key);
+                        if (entity != null)
+                            item = _macroService.GetById(entity.Id);
+                    }
+                    
+
+                    // this call - breaks content / media imports (even though they never go near this block of code)
+                    /*                    
                     var macros = _macroService.GetAll(key);
                     if (macros != null && macros.Any())
                         item = macros.FirstOrDefault();
+                        */
+                    
                 }
             }
 
