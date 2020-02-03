@@ -17,7 +17,7 @@ v.4.x.x - Umbraco 7.6+ Compatability
     <licenseUrl>https://opensource.org/licenses/MPL-2.0</licenseUrl>
     <tags>umbraco umbraco7 developer backoffice</tags>
     <dependencies>
-      <dependency id="uSync.Core" version="6.0.14" />
+      <dependency id="uSync.Core" version="6.0.15" />
     </dependencies>
   </metadata>
 </package>
