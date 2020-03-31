@@ -92,6 +92,12 @@ namespace Jumoo.uSync.Core.Mappers
             if (attempt.Success)
                 return attempt.Result;
 
+            /// fix - we use to do a single lookup - but breaking change in 7.0.12/13 (since reverted) means we have 
+            ///       to specify type. 
+            var mediaAttempt = ApplicationContext.Current.Services.EntityService.GetIdForKey(guid, UmbracoObjectTypes.Media);
+            if (mediaAttempt.Success)
+                return attempt.Result;
+
             return -1;
         }
 
