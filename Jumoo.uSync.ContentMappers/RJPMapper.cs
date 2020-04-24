@@ -32,7 +32,7 @@ namespace Jumoo.uSync.ContentMappers
                 {
                     if (link.id != null)
                     {
-                        var attempt = _entityService.uSyncGetKeyForId((int)link.Id);
+                        var attempt = _entityService.uSyncGetKeyForId((int)link.id);
                         if (attempt.Success)
                             link.id = attempt.Result;                        
                     }
