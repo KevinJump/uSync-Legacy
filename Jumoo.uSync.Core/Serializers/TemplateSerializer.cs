@@ -73,7 +73,7 @@ namespace Jumoo.uSync.Core.Serializers
                     {
                         // cannot find the master for this..
                         templatePath = string.Empty;
-                        LogHelper.Warn<TemplateSerializer>("Cannot find underling template file, so we cannot create the template");
+                        LogHelper.Warn<TemplateSerializer>($"Cannot find underling template file at {templatePath}, so we cannot create the template");
                     }
                 }
 
