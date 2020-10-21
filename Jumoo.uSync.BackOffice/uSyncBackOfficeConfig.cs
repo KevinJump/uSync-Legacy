@@ -88,7 +88,7 @@ namespace Jumoo.uSync.BackOffice
             _settings.Import = WebConfigSetting("uSync.Import", _settings.Import);
             _settings.ExportAtStartup = WebConfigSetting("uSync.ExportAtStartup", _settings.ExportAtStartup);
             _settings.ExportOnSave = WebConfigSetting("uSync.ExportOnSave", _settings.ExportOnSave);
-
+            _settings.Folder = WebConfigSetting("uSync.Folder", _settings.Folder);
             _settings.HandlerGroup = WebConfigSetting("uSync.HandlerGroup", _settings.HandlerGroup);
         }
 
