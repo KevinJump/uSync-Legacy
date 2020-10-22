@@ -23,8 +23,17 @@
                 $scope.getuSyncMode();
                 $scope.loading = false;
 
-                $scope.loadHistory();
+                // $scope.loadHistory();
             });
+        }
+
+        $scope.historyLoaded = false;
+
+        $scope.initHistory = function () {
+            if (!$scope.historyLoaded) {
+                $scope.historyLoaded = true;
+                $scope.loadHistory();
+            }
         }
 
         $scope.loadHistory = function () {

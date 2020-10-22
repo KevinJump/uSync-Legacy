@@ -1,4 +1,4 @@
-angular.module('umbraco.resources').factory('uSyncDashboardService',
+﻿angular.module('umbraco.resources').factory('uSyncDashboardService',
     function ($q, $http) {
 
         var serviceRoot = 'backoffice/uSync/uSyncApi/';

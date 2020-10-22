@@ -1,4 +1,4 @@
-{
+﻿{
 	javascript: [
 		'~/App_Plugins/uSync/uSyncDashboardController.js',
 		'~/App_Plugins/uSync/uSyncDashboardService.js'

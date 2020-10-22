@@ -1,4 +1,4 @@
-<div id="uSyncDashboard" ng-controller="uSyncDashboardController" class="usync-dash">
+﻿<div id="uSyncDashboard" ng-controller="uSyncDashboardController" class="usync-dash">
     <div ng-show="isInError" class="alert alert-danger">Error: {{errorMsg}}</div>
 
     <div class="row">
@@ -8,7 +8,7 @@
                 <li ng-repeat="tab in settings.addOnTabs track by $index">
                     <a href="#usync_tab_{{$index}}" data-toggle="tab">{{tab.name}}</a>
                 </li>
-                <li><a href="#usync_history" data-toggle="tab">History</a></li>
+                <li><a href="#usync_history" data-toggle="tab" ng-click="initHistory();">History</a></li>
                 <li><a href="#usync_config" data-toggle="tab">Config</a></li>
                 <li><a href="#usync_about" data-toggle="tab">About <i ng-show="!settings.licenced" class="icon-alert-alt color-red"></i></a></li>
             </ul>
@@ -196,6 +196,7 @@
                             <thead>
                                 <tr>
                                     <th>Name</th>
+                                    <th>User</th>
                                     <th>Changes</th>
                                     <th>Sync Type</th>
                                     <th>Date</th>
@@ -205,6 +206,7 @@
                             <tbody ng-repeat="item in history">
                                 <tr>
                                     <td>{{item.name}}</td>
+                                    <td>{{item.user}}</td>
                                     <td>{{getChangeCount(item.actions)}}</td>
                                     <td>{{item.type}}</td>
                                     <td>{{item.date}}</td>

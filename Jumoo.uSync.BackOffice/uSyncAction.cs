@@ -121,7 +121,7 @@ namespace Jumoo.uSync.BackOffice
 
     public class uSyncActionLogger
     {
-        public static void SaveActionLog(string name, IEnumerable<uSyncAction> actions)
+        public static void SaveActionLog(string name, string user, IEnumerable<uSyncAction> actions)
         {
             try {
                 // creates an action log (xml file) of the actions...
@@ -142,6 +142,7 @@ namespace Jumoo.uSync.BackOffice
 
                 XElement logFile = new XElement("uSync",
                     new XAttribute("Name", string.IsNullOrEmpty(name) ? "" : name),
+                    new XAttribute("User", string.IsNullOrEmpty(user) ? "Background" : user),
                     new XAttribute("DateTime", DateTime.Now.ToString("U")));
 
                 XElement logNode = new XElement("Actions");
@@ -237,6 +238,7 @@ namespace Jumoo.uSync.BackOffice
             {
                 info.type = data.Attribute("Name").ValueOrDefault("");
                 info.date = data.Attribute("DateTime").ValueOrDefault("");
+                info.user = data.Attribute("User").ValueOrDefault("");
 
                 info.actions = new List<uSyncAction>(); 
 
@@ -308,6 +310,9 @@ namespace Jumoo.uSync.BackOffice
     public class uSyncHistory
     {
         public string name { get; set; }
+
+        public string user { get; set; }
+
         public string path { get; set; }
         public string type { get; set; }
         public string date { get; set; }
