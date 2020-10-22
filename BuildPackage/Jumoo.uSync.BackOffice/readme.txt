@@ -7,13 +7,6 @@
  
  uSync for Umbraco 7.4+ 
  
- Upgrading from v2.x
- --------------------
- The default data folder has moved from /usync to /usync/data. You
- can move your files to the new folder or let uSync generate a clean
- export (recommended). After an upgrade you delete all the other
- folders in the /usync folder. 
-
  Recommended: Perform a new export on upgrades
  ----------------------------------------------
  The files that uSync exports are generally compatible between versions, 
@@ -32,5 +25,5 @@
  deployment. 
  
  ---------------
- Documentation : http://usync.readthedocs.io/
- Source code   : https://github.com/KevinJump/uSync
+ Documentation : https://docs.jumoo.co.uk/uSync/v4/
+ Source code   : https://github.com/KevinJump/uSync/
