@@ -59,7 +59,7 @@ namespace Jumoo.uSync.BackOffice.Controllers
             // we write a log - when there have been changes, a zero run doesn't get
             // a file written to disk.
             if (actions.Any(x => x.Change > ChangeType.NoChange))
-                uSyncActionLogger.SaveActionLog("Export", actions);
+                uSyncActionLogger.SaveActionLog("Export", Security?.CurrentUser?.Username, actions);
 
             return actions;
         }
@@ -89,7 +89,7 @@ namespace Jumoo.uSync.BackOffice.Controllers
             // we write a log - when there have been changes, a zero run doesn't get
             // a file written to disk.
             if (actions.Any(x => x.Change > ChangeType.NoChange))
-                uSyncActionLogger.SaveActionLog("Import", actions);
+                uSyncActionLogger.SaveActionLog("Import", Security?.CurrentUser?.Username, actions);
 
             return actions;
         }

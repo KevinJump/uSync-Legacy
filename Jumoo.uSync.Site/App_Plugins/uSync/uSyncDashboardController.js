@@ -1,4 +1,4 @@
-angular.module('umbraco').controller('uSyncDashboardController',
+﻿angular.module('umbraco').controller('uSyncDashboardController',
     function ($scope, $http, uSyncDashboardService) {
 
         $scope.snapshotsUrl = "/app_plugins/usync/test.html";
@@ -23,8 +23,17 @@ angular.module('umbraco').controller('uSyncDashboardController',
                 $scope.getuSyncMode();
                 $scope.loading = false;
 
-                $scope.loadHistory();
+                // $scope.loadHistory();
             });
+        }
+
+        $scope.historyLoaded = false;
+
+        $scope.initHistory = function () {
+            if (!$scope.historyLoaded) {
+                $scope.historyLoaded = true;
+                $scope.loadHistory();
+            }
         }
 
         $scope.loadHistory = function () {
