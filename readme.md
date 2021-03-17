@@ -1,8 +1,9 @@
 # uSync 
 
-![Build Status](https://jumoo.visualstudio.com/_apis/public/build/definitions/e5bc8d11-6d47-4620-9e6e-dd8199b2843e/6/badge)
 
-**Documentation : http://usync.readthedocs.io/**
+>> This is the uSync v4 repo (for Umbraco 7) - for the newer uSync v8 (for umbraco 8 repo) look here : https://github.com/KevinJump/uSync8
+
+Documentation : https://docs.jumoo.co.uk/uSync/
 
 uSync is a synchronization tool for the Umbraco CMS. It serializes the database config and data
 within an Umbraco site, and reads and writes it to disk as a collection of XML files. 
