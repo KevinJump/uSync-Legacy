@@ -1,7 +1,7 @@
 # uSync 
 
 
->> This is the uSync v4 repo (for Umbraco 7) - for the newer uSync v8 (for umbraco 8 repo) look here : https://github.com/KevinJump/uSync8
+> This is the uSync v4 repo (for Umbraco 7) - for the newer uSync v8 (for umbraco 8 repo) look here : https://github.com/KevinJump/uSync8
 
 Documentation : https://docs.jumoo.co.uk/uSync/
 
