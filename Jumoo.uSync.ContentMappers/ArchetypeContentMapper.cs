@@ -45,6 +45,7 @@ namespace Jumoo.uSync.ContentMappers
                     if (mapper != null)
                     {
                         typedContent.Fieldsets.AsQueryable()
+                                    .Where(fs => fs.Alias == fieldSet.Alias)
                                     .SelectMany(fs => fs.Properties)
                                     .Where(p => p.Alias == property.Alias)
                                     .ForEach(pm => pm.Value = mapper.GetExportValue(dataType.Id, pm.Value.ToString()));
