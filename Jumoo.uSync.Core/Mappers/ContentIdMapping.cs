@@ -96,7 +96,7 @@ namespace Jumoo.uSync.Core.Mappers
             ///       to specify type. 
             var mediaAttempt = ApplicationContext.Current.Services.EntityService.GetIdForKey(guid, UmbracoObjectTypes.Media);
             if (mediaAttempt.Success)
-                return attempt.Result;
+                return mediaAttempt.Result;
 
             return -1;
         }
