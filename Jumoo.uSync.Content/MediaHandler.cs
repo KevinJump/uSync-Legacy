@@ -17,7 +17,7 @@ using System.Linq;
 
 namespace Jumoo.uSync.Content
 {
-    public class MediaHandler : BaseContentHandler<IMedia>, ISyncHandler
+    public class MediaHandler : BaseContentHandler<IMedia>, ISyncHandler, ISyncHandlerConfig
     {
         public string Name { get { return "uSync: MediaHandler"; } }
         public int Priority { get { return uSyncConstants.Priority.Media; } }
